@@ -109,9 +109,9 @@ fetch('teamsData.json')
           recommendedPlayers.forEach(player => {
             // Ensure player data is correctly referenced (name and team)
             if (player && player.Name) {
-              // Use the player's team abbreviation (stored in player.team)
-              const teamAbbreviation = teamsData.find(team => team.name === player.team)?.name || 'Unknown Team';
-
+              // Get the team abbreviation directly from the team name
+              const teamAbbreviation = player.team || 'Unknown Team';
+              
               const listItem = document.createElement("li");
               // Display player name and team abbreviation
               listItem.textContent = `${player.Name} (${teamAbbreviation})`;
@@ -130,4 +130,3 @@ fetch('teamsData.json')
       .catch(error => console.error("Error fetching builder teams data:", error));
   })
   .catch(error => console.error("Error fetching teams data:", error));
-
