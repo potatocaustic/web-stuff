@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Caustic Tool</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Welcome to the Caustic Team Builder</h1>
+    </header>
+    <main>
+      <section class="info">
+        <p>Use this tool to select teams and players based on your budget.</p>
+      </section>
+      <section class="form-section">
+        <h2>Input Your Budget and Select Teams</h2>
+        <label for="budget">Enter your budget:</label>
+        <input type="number" id="budget" placeholder="Enter your budget" />
+        <div class="team-selection">
+          <h3>Select Teams</h3>
+          <label><input type="checkbox" id="team1" /> Team 1</label><br />
+          <label><input type="checkbox" id="team2" /> Team 2</label><br />
+          <label><input type="checkbox" id="team3" /> Team 3</label><br />
+          <label><input type="checkbox" id="team4" /> Team 4</label><br />
+          <label><input type="checkbox" id="team5" /> Team 5</label><br />
+        </div>
+        <button id="buildButton">Build My Team</button>
+      </section>
+      <section class="result-section">
+        <h2>Recommended Buys:</h2>
+        <ul id="recommendationsList">
+          <!-- Recommended buys will appear here -->
+        </ul>
+      </section>
+    </main>
+    <footer>
+      <p>&copy; 2025 Caustic Team Builder</p>
+    </footer>
+    <script src="script.js"></script>
+  </body>
+</html>
