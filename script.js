@@ -107,11 +107,14 @@ fetch('teamsData.json')
 
           // Display recommended buys
           recommendedPlayers.forEach(player => {
-            // Ensure player data is correctly referenced (name and rank)
-            if (player && player.Name && player.Rank) {  // Updated to match JSON data properties
+            // Ensure player data is correctly referenced (name and team)
+            if (player && player.Name && player.team) {
               const listItem = document.createElement("li");
-              listItem.textContent = `${player.Name} (${player.Rank})`;  // Updated property names
+              // Replace rank with team abbreviation (player.team)
+              listItem.textContent = `${player.Name} (${player.team})`;  // Display player name and team abbreviation
               recommendationsList.appendChild(listItem);
+            } else {
+              console.warn(`Player data is missing for ${player}`);
             }
           });
 
@@ -126,3 +129,4 @@ fetch('teamsData.json')
       .catch(error => console.error("Error fetching builder teams data:", error));
   })
   .catch(error => console.error("Error fetching teams data:", error));
+
