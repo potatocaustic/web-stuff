@@ -6,12 +6,6 @@ fetch('teamsData.json')
     fetch('builderTeams_abbr_fullnames_v2.json')  // Updated to the new JSON
       .then(response => response.json())
       .then(builderTeams => {
-        // Map team abbreviations to full names
-        const teamNamesMap = {};
-        builderTeams.forEach(team => {
-          teamNamesMap[team.abbreviation] = team.fullName;  // Map abbreviation to full name
-        });
-
         // Populate the team selection dynamically
         const teamSelectionContainer = document.querySelector('.team-selection');
         teamsData.forEach((team, index) => {
@@ -26,7 +20,7 @@ fetch('teamsData.json')
           checkbox.id = `team${index + 1}`; // Unique ID for each team
           teamLabel.appendChild(checkbox);
           
-          const textNode = document.createTextNode(` ${teamNamesMap[team.name] || team.name}`); // Display full team name
+          const textNode = document.createTextNode(` ${team.name}`); // Display full team name
           teamLabel.appendChild(textNode);
           teamSelectionContainer.appendChild(teamLabel);
           teamSelectionContainer.appendChild(document.createElement('br'));
@@ -105,16 +99,12 @@ fetch('teamsData.json')
             }
           });
 
-          // Display recommended buys
+          // Display recommended buys (player names only)
           recommendedPlayers.forEach(player => {
-            // Ensure player data is correctly referenced (name and team)
+            // Ensure player data is correctly referenced (name)
             if (player && player.Name) {
-              // Use the team abbreviation from the team data
-              const teamAbbreviation = teamsData.find(team => team.name === player.team)?.name || 'Unknown Team';
-              
               const listItem = document.createElement("li");
-              // Display player name and team abbreviation
-              listItem.textContent = `${player.Name} (${teamAbbreviation})`;
+              listItem.textContent = player.Name;  // Only display player name
               recommendationsList.appendChild(listItem);
             }
           });
