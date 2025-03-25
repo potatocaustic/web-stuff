@@ -78,36 +78,29 @@ fetch('teamsData.json')
           });
 
           // Calculate remaining budget after selecting team players
-          totalCost += recommendedPlayers.length * playerCost;
-          const remainingBudget = budget - totalCost;
+          let remainingBudget = budget - totalCost;
+
+          // Add players if the remaining budget allows
+          const filteredPlayers = recommendedPlayers.filter(player => {
+            if (remainingBudget >= playerCost) {
+              remainingBudget -= playerCost;
+              return true;
+            }
+            return false; // Stop if budget is exceeded
+          });
 
           // If the budget is exceeded after selecting team players
-          if (totalCost > budget) {
+          if (totalCost + filteredPlayers.length * playerCost > budget) {
             alert("Your budget is exceeded after selecting the best players from your teams.");
             return;
           }
 
-          // Add the best remaining players (excluding "FA" players) to fill the team
-          const remainingPlayers = teamsData.filter(team => team.name !== "FA").flatMap(team => team.players);
-          const sortedRemainingPlayers = remainingPlayers.sort((a, b) => a.Rank - b.Rank);
-          
-          // Add remaining players until the budget is exhausted or player limit is reached
-          sortedRemainingPlayers.forEach(player => {
-            if (recommendedPlayers.length < 70 && remainingBudget >= playerCost) {
-              recommendedPlayers.push(player);
-              totalCost += playerCost;
-            }
-          });
-
           // Display recommended buys with numbering
-          recommendedPlayers.forEach((player, index) => {
-            // Ensure player data is correctly referenced (name)
-            if (player && player.Name) {
-              const listItem = document.createElement("li");
-              // Display player name with numbering (index + 1)
-              listItem.textContent = `${index + 1}. ${player.Name}`;  // Add numbering to the player name
-              recommendationsList.appendChild(listItem);
-            }
+          filteredPlayers.forEach((player, index) => {
+            const listItem = document.createElement("li");
+            // Display player name with numbering (index + 1)
+            listItem.textContent = `${index + 1}. ${player.Name}`;  // Add numbering to the player name
+            recommendationsList.appendChild(listItem);
           });
 
           // If there's remaining budget, alert the user
@@ -121,4 +114,5 @@ fetch('teamsData.json')
       .catch(error => console.error("Error fetching builder teams data:", error));
   })
   .catch(error => console.error("Error fetching teams data:", error));
+
 
