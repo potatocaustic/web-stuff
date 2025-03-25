@@ -108,10 +108,9 @@ fetch('teamsData.json')
           // Display recommended buys
           recommendedPlayers.forEach(player => {
             // Ensure player data is correctly referenced (name and team)
-            if (player && player.Name) {
-              // Find the team abbreviation from the parent team object
-              const teamAbbreviation = teamsData.find(team => team.name === player.team)?.name || 'Unknown Team';
-              
+            if (player && player.Name && player.team) {
+              // Use the player team abbreviation to show the correct team abbreviation
+              const teamAbbreviation = player.team || 'Unknown Team';
               const listItem = document.createElement("li");
               // Replace rank with team abbreviation
               listItem.textContent = `${player.Name} (${teamAbbreviation})`;  // Display player name and team abbreviation
