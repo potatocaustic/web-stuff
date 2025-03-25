@@ -14,10 +14,15 @@ body {
 }
 
 header {
-  background-color: #333;
-  color: #fff;
+  background-color: #333; /* Black background */
+  color: #fff; /* White text */
   padding: 1rem;
   text-align: center;
+}
+
+/* Make sure h1 is white */
+h1 {
+  color: white; /* Set h1 text to white */
 }
 
 main {
@@ -85,3 +90,4 @@ footer {
   background-color: #333;
   color: #fff;
 }
+
