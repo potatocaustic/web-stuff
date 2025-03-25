@@ -99,12 +99,13 @@ fetch('teamsData.json')
             }
           });
 
-          // Display recommended buys (player names only)
-          recommendedPlayers.forEach(player => {
+          // Display recommended buys with numbering
+          recommendedPlayers.forEach((player, index) => {
             // Ensure player data is correctly referenced (name)
             if (player && player.Name) {
               const listItem = document.createElement("li");
-              listItem.textContent = player.Name;  // Only display player name
+              // Display player name with numbering (index + 1)
+              listItem.textContent = `${index + 1}. ${player.Name}`;  // Add numbering to the player name
               recommendationsList.appendChild(listItem);
             }
           });
