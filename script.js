@@ -2,14 +2,14 @@
 fetch('teamsData.json')
   .then(response => response.json())
   .then(teamsData => {
-    // Fetch team abbreviations and full names from the "Builder" tab
-    fetch('builderTeams.json')  // Assuming you've created a JSON from the Builder tab
+    // Fetch the new builderTeams_abbr_fullnames.json file
+    fetch('builderTeams_abbr_fullnames.json')  // Updated to the new JSON
       .then(response => response.json())
       .then(builderTeams => {
         // Map team abbreviations to full names
         const teamNamesMap = {};
         builderTeams.forEach(team => {
-          teamNamesMap[team.abbreviation] = team.fullName;
+          teamNamesMap[team[0]] = team[1];  // Map abbreviation (team[0]) to full name (team[1])
         });
 
         // Populate the team selection dynamically
@@ -90,5 +90,6 @@ fetch('teamsData.json')
       .catch(error => console.error("Error fetching builder teams data:", error));
   })
   .catch(error => console.error("Error fetching teams data:", error));
+
 
 
