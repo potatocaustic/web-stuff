@@ -107,9 +107,15 @@ fetch('teamsData.json')
 
           // Display recommended buys
           recommendedPlayers.forEach(player => {
+            // Log the player data to debug
+            console.log('Player:', player);
+
             // Ensure player data is correctly referenced (name and team)
             if (player && player.Name) {
-              // Get the team abbreviation directly from the team name
+              // Log the player's team abbreviation to debug
+              console.log('Player team abbreviation:', player.team);
+
+              // Use the player's team abbreviation
               const teamAbbreviation = player.team || 'Unknown Team';
               
               const listItem = document.createElement("li");
@@ -130,3 +136,4 @@ fetch('teamsData.json')
       .catch(error => console.error("Error fetching builder teams data:", error));
   })
   .catch(error => console.error("Error fetching teams data:", error));
+
