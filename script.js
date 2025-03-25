@@ -77,7 +77,7 @@ fetch('teamsData.json')
           // Get recommended players from selected teams (top 5 players per team)
           const recommendedPlayers = [];
           selectedTeams.forEach(team => {
-            const topPlayers = team.players.sort((a, b) => a.rank - b.rank).slice(0, 5); // Get top 5 players by rank
+            const topPlayers = team.players.sort((a, b) => a.Rank - b.Rank).slice(0, 5); // Get top 5 players by rank
             topPlayers.forEach(player => {
               recommendedPlayers.push(player);
             });
@@ -95,7 +95,7 @@ fetch('teamsData.json')
 
           // Add the best remaining players (excluding "FA" players) to fill the team
           const remainingPlayers = teamsData.filter(team => team.name !== "FA").flatMap(team => team.players);
-          const sortedRemainingPlayers = remainingPlayers.sort((a, b) => a.rank - b.rank);
+          const sortedRemainingPlayers = remainingPlayers.sort((a, b) => a.Rank - b.Rank);
           
           // Add remaining players until the budget is exhausted or player limit is reached
           sortedRemainingPlayers.forEach(player => {
@@ -108,9 +108,9 @@ fetch('teamsData.json')
           // Display recommended buys
           recommendedPlayers.forEach(player => {
             // Ensure player data is correctly referenced (name and rank)
-            if (player && player.name && player.rank) {
+            if (player && player.Name && player.Rank) {  // Updated to match JSON data properties
               const listItem = document.createElement("li");
-              listItem.textContent = `${player.name} (${player.rank})`;
+              listItem.textContent = `${player.Name} (${player.Rank})`;  // Updated property names
               recommendationsList.appendChild(listItem);
             }
           });
@@ -126,4 +126,3 @@ fetch('teamsData.json')
       .catch(error => console.error("Error fetching builder teams data:", error));
   })
   .catch(error => console.error("Error fetching teams data:", error));
-
