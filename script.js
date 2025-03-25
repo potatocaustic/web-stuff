@@ -37,6 +37,7 @@ fetch('teamsData.json')
           const budget = parseFloat(document.getElementById("budget").value);
           const selectedTeams = [];
           let totalCost = 0;
+          let totalPlayers = 0;
 
           // Check which teams are selected
           teamsData.forEach((team, index) => {
@@ -44,30 +45,61 @@ fetch('teamsData.json')
             if (checkbox && checkbox.checked && team.name !== "FA") {  // Exclude "FA" team
               selectedTeams.push(team);
               totalCost += 800; // Each team costs 800
+              totalPlayers += 5; // For each selected team, you must buy 5 players
             }
           });
 
           // Team and player costs
           const playerCost = 200;
-          // Ensure the budget is not exceeded
+
+          // Ensure the budget is not exceeded and that no more than 5 teams are selected
+          if (selectedTeams.length > 5) {
+            alert("You can select no more than 5 teams.");
+            return;
+          }
+
+          // Ensure no more than 70 players are selected
+          if (totalPlayers > 70) {
+            alert("You can select no more than 70 players.");
+            return;
+          }
+
+          // Ensure budget is not exceeded by the team selection
           if (totalCost > budget) {
             alert("Your selected teams exceed your budget. Please select fewer teams.");
             return;
           }
 
-          // Get recommended players from selected teams
+          // Get recommended players from selected teams (top 5 players per team)
           const recommendedPlayers = [];
           selectedTeams.forEach(team => {
-            team.players.forEach(player => {
-              if (player.team !== "FA") { // Exclude players from "FA"
-                recommendedPlayers.push(player);
-              }
+            const topPlayers = team.players.sort((a, b) => a.rank - b.rank).slice(0, 5); // Get top 5 players by rank
+            topPlayers.forEach(player => {
+              recommendedPlayers.push(player);
             });
           });
 
-          // Calculate remaining budget for players
+          // Calculate remaining budget after selecting team players
           totalCost += recommendedPlayers.length * playerCost;
           const remainingBudget = budget - totalCost;
+
+          // If the budget is exceeded after selecting team players
+          if (totalCost > budget) {
+            alert("Your budget is exceeded after selecting the best players from your teams.");
+            return;
+          }
+
+          // Add the best remaining players (excluding "FA" players) to fill the team
+          const remainingPlayers = teamsData.filter(team => team.name !== "FA").flatMap(team => team.players);
+          const sortedRemainingPlayers = remainingPlayers.sort((a, b) => a.rank - b.rank);
+          
+          // Add remaining players until the budget is exhausted or player limit is reached
+          sortedRemainingPlayers.forEach(player => {
+            if (recommendedPlayers.length < 70 && remainingBudget >= playerCost) {
+              recommendedPlayers.push(player);
+              totalCost += playerCost;
+            }
+          });
 
           // Display recommended buys
           const recommendationsList = document.getElementById("recommendationsList");
