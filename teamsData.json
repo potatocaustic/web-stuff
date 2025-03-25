@@ -1,0 +1,2557 @@
+[
+  {
+    "name": "ARI",
+    "players": [
+      {
+        "Name": "Corbin Carroll",
+        "Rank": 10
+      },
+      {
+        "Name": "Ketel Marte",
+        "Rank": 25
+      },
+      {
+        "Name": "Corbin Burnes",
+        "Rank": 38
+      },
+      {
+        "Name": "Josh Naylor",
+        "Rank": 72
+      },
+      {
+        "Name": "Zac Gallen",
+        "Rank": 106
+      },
+      {
+        "Name": "Eugenio Suarez",
+        "Rank": 148
+      },
+      {
+        "Name": "Brandon Pfaadt",
+        "Rank": 180
+      },
+      {
+        "Name": "Lourdes Gurriel Jr.",
+        "Rank": 183
+      },
+      {
+        "Name": "Jake McCarthy",
+        "Rank": 210
+      },
+      {
+        "Name": "Gabriel Moreno",
+        "Rank": 223
+      },
+      {
+        "Name": "Justin Martinez",
+        "Rank": 241
+      },
+      {
+        "Name": "Merrill Kelly",
+        "Rank": 280
+      },
+      {
+        "Name": "A.J. Puk",
+        "Rank": 282
+      },
+      {
+        "Name": "Pavin Smith",
+        "Rank": 354
+      },
+      {
+        "Name": "Eduardo Rodriguez",
+        "Rank": 383
+      },
+      {
+        "Name": "Jordan Lawlar",
+        "Rank": 389
+      },
+      {
+        "Name": "Kevin Ginkel",
+        "Rank": 435
+      },
+      {
+        "Name": "Ryne Nelson",
+        "Rank": 450
+      },
+      {
+        "Name": "Geraldo Perdomo",
+        "Rank": 485
+      },
+      {
+        "Name": "Jordan Montgomery",
+        "Rank": 498
+      },
+      {
+        "Name": "Joe Mantiply",
+        "Rank": 549
+      },
+      {
+        "Name": "Ryan Thompson",
+        "Rank": 579
+      }
+    ]
+  },
+  {
+    "name": "ATH",
+    "players": [
+      {
+        "Name": "Brent Rooker",
+        "Rank": 53
+      },
+      {
+        "Name": "Mason Miller",
+        "Rank": 60
+      },
+      {
+        "Name": "Lawrence Butler",
+        "Rank": 63
+      },
+      {
+        "Name": "Shea Langeliers",
+        "Rank": 138
+      },
+      {
+        "Name": "JJ Bleday",
+        "Rank": 228
+      },
+      {
+        "Name": "Jeffrey Springs",
+        "Rank": 259
+      },
+      {
+        "Name": "Tyler Soderstrom",
+        "Rank": 261
+      },
+      {
+        "Name": "Zack Gelof",
+        "Rank": 267
+      },
+      {
+        "Name": "Luis Severino",
+        "Rank": 281
+      },
+      {
+        "Name": "Jacob Wilson",
+        "Rank": 355
+      },
+      {
+        "Name": "JP Sears",
+        "Rank": 465
+      },
+      {
+        "Name": "Osvaldo Bido",
+        "Rank": 478
+      },
+      {
+        "Name": "Jose Leclerc",
+        "Rank": 515
+      },
+      {
+        "Name": "Seth Brown",
+        "Rank": 522
+      },
+      {
+        "Name": "Esteury Ruiz",
+        "Rank": 588
+      },
+      {
+        "Name": "Grant Holman",
+        "Rank": 600
+      }
+    ]
+  },
+  {
+    "name": "ATL",
+    "players": [
+      {
+        "Name": "Austin Riley",
+        "Rank": 27
+      },
+      {
+        "Name": "Matt Olson",
+        "Rank": 29
+      },
+      {
+        "Name": "Chris Sale",
+        "Rank": 34
+      },
+      {
+        "Name": "Ronald Acuna Jr.",
+        "Rank": 35
+      },
+      {
+        "Name": "Ozzie Albies",
+        "Rank": 40
+      },
+      {
+        "Name": "Michael Harris II",
+        "Rank": 47
+      },
+      {
+        "Name": "Marcell Ozuna",
+        "Rank": 58
+      },
+      {
+        "Name": "Raisel Iglesias",
+        "Rank": 71
+      },
+      {
+        "Name": "Spencer Schwellenbach",
+        "Rank": 88
+      },
+      {
+        "Name": "Spencer Strider",
+        "Rank": 105
+      },
+      {
+        "Name": "Jurickson Profar",
+        "Rank": 150
+      },
+      {
+        "Name": "Reynaldo Lopez",
+        "Rank": 162
+      },
+      {
+        "Name": "Sean Murphy",
+        "Rank": 291
+      },
+      {
+        "Name": "Grant Holmes",
+        "Rank": 296
+      },
+      {
+        "Name": "Drake Baldwin",
+        "Rank": 409
+      },
+      {
+        "Name": "Orlando Arcia",
+        "Rank": 457
+      },
+      {
+        "Name": "Dylan Lee",
+        "Rank": 459
+      },
+      {
+        "Name": "Hector Neris",
+        "Rank": 494
+      },
+      {
+        "Name": "Bryan De La Cruz",
+        "Rank": 504
+      },
+      {
+        "Name": "Aaron Bummer",
+        "Rank": 507
+      },
+      {
+        "Name": "Pierce Johnson",
+        "Rank": 524
+      },
+      {
+        "Name": "AJ Smith-Shawver",
+        "Rank": 539
+      },
+      {
+        "Name": "Alex Verdugo",
+        "Rank": 553
+      },
+      {
+        "Name": "Craig Kimbrel",
+        "Rank": 580
+      },
+      {
+        "Name": "Daysbel Hernandez",
+        "Rank": 585
+      }
+    ]
+  },
+  {
+    "name": "BAL",
+    "players": [
+      {
+        "Name": "Gunnar Henderson",
+        "Rank": 8
+      },
+      {
+        "Name": "Adley Rutschman",
+        "Rank": 70
+      },
+      {
+        "Name": "Jordan Westburg",
+        "Rank": 79
+      },
+      {
+        "Name": "Felix Bautista",
+        "Rank": 102
+      },
+      {
+        "Name": "Colton Cowser",
+        "Rank": 145
+      },
+      {
+        "Name": "Tyler O'Neill",
+        "Rank": 167
+      },
+      {
+        "Name": "Zach Eflin",
+        "Rank": 173
+      },
+      {
+        "Name": "Cedric Mullins II",
+        "Rank": 182
+      },
+      {
+        "Name": "Grayson Rodriguez",
+        "Rank": 194
+      },
+      {
+        "Name": "Ryan Mountcastle",
+        "Rank": 195
+      },
+      {
+        "Name": "Jackson Holliday",
+        "Rank": 205
+      },
+      {
+        "Name": "Heston Kjerstad",
+        "Rank": 341
+      },
+      {
+        "Name": "Ryan O'Hearn",
+        "Rank": 353
+      },
+      {
+        "Name": "Tomoyuki Sugano",
+        "Rank": 364
+      },
+      {
+        "Name": "Charlie Morton",
+        "Rank": 396
+      },
+      {
+        "Name": "Dean Kremer",
+        "Rank": 408
+      },
+      {
+        "Name": "Coby Mayo",
+        "Rank": 419
+      },
+      {
+        "Name": "Keegan Akin",
+        "Rank": 464
+      },
+      {
+        "Name": "Seranthony Dominguez",
+        "Rank": 475
+      },
+      {
+        "Name": "Cade Povich",
+        "Rank": 491
+      },
+      {
+        "Name": "Yennier Cano",
+        "Rank": 502
+      },
+      {
+        "Name": "Kyle Gibson",
+        "Rank": 508
+      },
+      {
+        "Name": "Gregory Soto",
+        "Rank": 572
+      }
+    ]
+  },
+  {
+    "name": "BOS",
+    "players": [
+      {
+        "Name": "Jarren Duran",
+        "Rank": 21
+      },
+      {
+        "Name": "Garrett Crochet",
+        "Rank": 30
+      },
+      {
+        "Name": "Rafael Devers",
+        "Rank": 32
+      },
+      {
+        "Name": "Alex Bregman",
+        "Rank": 84
+      },
+      {
+        "Name": "Triston Casas",
+        "Rank": 98
+      },
+      {
+        "Name": "Tanner Houck",
+        "Rank": 202
+      },
+      {
+        "Name": "Ceddanne Rafaela",
+        "Rank": 220
+      },
+      {
+        "Name": "Trevor Story",
+        "Rank": 238
+      },
+      {
+        "Name": "Walker Buehler",
+        "Rank": 254
+      },
+      {
+        "Name": "Kristian Campbell",
+        "Rank": 274
+      },
+      {
+        "Name": "Connor Wong",
+        "Rank": 275
+      },
+      {
+        "Name": "Wilyer Abreu",
+        "Rank": 277
+      },
+      {
+        "Name": "Aroldis Chapman",
+        "Rank": 278
+      },
+      {
+        "Name": "Roman Anthony",
+        "Rank": 284
+      },
+      {
+        "Name": "Kutter Crawford",
+        "Rank": 297
+      },
+      {
+        "Name": "Liam Hendriks",
+        "Rank": 300
+      },
+      {
+        "Name": "Brayan Bello",
+        "Rank": 333
+      },
+      {
+        "Name": "Masataka Yoshida",
+        "Rank": 348
+      },
+      {
+        "Name": "David Hamilton",
+        "Rank": 395
+      },
+      {
+        "Name": "Lucas Giolito",
+        "Rank": 432
+      },
+      {
+        "Name": "Justin Slaten",
+        "Rank": 440
+      },
+      {
+        "Name": "Richard Fitts",
+        "Rank": 451
+      },
+      {
+        "Name": "Garrett Whitlock",
+        "Rank": 473
+      },
+      {
+        "Name": "Vaughn Grissom",
+        "Rank": 560
+      }
+    ]
+  },
+  {
+    "name": "CHC",
+    "players": [
+      {
+        "Name": "Kyle Tucker",
+        "Rank": 7
+      },
+      {
+        "Name": "Shota Imanaga",
+        "Rank": 65
+      },
+      {
+        "Name": "Seiya Suzuki",
+        "Rank": 87
+      },
+      {
+        "Name": "Ian Happ",
+        "Rank": 114
+      },
+      {
+        "Name": "Justin Steele",
+        "Rank": 115
+      },
+      {
+        "Name": "Pete Crow-Armstrong",
+        "Rank": 135
+      },
+      {
+        "Name": "Dansby Swanson",
+        "Rank": 159
+      },
+      {
+        "Name": "Nico Hoerner",
+        "Rank": 169
+      },
+      {
+        "Name": "Ryan Pressly",
+        "Rank": 212
+      },
+      {
+        "Name": "Matt Shaw",
+        "Rank": 218
+      },
+      {
+        "Name": "Michael Busch",
+        "Rank": 221
+      },
+      {
+        "Name": "Porter Hodge",
+        "Rank": 312
+      },
+      {
+        "Name": "Matthew Boyd",
+        "Rank": 332
+      },
+      {
+        "Name": "Jameson Taillon",
+        "Rank": 338
+      },
+      {
+        "Name": "Miguel Amaya",
+        "Rank": 376
+      },
+      {
+        "Name": "Ben Brown",
+        "Rank": 417
+      },
+      {
+        "Name": "Justin Turner",
+        "Rank": 550
+      },
+      {
+        "Name": "Ryan Brasier",
+        "Rank": 564
+      },
+      {
+        "Name": "Tyson Miller",
+        "Rank": 567
+      },
+      {
+        "Name": "Jon Berti",
+        "Rank": 597
+      }
+    ]
+  },
+  {
+    "name": "CIN",
+    "players": [
+      {
+        "Name": "Elly De La Cruz",
+        "Rank": 5
+      },
+      {
+        "Name": "Matt McLain",
+        "Rank": 91
+      },
+      {
+        "Name": "Hunter Greene",
+        "Rank": 96
+      },
+      {
+        "Name": "Spencer Steer",
+        "Rank": 160
+      },
+      {
+        "Name": "Tyler Stephenson",
+        "Rank": 207
+      },
+      {
+        "Name": "Alexis Diaz",
+        "Rank": 215
+      },
+      {
+        "Name": "Christian Encarnacion-Strand",
+        "Rank": 216
+      },
+      {
+        "Name": "Nick Lodolo",
+        "Rank": 219
+      },
+      {
+        "Name": "TJ Friedl",
+        "Rank": 224
+      },
+      {
+        "Name": "Jeimer Candelario",
+        "Rank": 307
+      },
+      {
+        "Name": "Nick Martinez",
+        "Rank": 318
+      },
+      {
+        "Name": "Brady Singer",
+        "Rank": 331
+      },
+      {
+        "Name": "Austin Hays",
+        "Rank": 360
+      },
+      {
+        "Name": "Gavin Lux",
+        "Rank": 368
+      },
+      {
+        "Name": "Jake Fraley",
+        "Rank": 387
+      },
+      {
+        "Name": "Noelvi Marte",
+        "Rank": 390
+      },
+      {
+        "Name": "Rhett Lowder",
+        "Rank": 527
+      },
+      {
+        "Name": "Taylor Rogers",
+        "Rank": 529
+      },
+      {
+        "Name": "Andrew Abbott",
+        "Rank": 541
+      },
+      {
+        "Name": "Tony Santillan",
+        "Rank": 574
+      }
+    ]
+  },
+  {
+    "name": "CLE",
+    "players": [
+      {
+        "Name": "Jose Ramirez",
+        "Rank": 4
+      },
+      {
+        "Name": "Emmanuel Clase",
+        "Rank": 45
+      },
+      {
+        "Name": "Tanner Bibee",
+        "Rank": 85
+      },
+      {
+        "Name": "Steven Kwan",
+        "Rank": 121
+      },
+      {
+        "Name": "Lane Thomas",
+        "Rank": 168
+      },
+      {
+        "Name": "Gavin Williams",
+        "Rank": 230
+      },
+      {
+        "Name": "Nolan Jones",
+        "Rank": 236
+      },
+      {
+        "Name": "Kyle Manzardo",
+        "Rank": 302
+      },
+      {
+        "Name": "Bo Naylor",
+        "Rank": 304
+      },
+      {
+        "Name": "Carlos Santana",
+        "Rank": 321
+      },
+      {
+        "Name": "Cade Smith",
+        "Rank": 361
+      },
+      {
+        "Name": "Jhonkensy Noel",
+        "Rank": 363
+      },
+      {
+        "Name": "Shane Bieber",
+        "Rank": 365
+      },
+      {
+        "Name": "Luis L. Ortiz",
+        "Rank": 411
+      },
+      {
+        "Name": "Brayan Rocchio",
+        "Rank": 444
+      },
+      {
+        "Name": "Paul Sewald",
+        "Rank": 492
+      },
+      {
+        "Name": "Hunter Gaddis",
+        "Rank": 499
+      },
+      {
+        "Name": "Ben Lively",
+        "Rank": 501
+      },
+      {
+        "Name": "Joey Cantillo",
+        "Rank": 511
+      },
+      {
+        "Name": "Tim Herrin",
+        "Rank": 516
+      }
+    ]
+  },
+  {
+    "name": "COL",
+    "players": [
+      {
+        "Name": "Brenton Doyle",
+        "Rank": 68
+      },
+      {
+        "Name": "Ezequiel Tovar",
+        "Rank": 119
+      },
+      {
+        "Name": "Michael Toglia",
+        "Rank": 178
+      },
+      {
+        "Name": "Ryan McMahon",
+        "Rank": 239
+      },
+      {
+        "Name": "Thairo Estrada",
+        "Rank": 292
+      },
+      {
+        "Name": "Hunter Goodman",
+        "Rank": 371
+      },
+      {
+        "Name": "Seth Halvorsen",
+        "Rank": 416
+      },
+      {
+        "Name": "Jordan Beck",
+        "Rank": 427
+      },
+      {
+        "Name": "Kris Bryant",
+        "Rank": 452
+      },
+      {
+        "Name": "Tyler Kinley",
+        "Rank": 495
+      },
+      {
+        "Name": "Jacob Stallings",
+        "Rank": 544
+      }
+    ]
+  },
+  {
+    "name": "CWS",
+    "players": [
+      {
+        "Name": "Luis Robert Jr.",
+        "Rank": 81
+      },
+      {
+        "Name": "Andrew Vaughn",
+        "Rank": 266
+      },
+      {
+        "Name": "Andrew Benintendi",
+        "Rank": 394
+      },
+      {
+        "Name": "Sean Burke",
+        "Rank": 476
+      },
+      {
+        "Name": "Miguel Vargas",
+        "Rank": 482
+      },
+      {
+        "Name": "Lenyn Sosa",
+        "Rank": 514
+      },
+      {
+        "Name": "Mike Clevinger",
+        "Rank": 586
+      },
+      {
+        "Name": "Mike Tauchman",
+        "Rank": 590
+      },
+      {
+        "Name": "Josh Rojas",
+        "Rank": 592
+      }
+    ]
+  },
+  {
+    "name": "DET",
+    "players": [
+      {
+        "Name": "Tarik Skubal",
+        "Rank": 17
+      },
+      {
+        "Name": "Riley Greene",
+        "Rank": 95
+      },
+      {
+        "Name": "Jack Flaherty",
+        "Rank": 126
+      },
+      {
+        "Name": "Kerry Carpenter",
+        "Rank": 176
+      },
+      {
+        "Name": "Gleyber Torres",
+        "Rank": 201
+      },
+      {
+        "Name": "Colt Keith",
+        "Rank": 247
+      },
+      {
+        "Name": "Reese Olson",
+        "Rank": 257
+      },
+      {
+        "Name": "Parker Meadows",
+        "Rank": 269
+      },
+      {
+        "Name": "Jackson Jobe",
+        "Rank": 276
+      },
+      {
+        "Name": "Jason Foley",
+        "Rank": 286
+      },
+      {
+        "Name": "Spencer Torkelson",
+        "Rank": 330
+      },
+      {
+        "Name": "Matt Vierling",
+        "Rank": 359
+      },
+      {
+        "Name": "Casey Mize",
+        "Rank": 412
+      },
+      {
+        "Name": "Tyler Holton",
+        "Rank": 414
+      },
+      {
+        "Name": "Alex Cobb",
+        "Rank": 434
+      },
+      {
+        "Name": "Beau Brieske",
+        "Rank": 453
+      },
+      {
+        "Name": "Jake Rogers",
+        "Rank": 468
+      },
+      {
+        "Name": "Will Vest",
+        "Rank": 496
+      },
+      {
+        "Name": "Brant Hurter",
+        "Rank": 505
+      },
+      {
+        "Name": "Jace Jung",
+        "Rank": 566
+      },
+      {
+        "Name": "Trey Sweeney",
+        "Rank": 575
+      }
+    ]
+  },
+  {
+    "name": "FA",
+    "players": [
+      {
+        "Name": "J.D. Martinez",
+        "Rank": 373
+      },
+      {
+        "Name": "Jacob Wilson",
+        "Rank": 424
+      },
+      {
+        "Name": "Anthony Rizzo",
+        "Rank": 437
+      },
+      {
+        "Name": "David Robertson",
+        "Rank": 480
+      },
+      {
+        "Name": "Brandon Drury",
+        "Rank": 487
+      },
+      {
+        "Name": "A.J. Griffin",
+        "Rank": 497
+      },
+      {
+        "Name": "Jose Abreu",
+        "Rank": 543
+      }
+    ]
+  },
+  {
+    "name": "HOU",
+    "players": [
+      {
+        "Name": "Yordan Alvarez",
+        "Rank": 15
+      },
+      {
+        "Name": "Jose Altuve",
+        "Rank": 43
+      },
+      {
+        "Name": "Framber Valdez",
+        "Rank": 56
+      },
+      {
+        "Name": "Josh Hader",
+        "Rank": 57
+      },
+      {
+        "Name": "Christian Walker",
+        "Rank": 75
+      },
+      {
+        "Name": "Hunter Brown",
+        "Rank": 93
+      },
+      {
+        "Name": "Yainer Diaz",
+        "Rank": 104
+      },
+      {
+        "Name": "Isaac Paredes",
+        "Rank": 153
+      },
+      {
+        "Name": "Jeremy Pena",
+        "Rank": 155
+      },
+      {
+        "Name": "Spencer Arrighetti",
+        "Rank": 206
+      },
+      {
+        "Name": "Ronel Blanco",
+        "Rank": 233
+      },
+      {
+        "Name": "Cam Smith",
+        "Rank": 301
+      },
+      {
+        "Name": "Chas McCormick",
+        "Rank": 346
+      },
+      {
+        "Name": "Bryan Abreu",
+        "Rank": 388
+      },
+      {
+        "Name": "Hayden Wesneski",
+        "Rank": 448
+      },
+      {
+        "Name": "Jake Meyers",
+        "Rank": 484
+      },
+      {
+        "Name": "Luis Garcia",
+        "Rank": 531
+      },
+      {
+        "Name": "Brendan Rodgers",
+        "Rank": 584
+      },
+      {
+        "Name": "Mauricio Dubon",
+        "Rank": 599
+      }
+    ]
+  },
+  {
+    "name": "KC",
+    "players": [
+      {
+        "Name": "Bobby Witt Jr.",
+        "Rank": 2
+      },
+      {
+        "Name": "Cole Ragans",
+        "Rank": 37
+      },
+      {
+        "Name": "Salvador Perez",
+        "Rank": 100
+      },
+      {
+        "Name": "Vinnie Pasquantino",
+        "Rank": 109
+      },
+      {
+        "Name": "Seth Lugo",
+        "Rank": 158
+      },
+      {
+        "Name": "Jonathan India",
+        "Rank": 200
+      },
+      {
+        "Name": "Carlos Estevez",
+        "Rank": 226
+      },
+      {
+        "Name": "Maikel Garcia",
+        "Rank": 227
+      },
+      {
+        "Name": "Lucas Erceg",
+        "Rank": 251
+      },
+      {
+        "Name": "Michael Wacha",
+        "Rank": 260
+      },
+      {
+        "Name": "Michael Massey",
+        "Rank": 356
+      },
+      {
+        "Name": "Kris Bubic",
+        "Rank": 377
+      },
+      {
+        "Name": "MJ Melendez",
+        "Rank": 385
+      },
+      {
+        "Name": "Freddy Fermin",
+        "Rank": 393
+      },
+      {
+        "Name": "Kyle Isbel",
+        "Rank": 493
+      },
+      {
+        "Name": "Hunter Harvey",
+        "Rank": 528
+      },
+      {
+        "Name": "Hunter Renfroe",
+        "Rank": 540
+      }
+    ]
+  },
+  {
+    "name": "LAA",
+    "players": [
+      {
+        "Name": "Mike Trout",
+        "Rank": 110
+      },
+      {
+        "Name": "Logan O'Hoppe",
+        "Rank": 156
+      },
+      {
+        "Name": "Taylor Ward",
+        "Rank": 163
+      },
+      {
+        "Name": "Yusei Kikuchi",
+        "Rank": 165
+      },
+      {
+        "Name": "Zach Neto",
+        "Rank": 174
+      },
+      {
+        "Name": "Kenley Jansen",
+        "Rank": 187
+      },
+      {
+        "Name": "Luis Rengifo",
+        "Rank": 189
+      },
+      {
+        "Name": "Jorge Soler",
+        "Rank": 193
+      },
+      {
+        "Name": "Nolan Schanuel",
+        "Rank": 272
+      },
+      {
+        "Name": "Ben Joyce",
+        "Rank": 288
+      },
+      {
+        "Name": "Jo Adell",
+        "Rank": 299
+      },
+      {
+        "Name": "Jose Soriano",
+        "Rank": 317
+      },
+      {
+        "Name": "Reid Detmers",
+        "Rank": 375
+      },
+      {
+        "Name": "Travis d'Arnaud",
+        "Rank": 410
+      },
+      {
+        "Name": "Christian Moore",
+        "Rank": 449
+      },
+      {
+        "Name": "Tim Anderson",
+        "Rank": 551
+      },
+      {
+        "Name": "Yoan Moncada",
+        "Rank": 562
+      },
+      {
+        "Name": "Tyler Anderson",
+        "Rank": 565
+      },
+      {
+        "Name": "Kevin Newman",
+        "Rank": 594
+      }
+    ]
+  },
+  {
+    "name": "LAD",
+    "players": [
+      {
+        "Name": "Shohei Ohtani",
+        "Rank": 1
+      },
+      {
+        "Name": "Mookie Betts",
+        "Rank": 11
+      },
+      {
+        "Name": "Freddie Freeman",
+        "Rank": 23
+      },
+      {
+        "Name": "Blake Snell",
+        "Rank": 44
+      },
+      {
+        "Name": "Teoscar Hernandez",
+        "Rank": 49
+      },
+      {
+        "Name": "Yoshinobu Yamamoto",
+        "Rank": 51
+      },
+      {
+        "Name": "Tyler Glasnow",
+        "Rank": 74
+      },
+      {
+        "Name": "Will Smith",
+        "Rank": 120
+      },
+      {
+        "Name": "Roki Sasaki",
+        "Rank": 122
+      },
+      {
+        "Name": "Tanner Scott",
+        "Rank": 133
+      },
+      {
+        "Name": "Tommy Edman",
+        "Rank": 188
+      },
+      {
+        "Name": "Max Muncy",
+        "Rank": 229
+      },
+      {
+        "Name": "Kirby Yates",
+        "Rank": 262
+      },
+      {
+        "Name": "Michael Conforto",
+        "Rank": 271
+      },
+      {
+        "Name": "Dustin May",
+        "Rank": 325
+      },
+      {
+        "Name": "Andy Pages",
+        "Rank": 357
+      },
+      {
+        "Name": "Michael Kopech",
+        "Rank": 382
+      },
+      {
+        "Name": "Evan Phillips",
+        "Rank": 397
+      },
+      {
+        "Name": "Hyeseong Kim",
+        "Rank": 399
+      },
+      {
+        "Name": "Blake Treinen",
+        "Rank": 405
+      },
+      {
+        "Name": "Alex Vesia",
+        "Rank": 431
+      },
+      {
+        "Name": "James Outman",
+        "Rank": 462
+      },
+      {
+        "Name": "Clayton Kershaw",
+        "Rank": 474
+      },
+      {
+        "Name": "Tony Gonsolin",
+        "Rank": 486
+      },
+      {
+        "Name": "Landon Knack",
+        "Rank": 552
+      },
+      {
+        "Name": "Bobby Miller",
+        "Rank": 558
+      },
+      {
+        "Name": "Dalton Rushing",
+        "Rank": 571
+      }
+    ]
+  },
+  {
+    "name": "MIA",
+    "players": [
+      {
+        "Name": "Sandy Alcantara",
+        "Rank": 128
+      },
+      {
+        "Name": "Xavier Edwards",
+        "Rank": 134
+      },
+      {
+        "Name": "Connor Norby",
+        "Rank": 244
+      },
+      {
+        "Name": "Jesus Sanchez",
+        "Rank": 294
+      },
+      {
+        "Name": "Ryan Weathers",
+        "Rank": 314
+      },
+      {
+        "Name": "Calvin Faucher",
+        "Rank": 323
+      },
+      {
+        "Name": "Otto Lopez",
+        "Rank": 343
+      },
+      {
+        "Name": "Max Meyer",
+        "Rank": 347
+      },
+      {
+        "Name": "Jesus Tinoco",
+        "Rank": 413
+      },
+      {
+        "Name": "Eury Perez",
+        "Rank": 425
+      },
+      {
+        "Name": "Edward Cabrera",
+        "Rank": 429
+      },
+      {
+        "Name": "Deyvison De Los Santos",
+        "Rank": 454
+      },
+      {
+        "Name": "Jonah Bride",
+        "Rank": 537
+      },
+      {
+        "Name": "Anthony Bender",
+        "Rank": 538
+      },
+      {
+        "Name": "Griffin Conine",
+        "Rank": 583
+      },
+      {
+        "Name": "Agustin Ramirez",
+        "Rank": 593
+      }
+    ]
+  },
+  {
+    "name": "MIL",
+    "players": [
+      {
+        "Name": "Jackson Chourio",
+        "Rank": 18
+      },
+      {
+        "Name": "William Contreras",
+        "Rank": 42
+      },
+      {
+        "Name": "Freddy Peralta",
+        "Rank": 90
+      },
+      {
+        "Name": "Christian Yelich",
+        "Rank": 117
+      },
+      {
+        "Name": "Brice Turang",
+        "Rank": 142
+      },
+      {
+        "Name": "Trevor Megill",
+        "Rank": 172
+      },
+      {
+        "Name": "Rhys Hoskins",
+        "Rank": 225
+      },
+      {
+        "Name": "Brandon Woodruff",
+        "Rank": 250
+      },
+      {
+        "Name": "Garrett Mitchell",
+        "Rank": 258
+      },
+      {
+        "Name": "Joey Ortiz",
+        "Rank": 285
+      },
+      {
+        "Name": "Nestor Cortes Jr.",
+        "Rank": 289
+      },
+      {
+        "Name": "Sal Frelick",
+        "Rank": 337
+      },
+      {
+        "Name": "Tobias Myers",
+        "Rank": 349
+      },
+      {
+        "Name": "Aaron Civale",
+        "Rank": 372
+      },
+      {
+        "Name": "Bryan Hudson",
+        "Rank": 458
+      },
+      {
+        "Name": "Caleb Durbin",
+        "Rank": 461
+      },
+      {
+        "Name": "Joel Payamps",
+        "Rank": 479
+      },
+      {
+        "Name": "Tyler Black",
+        "Rank": 481
+      },
+      {
+        "Name": "Jared Koenig",
+        "Rank": 517
+      },
+      {
+        "Name": "Jose Quintana",
+        "Rank": 536
+      }
+    ]
+  },
+  {
+    "name": "MIN",
+    "players": [
+      {
+        "Name": "Pablo Lopez",
+        "Rank": 62
+      },
+      {
+        "Name": "Bailey Ober",
+        "Rank": 94
+      },
+      {
+        "Name": "Joe Ryan",
+        "Rank": 99
+      },
+      {
+        "Name": "Jhoan Duran",
+        "Rank": 101
+      },
+      {
+        "Name": "Royce Lewis",
+        "Rank": 131
+      },
+      {
+        "Name": "Carlos Correa",
+        "Rank": 192
+      },
+      {
+        "Name": "Byron Buxton",
+        "Rank": 204
+      },
+      {
+        "Name": "Ryan Jeffers",
+        "Rank": 246
+      },
+      {
+        "Name": "Matt Wallner",
+        "Rank": 253
+      },
+      {
+        "Name": "Willi Castro",
+        "Rank": 270
+      },
+      {
+        "Name": "Griffin Jax",
+        "Rank": 315
+      },
+      {
+        "Name": "David Festa",
+        "Rank": 319
+      },
+      {
+        "Name": "Trevor Larnach",
+        "Rank": 329
+      },
+      {
+        "Name": "Jose Miranda",
+        "Rank": 379
+      },
+      {
+        "Name": "Brooks Lee",
+        "Rank": 398
+      },
+      {
+        "Name": "Zebby Matthews",
+        "Rank": 423
+      },
+      {
+        "Name": "Cole Sands",
+        "Rank": 463
+      },
+      {
+        "Name": "Ty France",
+        "Rank": 467
+      },
+      {
+        "Name": "Edouard Julien",
+        "Rank": 500
+      },
+      {
+        "Name": "Chris Paddack",
+        "Rank": 526
+      },
+      {
+        "Name": "Danny Coulombe",
+        "Rank": 530
+      },
+      {
+        "Name": "Harrison Bader",
+        "Rank": 542
+      },
+      {
+        "Name": "Brock Stewart",
+        "Rank": 555
+      },
+      {
+        "Name": "Simeon Woods Richardson",
+        "Rank": 557
+      },
+      {
+        "Name": "Jorge Alcala",
+        "Rank": 577
+      }
+    ]
+  },
+  {
+    "name": "NYM",
+    "players": [
+      {
+        "Name": "Juan Soto",
+        "Rank": 6
+      },
+      {
+        "Name": "Francisco Lindor",
+        "Rank": 12
+      },
+      {
+        "Name": "Pete Alonso",
+        "Rank": 36
+      },
+      {
+        "Name": "Edwin Diaz",
+        "Rank": 59
+      },
+      {
+        "Name": "Mark Vientos",
+        "Rank": 89
+      },
+      {
+        "Name": "Kodai Senga",
+        "Rank": 141
+      },
+      {
+        "Name": "Brandon Nimmo",
+        "Rank": 151
+      },
+      {
+        "Name": "Clay Holmes",
+        "Rank": 211
+      },
+      {
+        "Name": "Sean Manaea",
+        "Rank": 234
+      },
+      {
+        "Name": "Francisco Alvarez",
+        "Rank": 265
+      },
+      {
+        "Name": "David Peterson",
+        "Rank": 342
+      },
+      {
+        "Name": "Starling Marte",
+        "Rank": 370
+      },
+      {
+        "Name": "Jesse Winker",
+        "Rank": 392
+      },
+      {
+        "Name": "Jose Siri",
+        "Rank": 407
+      },
+      {
+        "Name": "Tylor Megill",
+        "Rank": 415
+      },
+      {
+        "Name": "Jeff McNeil",
+        "Rank": 430
+      },
+      {
+        "Name": "Luisangel Acuna",
+        "Rank": 436
+      },
+      {
+        "Name": "Frankie Montas",
+        "Rank": 438
+      },
+      {
+        "Name": "A.J. Minter",
+        "Rank": 471
+      },
+      {
+        "Name": "Dedniel Nunez",
+        "Rank": 513
+      },
+      {
+        "Name": "Jose Butto",
+        "Rank": 523
+      },
+      {
+        "Name": "Reed Garrett",
+        "Rank": 561
+      },
+      {
+        "Name": "Brett Baty",
+        "Rank": 569
+      },
+      {
+        "Name": "Griffin Canning",
+        "Rank": 591
+      }
+    ]
+  },
+  {
+    "name": "NYY",
+    "players": [
+      {
+        "Name": "Aaron Judge",
+        "Rank": 3
+      },
+      {
+        "Name": "Jazz Chisholm Jr.",
+        "Rank": 26
+      },
+      {
+        "Name": "Devin Williams",
+        "Rank": 55
+      },
+      {
+        "Name": "Cody Bellinger",
+        "Rank": 82
+      },
+      {
+        "Name": "Max Fried",
+        "Rank": 86
+      },
+      {
+        "Name": "Carlos Rodon",
+        "Rank": 129
+      },
+      {
+        "Name": "Anthony Volpe",
+        "Rank": 130
+      },
+      {
+        "Name": "Jasson Dominguez",
+        "Rank": 137
+      },
+      {
+        "Name": "Paul Goldschmidt",
+        "Rank": 152
+      },
+      {
+        "Name": "Austin Wells",
+        "Rank": 190
+      },
+      {
+        "Name": "Clarke Schmidt",
+        "Rank": 237
+      },
+      {
+        "Name": "Luis Gil",
+        "Rank": 305
+      },
+      {
+        "Name": "Giancarlo Stanton",
+        "Rank": 326
+      },
+      {
+        "Name": "Luke Weaver",
+        "Rank": 344
+      },
+      {
+        "Name": "Will Warren",
+        "Rank": 406
+      },
+      {
+        "Name": "Ben Rice",
+        "Rank": 489
+      },
+      {
+        "Name": "Fernando Cruz",
+        "Rank": 518
+      },
+      {
+        "Name": "Ian Hamilton",
+        "Rank": 521
+      },
+      {
+        "Name": "Mark Leiter Jr.",
+        "Rank": 578
+      }
+    ]
+  },
+  {
+    "name": "PHI",
+    "players": [
+      {
+        "Name": "Bryce Harper",
+        "Rank": 19
+      },
+      {
+        "Name": "Zack Wheeler",
+        "Rank": 20
+      },
+      {
+        "Name": "Trea Turner",
+        "Rank": 22
+      },
+      {
+        "Name": "Kyle Schwarber",
+        "Rank": 48
+      },
+      {
+        "Name": "Aaron Nola",
+        "Rank": 73
+      },
+      {
+        "Name": "Alec Bohm",
+        "Rank": 139
+      },
+      {
+        "Name": "Nick Castellanos",
+        "Rank": 140
+      },
+      {
+        "Name": "Cristopher Sanchez",
+        "Rank": 149
+      },
+      {
+        "Name": "J.T. Realmuto",
+        "Rank": 154
+      },
+      {
+        "Name": "Bryson Stott",
+        "Rank": 164
+      },
+      {
+        "Name": "Jordan Romano",
+        "Rank": 191
+      },
+      {
+        "Name": "Jesus Luzardo",
+        "Rank": 231
+      },
+      {
+        "Name": "Ranger Suarez",
+        "Rank": 263
+      },
+      {
+        "Name": "Brandon Marsh",
+        "Rank": 310
+      },
+      {
+        "Name": "Orion Kerkering",
+        "Rank": 328
+      },
+      {
+        "Name": "Max Kepler",
+        "Rank": 362
+      },
+      {
+        "Name": "Matt Strahm",
+        "Rank": 401
+      },
+      {
+        "Name": "Jose Alvarado",
+        "Rank": 441
+      },
+      {
+        "Name": "Andrew Painter",
+        "Rank": 445
+      }
+    ]
+  },
+  {
+    "name": "PIT",
+    "players": [
+      {
+        "Name": "Paul Skenes",
+        "Rank": 16
+      },
+      {
+        "Name": "Oneil Cruz",
+        "Rank": 41
+      },
+      {
+        "Name": "Bryan Reynolds",
+        "Rank": 77
+      },
+      {
+        "Name": "David Bednar",
+        "Rank": 196
+      },
+      {
+        "Name": "Jared Jones",
+        "Rank": 203
+      },
+      {
+        "Name": "Mitch Keller",
+        "Rank": 290
+      },
+      {
+        "Name": "Joey Bart",
+        "Rank": 303
+      },
+      {
+        "Name": "Ke'Bryan Hayes",
+        "Rank": 335
+      },
+      {
+        "Name": "Bubba Chandler",
+        "Rank": 339
+      },
+      {
+        "Name": "Spencer Horwitz",
+        "Rank": 358
+      },
+      {
+        "Name": "Isiah Kiner-Falefa",
+        "Rank": 374
+      },
+      {
+        "Name": "Nick Gonzales",
+        "Rank": 403
+      },
+      {
+        "Name": "Tommy Pham",
+        "Rank": 418
+      },
+      {
+        "Name": "Endy Rodriguez",
+        "Rank": 447
+      },
+      {
+        "Name": "Andrew McCutchen",
+        "Rank": 472
+      },
+      {
+        "Name": "Andrew Heaney",
+        "Rank": 535
+      },
+      {
+        "Name": "Jack Suwinski",
+        "Rank": 581
+      }
+    ]
+  },
+  {
+    "name": "SD",
+    "players": [
+      {
+        "Name": "Fernando Tatis Jr.",
+        "Rank": 9
+      },
+      {
+        "Name": "Jackson Merrill",
+        "Rank": 24
+      },
+      {
+        "Name": "Manny Machado",
+        "Rank": 31
+      },
+      {
+        "Name": "Dylan Cease",
+        "Rank": 39
+      },
+      {
+        "Name": "Michael King",
+        "Rank": 54
+      },
+      {
+        "Name": "Robert Suarez",
+        "Rank": 132
+      },
+      {
+        "Name": "Xander Bogaerts",
+        "Rank": 136
+      },
+      {
+        "Name": "Luis Arraez",
+        "Rank": 170
+      },
+      {
+        "Name": "Nick Pivetta",
+        "Rank": 184
+      },
+      {
+        "Name": "Jake Cronenworth",
+        "Rank": 264
+      },
+      {
+        "Name": "Yu Darvish",
+        "Rank": 268
+      },
+      {
+        "Name": "Jason Adam",
+        "Rank": 322
+      },
+      {
+        "Name": "Jeremiah Estrada",
+        "Rank": 400
+      },
+      {
+        "Name": "Luis Campusano",
+        "Rank": 433
+      },
+      {
+        "Name": "Tirso Ornelas",
+        "Rank": 512
+      },
+      {
+        "Name": "Elias Diaz",
+        "Rank": 519
+      },
+      {
+        "Name": "Yuki Matsui",
+        "Rank": 532
+      },
+      {
+        "Name": "Adrian Morejon",
+        "Rank": 556
+      },
+      {
+        "Name": "Joe Musgrove",
+        "Rank": 559
+      }
+    ]
+  },
+  {
+    "name": "SEA",
+    "players": [
+      {
+        "Name": "Julio Rodriguez",
+        "Rank": 14
+      },
+      {
+        "Name": "Logan Gilbert",
+        "Rank": 28
+      },
+      {
+        "Name": "Bryce Miller",
+        "Rank": 78
+      },
+      {
+        "Name": "Luis Castillo",
+        "Rank": 83
+      },
+      {
+        "Name": "Andres Munoz",
+        "Rank": 92
+      },
+      {
+        "Name": "George Kirby",
+        "Rank": 97
+      },
+      {
+        "Name": "Cal Raleigh",
+        "Rank": 108
+      },
+      {
+        "Name": "Randy Arozarena",
+        "Rank": 118
+      },
+      {
+        "Name": "Bryan Woo",
+        "Rank": 123
+      },
+      {
+        "Name": "Victor Robles",
+        "Rank": 198
+      },
+      {
+        "Name": "Luke Raley",
+        "Rank": 293
+      },
+      {
+        "Name": "Jorge Polanco",
+        "Rank": 378
+      },
+      {
+        "Name": "Dylan Moore",
+        "Rank": 386
+      },
+      {
+        "Name": "Trent Thornton",
+        "Rank": 466
+      },
+      {
+        "Name": "Mitch Garver",
+        "Rank": 477
+      },
+      {
+        "Name": "J.P. Crawford",
+        "Rank": 483
+      },
+      {
+        "Name": "Gregory Santos",
+        "Rank": 534
+      },
+      {
+        "Name": "Troy Taylor",
+        "Rank": 587
+      },
+      {
+        "Name": "Matt Brash",
+        "Rank": 595
+      }
+    ]
+  },
+  {
+    "name": "SF",
+    "players": [
+      {
+        "Name": "Logan Webb",
+        "Rank": 69
+      },
+      {
+        "Name": "Willy Adames",
+        "Rank": 80
+      },
+      {
+        "Name": "Ryan Walker",
+        "Rank": 113
+      },
+      {
+        "Name": "Matt Chapman",
+        "Rank": 116
+      },
+      {
+        "Name": "Robbie Ray",
+        "Rank": 161
+      },
+      {
+        "Name": "Heliot Ramos",
+        "Rank": 177
+      },
+      {
+        "Name": "Jung Hoo Lee",
+        "Rank": 222
+      },
+      {
+        "Name": "Tyler Fitzgerald",
+        "Rank": 255
+      },
+      {
+        "Name": "Justin Verlander",
+        "Rank": 324
+      },
+      {
+        "Name": "Patrick Bailey",
+        "Rank": 327
+      },
+      {
+        "Name": "Hayden Birdsong",
+        "Rank": 336
+      },
+      {
+        "Name": "Camilo Doval",
+        "Rank": 366
+      },
+      {
+        "Name": "LaMonte Wade Jr.",
+        "Rank": 367
+      },
+      {
+        "Name": "Kyle Harrison",
+        "Rank": 384
+      },
+      {
+        "Name": "Landen Roupp",
+        "Rank": 446
+      },
+      {
+        "Name": "Mike Yastrzemski",
+        "Rank": 455
+      },
+      {
+        "Name": "Jordan Hicks",
+        "Rank": 469
+      },
+      {
+        "Name": "Jerar Encarnacion",
+        "Rank": 533
+      },
+      {
+        "Name": "Erik Miller",
+        "Rank": 547
+      },
+      {
+        "Name": "Wilmer Flores",
+        "Rank": 548
+      },
+      {
+        "Name": "Tyler Rogers",
+        "Rank": 570
+      }
+    ]
+  },
+  {
+    "name": "STL",
+    "players": [
+      {
+        "Name": "Ryan Helsley",
+        "Rank": 67
+      },
+      {
+        "Name": "Sonny Gray",
+        "Rank": 103
+      },
+      {
+        "Name": "Willson Contreras",
+        "Rank": 111
+      },
+      {
+        "Name": "Masyn Winn",
+        "Rank": 146
+      },
+      {
+        "Name": "Nolan Arenado",
+        "Rank": 185
+      },
+      {
+        "Name": "Alec Burleson",
+        "Rank": 214
+      },
+      {
+        "Name": "Lars Nootbaar",
+        "Rank": 240
+      },
+      {
+        "Name": "Ivan Herrera",
+        "Rank": 243
+      },
+      {
+        "Name": "Brendan Donovan",
+        "Rank": 248
+      },
+      {
+        "Name": "Jordan Walker",
+        "Rank": 252
+      },
+      {
+        "Name": "Erick Fedde",
+        "Rank": 320
+      },
+      {
+        "Name": "Victor Scott",
+        "Rank": 340
+      },
+      {
+        "Name": "Nolan Gorman",
+        "Rank": 381
+      },
+      {
+        "Name": "Quinn Mathews",
+        "Rank": 470
+      },
+      {
+        "Name": "Miles Mikolas",
+        "Rank": 503
+      },
+      {
+        "Name": "JoJo Romero",
+        "Rank": 510
+      },
+      {
+        "Name": "Michael McGreevy",
+        "Rank": 525
+      },
+      {
+        "Name": "Andre Pallante",
+        "Rank": 596
+      }
+    ]
+  },
+  {
+    "name": "TB",
+    "players": [
+      {
+        "Name": "Junior Caminero",
+        "Rank": 76
+      },
+      {
+        "Name": "Shane McClanahan",
+        "Rank": 143
+      },
+      {
+        "Name": "Josh Lowe",
+        "Rank": 144
+      },
+      {
+        "Name": "Ryan Pepiot",
+        "Rank": 171
+      },
+      {
+        "Name": "Pete Fairbanks",
+        "Rank": 175
+      },
+      {
+        "Name": "Yandy Diaz",
+        "Rank": 179
+      },
+      {
+        "Name": "Brandon Lowe",
+        "Rank": 199
+      },
+      {
+        "Name": "Taj Bradley",
+        "Rank": 209
+      },
+      {
+        "Name": "Shane Baz",
+        "Rank": 217
+      },
+      {
+        "Name": "Christopher Morel",
+        "Rank": 279
+      },
+      {
+        "Name": "Drew Rasmussen",
+        "Rank": 283
+      },
+      {
+        "Name": "Ha-Seong Kim",
+        "Rank": 311
+      },
+      {
+        "Name": "Jonathan Aranda",
+        "Rank": 313
+      },
+      {
+        "Name": "Edwin Uceta",
+        "Rank": 334
+      },
+      {
+        "Name": "Danny Jansen",
+        "Rank": 345
+      },
+      {
+        "Name": "Jose Caballero",
+        "Rank": 369
+      },
+      {
+        "Name": "Jonny DeLuca",
+        "Rank": 380
+      },
+      {
+        "Name": "Zack Littell",
+        "Rank": 402
+      },
+      {
+        "Name": "Curtis Mead",
+        "Rank": 488
+      },
+      {
+        "Name": "Manuel Rodriguez",
+        "Rank": 490
+      },
+      {
+        "Name": "Kevin Kelly",
+        "Rank": 545
+      },
+      {
+        "Name": "Garrett Cleavinger",
+        "Rank": 546
+      },
+      {
+        "Name": "Taylor Walls",
+        "Rank": 589
+      }
+    ]
+  },
+  {
+    "name": "TEX",
+    "players": [
+      {
+        "Name": "Corey Seager",
+        "Rank": 33
+      },
+      {
+        "Name": "Wyatt Langford",
+        "Rank": 46
+      },
+      {
+        "Name": "Jacob deGrom",
+        "Rank": 61
+      },
+      {
+        "Name": "Marcus Semien",
+        "Rank": 64
+      },
+      {
+        "Name": "Jake Burger",
+        "Rank": 112
+      },
+      {
+        "Name": "Adolis Garcia",
+        "Rank": 127
+      },
+      {
+        "Name": "Nathan Eovaldi",
+        "Rank": 181
+      },
+      {
+        "Name": "Josh Jung",
+        "Rank": 186
+      },
+      {
+        "Name": "Evan Carter",
+        "Rank": 242
+      },
+      {
+        "Name": "Joc Pederson",
+        "Rank": 249
+      },
+      {
+        "Name": "Chris Martin",
+        "Rank": 306
+      },
+      {
+        "Name": "Kumar Rocker",
+        "Rank": 309
+      },
+      {
+        "Name": "Cody Bradford",
+        "Rank": 350
+      },
+      {
+        "Name": "Jonah Heim",
+        "Rank": 351
+      },
+      {
+        "Name": "Josh Smith",
+        "Rank": 404
+      },
+      {
+        "Name": "Leody Taveras",
+        "Rank": 420
+      },
+      {
+        "Name": "Robert Garcia",
+        "Rank": 421
+      },
+      {
+        "Name": "Tyler Mahle",
+        "Rank": 426
+      },
+      {
+        "Name": "Jack Leiter",
+        "Rank": 439
+      },
+      {
+        "Name": "Kyle Higashioka",
+        "Rank": 442
+      },
+      {
+        "Name": "Jon Gray",
+        "Rank": 554
+      }
+    ]
+  },
+  {
+    "name": "TOR",
+    "players": [
+      {
+        "Name": "Vladimir Guerrero Jr.",
+        "Rank": 13
+      },
+      {
+        "Name": "Anthony Santander",
+        "Rank": 66
+      },
+      {
+        "Name": "Bo Bichette",
+        "Rank": 107
+      },
+      {
+        "Name": "Kevin Gausman",
+        "Rank": 147
+      },
+      {
+        "Name": "Andres Gimenez",
+        "Rank": 157
+      },
+      {
+        "Name": "Jeff Hoffman",
+        "Rank": 166
+      },
+      {
+        "Name": "George Springer",
+        "Rank": 197
+      },
+      {
+        "Name": "Jose Berrios",
+        "Rank": 232
+      },
+      {
+        "Name": "Bowden Francis",
+        "Rank": 235
+      },
+      {
+        "Name": "Max Scherzer",
+        "Rank": 273
+      },
+      {
+        "Name": "Daulton Varsho",
+        "Rank": 287
+      },
+      {
+        "Name": "Alejandro Kirk",
+        "Rank": 308
+      },
+      {
+        "Name": "Chris Bassitt",
+        "Rank": 316
+      },
+      {
+        "Name": "Chad Green",
+        "Rank": 391
+      },
+      {
+        "Name": "Ernie Clement",
+        "Rank": 428
+      },
+      {
+        "Name": "Yimi Garcia",
+        "Rank": 456
+      },
+      {
+        "Name": "Yariel Rodriguez",
+        "Rank": 573
+      },
+      {
+        "Name": "Will Wagner",
+        "Rank": 576
+      },
+      {
+        "Name": "Nick Sandlin",
+        "Rank": 598
+      }
+    ]
+  },
+  {
+    "name": "WSH",
+    "players": [
+      {
+        "Name": "CJ Abrams",
+        "Rank": 50
+      },
+      {
+        "Name": "James Wood",
+        "Rank": 52
+      },
+      {
+        "Name": "Dylan Crews",
+        "Rank": 124
+      },
+      {
+        "Name": "Luis Garcia",
+        "Rank": 125
+      },
+      {
+        "Name": "MacKenzie Gore",
+        "Rank": 208
+      },
+      {
+        "Name": "Nathaniel Lowe",
+        "Rank": 213
+      },
+      {
+        "Name": "Kyle Finnegan",
+        "Rank": 245
+      },
+      {
+        "Name": "Keibert Ruiz",
+        "Rank": 256
+      },
+      {
+        "Name": "Josh Bell",
+        "Rank": 295
+      },
+      {
+        "Name": "Jacob Young",
+        "Rank": 298
+      },
+      {
+        "Name": "DJ Herz",
+        "Rank": 352
+      },
+      {
+        "Name": "Paul DeJong",
+        "Rank": 422
+      },
+      {
+        "Name": "Jake Irvin",
+        "Rank": 443
+      },
+      {
+        "Name": "Michael Soroka",
+        "Rank": 460
+      },
+      {
+        "Name": "Mitchell Parker",
+        "Rank": 506
+      },
+      {
+        "Name": "Derek Law",
+        "Rank": 509
+      },
+      {
+        "Name": "Jorge Lopez",
+        "Rank": 520
+      },
+      {
+        "Name": "Jose Tena",
+        "Rank": 563
+      },
+      {
+        "Name": "Colin Poche",
+        "Rank": 568
+      },
+      {
+        "Name": "Jose A. Ferrer",
+        "Rank": 582
+      }
+    ]
+  }
+]
