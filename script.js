@@ -6,10 +6,10 @@ fetch('teamsData.json')
     fetch('builderTeams_abbr_fullnames_v2.json')  // Updated to the new JSON
       .then(response => response.json())
       .then(builderTeams => {
-        // Map team abbreviations to full names
-        const teamNamesMap = {};
+        // Map team names to their abbreviations
+        const teamAbbreviationsMap = {};
         builderTeams.forEach(team => {
-          teamNamesMap[team.abbreviation] = team.fullName;  // Map abbreviation to full name
+          teamAbbreviationsMap[team.fullName] = team.abbreviation;  // Map full team name to abbreviation
         });
 
         // Populate the team selection dynamically
@@ -26,7 +26,7 @@ fetch('teamsData.json')
           checkbox.id = `team${index + 1}`; // Unique ID for each team
           teamLabel.appendChild(checkbox);
           
-          const textNode = document.createTextNode(` ${teamNamesMap[team.name] || team.name}`); // Display full team name
+          const textNode = document.createTextNode(` ${team.name}`); // Display full team name
           teamLabel.appendChild(textNode);
           teamSelectionContainer.appendChild(teamLabel);
           teamSelectionContainer.appendChild(document.createElement('br'));
@@ -109,8 +109,8 @@ fetch('teamsData.json')
           recommendedPlayers.forEach(player => {
             // Ensure player data is correctly referenced (name and team)
             if (player && player.Name) {
-              // Find the team abbreviation by matching the team name
-              const teamAbbreviation = teamsData.find(team => team.name === player.team)?.name || 'Unknown Team';
+              // Get the team abbreviation by matching full team name
+              const teamAbbreviation = teamAbbreviationsMap[player.team] || 'Unknown Team';
               
               const listItem = document.createElement("li");
               // Display player name and team abbreviation
@@ -130,3 +130,4 @@ fetch('teamsData.json')
       .catch(error => console.error("Error fetching builder teams data:", error));
   })
   .catch(error => console.error("Error fetching teams data:", error));
+
