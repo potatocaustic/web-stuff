@@ -34,6 +34,10 @@ fetch('teamsData.json')
 
         // Set up the Build My Team button
         document.getElementById("buildButton").addEventListener("click", function () {
+          // Clear the existing recommended buys list before creating a new one
+          const recommendationsList = document.getElementById("recommendationsList");
+          recommendationsList.innerHTML = ""; // Clear previous recommendations
+
           const budget = parseFloat(document.getElementById("budget").value);
           const selectedTeams = [];
           let totalCost = 0;
@@ -102,13 +106,13 @@ fetch('teamsData.json')
           });
 
           // Display recommended buys
-          const recommendationsList = document.getElementById("recommendationsList");
-          recommendationsList.innerHTML = ""; // Clear previous recommendations
-
           recommendedPlayers.forEach(player => {
-            const listItem = document.createElement("li");
-            listItem.textContent = `${player.name} (${player.rank})`;
-            recommendationsList.appendChild(listItem);
+            // Ensure player data is correctly referenced (name and rank)
+            if (player && player.name && player.rank) {
+              const listItem = document.createElement("li");
+              listItem.textContent = `${player.name} (${player.rank})`;
+              recommendationsList.appendChild(listItem);
+            }
           });
 
           // If there's remaining budget, alert the user
@@ -122,5 +126,4 @@ fetch('teamsData.json')
       .catch(error => console.error("Error fetching builder teams data:", error));
   })
   .catch(error => console.error("Error fetching teams data:", error));
-
 
