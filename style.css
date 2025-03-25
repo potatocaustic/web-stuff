@@ -21,8 +21,8 @@ header {
 }
 
 /* Ensure h1 is white on black background */
-h1 {
-  color: white; /* Set h1 text to white */
+header h1 {
+  color: white !important; /* Force white color with !important */
 }
 
 main {
