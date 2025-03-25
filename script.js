@@ -80,7 +80,7 @@ fetch('teamsData.json')
           // Calculate remaining budget after selecting team players
           let remainingBudget = budget - totalCost;
 
-          // Add players from the remaining pool of players if the remaining budget allows
+          // Ensure we don't exceed the remaining budget when adding players
           const remainingPlayers = teamsData.filter(team => team.name !== "FA").flatMap(team => team.players);
           const sortedRemainingPlayers = remainingPlayers.sort((a, b) => a.Rank - b.Rank);
 
@@ -91,11 +91,6 @@ fetch('teamsData.json')
               remainingBudget -= playerCost; // Subtract the cost of the added player
             }
           });
-
-          // Ensure we don't exceed the budget or 70 players
-          if (recommendedPlayers.length > 70) {
-            recommendedPlayers.length = 70;  // Cap to 70 players
-          }
 
           // Display recommended buys with numbering
           recommendedPlayers.forEach((player, index) => {
@@ -116,4 +111,5 @@ fetch('teamsData.json')
       .catch(error => console.error("Error fetching builder teams data:", error));
   })
   .catch(error => console.error("Error fetching teams data:", error));
+
 
