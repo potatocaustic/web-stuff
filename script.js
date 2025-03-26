@@ -98,6 +98,11 @@ fetch('teamsData.json')
             recommendationsList.appendChild(listItem);
           });
 
+          // Display the remaining balance (Remaining Rax)
+          const remainingBalanceItem = document.createElement("li");
+          remainingBalanceItem.textContent = `Remaining Rax: ${remainingBudget}`;  // Show remaining budget
+          recommendationsList.appendChild(remainingBalanceItem);
+
           // Create a CSV button if there are recommended players
           if (recommendedPlayers.length > 0) {
             const csvButton = document.createElement('button');
