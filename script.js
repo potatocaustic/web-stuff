@@ -36,6 +36,8 @@ fetch('teamsData.json')
           const selectedTeams = [];
           let totalCost = 0;
           let totalPlayers = 0;
+          let playerCost = 200;
+          let maxPlayers = 70;
 
           // Check which teams are selected
           teamsData.forEach((team, index) => {
@@ -43,24 +45,9 @@ fetch('teamsData.json')
             if (checkbox && checkbox.checked && team.name !== "FA") {  // Exclude "FA" team
               selectedTeams.push(team);
               totalCost += 800; // Each team costs 800
-              totalPlayers += 5; // For each selected team, you must buy 5 players
+              totalPlayers += (budget >= 10000) ? 5 : 1; // For each selected team, you must buy 5 players (or 1/2 depending on budget)
             }
           });
-
-          // Team and player costs
-          const playerCost = 200;
-
-          // Ensure the budget is not exceeded and that no more than 5 teams are selected
-          if (selectedTeams.length > 5) {
-            alert("You can select no more than 5 teams.");
-            return;
-          }
-
-          // Ensure no more than 70 players are selected
-          if (totalPlayers > 70) {
-            alert("You can select no more than 70 players.");
-            return;
-          }
 
           // Ensure budget is not exceeded by the team selection
           if (totalCost > budget) {
@@ -68,29 +55,44 @@ fetch('teamsData.json')
             return;
           }
 
-          // Get recommended players from selected teams (top 5 players per team)
+          // Add players from selected teams
           const recommendedPlayers = [];
           selectedTeams.forEach(team => {
-            const topPlayers = team.players.sort((a, b) => a.Rank - b.Rank).slice(0, 5); // Get top 5 players by rank
+            // Add the top 5 or 2 players depending on budget
+            const topPlayers = team.players.sort((a, b) => a.Rank - b.Rank).slice(0, budget >= 10000 ? 5 : 2);
             topPlayers.forEach(player => {
               recommendedPlayers.push(player);
             });
           });
 
-          // Calculate remaining budget after selecting team players
+          // Subtract the cost of players from the remaining budget
+          totalCost += recommendedPlayers.length * playerCost;
           let remainingBudget = budget - totalCost;
 
-          // Ensure we don't exceed the remaining budget when adding players
+          // Ensure the remaining budget is valid
+          if (remainingBudget < 0) {
+            alert("Your budget is exceeded after selecting players from your teams.");
+            return;
+          }
+
+          // Calculate how many more players can be added with the remaining budget
           const remainingPlayers = teamsData.filter(team => team.name !== "FA").flatMap(team => team.players);
           const sortedRemainingPlayers = remainingPlayers.sort((a, b) => a.Rank - b.Rank);
 
-          // Add remaining players until the budget is exhausted or player limit is reached
-          sortedRemainingPlayers.forEach(player => {
-            if (recommendedPlayers.length < 70 && remainingBudget >= playerCost) {
-              recommendedPlayers.push(player);
-              remainingBudget -= playerCost; // Subtract the cost of the added player
+          // Calculate how many additional players can be selected
+          const remainingPlayerCount = Math.floor(remainingBudget / playerCost);
+
+          // Add remaining players (up to 70 in total)
+          for (let i = 0; i < sortedRemainingPlayers.length; i++) {
+            if (recommendedPlayers.length < maxPlayers && i < remainingPlayerCount) {
+              recommendedPlayers.push(sortedRemainingPlayers[i]);
             }
-          });
+          }
+
+          // Ensure no more than 70 players are selected
+          if (recommendedPlayers.length > maxPlayers) {
+            recommendedPlayers.length = maxPlayers;  // Cap to 70 players
+          }
 
           // Display recommended buys with numbering
           recommendedPlayers.forEach((player, index) => {
