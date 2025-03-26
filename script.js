@@ -27,7 +27,8 @@ fetch('teamsData.json')
         });
 
         // Set up the Build My Team button
-        document.getElementById("buildButton").addEventListener("click", function () {
+        const buildButton = document.getElementById("buildButton");
+        buildButton.addEventListener("click", function () {
           // Clear the existing recommended buys list before creating a new one
           const recommendationsList = document.getElementById("recommendationsList");
           recommendationsList.innerHTML = ""; // Clear previous recommendations
@@ -116,7 +117,9 @@ fetch('teamsData.json')
             csvButton.addEventListener('click', function () {
               downloadCSV(recommendedPlayers);
             });
-            document.body.appendChild(csvButton);  // Add the button to the page
+            
+            // Insert the CSV button next to the Build My Team button
+            buildButton.insertAdjacentElement('afterend', csvButton);
           }
         });
       })
