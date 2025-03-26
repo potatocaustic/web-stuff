@@ -26,7 +26,7 @@ fetch('teamsData.json')
           teamSelectionContainer.appendChild(document.createElement('br'));
         });
 
-        // Set up the Build My Team button
+        // Set up the Build My List button
         const buildButton = document.getElementById("buildButton");
         const buttonContainer = document.getElementById("buttonContainer"); // A container for both buttons
         buildButton.addEventListener("click", function () {
@@ -34,7 +34,16 @@ fetch('teamsData.json')
           const recommendationsList = document.getElementById("recommendationsList");
           recommendationsList.innerHTML = ""; // Clear previous recommendations
 
-          const budget = parseFloat(document.getElementById("budget").value);
+          // Get the budget value, remove commas, and convert to number
+          const budgetInput = document.getElementById("budget").value;
+          const budget = parseFloat(budgetInput.replace(/,/g, '')); // Remove commas
+
+          // If the budget is not a valid number, exit early
+          if (isNaN(budget) || budget <= 0) {
+            alert("Please enter a valid budget.");
+            return;
+          }
+
           const selectedTeams = [];
           let totalCost = 0;
           let totalPlayers = 0;
@@ -68,14 +77,11 @@ fetch('teamsData.json')
           totalCost += recommendedPlayers.length * playerCost;
           let remainingBudget = budget - totalCost;
 
-          // If remaining budget is invalid, return
           if (remainingBudget < 0) return;
 
-          // Calculate how many more players can be added with the remaining budget
           const remainingPlayers = teamsData.filter(team => team.name !== "FA").flatMap(team => team.players);
           const sortedRemainingPlayers = remainingPlayers.sort((a, b) => a.Rank - b.Rank);
 
-          // Calculate how many additional players can be selected
           const remainingPlayerCount = Math.floor(remainingBudget / playerCost);
 
           // Add remaining players (up to 70 in total)
@@ -87,14 +93,13 @@ fetch('teamsData.json')
 
           // Ensure no more than 70 players are selected
           if (recommendedPlayers.length > maxPlayers) {
-            recommendedPlayers.length = maxPlayers;  // Cap to 70 players
+            recommendedPlayers.length = maxPlayers;
           }
 
           // Display recommended buys with numbering
           recommendedPlayers.forEach((player, index) => {
             const listItem = document.createElement("li");
-            // Display player name with numbering (index + 1)
-            listItem.textContent = `${index + 1}. ${player.Name}`;  // Add numbering to the player name
+            listItem.textContent = `${index + 1}. ${player.Name}`; 
             recommendationsList.appendChild(listItem);
           });
 
@@ -119,8 +124,8 @@ fetch('teamsData.json')
               downloadCSV(recommendedPlayers);
             });
             
-            // Insert the CSV button next to the Build My Team button
-            buttonContainer.appendChild(csvButton);  // Insert into the container
+            // Insert the CSV button next to the Build My List button
+            buttonContainer.appendChild(csvButton);
           }
         });
       })
@@ -152,4 +157,3 @@ function downloadCSV(players) {
     link.click();  // Trigger the download
   }
 }
-
