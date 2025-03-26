@@ -108,9 +108,44 @@ fetch('teamsData.json')
           } else {
             alert("You have exceeded your budget!");
           }
+
+          // Create a CSV button if there are recommended players
+          if (recommendedPlayers.length > 0) {
+            const csvButton = document.createElement('button');
+            csvButton.textContent = 'Download CSV';
+            csvButton.addEventListener('click', function () {
+              downloadCSV(recommendedPlayers);
+            });
+            document.body.appendChild(csvButton);  // Add the button to the page
+          }
         });
       })
       .catch(error => console.error("Error fetching builder teams data:", error));
   })
   .catch(error => console.error("Error fetching teams data:", error));
+
+// Function to download the recommended player list as a CSV file
+function downloadCSV(players) {
+  // Create CSV data (header + rows of player names)
+  const header = ["Player Name"];
+  const rows = players.map(player => [player.Name]);
+
+  // Create CSV content by joining rows with commas and separating each row with a new line
+  let csvContent = header.join(",") + "\n";
+  rows.forEach(row => {
+    csvContent += row.join(",") + "\n";
+  });
+
+  // Create a Blob object containing the CSV content
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+  // Create a download link and trigger the download
+  const link = document.createElement("a");
+  if (link.download !== undefined) {  // Ensure download attribute is supported
+    const fileName = "recommended_buy_list.csv";
+    link.setAttribute("href", URL.createObjectURL(blob));
+    link.setAttribute("download", fileName);
+    link.click();  // Trigger the download
+  }
+}
 
