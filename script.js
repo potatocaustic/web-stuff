@@ -108,9 +108,12 @@ fetch('teamsData.json')
           totalCostItem.textContent = `Total Cost: ${finalTotalCost} Rax`;  // Show total cost
           recommendationsList.appendChild(totalCostItem);
 
-          // Create a CSV button if there are recommended players
-          if (recommendedPlayers.length > 0) {
-            const csvButton = document.createElement('button');
+          // Check if CSV button already exists, if so, do not create a new one
+          let csvButton = document.getElementById("csvButton");
+          if (!csvButton) {
+            // Create a CSV button if it does not already exist
+            csvButton = document.createElement('button');
+            csvButton.id = "csvButton";
             csvButton.textContent = 'Download CSV';
             csvButton.addEventListener('click', function () {
               downloadCSV(recommendedPlayers);
