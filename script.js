@@ -112,4 +112,3 @@ fetch('teamsData.json')
   })
   .catch(error => console.error("Error fetching teams data:", error));
 
-
