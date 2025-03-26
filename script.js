@@ -98,9 +98,13 @@ fetch('teamsData.json')
             recommendationsList.appendChild(listItem);
           });
 
-          // Display the remaining balance (Remaining Rax)
+          // Calculate the final remaining balance (after all players have been added)
+          const totalPlayerCost = recommendedPlayers.length * playerCost;
+          const finalRemainingBalance = budget - totalCost - totalPlayerCost;
+
+          // Display the remaining balance at the end of the list
           const remainingBalanceItem = document.createElement("li");
-          remainingBalanceItem.textContent = `Remaining Rax: ${remainingBudget}`;  // Show remaining budget
+          remainingBalanceItem.textContent = `Remaining Rax: ${finalRemainingBalance}`;  // Show remaining balance
           recommendationsList.appendChild(remainingBalanceItem);
 
           // Create a CSV button if there are recommended players
