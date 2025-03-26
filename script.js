@@ -98,14 +98,15 @@ fetch('teamsData.json')
             recommendationsList.appendChild(listItem);
           });
 
-          // Calculate the final remaining balance (after all players have been added)
+          // Calculate the total cost again: (800 * number of teams) + (200 * number of players)
+          const totalTeamCost = 800 * selectedTeams.length;
           const totalPlayerCost = recommendedPlayers.length * playerCost;
-          const finalRemainingBalance = budget - totalCost - totalPlayerCost;
+          const finalTotalCost = totalTeamCost + totalPlayerCost;
 
-          // Display the remaining balance at the end of the list
-          const remainingBalanceItem = document.createElement("li");
-          remainingBalanceItem.textContent = `Remaining Rax: ${finalRemainingBalance}`;  // Show remaining balance
-          recommendationsList.appendChild(remainingBalanceItem);
+          // Display the total cost at the end of the list
+          const totalCostItem = document.createElement("li");
+          totalCostItem.textContent = `Total Cost: ${finalTotalCost} Rax`;  // Show total cost
+          recommendationsList.appendChild(totalCostItem);
 
           // Create a CSV button if there are recommended players
           if (recommendedPlayers.length > 0) {
