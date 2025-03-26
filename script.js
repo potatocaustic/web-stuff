@@ -52,10 +52,7 @@ fetch('teamsData.json')
           });
 
           // Ensure budget is not exceeded by the team selection
-          if (totalCost > budget) {
-            alert("Your selected teams exceed your budget. Please select fewer teams.");
-            return;
-          }
+          if (totalCost > budget) return; // Skip if total team cost exceeds budget
 
           // Add players from selected teams
           const recommendedPlayers = [];
@@ -71,11 +68,8 @@ fetch('teamsData.json')
           totalCost += recommendedPlayers.length * playerCost;
           let remainingBudget = budget - totalCost;
 
-          // Ensure the remaining budget is valid
-          if (remainingBudget < 0) {
-            alert("Your budget is exceeded after selecting players from your teams.");
-            return;
-          }
+          // If remaining budget is invalid, return
+          if (remainingBudget < 0) return;
 
           // Calculate how many more players can be added with the remaining budget
           const remainingPlayers = teamsData.filter(team => team.name !== "FA").flatMap(team => team.players);
@@ -103,13 +97,6 @@ fetch('teamsData.json')
             listItem.textContent = `${index + 1}. ${player.Name}`;  // Add numbering to the player name
             recommendationsList.appendChild(listItem);
           });
-
-          // If there's remaining budget, alert the user
-          if (remainingBudget >= 0) {
-            alert(`Your team is ready! Remaining budget: $${remainingBudget}`);
-          } else {
-            alert("You have exceeded your budget!");
-          }
 
           // Create a CSV button if there are recommended players
           if (recommendedPlayers.length > 0) {
@@ -152,5 +139,4 @@ function downloadCSV(players) {
     link.click();  // Trigger the download
   }
 }
-
 
