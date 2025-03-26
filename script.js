@@ -28,6 +28,7 @@ fetch('teamsData.json')
 
         // Set up the Build My Team button
         const buildButton = document.getElementById("buildButton");
+        const buttonContainer = document.getElementById("buttonContainer"); // A container for both buttons
         buildButton.addEventListener("click", function () {
           // Clear the existing recommended buys list before creating a new one
           const recommendationsList = document.getElementById("recommendationsList");
@@ -119,7 +120,7 @@ fetch('teamsData.json')
             });
             
             // Insert the CSV button next to the Build My Team button
-            buildButton.insertAdjacentElement('afterend', csvButton);
+            buttonContainer.appendChild(csvButton);  // Insert into the container
           }
         });
       })
@@ -151,4 +152,5 @@ function downloadCSV(players) {
     link.click();  // Trigger the download
   }
 }
+
 
