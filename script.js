@@ -63,13 +63,19 @@ fetch('teamsData.json')
           // Ensure budget is not exceeded by the team selection
           if (totalCost > budget) return; // Skip if total team cost exceeds budget
 
-          // Add players from selected teams
+          // Use a Set to keep track of already added players (prevents duplicates)
+          const addedPlayers = new Set();
           const recommendedPlayers = [];
+
+          // Add players from selected teams (ensure no duplicates)
           selectedTeams.forEach(team => {
-            // Add the top 5 or 2 players depending on budget
             const topPlayers = team.players.sort((a, b) => a.Rank - b.Rank).slice(0, budget >= 10000 ? 5 : 2);
             topPlayers.forEach(player => {
-              recommendedPlayers.push(player);
+              // Check if player is already in the set
+              if (!addedPlayers.has(player.Name)) {
+                recommendedPlayers.push(player);
+                addedPlayers.add(player.Name);
+              }
             });
           });
 
@@ -79,15 +85,19 @@ fetch('teamsData.json')
 
           if (remainingBudget < 0) return;
 
+          // Add remaining players (ensure no duplicates)
           const remainingPlayers = teamsData.filter(team => team.name !== "FA").flatMap(team => team.players);
           const sortedRemainingPlayers = remainingPlayers.sort((a, b) => a.Rank - b.Rank);
 
           const remainingPlayerCount = Math.floor(remainingBudget / playerCost);
 
-          // Add remaining players (up to 70 in total)
           for (let i = 0; i < sortedRemainingPlayers.length; i++) {
             if (recommendedPlayers.length < maxPlayers && i < remainingPlayerCount) {
-              recommendedPlayers.push(sortedRemainingPlayers[i]);
+              const player = sortedRemainingPlayers[i];
+              if (!addedPlayers.has(player.Name)) {
+                recommendedPlayers.push(player);
+                addedPlayers.add(player.Name);
+              }
             }
           }
 
@@ -157,3 +167,4 @@ function downloadCSV(players) {
     link.click();  // Trigger the download
   }
 }
+
