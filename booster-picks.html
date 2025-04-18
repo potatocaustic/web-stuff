@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booster Picks - caustic.info</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
+    <!-- Additional CSS for the table -->
+    <style>
+      .booster-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+      .booster-table th, .booster-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+      .booster-table th {
+        background-color: #333;
+        color: white;
+      }
+      .booster-table tr:hover {
+        background-color: #f5f5f5;
+      }
+      .strong-icon {
+        color: green;
+        font-size: 1.2em;
+      }
+      .medium-icon {
+        color: #f0ad4e;
+        font-size: 1.2em;
+      }
+      .weak-icon {
+        color: red;
+        font-size: 1.2em;
+      }
+      .category-header {
+        background-color: #444;
+        color: white;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>MLB Booster Picks</h1>
+    </header>
+    <main>
+      <section class="info">
+        <p>Top candidates for each booster category based on player projections. Updated weekly.</p>
+      </section>
+      <section class="results-section">
+        <h2>Booster Candidate Rankings</h2>
+        <div id="lastUpdated">Last updated: <span id="updateDate">April 17, 2025</span></div>
+        
+        <div id="boosterResults">
+          <!-- This is where we'll insert the table with results -->
+        </div>
+      </section>
+    </main>
+    <footer>
+      <p>&copy; caustic.info</p>
+    </footer>
+    
+    <script src="booster-picks.js"></script>
+  </body>
+</html>
