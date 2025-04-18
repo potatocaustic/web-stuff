@@ -25,6 +25,11 @@
         "player": "Willson Contreras",
         "team": "St. Louis Cardinals",
         "rating": "Medium"
+      },
+      {
+        "player": "Jordan Westburg",
+        "team": "Baltimore Orioles",
+        "rating": "Medium"
       }
     ],
     "Triples & Home Runs": [
@@ -50,6 +55,11 @@
       },
       {
         "player": "Josh Naylor",
+        "team": "Arizona Diamondbacks",
+        "rating": "Strong"
+      },
+      {
+        "player": "Eugenio Suarez",
         "team": "Arizona Diamondbacks",
         "rating": "Strong"
       }
@@ -79,6 +89,11 @@
         "player": "Aaron Judge",
         "team": "New York Yankees",
         "rating": "Medium"
+      },
+      {
+        "player": "Gunnar Henderson",
+        "team": "Baltimore Orioles",
+        "rating": "Medium"
       }
     ],
     "RBIs": [
@@ -106,6 +121,11 @@
         "player": "Eugenio Suarez",
         "team": "Arizona Diamondbacks",
         "rating": "Strong"
+      },
+      {
+        "player": "Bo Naylor",
+        "team": "Cleveland Guardians",
+        "rating": "Medium"
       }
     ]
   }
