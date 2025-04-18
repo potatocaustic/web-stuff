@@ -6,61 +6,60 @@
     <title>Booster Picks - caustic.info</title>
     <link rel="stylesheet" href="style.css" />
     <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
-    <!-- Additional CSS for the table -->
-<style>
-  .booster-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-  }
-  .booster-table th, .booster-table td {
-    padding: 8px 12px; /* Reduced horizontal padding */
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-  }
-  .booster-table th {
-    background-color: #333;
-    color: white;
-  }
-  .booster-table tr:hover {
-    background-color: #f5f5f5;
-  }
-  /* Rank column should be narrow */
-  .booster-table th:first-child,
-  .booster-table td:first-child {
-    width: 50px;
-  }
-  /* Team column should be medium width */
-  .booster-table th:nth-child(3),
-  .booster-table td:nth-child(3) {
-    width: 120px;
-  }
-  /* Rating column should be narrow */
-  .booster-table th:last-child,
-  .booster-table td:last-child {
-    width: 80px;
-    text-align: center;
-  }
-  .strong-icon {
-    color: green;
-    font-size: 1.6em; /* Increased icon size */
-  }
-  .medium-icon {
-    color: #f0ad4e;
-    font-size: 1.6em; /* Increased icon size */
-  }
-  .weak-icon {
-    color: red;
-    font-size: 1.6em; /* Increased icon size */
-  }
-  h3 {
-    margin-top: 30px;
-    background-color: #444;
-    color: white;
-    padding: 10px;
-    border-radius: 5px;
-  }
-</style>
+    <style>
+      .booster-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+      .booster-table th, .booster-table td {
+        padding: 8px 12px; /* Reduced horizontal padding */
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+      .booster-table th {
+        background-color: #333;
+        color: white;
+      }
+      .booster-table tr:hover {
+        background-color: #f5f5f5;
+      }
+      /* Rank column should be narrow */
+      .booster-table th:first-child,
+      .booster-table td:first-child {
+        width: 50px;
+      }
+      /* Team column should be medium width */
+      .booster-table th:nth-child(3),
+      .booster-table td:nth-child(3) {
+        width: 120px;
+      }
+      /* Rating column should be narrow */
+      .booster-table th:last-child,
+      .booster-table td:last-child {
+        width: 80px;
+        text-align: center;
+      }
+      .strong-icon {
+        color: green;
+        font-size: 1.6em; /* Increased icon size */
+      }
+      .medium-icon {
+        color: #f0ad4e;
+        font-size: 1.6em; /* Increased icon size */
+      }
+      .weak-icon {
+        color: red;
+        font-size: 1.6em; /* Increased icon size */
+      }
+      h3 {
+        margin-top: 30px;
+        background-color: #444;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+      }
+    </style>
   </head>
   <body>
     <header>
@@ -72,17 +71,36 @@
       </section>
       <section class="results-section">
         <h2>Booster Candidate Rankings</h2>
-        <div id="lastUpdated">Last updated: <span id="updateDate">April 17, 2025</span></div>
+        <div id="lastUpdated">Last updated: April 17, 2025</div>
         
         <div id="boosterResults">
-          <!-- This is where we'll insert the table with results -->
+          <h3>Doubles</h3>
+          <table class="booster-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Team</th>
+                <th>Rating</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>Freddie Freeman</td>
+                <td>LAD</td>
+                <td><span class="strong-icon">●</span></td>
+              </tr>
+              <!-- Other players... -->
+            </tbody>
+          </table>
+
+          <!-- Repeat for other categories -->
         </div>
       </section>
     </main>
     <footer>
       <p>&copy; caustic.info</p>
     </footer>
-    
-    <script src="booster-picks.js"></script>
   </body>
 </html>
