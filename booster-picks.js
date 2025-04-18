@@ -1,15 +1,3 @@
-// Function to load the booster results
-async function loadBoosterResults() {
-  try {
-    const response = await fetch('booster_results.json');
-    const data = await response.json();
-    displayResults(data);
-  } catch (error) {
-    console.error('Error loading booster results:', error);
-    document.getElementById('boosterResults').innerHTML = '<p>Error loading results. Please try again later.</p>';
-  }
-}
-
 // Function to display the results in a table
 function displayResults(data) {
   const resultsContainer = document.getElementById('boosterResults');
@@ -32,15 +20,19 @@ function displayResults(data) {
     
     const rankHeader = document.createElement('th');
     rankHeader.textContent = 'Rank';
+    rankHeader.style.width = '50px'; // Narrow column for rank
     
     const playerHeader = document.createElement('th');
     playerHeader.textContent = 'Player';
     
     const teamHeader = document.createElement('th');
     teamHeader.textContent = 'Team';
+    teamHeader.style.width = '120px'; // Medium width for team
     
     const ratingHeader = document.createElement('th');
     ratingHeader.textContent = 'Rating';
+    ratingHeader.style.width = '80px'; // Narrow width for rating
+    ratingHeader.style.textAlign = 'center';
     
     headerRow.appendChild(rankHeader);
     headerRow.appendChild(playerHeader);
@@ -70,17 +62,21 @@ function displayResults(data) {
       
       // Rating cell with appropriate icon
       const ratingCell = document.createElement('td');
+      ratingCell.style.textAlign = 'center';
       const ratingIcon = document.createElement('span');
       
       if (player.rating === 'Strong') {
         ratingIcon.className = 'strong-icon';
         ratingIcon.innerHTML = '●'; // Green circle for strong
+        ratingIcon.style.fontSize = '1.6em'; // Bigger icon
       } else if (player.rating === 'Medium') {
         ratingIcon.className = 'medium-icon';
         ratingIcon.innerHTML = '●'; // Yellow circle for medium
+        ratingIcon.style.fontSize = '1.6em'; // Bigger icon
       } else {
         ratingIcon.className = 'weak-icon';
         ratingIcon.innerHTML = '●'; // Red circle for weak
+        ratingIcon.style.fontSize = '1.6em'; // Bigger icon
       }
       
       ratingCell.appendChild(ratingIcon);
@@ -107,6 +103,3 @@ function displayResults(data) {
     day: 'numeric'
   });
 }
-
-// Load the results when the page loads
-window.addEventListener('DOMContentLoaded', loadBoosterResults);
