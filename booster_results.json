@@ -1,0 +1,112 @@
+{
+  "categories": {
+    "Doubles": [
+      {
+        "player": "Luis Garcia",
+        "team": "Washington Nationals",
+        "rating": "Strong"
+      },
+      {
+        "player": "Lourdes Gurriel",
+        "team": "Arizona Diamondbacks",
+        "rating": "Medium"
+      },
+      {
+        "player": "Otto Lopez",
+        "team": "Miami Marlins",
+        "rating": "Medium"
+      },
+      {
+        "player": "Josh Jung",
+        "team": "Texas Rangers",
+        "rating": "Medium"
+      },
+      {
+        "player": "Willson Contreras",
+        "team": "St. Louis Cardinals",
+        "rating": "Medium"
+      }
+    ],
+    "Triples & Home Runs": [
+      {
+        "player": "Aaron Judge",
+        "team": "New York Yankees",
+        "rating": "Strong"
+      },
+      {
+        "player": "Shea Langeliers",
+        "team": "Oakland Athletics",
+        "rating": "Strong"
+      },
+      {
+        "player": "Bryce Harper",
+        "team": "Philadelphia Phillies",
+        "rating": "Strong"
+      },
+      {
+        "player": "Jose Ramirez",
+        "team": "Cleveland Guardians",
+        "rating": "Strong"
+      },
+      {
+        "player": "Josh Naylor",
+        "team": "Arizona Diamondbacks",
+        "rating": "Strong"
+      }
+    ],
+    "Runs": [
+      {
+        "player": "Trea Turner",
+        "team": "Philadelphia Phillies",
+        "rating": "Strong"
+      },
+      {
+        "player": "Bryce Harper",
+        "team": "Philadelphia Phillies",
+        "rating": "Strong"
+      },
+      {
+        "player": "Corbin Carroll",
+        "team": "Arizona Diamondbacks",
+        "rating": "Medium"
+      },
+      {
+        "player": "Jose Ramirez",
+        "team": "Cleveland Guardians",
+        "rating": "Medium"
+      },
+      {
+        "player": "Aaron Judge",
+        "team": "New York Yankees",
+        "rating": "Medium"
+      }
+    ],
+    "RBIs": [
+      {
+        "player": "Jose Ramirez",
+        "team": "Cleveland Guardians",
+        "rating": "Strong"
+      },
+      {
+        "player": "Bryce Harper",
+        "team": "Philadelphia Phillies",
+        "rating": "Strong"
+      },
+      {
+        "player": "Aaron Judge",
+        "team": "New York Yankees",
+        "rating": "Strong"
+      },
+      {
+        "player": "Shea Langeliers",
+        "team": "Oakland Athletics",
+        "rating": "Strong"
+      },
+      {
+        "player": "Eugenio Suarez",
+        "team": "Arizona Diamondbacks",
+        "rating": "Strong"
+      }
+    ]
+  }
+}
