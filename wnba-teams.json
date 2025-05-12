@@ -1,0 +1,54 @@
+[
+  {
+    "abbreviation": "LV",
+    "fullName": "Las Vegas Aces"
+  },
+  {
+    "abbreviation": "Ind",
+    "fullName": "Indiana Fever"
+  },
+  {
+    "abbreviation": "NY",
+    "fullName": "New York Liberty"
+  },
+  {
+    "abbreviation": "Min",
+    "fullName": "Minnesota Lynx"
+  },
+  {
+    "abbreviation": "Dal",
+    "fullName": "Dallas Wings"
+  },
+  {
+    "abbreviation": "Phx",
+    "fullName": "Phoenix Mercury"
+  },
+  {
+    "abbreviation": "LA",
+    "fullName": "Los Angeles Sparks"
+  },
+  {
+    "abbreviation": "Chi",
+    "fullName": "Chicago Sky"
+  },
+  {
+    "abbreviation": "Sea",
+    "fullName": "Seattle Storm"
+  },
+  {
+    "abbreviation": "Atl",
+    "fullName": "Atlanta Dream"
+  },
+  {
+    "abbreviation": "Conn",
+    "fullName": "Connecticut Sun"
+  },
+  {
+    "abbreviation": "Wsh",
+    "fullName": "Washington Mystics"
+  },
+  {
+    "abbreviation": "GSV",
+    "fullName": "Golden State Valkyries"
+  }
+]
