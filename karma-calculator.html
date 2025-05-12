@@ -4,13 +4,67 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Karma Betting Calculator - caustic.info</title>
-    <link rel="stylesheet" href="style.css" />
     <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
     <!-- React and ReactDOM -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <!-- Babel for JSX -->
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <style>
+      /* Base styles */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #f5f5f5;
+        padding: 0;
+        margin: 0;
+      }
+      
+      header {
+        background-color: #2c3e50;
+        color: white;
+        text-align: center;
+        padding: 1rem;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+        margin: 0;
+      }
+      
+      @media (min-width: 768px) {
+        h1 {
+          font-size: 2rem;
+        }
+      }
+      
+      main {
+        padding: 1rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      
+      .info {
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+      
+      footer {
+        text-align: center;
+        padding: 1rem;
+        background-color: #2c3e50;
+        color: white;
+      }
+      
+      /* Custom styles for the calculator will be handled by the React component */
+    </style>
   </head>
   <body>
     <header>
@@ -48,6 +102,19 @@
         const [evMaxUnder, setEvMaxUnder] = React.useState(null);
         const [evZeroOver, setEvZeroOver] = React.useState(null);
         const [evZeroUnder, setEvZeroUnder] = React.useState(null);
+        
+        // State for screen size
+        const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+        
+        // Update isMobile state when window is resized
+        React.useEffect(() => {
+          const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+          };
+          
+          window.addEventListener('resize', handleResize);
+          return () => window.removeEventListener('resize', handleResize);
+        }, []);
         
         // Refs for input fields to manage focus
         const realAppOverRef = React.useRef(null);
@@ -184,71 +251,100 @@
           setEvZeroUnder(evZeroUnderCalc);
         }, [realAppOver, realAppUnder, sbOver, sbUnder, oddsFormat, maxBetSize]);
         
-        // Custom styles to match your website's CSS
+        // Custom styles with responsive design
         const styles = {
           container: {
-            maxWidth: '800px',
+            width: '100%',
             margin: '0 auto',
             backgroundColor: '#fff',
             borderRadius: '8px',
-            padding: '1.5rem',
+            padding: '1rem',
             boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)'
           },
           section: {
-            marginBottom: '1.5rem',
-            padding: '1rem',
+            marginBottom: '1rem',
+            padding: '0.75rem',
             borderRadius: '8px',
             backgroundColor: '#f9f9f9',
             border: '1px solid #eee'
           },
           grid: {
             display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '1.5rem',
-            marginBottom: '1.5rem'
+            gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+            gap: '1rem',
+            marginBottom: '1rem'
           },
           inputGroup: {
-            marginBottom: '1rem'
+            marginBottom: '0.75rem'
           },
           label: {
             display: 'block',
             marginBottom: '0.5rem',
-            fontWeight: 'bold'
+            fontWeight: 'bold',
+            fontSize: '0.95rem'
           },
           input: {
             width: '100%',
-            padding: '0.5rem',
+            padding: '0.75rem',
             border: '1px solid #ccc',
-            borderRadius: '4px'
+            borderRadius: '4px',
+            fontSize: '1rem',
+            appearance: 'none'
           },
           radioGroup: {
             display: 'flex',
-            gap: '1rem',
-            marginBottom: '1rem'
+            flexWrap: 'wrap',
+            gap: '0.5rem',
+            marginBottom: '0.75rem'
+          },
+          radioLabel: {
+            display: 'inline-flex',
+            alignItems: 'center',
+            padding: '0.5rem',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            backgroundColor: '#f5f5f5',
+            cursor: 'pointer',
+            flex: isMobile ? '1 0 calc(50% - 0.5rem)' : 'auto',
+            justifyContent: 'center'
+          },
+          radioLabelSelected: {
+            backgroundColor: '#e3f2fd',
+            borderColor: '#2196f3'
+          },
+          radioInput: {
+            marginRight: '0.5rem'
           },
           resultCard: {
             backgroundColor: '#fff',
-            padding: '1rem',
+            padding: '0.75rem',
             borderRadius: '4px',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-            marginBottom: '1rem'
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+            marginBottom: '0.75rem'
           },
           resultTitle: {
-            fontSize: '1.2rem',
+            fontSize: '1.1rem',
             marginBottom: '0.5rem',
-            textAlign: 'center'
+            textAlign: 'center',
+            fontWeight: 'bold'
           },
           resultGrid: {
             display: 'grid',
             gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '1rem'
+            gap: '0.75rem'
           },
           recommendation: {
             backgroundColor: '#f0f8ff',
-            padding: '1rem',
+            padding: '0.75rem',
             borderRadius: '4px',
             textAlign: 'center',
-            margin: '1rem 0'
+            margin: '0.75rem 0',
+            border: '1px solid #cce5ff'
+          },
+          sectionTitle: {
+            marginBottom: '0.75rem',
+            fontSize: '1.2rem',
+            fontWeight: 'bold'
           },
           evPositive: {
             color: '#008800',
@@ -257,55 +353,82 @@
           evNegative: {
             color: '#cc0000',
             fontWeight: 'bold'
+          },
+          calculateButton: {
+            backgroundColor: '#2196f3',
+            color: 'white',
+            padding: '0.75rem',
+            borderRadius: '4px',
+            border: 'none',
+            fontSize: '1rem',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            width: '100%',
+            marginTop: '0.5rem',
+            marginBottom: '0.5rem',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
           }
+        };
+        
+        // Custom Radio Button component for better mobile experience
+        const CustomRadio = ({ checked, onChange, label, value }) => {
+          return (
+            <label 
+              style={{
+                ...styles.radioLabel,
+                ...(checked ? styles.radioLabelSelected : {})
+              }}
+            >
+              <input
+                type="radio"
+                checked={checked}
+                onChange={onChange}
+                value={value}
+                style={{ marginRight: '0.5rem' }}
+              />
+              {label}
+            </label>
+          );
         };
         
         return (
           <div style={styles.container}>
             <div style={styles.section}>
-              <h2 style={{marginBottom: '1rem'}}>Maximum Bet Size</h2>
+              <h2 style={styles.sectionTitle}>Maximum Bet Size</h2>
               <div style={styles.radioGroup}>
-                <label style={{display: 'inline-flex', alignItems: 'center'}}>
-                  <input
-                    type="radio"
-                    checked={maxBetSize === 50}
-                    onChange={() => setMaxBetSize(50)}
-                    style={{marginRight: '0.5rem'}}
-                  />
-                  50 Karma
-                </label>
-                <label style={{display: 'inline-flex', alignItems: 'center'}}>
-                  <input
-                    type="radio"
-                    checked={maxBetSize === 100}
-                    onChange={() => setMaxBetSize(100)}
-                    style={{marginRight: '0.5rem'}}
-                  />
-                  100 Karma
-                </label>
-                <label style={{display: 'inline-flex', alignItems: 'center'}}>
-                  <input
-                    type="radio"
-                    checked={maxBetSize === 200}
-                    onChange={() => setMaxBetSize(200)}
-                    style={{marginRight: '0.5rem'}}
-                  />
-                  200 Karma
-                </label>
+                <CustomRadio
+                  checked={maxBetSize === 50}
+                  onChange={() => setMaxBetSize(50)}
+                  label="50 Karma"
+                  value="50"
+                />
+                <CustomRadio
+                  checked={maxBetSize === 100}
+                  onChange={() => setMaxBetSize(100)}
+                  label="100 Karma"
+                  value="100"
+                />
+                <CustomRadio
+                  checked={maxBetSize === 200}
+                  onChange={() => setMaxBetSize(200)}
+                  label="200 Karma"
+                  value="200"
+                />
               </div>
             </div>
             
             <div style={styles.grid}>
               <div style={styles.section}>
-                <h2 style={{marginBottom: '1rem'}}>Real App Odds</h2>
+                <h2 style={styles.sectionTitle}>Real App Odds</h2>
                 <div style={styles.inputGroup}>
                   <label style={styles.label}>Over/Home Team Odds:</label>
                   <input
                     type="text"
+                    inputMode="numeric"
                     value={realAppOver}
                     onChange={(e) => setRealAppOver(e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, 0)}
-                    placeholder="e.g. 150 or -120"
+                    placeholder="e.g. +150 or -120"
                     style={styles.input}
                     ref={realAppOverRef}
                   />
@@ -314,10 +437,11 @@
                   <label style={styles.label}>Under/Away Team Odds:</label>
                   <input
                     type="text"
+                    inputMode="numeric"
                     value={realAppUnder}
                     onChange={(e) => setRealAppUnder(e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, 1)}
-                    placeholder="e.g. 150 or -120"
+                    placeholder="e.g. +150 or -120"
                     style={styles.input}
                     ref={realAppUnderRef}
                   />
@@ -325,38 +449,33 @@
               </div>
               
               <div style={styles.section}>
-                <h2 style={{marginBottom: '1rem'}}>Sportsbook Odds</h2>
+                <h2 style={styles.sectionTitle}>Sportsbook Odds</h2>
                 <div style={styles.inputGroup}>
                   <label style={styles.label}>Odds Format:</label>
                   <div style={styles.radioGroup}>
-                    <label style={{display: 'inline-flex', alignItems: 'center'}}>
-                      <input
-                        type="radio"
-                        checked={oddsFormat === 'american'}
-                        onChange={() => setOddsFormat('american')}
-                        style={{marginRight: '0.5rem'}}
-                      />
-                      American (+/-)
-                    </label>
-                    <label style={{display: 'inline-flex', alignItems: 'center'}}>
-                      <input
-                        type="radio"
-                        checked={oddsFormat === 'decimal'}
-                        onChange={() => setOddsFormat('decimal')}
-                        style={{marginRight: '0.5rem'}}
-                      />
-                      Decimal
-                    </label>
+                    <CustomRadio
+                      checked={oddsFormat === 'american'}
+                      onChange={() => setOddsFormat('american')}
+                      label="American (+/-)"
+                      value="american"
+                    />
+                    <CustomRadio
+                      checked={oddsFormat === 'decimal'}
+                      onChange={() => setOddsFormat('decimal')}
+                      label="Decimal"
+                      value="decimal"
+                    />
                   </div>
                 </div>
                 <div style={styles.inputGroup}>
                   <label style={styles.label}>Over/Home Team Odds:</label>
                   <input
                     type="text"
+                    inputMode="numeric"
                     value={sbOver}
                     onChange={(e) => setSbOver(e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, 2)}
-                    placeholder={oddsFormat === 'american' ? "e.g. 150 or -120" : "e.g. 2.50"}
+                    placeholder={oddsFormat === 'american' ? "e.g. +150 or -120" : "e.g. 2.50"}
                     style={styles.input}
                     ref={sbOverRef}
                   />
@@ -365,10 +484,11 @@
                   <label style={styles.label}>Under/Away Team Odds:</label>
                   <input
                     type="text"
+                    inputMode="numeric"
                     value={sbUnder}
                     onChange={(e) => setSbUnder(e.target.value)}
                     onKeyDown={(e) => handleKeyDown(e, 3)}
-                    placeholder={oddsFormat === 'american' ? "e.g. 150 or -120" : "e.g. 2.50"}
+                    placeholder={oddsFormat === 'american' ? "e.g. +150 or -120" : "e.g. 2.50"}
                     style={styles.input}
                     ref={sbUnderRef}
                   />
@@ -378,7 +498,7 @@
             
             {evMaxOver !== null && evMaxUnder !== null && evZeroOver !== null && evZeroUnder !== null && (
               <div style={styles.section}>
-                <h2 style={{marginBottom: '1rem'}}>Expected Value Results</h2>
+                <h2 style={styles.sectionTitle}>Expected Value Results</h2>
                 
                 <div style={styles.grid}>
                   <div style={styles.resultCard}>
@@ -419,7 +539,7 @@
                 </div>
                 
                 <div style={styles.recommendation}>
-                  <div style={{fontWeight: 'bold', fontSize: '1.2rem', marginBottom: '0.5rem'}}>Recommended Bet:</div>
+                  <div style={{fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.5rem'}}>Recommended Bet:</div>
                   {(() => {
                     // Find the highest EV among all options
                     const evOptions = [
