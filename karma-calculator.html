@@ -11,7 +11,6 @@
     <!-- Babel for JSX -->
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <style>
-      /* Base styles */
       * {
         box-sizing: border-box;
         margin: 0;
@@ -63,7 +62,160 @@
         color: white;
       }
       
-      /* Custom styles for the calculator will be handled by the React component */
+      /* Custom styles */
+      .container {
+        width: 100%;
+        margin: 0 auto;
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 1rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      
+      .section {
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        border: 1px solid #eee;
+      }
+      
+      .section-title {
+        margin-bottom: 0.75rem;
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+      
+      .grid {
+        display: grid;
+        gap: 1rem;
+      }
+      
+      @media (min-width: 768px) {
+        .grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      
+      .input-group {
+        margin-bottom: 0.75rem;
+      }
+      
+      .label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+        font-size: 0.95rem;
+      }
+      
+      .input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+      
+      .input-wrapper {
+        position: relative;
+        display: flex;
+      }
+      
+      .button-group {
+        display: flex;
+        margin-left: 0.5rem;
+      }
+      
+      .button {
+        background-color: #e3f2fd;
+        border: 1px solid #bbdefb;
+        color: #0d47a1;
+        width: 40px;
+        height: 40px;
+        font-size: 1.25rem;
+        font-weight: bold;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 0.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .radio-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+      }
+      
+      .radio-label {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: #f5f5f5;
+        cursor: pointer;
+        flex: 1;
+        min-width: calc(33.33% - 0.5rem);
+        justify-content: center;
+      }
+      
+      @media (max-width: 767px) {
+        .radio-label {
+          min-width: calc(50% - 0.5rem);
+        }
+      }
+      
+      .radio-label-selected {
+        background-color: #e3f2fd;
+        border-color: #2196f3;
+      }
+      
+      .radio-input {
+        margin-right: 0.5rem;
+      }
+      
+      .result-card {
+        background-color: #fff;
+        padding: 0.75rem;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 0.75rem;
+      }
+      
+      .result-title {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        text-align: center;
+        font-weight: bold;
+      }
+      
+      .result-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+      }
+      
+      .recommendation {
+        background-color: #f0f8ff;
+        padding: 0.75rem;
+        border-radius: 4px;
+        text-align: center;
+        margin: 0.75rem 0;
+        border: 1px solid #cce5ff;
+      }
+      
+      .ev-positive {
+        color: #008800;
+        font-weight: bold;
+      }
+      
+      .ev-negative {
+        color: #cc0000;
+        font-weight: bold;
+      }
     </style>
   </head>
   <body>
@@ -103,19 +255,6 @@
         const [evZeroOver, setEvZeroOver] = React.useState(null);
         const [evZeroUnder, setEvZeroUnder] = React.useState(null);
         
-        // State for screen size
-        const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
-        
-        // Update isMobile state when window is resized
-        React.useEffect(() => {
-          const handleResize = () => {
-            setIsMobile(window.innerWidth < 768);
-          };
-          
-          window.addEventListener('resize', handleResize);
-          return () => window.removeEventListener('resize', handleResize);
-        }, []);
-        
         // Refs for input fields to manage focus
         const realAppOverRef = React.useRef(null);
         const realAppUnderRef = React.useRef(null);
@@ -132,6 +271,14 @@
             const nextIndex = (currentIndex + 1) % inputOrder.length;
             inputOrder[nextIndex].current.focus();
           }
+        };
+        
+        // Helper function to add plus or minus sign
+        const addSign = (value, sign) => {
+          if (!value) return sign;
+          // Remove any existing sign
+          const numberPart = value.replace(/^[+-]/, '');
+          return sign + numberPart;
         };
         
         // Helper functions for odds conversion
@@ -251,255 +398,87 @@
           setEvZeroUnder(evZeroUnderCalc);
         }, [realAppOver, realAppUnder, sbOver, sbUnder, oddsFormat, maxBetSize]);
         
-        // Custom Radio Button component for better mobile experience
-        const CustomRadio = ({ checked, onChange, label, value }) => {
-          return (
-            <label 
-              style={{
-                ...styles.radioLabel,
-                ...(checked ? styles.radioLabelSelected : {})
-              }}
-            >
-              <input
-                type="radio"
-                checked={checked}
-                onChange={onChange}
-                value={value}
-                style={{ marginRight: '0.5rem' }}
-              />
-              {label}
-            </label>
-          );
-        };
-          section: {
-            marginBottom: '1rem',
-            padding: '0.75rem',
-            borderRadius: '8px',
-            backgroundColor: '#f9f9f9',
-            border: '1px solid #eee'
-          },
-          grid: {
-            display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
-            gap: '1rem',
-            marginBottom: '1rem'
-          },
-          inputGroup: {
-            marginBottom: '0.75rem'
-          },
-          label: {
-            display: 'block',
-            marginBottom: '0.5rem',
-            fontWeight: 'bold',
-            fontSize: '0.95rem'
-          },
-          input: {
-            width: '100%',
-            padding: '0.75rem',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            fontSize: '1rem',
-            appearance: 'none'
-          },
-          inputWrapper: {
-            position: 'relative',
-            display: 'flex',
-            alignItems: 'center'
-          },
-          symbolButtons: {
-            display: 'flex',
-            marginLeft: '0.5rem'
-          },
-          symbolButton: {
-            width: '36px',
-            height: '36px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#e3f2fd',
-            color: '#0d47a1',
-            border: '1px solid #bbdefb',
-            borderRadius: '4px',
-            fontSize: '1.25rem',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            marginRight: '0.25rem'
-          },
-          radioGroup: {
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '0.5rem',
-            marginBottom: '0.75rem'
-          },
-          radioLabel: {
-            display: 'inline-flex',
-            alignItems: 'center',
-            padding: '0.5rem',
-            border: '1px solid #ddd',
-            borderRadius: '4px',
-            backgroundColor: '#f5f5f5',
-            cursor: 'pointer',
-            flex: isMobile ? '1 0 calc(50% - 0.5rem)' : 'auto',
-            justifyContent: 'center'
-          },
-          radioLabelSelected: {
-            backgroundColor: '#e3f2fd',
-            borderColor: '#2196f3'
-          },
-          radioInput: {
-            marginRight: '0.5rem'
-          },
-          resultCard: {
-            backgroundColor: '#fff',
-            padding: '0.75rem',
-            borderRadius: '4px',
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-            marginBottom: '0.75rem'
-          },
-          resultTitle: {
-            fontSize: '1.1rem',
-            marginBottom: '0.5rem',
-            textAlign: 'center',
-            fontWeight: 'bold'
-          },
-          resultGrid: {
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '0.75rem'
-          },
-          recommendation: {
-            backgroundColor: '#f0f8ff',
-            padding: '0.75rem',
-            borderRadius: '4px',
-            textAlign: 'center',
-            margin: '0.75rem 0',
-            border: '1px solid #cce5ff'
-          },
-          sectionTitle: {
-            marginBottom: '0.75rem',
-            fontSize: '1.2rem',
-            fontWeight: 'bold'
-          },
-          evPositive: {
-            color: '#008800',
-            fontWeight: 'bold'
-          },
-          evNegative: {
-            color: '#cc0000',
-            fontWeight: 'bold'
-          },
-          calculateButton: {
-            backgroundColor: '#2196f3',
-            color: 'white',
-            padding: '0.75rem',
-            borderRadius: '4px',
-            border: 'none',
-            fontSize: '1rem',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            width: '100%',
-            marginTop: '0.5rem',
-            marginBottom: '0.5rem',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-          }
-        };
-        
-        // Custom styles with responsive design
-        const styles = {
-          container: {
-            width: '100%',
-            margin: '0 auto',
-            backgroundColor: '#fff',
-            borderRadius: '8px',
-            padding: '1rem',
-            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)'
-          },
-        
         return (
-          <div style={styles.container}>
-            <div style={styles.section}>
-              <h2 style={styles.sectionTitle}>Maximum Bet Size</h2>
-              <div style={styles.radioGroup}>
-                <CustomRadio
-                  checked={maxBetSize === 50}
-                  onChange={() => setMaxBetSize(50)}
-                  label="50 Karma"
-                  value="50"
-                />
-                <CustomRadio
-                  checked={maxBetSize === 100}
-                  onChange={() => setMaxBetSize(100)}
-                  label="100 Karma"
-                  value="100"
-                />
-                <CustomRadio
-                  checked={maxBetSize === 200}
-                  onChange={() => setMaxBetSize(200)}
-                  label="200 Karma"
-                  value="200"
-                />
+          <div className="container">
+            <div className="section">
+              <h2 className="section-title">Maximum Bet Size</h2>
+              <div className="radio-group">
+                {[50, 100, 200].map(size => (
+                  <label 
+                    key={size}
+                    className={`radio-label ${maxBetSize === size ? 'radio-label-selected' : ''}`}
+                  >
+                    <input
+                      type="radio"
+                      checked={maxBetSize === size}
+                      onChange={() => setMaxBetSize(size)}
+                      className="radio-input"
+                    />
+                    {size} Karma
+                  </label>
+                ))}
               </div>
             </div>
             
-            <div style={styles.grid}>
-              <div style={styles.section}>
-                <h2 style={styles.sectionTitle}>Real App Odds</h2>
-                <div style={styles.inputGroup}>
-                  <label style={styles.label}>Over/Home Team Odds:</label>
-                  <div style={styles.inputWrapper}>
+            <div className="grid">
+              <div className="section">
+                <h2 className="section-title">Real App Odds</h2>
+                <div className="input-group">
+                  <label className="label">Over/Home Team Odds:</label>
+                  <div className="input-wrapper">
                     <input
                       type="text"
-                      inputMode="decimal"
+                      inputMode="text"
                       value={realAppOver}
                       onChange={(e) => setRealAppOver(e.target.value)}
                       onKeyDown={(e) => handleKeyDown(e, 0)}
                       placeholder="e.g. +150 or -120"
-                      style={styles.input}
+                      className="input"
                       ref={realAppOverRef}
                     />
-                    <div style={styles.symbolButtons}>
+                    <div className="button-group">
                       <button
                         type="button"
-                        onClick={() => setRealAppOver(prev => prev.startsWith('+') ? prev : '+' + prev.replace(/^[+-]/, ''))}
-                        style={styles.symbolButton}
+                        onClick={() => setRealAppOver(prev => addSign(prev, '+'))}
+                        className="button"
                       >
                         +
                       </button>
                       <button
                         type="button"
-                        onClick={() => setRealAppOver(prev => prev.startsWith('-') ? prev : '-' + prev.replace(/^[+-]/, ''))}
-                        style={styles.symbolButton}
+                        onClick={() => setRealAppOver(prev => addSign(prev, '-'))}
+                        className="button"
                       >
                         -
                       </button>
                     </div>
                   </div>
                 </div>
-                <div style={styles.inputGroup}>
-                  <label style={styles.label}>Under/Away Team Odds:</label>
-                  <div style={styles.inputWrapper}>
+                <div className="input-group">
+                  <label className="label">Under/Away Team Odds:</label>
+                  <div className="input-wrapper">
                     <input
                       type="text"
-                      inputMode="decimal"
+                      inputMode="text"
                       value={realAppUnder}
                       onChange={(e) => setRealAppUnder(e.target.value)}
                       onKeyDown={(e) => handleKeyDown(e, 1)}
                       placeholder="e.g. +150 or -120"
-                      style={styles.input}
+                      className="input"
                       ref={realAppUnderRef}
                     />
-                    <div style={styles.symbolButtons}>
+                    <div className="button-group">
                       <button
                         type="button"
-                        onClick={() => setRealAppUnder(prev => prev.startsWith('+') ? prev : '+' + prev.replace(/^[+-]/, ''))}
-                        style={styles.symbolButton}
+                        onClick={() => setRealAppUnder(prev => addSign(prev, '+'))}
+                        className="button"
                       >
                         +
                       </button>
                       <button
                         type="button"
-                        onClick={() => setRealAppUnder(prev => prev.startsWith('-') ? prev : '-' + prev.replace(/^[+-]/, ''))}
-                        style={styles.symbolButton}
+                        onClick={() => setRealAppUnder(prev => addSign(prev, '-'))}
+                        className="button"
                       >
                         -
                       </button>
@@ -508,51 +487,61 @@
                 </div>
               </div>
               
-              <div style={styles.section}>
-                <h2 style={styles.sectionTitle}>Sportsbook Odds</h2>
-                <div style={styles.inputGroup}>
-                  <label style={styles.label}>Odds Format:</label>
-                  <div style={styles.radioGroup}>
-                    <CustomRadio
-                      checked={oddsFormat === 'american'}
-                      onChange={() => setOddsFormat('american')}
-                      label="American (+/-)"
-                      value="american"
-                    />
-                    <CustomRadio
-                      checked={oddsFormat === 'decimal'}
-                      onChange={() => setOddsFormat('decimal')}
-                      label="Decimal"
-                      value="decimal"
-                    />
+              <div className="section">
+                <h2 className="section-title">Sportsbook Odds</h2>
+                <div className="input-group">
+                  <label className="label">Odds Format:</label>
+                  <div className="radio-group">
+                    <label 
+                      className={`radio-label ${oddsFormat === 'american' ? 'radio-label-selected' : ''}`}
+                    >
+                      <input
+                        type="radio"
+                        checked={oddsFormat === 'american'}
+                        onChange={() => setOddsFormat('american')}
+                        className="radio-input"
+                      />
+                      American (+/-)
+                    </label>
+                    <label 
+                      className={`radio-label ${oddsFormat === 'decimal' ? 'radio-label-selected' : ''}`}
+                    >
+                      <input
+                        type="radio"
+                        checked={oddsFormat === 'decimal'}
+                        onChange={() => setOddsFormat('decimal')}
+                        className="radio-input"
+                      />
+                      Decimal
+                    </label>
                   </div>
                 </div>
-                <div style={styles.inputGroup}>
-                  <label style={styles.label}>Over/Home Team Odds:</label>
-                  <div style={styles.inputWrapper}>
+                <div className="input-group">
+                  <label className="label">Over/Home Team Odds:</label>
+                  <div className="input-wrapper">
                     <input
                       type="text"
-                      inputMode="decimal"
+                      inputMode="text"
                       value={sbOver}
                       onChange={(e) => setSbOver(e.target.value)}
                       onKeyDown={(e) => handleKeyDown(e, 2)}
                       placeholder={oddsFormat === 'american' ? "e.g. +150 or -120" : "e.g. 2.50"}
-                      style={styles.input}
+                      className="input"
                       ref={sbOverRef}
                     />
                     {oddsFormat === 'american' && (
-                      <div style={styles.symbolButtons}>
+                      <div className="button-group">
                         <button
                           type="button"
-                          onClick={() => setSbOver(prev => prev.startsWith('+') ? prev : '+' + prev.replace(/^[+-]/, ''))}
-                          style={styles.symbolButton}
+                          onClick={() => setSbOver(prev => addSign(prev, '+'))}
+                          className="button"
                         >
                           +
                         </button>
                         <button
                           type="button"
-                          onClick={() => setSbOver(prev => prev.startsWith('-') ? prev : '-' + prev.replace(/^[+-]/, ''))}
-                          style={styles.symbolButton}
+                          onClick={() => setSbOver(prev => addSign(prev, '-'))}
+                          className="button"
                         >
                           -
                         </button>
@@ -560,32 +549,32 @@
                     )}
                   </div>
                 </div>
-                <div style={styles.inputGroup}>
-                  <label style={styles.label}>Under/Away Team Odds:</label>
-                  <div style={styles.inputWrapper}>
+                <div className="input-group">
+                  <label className="label">Under/Away Team Odds:</label>
+                  <div className="input-wrapper">
                     <input
                       type="text"
-                      inputMode="decimal"
+                      inputMode="text"
                       value={sbUnder}
                       onChange={(e) => setSbUnder(e.target.value)}
                       onKeyDown={(e) => handleKeyDown(e, 3)}
                       placeholder={oddsFormat === 'american' ? "e.g. +150 or -120" : "e.g. 2.50"}
-                      style={styles.input}
+                      className="input"
                       ref={sbUnderRef}
                     />
                     {oddsFormat === 'american' && (
-                      <div style={styles.symbolButtons}>
+                      <div className="button-group">
                         <button
                           type="button"
-                          onClick={() => setSbUnder(prev => prev.startsWith('+') ? prev : '+' + prev.replace(/^[+-]/, ''))}
-                          style={styles.symbolButton}
+                          onClick={() => setSbUnder(prev => addSign(prev, '+'))}
+                          className="button"
                         >
                           +
                         </button>
                         <button
                           type="button"
-                          onClick={() => setSbUnder(prev => prev.startsWith('-') ? prev : '-' + prev.replace(/^[+-]/, ''))}
-                          style={styles.symbolButton}
+                          onClick={() => setSbUnder(prev => addSign(prev, '-'))}
+                          className="button"
                         >
                           -
                         </button>
@@ -597,40 +586,40 @@
             </div>
             
             {evMaxOver !== null && evMaxUnder !== null && evZeroOver !== null && evZeroUnder !== null && (
-              <div style={styles.section}>
-                <h2 style={styles.sectionTitle}>Expected Value Results</h2>
+              <div className="section">
+                <h2 className="section-title">Expected Value Results</h2>
                 
-                <div style={styles.grid}>
-                  <div style={styles.resultCard}>
-                    <h3 style={styles.resultTitle}>Over/Home Team</h3>
-                    <div style={styles.resultGrid}>
+                <div className="grid">
+                  <div className="result-card">
+                    <h3 className="result-title">Over/Home Team</h3>
+                    <div className="result-grid">
                       <div>
                         <div style={{fontWeight: 'bold'}}>Max Bet EV:</div>
-                        <div style={evMaxOver >= 0 ? styles.evPositive : styles.evNegative}>
+                        <div className={evMaxOver >= 0 ? 'ev-positive' : 'ev-negative'}>
                           {evMaxOver.toFixed(2)} karma
                         </div>
                       </div>
                       <div>
                         <div style={{fontWeight: 'bold'}}>Zero Bet EV:</div>
-                        <div style={evZeroOver >= 0 ? styles.evPositive : styles.evNegative}>
+                        <div className={evZeroOver >= 0 ? 'ev-positive' : 'ev-negative'}>
                           {evZeroOver.toFixed(2)} karma
                         </div>
                       </div>
                     </div>
                   </div>
                   
-                  <div style={styles.resultCard}>
-                    <h3 style={styles.resultTitle}>Under/Away Team</h3>
-                    <div style={styles.resultGrid}>
+                  <div className="result-card">
+                    <h3 className="result-title">Under/Away Team</h3>
+                    <div className="result-grid">
                       <div>
                         <div style={{fontWeight: 'bold'}}>Max Bet EV:</div>
-                        <div style={evMaxUnder >= 0 ? styles.evPositive : styles.evNegative}>
+                        <div className={evMaxUnder >= 0 ? 'ev-positive' : 'ev-negative'}>
                           {evMaxUnder.toFixed(2)} karma
                         </div>
                       </div>
                       <div>
                         <div style={{fontWeight: 'bold'}}>Zero Bet EV:</div>
-                        <div style={evZeroUnder >= 0 ? styles.evPositive : styles.evNegative}>
+                        <div className={evZeroUnder >= 0 ? 'ev-positive' : 'ev-negative'}>
                           {evZeroUnder.toFixed(2)} karma
                         </div>
                       </div>
@@ -638,7 +627,7 @@
                   </div>
                 </div>
                 
-                <div style={styles.recommendation}>
+                <div className="recommendation">
                   <div style={{fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.5rem'}}>Recommended Bet:</div>
                   {(() => {
                     // Find the highest EV among all options
@@ -659,7 +648,7 @@
                     return (
                       <div style={{fontSize: '1.1rem'}}>
                         {bestOption.type.includes("Max") ? "Max" : "Zero"} bet on {bestOption.side} ({bestOption.amount} karma)
-                        <div style={{color: '#008800', fontWeight: 'bold', marginTop: '0.5rem'}}>
+                        <div className="ev-positive" style={{marginTop: '0.5rem'}}>
                           Expected Value: {bestOption.value.toFixed(2)} karma
                         </div>
                       </div>
