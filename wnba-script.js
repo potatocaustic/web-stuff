@@ -12,7 +12,8 @@ const TEAM_NAMES = {
   "Atl": "Atlanta Dream",
   "Conn": "Connecticut Sun",
   "Wsh": "Washington Mystics",
-  "GSV": "Golden State Valkyries"
+  "GSV": "Golden State Valkyries",
+  "FA": "Free Agent"
 };
 
 // Fetch the team and player data from the JSON file
@@ -20,6 +21,9 @@ fetch('wnba-data.json')
   .then(response => response.json())
   .then(teamsData => {
     console.log("Teams data loaded:", teamsData);
+    
+    // Remove free agent team if it exists
+    teamsData = teamsData.filter(team => team.name !== "FA");
     
     // Populate the team selection dynamically
     const teamSelectionContainer = document.querySelector('.team-selection');
@@ -161,6 +165,128 @@ fetch('wnba-data.json')
       recommendedPlayers.forEach((player, index) => {
         const listItem = document.createElement("li");
         const teamFullName = TEAM_NAMES[player.Team] || player.Team;
+        listItem.textContent = `${index + 1}. ${player.Name} (${teamFullName})`; 
+        recommendationsList.appendChild(listItem);
+      });
+
+      // Calculate the total cost: (800 * number of teams) + (200 * number of players)
+      const totalTeamCost = 800 * selectedTeams.length;
+      const totalPlayerCost = recommendedPlayers.length * playerCost;
+      const finalTotalCost = totalTeamCost + totalPlayerCost;
+
+      // Display the total cost at the end of the list
+      const totalCostItem = document.createElement("li");
+      totalCostItem.textContent = `Total Cost: ${finalTotalCost} Rax`;  // Show total cost
+      recommendationsList.appendChild(totalCostItem);
+
+      // Check if CSV button already exists, if so, do not create a new one
+      let csvButton = document.getElementById("csvButton");
+      if (!csvButton) {
+        // Create a CSV button if it does not already exist
+        csvButton = document.createElement('button');
+        csvButton.id = "csvButton";
+        csvButton.textContent = 'Download CSV';
+        csvButton.addEventListener('click', function() {
+          downloadCSV(recommendedPlayers);
+        });
+        
+        // Insert the CSV button next to the Build My List button
+        buttonContainer.appendChild(csvButton);
+      }
+    });
+  })
+  .catch(error => {
+    console.error("Error fetching teams data:", error);
+    // Display error on page
+    const teamSelectionContainer = document.querySelector('.team-selection');
+    teamSelectionContainer.innerHTML = '<p style="color: red;">Error loading team data. Please check console for details.</p>';
+  });
+
+// Function to download the recommended player list as a CSV file
+function downloadCSV(players) {
+  // Create CSV data (header + rows of player names with team)
+  const header = ["Player Name", "Team"];
+  const rows = players.map(player => [player.Name, TEAM_NAMES[player.Team] || player.Team]);
+
+  // Create CSV content by joining rows with commas and separating each row with a new line
+  let csvContent = header.join(",") + "\n";
+  rows.forEach(row => {
+    csvContent += row.join(",") + "\n";
+  });
+
+  // Create a Blob object containing the CSV content
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+  // Create a download link and trigger the download
+  const link = document.createElement("a");
+  if (link.download !== undefined) {  // Ensure download attribute is supported
+    const fileName = "recommended_wnba_players.csv";
+    link.setAttribute("href", URL.createObjectURL(blob));
+    link.setAttribute("download", fileName);
+    link.click();  // Trigger the download
+  }
+} TEAM_NAMES[player.Team] || player.Team;
+        listItem.textContent = `${index + 1}. ${player.Name} (${teamFullName})`; 
+        recommendationsList.appendChild(listItem);
+      });
+
+      // Calculate the total cost: (800 * number of teams) + (200 * number of players)
+      const totalTeamCost = 800 * selectedTeams.length;
+      const totalPlayerCost = recommendedPlayers.length * playerCost;
+      const finalTotalCost = totalTeamCost + totalPlayerCost;
+
+      // Display the total cost at the end of the list
+      const totalCostItem = document.createElement("li");
+      totalCostItem.textContent = `Total Cost: ${finalTotalCost} Rax`;  // Show total cost
+      recommendationsList.appendChild(totalCostItem);
+
+      // Check if CSV button already exists, if so, do not create a new one
+      let csvButton = document.getElementById("csvButton");
+      if (!csvButton) {
+        // Create a CSV button if it does not already exist
+        csvButton = document.createElement('button');
+        csvButton.id = "csvButton";
+        csvButton.textContent = 'Download CSV';
+        csvButton.addEventListener('click', function() {
+          downloadCSV(recommendedPlayers);
+        });
+        
+        // Insert the CSV button next to the Build My List button
+        buttonContainer.appendChild(csvButton);
+      }
+    });
+  })
+  .catch(error => {
+    console.error("Error fetching teams data:", error);
+    // Display error on page
+    const teamSelectionContainer = document.querySelector('.team-selection');
+    teamSelectionContainer.innerHTML = '<p style="color: red;">Error loading team data. Please check console for details.</p>';
+  });
+
+// Function to download the recommended player list as a CSV file
+function downloadCSV(players) {
+  // Create CSV data (header + rows of player names with team)
+  const header = ["Player Name", "Team"];
+  const rows = players.map(player => [player.Name, TEAM_NAMES[player.Team] || player.Team]);
+
+  // Create CSV content by joining rows with commas and separating each row with a new line
+  let csvContent = header.join(",") + "\n";
+  rows.forEach(row => {
+    csvContent += row.join(",") + "\n";
+  });
+
+  // Create a Blob object containing the CSV content
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+
+  // Create a download link and trigger the download
+  const link = document.createElement("a");
+  if (link.download !== undefined) {  // Ensure download attribute is supported
+    const fileName = "recommended_wnba_players.csv";
+    link.setAttribute("href", URL.createObjectURL(blob));
+    link.setAttribute("download", fileName);
+    link.click();  // Trigger the download
+  }
+} TEAM_NAMES[player.Team] || player.Team;
         listItem.textContent = `${index + 1}. ${player.Name} (${teamFullName})`; 
         recommendationsList.appendChild(listItem);
       });
