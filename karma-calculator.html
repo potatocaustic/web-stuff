@@ -251,16 +251,26 @@
           setEvZeroUnder(evZeroUnderCalc);
         }, [realAppOver, realAppUnder, sbOver, sbUnder, oddsFormat, maxBetSize]);
         
-        // Custom styles with responsive design
-        const styles = {
-          container: {
-            width: '100%',
-            margin: '0 auto',
-            backgroundColor: '#fff',
-            borderRadius: '8px',
-            padding: '1rem',
-            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)'
-          },
+        // Custom Radio Button component for better mobile experience
+        const CustomRadio = ({ checked, onChange, label, value }) => {
+          return (
+            <label 
+              style={{
+                ...styles.radioLabel,
+                ...(checked ? styles.radioLabelSelected : {})
+              }}
+            >
+              <input
+                type="radio"
+                checked={checked}
+                onChange={onChange}
+                value={value}
+                style={{ marginRight: '0.5rem' }}
+              />
+              {label}
+            </label>
+          );
+        };
           section: {
             marginBottom: '1rem',
             padding: '0.75rem',
@@ -290,6 +300,30 @@
             borderRadius: '4px',
             fontSize: '1rem',
             appearance: 'none'
+          },
+          inputWrapper: {
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center'
+          },
+          symbolButtons: {
+            display: 'flex',
+            marginLeft: '0.5rem'
+          },
+          symbolButton: {
+            width: '36px',
+            height: '36px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#e3f2fd',
+            color: '#0d47a1',
+            border: '1px solid #bbdefb',
+            borderRadius: '4px',
+            fontSize: '1.25rem',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            marginRight: '0.25rem'
           },
           radioGroup: {
             display: 'flex',
@@ -370,26 +404,16 @@
           }
         };
         
-        // Custom Radio Button component for better mobile experience
-        const CustomRadio = ({ checked, onChange, label, value }) => {
-          return (
-            <label 
-              style={{
-                ...styles.radioLabel,
-                ...(checked ? styles.radioLabelSelected : {})
-              }}
-            >
-              <input
-                type="radio"
-                checked={checked}
-                onChange={onChange}
-                value={value}
-                style={{ marginRight: '0.5rem' }}
-              />
-              {label}
-            </label>
-          );
-        };
+        // Custom styles with responsive design
+        const styles = {
+          container: {
+            width: '100%',
+            margin: '0 auto',
+            backgroundColor: '#fff',
+            borderRadius: '8px',
+            padding: '1rem',
+            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)'
+          },
         
         return (
           <div style={styles.container}>
@@ -422,29 +446,65 @@
                 <h2 style={styles.sectionTitle}>Real App Odds</h2>
                 <div style={styles.inputGroup}>
                   <label style={styles.label}>Over/Home Team Odds:</label>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={realAppOver}
-                    onChange={(e) => setRealAppOver(e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(e, 0)}
-                    placeholder="e.g. +150 or -120"
-                    style={styles.input}
-                    ref={realAppOverRef}
-                  />
+                  <div style={styles.inputWrapper}>
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      value={realAppOver}
+                      onChange={(e) => setRealAppOver(e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(e, 0)}
+                      placeholder="e.g. +150 or -120"
+                      style={styles.input}
+                      ref={realAppOverRef}
+                    />
+                    <div style={styles.symbolButtons}>
+                      <button
+                        type="button"
+                        onClick={() => setRealAppOver(prev => prev.startsWith('+') ? prev : '+' + prev.replace(/^[+-]/, ''))}
+                        style={styles.symbolButton}
+                      >
+                        +
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setRealAppOver(prev => prev.startsWith('-') ? prev : '-' + prev.replace(/^[+-]/, ''))}
+                        style={styles.symbolButton}
+                      >
+                        -
+                      </button>
+                    </div>
+                  </div>
                 </div>
                 <div style={styles.inputGroup}>
                   <label style={styles.label}>Under/Away Team Odds:</label>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={realAppUnder}
-                    onChange={(e) => setRealAppUnder(e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(e, 1)}
-                    placeholder="e.g. +150 or -120"
-                    style={styles.input}
-                    ref={realAppUnderRef}
-                  />
+                  <div style={styles.inputWrapper}>
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      value={realAppUnder}
+                      onChange={(e) => setRealAppUnder(e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(e, 1)}
+                      placeholder="e.g. +150 or -120"
+                      style={styles.input}
+                      ref={realAppUnderRef}
+                    />
+                    <div style={styles.symbolButtons}>
+                      <button
+                        type="button"
+                        onClick={() => setRealAppUnder(prev => prev.startsWith('+') ? prev : '+' + prev.replace(/^[+-]/, ''))}
+                        style={styles.symbolButton}
+                      >
+                        +
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setRealAppUnder(prev => prev.startsWith('-') ? prev : '-' + prev.replace(/^[+-]/, ''))}
+                        style={styles.symbolButton}
+                      >
+                        -
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
               
@@ -469,29 +529,69 @@
                 </div>
                 <div style={styles.inputGroup}>
                   <label style={styles.label}>Over/Home Team Odds:</label>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={sbOver}
-                    onChange={(e) => setSbOver(e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(e, 2)}
-                    placeholder={oddsFormat === 'american' ? "e.g. +150 or -120" : "e.g. 2.50"}
-                    style={styles.input}
-                    ref={sbOverRef}
-                  />
+                  <div style={styles.inputWrapper}>
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      value={sbOver}
+                      onChange={(e) => setSbOver(e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(e, 2)}
+                      placeholder={oddsFormat === 'american' ? "e.g. +150 or -120" : "e.g. 2.50"}
+                      style={styles.input}
+                      ref={sbOverRef}
+                    />
+                    {oddsFormat === 'american' && (
+                      <div style={styles.symbolButtons}>
+                        <button
+                          type="button"
+                          onClick={() => setSbOver(prev => prev.startsWith('+') ? prev : '+' + prev.replace(/^[+-]/, ''))}
+                          style={styles.symbolButton}
+                        >
+                          +
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSbOver(prev => prev.startsWith('-') ? prev : '-' + prev.replace(/^[+-]/, ''))}
+                          style={styles.symbolButton}
+                        >
+                          -
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div style={styles.inputGroup}>
                   <label style={styles.label}>Under/Away Team Odds:</label>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={sbUnder}
-                    onChange={(e) => setSbUnder(e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(e, 3)}
-                    placeholder={oddsFormat === 'american' ? "e.g. +150 or -120" : "e.g. 2.50"}
-                    style={styles.input}
-                    ref={sbUnderRef}
-                  />
+                  <div style={styles.inputWrapper}>
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      value={sbUnder}
+                      onChange={(e) => setSbUnder(e.target.value)}
+                      onKeyDown={(e) => handleKeyDown(e, 3)}
+                      placeholder={oddsFormat === 'american' ? "e.g. +150 or -120" : "e.g. 2.50"}
+                      style={styles.input}
+                      ref={sbUnderRef}
+                    />
+                    {oddsFormat === 'american' && (
+                      <div style={styles.symbolButtons}>
+                        <button
+                          type="button"
+                          onClick={() => setSbUnder(prev => prev.startsWith('+') ? prev : '+' + prev.replace(/^[+-]/, ''))}
+                          style={styles.symbolButton}
+                        >
+                          +
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSbUnder(prev => prev.startsWith('-') ? prev : '-' + prev.replace(/^[+-]/, ''))}
+                          style={styles.symbolButton}
+                        >
+                          -
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
