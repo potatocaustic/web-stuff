@@ -1,5 +1,260 @@
 [
   {
+    "name": "Atl",
+    "players": [
+      {
+        "Name": "Rhyne Howard",
+        "Rank": 19
+      },
+      {
+        "Name": "Allisha Gray",
+        "Rank": 22
+      },
+      {
+        "Name": "Brionna Jones",
+        "Rank": 26
+      },
+      {
+        "Name": "Jordin Canada",
+        "Rank": 32
+      },
+      {
+        "Name": "Brittney Griner",
+        "Rank": 33
+      },
+      {
+        "Name": "Shatori Walker-Kimbrough",
+        "Rank": 74
+      },
+      {
+        "Name": "Naz Hillmon",
+        "Rank": 85
+      },
+      {
+        "Name": "Nia Coffey",
+        "Rank": 89
+      },
+      {
+        "Name": "Haley Jones",
+        "Rank": 98
+      }
+    ]
+  },
+  {
+    "name": "Chi",
+    "players": [
+      {
+        "Name": "Angel Reese",
+        "Rank": 11
+      },
+      {
+        "Name": "Ariel Atkins",
+        "Rank": 35
+      },
+      {
+        "Name": "Kamilla Cardoso",
+        "Rank": 43
+      },
+      {
+        "Name": "Elizabeth Williams",
+        "Rank": 48
+      },
+      {
+        "Name": "Courtney Vandersloot",
+        "Rank": 55
+      },
+      {
+        "Name": "Rebecca Allen",
+        "Rank": 72
+      },
+      {
+        "Name": "Kia Nurse",
+        "Rank": 73
+      },
+      {
+        "Name": "Michaela Onyenwere",
+        "Rank": 82
+      }
+    ]
+  },
+  {
+    "name": "Conn",
+    "players": [
+      {
+        "Name": "Marina Mabrey",
+        "Rank": 25
+      },
+      {
+        "Name": "Tina Charles",
+        "Rank": 38
+      },
+      {
+        "Name": "Aneesah Morrow",
+        "Rank": 45
+      },
+      {
+        "Name": "Jacy Sheldon",
+        "Rank": 75
+      },
+      {
+        "Name": "Lindsay Allen",
+        "Rank": 77
+      },
+      {
+        "Name": "Diamond DeShields",
+        "Rank": 80
+      },
+      {
+        "Name": "Olivia Nelson-Ododa",
+        "Rank": 87
+      },
+      {
+        "Name": "Saniya Rivers",
+        "Rank": 95
+      }
+    ]
+  },
+  {
+    "name": "Dal",
+    "players": [
+      {
+        "Name": "Arike Ogunbowale",
+        "Rank": 5
+      },
+      {
+        "Name": "Paige Bueckers",
+        "Rank": 20
+      },
+      {
+        "Name": "Teaira McCowan",
+        "Rank": 37
+      },
+      {
+        "Name": "NaLyssa Smith",
+        "Rank": 39
+      },
+      {
+        "Name": "DiJonai Carrington",
+        "Rank": 40
+      },
+      {
+        "Name": "Tyasha Harris",
+        "Rank": 60
+      },
+      {
+        "Name": "Myisha Hines-Allen",
+        "Rank": 64
+      },
+      {
+        "Name": "Maddy Siegrist",
+        "Rank": 70
+      }
+    ]
+  },
+  {
+    "name": "GSV",
+    "players": [
+      {
+        "Name": "Julie Vanloo",
+        "Rank": 50
+      },
+      {
+        "Name": "Tiffany Hayes",
+        "Rank": 59
+      },
+      {
+        "Name": "Monique Billings",
+        "Rank": 61
+      },
+      {
+        "Name": "Kayla Thornton",
+        "Rank": 66
+      },
+      {
+        "Name": "Temi Fagbenle",
+        "Rank": 91
+      },
+      {
+        "Name": "Stephanie Talbot",
+        "Rank": 94
+      },
+      {
+        "Name": "Juste Jocyte",
+        "Rank": 97
+      }
+    ]
+  },
+  {
+    "name": "Ind",
+    "players": [
+      {
+        "Name": "Caitlin Clark",
+        "Rank": 2
+      },
+      {
+        "Name": "Aliyah Boston",
+        "Rank": 10
+      },
+      {
+        "Name": "DeWanna Bonner",
+        "Rank": 18
+      },
+      {
+        "Name": "Kelsey Mitchell",
+        "Rank": 24
+      },
+      {
+        "Name": "Natasha Howard",
+        "Rank": 27
+      },
+      {
+        "Name": "Sophie Cunningham",
+        "Rank": 53
+      },
+      {
+        "Name": "Brianna Turner",
+        "Rank": 84
+      }
+    ]
+  },
+  {
+    "name": "LA",
+    "players": [
+      {
+        "Name": "Dearica Hamby",
+        "Rank": 8
+      },
+      {
+        "Name": "Kelsey Plum",
+        "Rank": 14
+      },
+      {
+        "Name": "Rickea Jackson",
+        "Rank": 36
+      },
+      {
+        "Name": "Azura Stevens",
+        "Rank": 46
+      },
+      {
+        "Name": "Cameron Brink",
+        "Rank": 49
+      },
+      {
+        "Name": "Odyssey Sims",
+        "Rank": 76
+      },
+      {
+        "Name": "Aari McDonald",
+        "Rank": 78
+      },
+      {
+        "Name": "Mercedes Russell",
+        "Rank": 100
+      }
+    ]
+  },
+  {
     "name": "LV",
     "players": [
       {
@@ -33,35 +288,35 @@
     ]
   },
   {
-    "name": "Ind",
+    "name": "Min",
     "players": [
       {
-        "Name": "Caitlin Clark",
-        "Rank": 2
+        "Name": "Napheesa Collier",
+        "Rank": 4
       },
       {
-        "Name": "Aliyah Boston",
-        "Rank": 10
-      },
-      {
-        "Name": "DeWanna Bonner",
-        "Rank": 18
-      },
-      {
-        "Name": "NaLyssa Smith",
+        "Name": "Courtney Williams",
         "Rank": 28
       },
       {
-        "Name": "Kelsey Mitchell",
-        "Rank": 33
+        "Name": "Alanna Smith",
+        "Rank": 30
       },
       {
-        "Name": "Victoria Vivians",
-        "Rank": 52
+        "Name": "Kayla McBride",
+        "Rank": 31
       },
       {
-        "Name": "Katie Lou Samuelson",
+        "Name": "Bridget Carleton",
+        "Rank": 63
+      },
+      {
+        "Name": "Dorka Juhasz",
         "Rank": 79
+      },
+      {
+        "Name": "Natisha Hiedeman",
+        "Rank": 81
       }
     ]
   },
@@ -81,74 +336,20 @@
         "Rank": 9
       },
       {
-        "Name": "Betnijah Laney",
-        "Rank": 25
+        "Name": "Natasha Cloud",
+        "Rank": 29
       },
       {
-        "Name": "Kayla Thornton",
-        "Rank": 47
+        "Name": "Leonie Fiebich",
+        "Rank": 44
       },
       {
-        "Name": "Courtney Vandersloot",
-        "Rank": 63
-      }
-    ]
-  },
-  {
-    "name": "Min",
-    "players": [
-      {
-        "Name": "Napheesa Collier",
-        "Rank": 4
+        "Name": "Isabelle Harrison",
+        "Rank": 65
       },
       {
-        "Name": "Kayla McBride",
-        "Rank": 26
-      },
-      {
-        "Name": "Bridget Carleton",
-        "Rank": 40
-      },
-      {
-        "Name": "Courtney Williams",
-        "Rank": 45
-      },
-      {
-        "Name": "Diamond Miller",
-        "Rank": 55
-      },
-      {
-        "Name": "Natisha Hiedeman",
-        "Rank": 67
-      }
-    ]
-  },
-  {
-    "name": "Dal",
-    "players": [
-      {
-        "Name": "Arike Ogunbowale",
-        "Rank": 5
-      },
-      {
-        "Name": "Satou Sabally",
-        "Rank": 15
-      },
-      {
-        "Name": "Natasha Howard",
-        "Rank": 24
-      },
-      {
-        "Name": "Teaira McCowan",
-        "Rank": 37
-      },
-      {
-        "Name": "Maddy Siegrist",
-        "Rank": 61
-      },
-      {
-        "Name": "Stephanie Soares",
-        "Rank": 82
+        "Name": "Marine Johannes",
+        "Rank": 99
       }
     ]
   },
@@ -160,82 +361,28 @@
         "Rank": 7
       },
       {
-        "Name": "Diana Taurasi",
-        "Rank": 30
-      },
-      {
-        "Name": "Brittney Griner",
-        "Rank": 35
-      },
-      {
         "Name": "Kahleah Copper",
-        "Rank": 38
+        "Rank": 15
       },
       {
-        "Name": "Rebecca Allen",
-        "Rank": 74
+        "Name": "Satou Sabally",
+        "Rank": 21
       },
       {
-        "Name": "Sophie Cunningham",
-        "Rank": 85
-      }
-    ]
-  },
-  {
-    "name": "LA",
-    "players": [
-      {
-        "Name": "Dearica Hamby",
-        "Rank": 8
+        "Name": "Natasha Mack",
+        "Rank": 57
       },
       {
-        "Name": "Cameron Brink",
-        "Rank": 14
+        "Name": "Sami Whitcomb",
+        "Rank": 69
       },
       {
-        "Name": "Lexie Brown",
-        "Rank": 39
+        "Name": "Sevgi Uzun",
+        "Rank": 83
       },
       {
-        "Name": "Rickea Jackson",
-        "Rank": 51
-      },
-      {
-        "Name": "Stephanie Talbot",
-        "Rank": 66
-      },
-      {
-        "Name": "Layshia Clarendon",
-        "Rank": 91
-      }
-    ]
-  },
-  {
-    "name": "Chi",
-    "players": [
-      {
-        "Name": "Angel Reese",
-        "Rank": 11
-      },
-      {
-        "Name": "Chennedy Carter",
-        "Rank": 23
-      },
-      {
-        "Name": "Elizabeth Williams",
-        "Rank": 36
-      },
-      {
-        "Name": "Marina Mabrey",
-        "Rank": 50
-      },
-      {
-        "Name": "Isabelle Harrison",
-        "Rank": 68
-      },
-      {
-        "Name": "Kamilla Cardoso",
-        "Rank": 77
+        "Name": "Kalani Brown",
+        "Rank": 88
       }
     ]
   },
@@ -247,82 +394,36 @@
         "Rank": 12
       },
       {
-        "Name": "Skylar Diggins-Smith",
-        "Rank": 19
-      },
-      {
-        "Name": "Ezi Magbegor",
-        "Rank": 29
-      },
-      {
-        "Name": "Sami Whitcomb",
-        "Rank": 58
-      },
-      {
-        "Name": "Jordin Canada",
-        "Rank": 70
-      },
-      {
-        "Name": "Mercedes Russell",
-        "Rank": 89
-      }
-    ]
-  },
-  {
-    "name": "Atl",
-    "players": [
-      {
-        "Name": "Rhyne Howard",
+        "Name": "Skylar Diggins",
         "Rank": 16
       },
       {
-        "Name": "Allisha Gray",
-        "Rank": 27
+        "Name": "Ezi Magbegor",
+        "Rank": 23
       },
       {
-        "Name": "Tina Charles",
-        "Rank": 32
+        "Name": "Gabby Williams",
+        "Rank": 51
       },
       {
-        "Name": "Cheyenne Parker",
+        "Name": "Dominique Malonga",
         "Rank": 54
       },
       {
-        "Name": "Jordin Alexis",
-        "Rank": 69
+        "Name": "Erica Wheeler",
+        "Rank": 67
       },
       {
-        "Name": "Aerial Powers",
-        "Rank": 90
-      }
-    ]
-  },
-  {
-    "name": "Conn",
-    "players": [
-      {
-        "Name": "DiJonai Carrington",
-        "Rank": 20
+        "Name": "Alysha Clark",
+        "Rank": 68
       },
       {
-        "Name": "Marina Mabrey",
-        "Rank": 31
+        "Name": "Lexie Brown",
+        "Rank": 92
       },
       {
-        "Name": "Brionna Jones",
-        "Rank": 41
-      },
-      {
-        "Name": "Olivia Nelson-Ododa",
-        "Rank": 60
-      },
-      {
-        "Name": "Veronica Burton",
-        "Rank": 76
-      },
-      {
-        "Name": "Ty Harris",
-        "Rank": 88
+        "Name": "Katie Lou Samuelson",
+        "Rank": 96
       }
     ]
   },
@@ -330,57 +431,32 @@
     "name": "Wsh",
     "players": [
       {
-        "Name": "Ariel Atkins",
-        "Rank": 21
-      },
-      {
-        "Name": "Myisha Hines-Allen",
+        "Name": "Brittney Sykes",
         "Rank": 34
       },
       {
+        "Name": "Sonia Citron",
+        "Rank": 41
+      },
+      {
+        "Name": "Aaliyah Edwards",
+        "Rank": 47
+      },
+      {
+        "Name": "Stefanie Dolson",
+        "Rank": 52
+      },
+      {
+        "Name": "Shakira Austin",
+        "Rank": 56
+      },
+      {
+        "Name": "Kiki Iriafen",
+        "Rank": 58
+      },
+      {
         "Name": "Emily Engstler",
-        "Rank": 53
-      },
-      {
-        "Name": "Julie Vanloo",
-        "Rank": 65
-      },
-      {
-        "Name": "Karlie Samuelson",
-        "Rank": 80
-      },
-      {
-        "Name": "Shatori Walker-Kimbrough",
-        "Rank": 92
-      }
-    ]
-  },
-  {
-    "name": "GSV",
-    "players": [
-      {
-        "Name": "Haley Jones",
-        "Rank": 22
-      },
-      {
-        "Name": "Azurá Stevens",
-        "Rank": 44
-      },
-      {
-        "Name": "Carolyn Swords",
-        "Rank": 57
-      },
-      {
-        "Name": "Rae Burrell",
-        "Rank": 73
-      },
-      {
-        "Name": "Jade Melbourne",
-        "Rank": 83
-      },
-      {
-        "Name": "Epiphanny Prince",
-        "Rank": 95
+        "Rank": 90
       }
     ]
   }
