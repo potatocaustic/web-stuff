@@ -61,9 +61,9 @@ fetch('wnba-data.json')
 
       const selectedTeams = [];
       let totalCost = 0;
-      let totalPlayers = 0;
       let playerCost = 200;
-      let maxPlayers = 70;
+      let maxPlayers = 50; // Changed maximum players from 70 to 50
+      const playersPerTeam = 3; // Changed from 5 to 3 players per team
 
       // Check which teams are selected
       teamsData.forEach((team, index) => {
@@ -71,7 +71,6 @@ fetch('wnba-data.json')
         if (checkbox && checkbox.checked) {
           selectedTeams.push(team);
           totalCost += 800; // Each team costs 800
-          totalPlayers += (budget >= 10000) ? 5 : 1; // For each selected team, you must buy 5 players (or 1/2 depending on budget)
         }
       });
 
@@ -83,58 +82,90 @@ fetch('wnba-data.json')
 
       // Use a Set to keep track of already added players (prevents duplicates)
       const addedPlayers = new Set();
-      const recommendedPlayers = [];
+      let recommendedPlayers = [];
 
-      // Add players from selected teams (ensure no duplicates)
-      selectedTeams.forEach(team => {
-        const topPlayers = team.players.sort((a, b) => a.Rank - b.Rank).slice(0, budget >= 10000 ? 5 : 2);
-        topPlayers.forEach(player => {
-          // Check if player is already in the set
-          if (!addedPlayers.has(player.Name)) {
-            recommendedPlayers.push(player);
-            addedPlayers.add(player.Name);
+      // New approach for adding players by tier (first player from each team, then second, etc.)
+      // This ensures even distribution if budget constraints prevent adding all 3 players per team
+      for (let tier = 0; tier < playersPerTeam; tier++) {
+        selectedTeams.forEach(team => {
+          // Sort players in the team by rank
+          const sortedPlayers = [...team.players].sort((a, b) => a.Rank - b.Rank);
+          
+          // If there's a player at this tier
+          if (tier < sortedPlayers.length) {
+            const player = sortedPlayers[tier];
+            
+            // Check if the player is already in the set (shouldn't happen with this approach, but a safety check)
+            if (!addedPlayers.has(player.Name)) {
+              // Add team name to the player object
+              recommendedPlayers.push({
+                ...player,
+                Team: team.name
+              });
+              addedPlayers.add(player.Name);
+              
+              // Increment total cost
+              totalCost += playerCost;
+              
+              // Check if we've exceeded budget
+              if (totalCost > budget) {
+                // If adding this player exceeds budget, remove them and stop adding more
+                recommendedPlayers.pop();
+                addedPlayers.delete(player.Name);
+                totalCost -= playerCost;
+                return; // Break out of the current forEach iteration
+              }
+            }
           }
         });
-      });
-
-      // Subtract the cost of players from the remaining budget
-      totalCost += recommendedPlayers.length * playerCost;
-      let remainingBudget = budget - totalCost;
-
-      if (remainingBudget < 0) {
-        alert("Your player selection exceeds your budget.");
-        return;
       }
 
-      // Add remaining players (ensure no duplicates)
-      const remainingPlayers = teamsData.flatMap(team => team.players);
+      // If there's budget left, add more players
+      let remainingBudget = budget - totalCost;
+
+      // Collect all remaining players from the teams (that haven't been added yet)
+      const remainingPlayers = teamsData.flatMap(team => 
+        team.players
+          .filter(player => !addedPlayers.has(player.Name))
+          .map(player => ({
+            ...player,
+            Team: team.name
+          }))
+      );
+      
+      // Sort the remaining players by rank
       const sortedRemainingPlayers = remainingPlayers.sort((a, b) => a.Rank - b.Rank);
 
+      // Calculate how many more players we can add with the remaining budget
       const remainingPlayerCount = Math.floor(remainingBudget / playerCost);
 
-      for (let i = 0; i < sortedRemainingPlayers.length; i++) {
-        if (recommendedPlayers.length < maxPlayers && i < remainingPlayerCount) {
-          const player = sortedRemainingPlayers[i];
-          if (!addedPlayers.has(player.Name)) {
-            recommendedPlayers.push(player);
-            addedPlayers.add(player.Name);
-          }
+      // Add remaining players until we hit the budget or the max player count
+      for (let i = 0; i < sortedRemainingPlayers.length && i < remainingPlayerCount; i++) {
+        const player = sortedRemainingPlayers[i];
+        if (recommendedPlayers.length < maxPlayers && !addedPlayers.has(player.Name)) {
+          recommendedPlayers.push(player);
+          addedPlayers.add(player.Name);
+          totalCost += playerCost;
+        }
+        
+        // Stop if we've reached the maximum player count
+        if (recommendedPlayers.length >= maxPlayers) {
+          break;
         }
       }
 
-      // Ensure no more than 70 players are selected
-      if (recommendedPlayers.length > maxPlayers) {
-        recommendedPlayers.length = maxPlayers;
-      }
+      // Sort all recommended players by rank
+      recommendedPlayers.sort((a, b) => a.Rank - b.Rank);
 
-      // Display recommended buys with numbering
+      // Display recommended buys with numbering and team name
       recommendedPlayers.forEach((player, index) => {
         const listItem = document.createElement("li");
-        listItem.textContent = `${index + 1}. ${player.Name}`; 
+        const teamFullName = TEAM_NAMES[player.Team] || player.Team;
+        listItem.textContent = `${index + 1}. ${player.Name} (${teamFullName})`; 
         recommendationsList.appendChild(listItem);
       });
 
-      // Calculate the total cost again: (800 * number of teams) + (200 * number of players)
+      // Calculate the total cost: (800 * number of teams) + (200 * number of players)
       const totalTeamCost = 800 * selectedTeams.length;
       const totalPlayerCost = recommendedPlayers.length * playerCost;
       const finalTotalCost = totalTeamCost + totalPlayerCost;
@@ -169,9 +200,9 @@ fetch('wnba-data.json')
 
 // Function to download the recommended player list as a CSV file
 function downloadCSV(players) {
-  // Create CSV data (header + rows of player names)
-  const header = ["Player Name"];
-  const rows = players.map(player => [player.Name]);
+  // Create CSV data (header + rows of player names with team)
+  const header = ["Player Name", "Team"];
+  const rows = players.map(player => [player.Name, TEAM_NAMES[player.Team] || player.Team]);
 
   // Create CSV content by joining rows with commas and separating each row with a new line
   let csvContent = header.join(",") + "\n";
