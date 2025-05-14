@@ -19,7 +19,8 @@ const CONFIG = {
     TB: 'https://docs.google.com/spreadsheets/d/1fOlILjsP0Nk_w92dn7WxA10-gM0zc8NjBw7Pu_YN-Hk/export?format=csv&gid=0',
     RBI: 'https://docs.google.com/spreadsheets/d/1fOlILjsP0Nk_w92dn7WxA10-gM0zc8NjBw7Pu_YN-Hk/export?format=csv&gid=622677442',
     PK: 'https://docs.google.com/spreadsheets/d/1fOlILjsP0Nk_w92dn7WxA10-gM0zc8NjBw7Pu_YN-Hk/export?format=csv&gid=226676683'
-  },
+  }
+};
 
 // DOM elements
 const elements = {
