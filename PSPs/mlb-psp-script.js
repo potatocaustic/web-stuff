@@ -15,9 +15,9 @@ const CONFIG = {
   
   // Google Sheet direct URLs (if using 'google_sheets' source)
   GOOGLE_SHEET_URLS: {
-    TB: 'https://docs.google.com/spreadsheets/d/2PACX-1vQQTQp7kaCBVmJfieEjBqRH4HLLlwjEHuZUXd18VilZxs_dMuKryNXpu8x3hLhxBZPmx6T8aVjXbdYS/export?format=csv&gid=0',
-    RBI: 'https://docs.google.com/spreadsheets/d/2PACX-1vQQTQp7kaCBVmJfieEjBqRH4HLLlwjEHuZUXd18VilZxs_dMuKryNXpu8x3hLhxBZPmx6T8aVjXbdYS/export?format=csv&gid=622677442',
-    PK: 'https://docs.google.com/spreadsheets/d/2PACX-1vQQTQp7kaCBVmJfieEjBqRH4HLLlwjEHuZUXd18VilZxs_dMuKryNXpu8x3hLhxBZPmx6T8aVjXbdYS/export?format=csv&gid=226676683'
+    TB: 'https://docs.google.com/spreadsheets/d/1fOlILjsP0Nk_w92dn7WxA10-gM0zc8NjBw7Pu_YN-Hk/export?format=csv&gid=0',
+    RBI: 'https://docs.google.com/spreadsheets/d/1fOlILjsP0Nk_w92dn7WxA10-gM0zc8NjBw7Pu_YN-Hk/export?format=csv&gid=622677442',
+    PK: 'https://docs.google.com/spreadsheets/d/1fOlILjsP0Nk_w92dn7WxA10-gM0zc8NjBw7Pu_YN-Hk/export?format=csv&gid=226676683'
   },
   
   // Server JSON URLs (if using 'server' source)
