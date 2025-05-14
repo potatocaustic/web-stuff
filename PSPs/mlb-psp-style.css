@@ -132,6 +132,25 @@
   color: #721c24;
 }
 
+/* Show All Button */
+.show-all-button {
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  background-color: #f4f4f4;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  display: block;
+  width: fit-content;
+}
+
+.show-all-button:hover {
+  background-color: #e0e0e0;
+}
+
 /* Stats Section */
 .stats-section {
   background-color: #fff;
@@ -142,27 +161,45 @@
 
 .stats-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
   margin-top: 1rem;
 }
 
-.stat-card {
-  background-color: #f4f4f4;
+.stat-block {
+  background-color: #f9f9f9;
   padding: 1rem;
   border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.stat-block h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #333;
+  font-size: 1.1rem;
   text-align: center;
 }
 
-.stat-title {
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  color: #666;
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.stat-value {
-  font-size: 1.5rem;
-  color: #333;
+.stats-table th,
+.stats-table td {
+  padding: 0.6rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.stats-table th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+.stats-table tr:last-child td {
+  border-bottom: none;
 }
 
 /* Info section update */
@@ -198,5 +235,9 @@
   .category-button {
     flex: 1;
     min-width: 100px;
+  }
+  
+  .stats-container {
+    grid-template-columns: 1fr;
   }
 }
