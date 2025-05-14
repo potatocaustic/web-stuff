@@ -7,6 +7,7 @@ let allData = {
 };
 let currentPlayer = null;
 let dataLastUpdated = null;
+let currentPlayerData = null; // Store current player data globally for "Show All" functionality
 
 // Configuration - update these with your actual data sources
 const CONFIG = {
@@ -19,15 +20,6 @@ const CONFIG = {
     RBI: 'https://docs.google.com/spreadsheets/d/1fOlILjsP0Nk_w92dn7WxA10-gM0zc8NjBw7Pu_YN-Hk/export?format=csv&gid=622677442',
     PK: 'https://docs.google.com/spreadsheets/d/1fOlILjsP0Nk_w92dn7WxA10-gM0zc8NjBw7Pu_YN-Hk/export?format=csv&gid=226676683'
   },
-  
-  // Server JSON URLs (if using 'server' source)
-  SERVER_JSON_URLS: {
-    TB: 'data/mlb_psp_tb.json',
-    RBI: 'data/mlb_psp_rbi.json',
-    PK: 'data/mlb_psp_pk.json',
-    METADATA: 'data/mlb_psp_metadata.json'
-  }
-};
 
 // DOM elements
 const elements = {
@@ -41,9 +33,9 @@ const elements = {
   noResultsMessage: document.getElementById('noResultsMessage'),
   lastUpdated: document.getElementById('last-updated'),
   statsSection: document.getElementById('statsSection'),
-  successRate: document.getElementById('successRate'),
-  avgTarget: document.getElementById('avgTarget'),
-  avgRank: document.getElementById('avgRank')
+  successRateByTarget: document.getElementById('successRateByTarget'),
+  avgRankSection: document.getElementById('avgRankSection'),
+  showAllButton: document.getElementById('showAllButton')
 };
 
 // Event listeners
@@ -56,6 +48,7 @@ async function init() {
   elements.rbiButton.addEventListener('click', () => switchCategory('RBI'));
   elements.pkButton.addEventListener('click', () => switchCategory('PK'));
   elements.playerSearchInput.addEventListener('input', handlePlayerSearch);
+  elements.showAllButton.addEventListener('click', handleShowAll);
   
   // Initial data load
   try {
@@ -218,6 +211,17 @@ function handlePlayerSearch() {
   }
 }
 
+// Handle Show All button click
+function handleShowAll() {
+  if (!currentPlayerData) return;
+  
+  // Display all player data
+  displayPlayerData(currentPlayerData, false);
+  
+  // Hide the "Show All" button
+  elements.showAllButton.classList.add('hidden');
+}
+
 // Get unique players matching search term
 function getUniquePlayers(category, searchTerm) {
   const playerSet = new Set();
@@ -248,6 +252,25 @@ function selectPlayer(playerName) {
     return dateB - dateA;
   });
   
+  // Store current player data globally
+  currentPlayerData = playerData;
+  
+  // Display only the first 5 results initially
+  displayPlayerData(playerData, true);
+  
+  // Show/hide the Show All button based on data length
+  if (playerData.length > 5) {
+    elements.showAllButton.classList.remove('hidden');
+  } else {
+    elements.showAllButton.classList.add('hidden');
+  }
+  
+  // Clear search results
+  elements.searchResults.innerHTML = '';
+}
+
+// Display player data
+function displayPlayerData(playerData, limitToFive) {
   // Clear previous results
   elements.playerStatsBody.innerHTML = '';
   
@@ -257,23 +280,27 @@ function selectPlayer(playerName) {
     elements.noResultsMessage.classList.add('hidden');
     elements.playerStatsBody.parentElement.classList.remove('hidden');
     
+    // Determine how many entries to display
+    const entriesToDisplay = limitToFive ? Math.min(5, playerData.length) : playerData.length;
+    
     // Populate table with player data
-    playerData.forEach(entry => {
+    for (let i = 0; i < entriesToDisplay; i++) {
+      const entry = playerData[i];
       const row = document.createElement('tr');
       
       // Format the date
       const formattedDate = formatDate(entry.Date);
       
-      // Create table cells
+      // Create table cells with whole number rank
       row.innerHTML = `
         <td>${formattedDate}</td>
         <td>${entry['Target Value']}</td>
-        <td>${entry.Rank.toFixed(1)}</td>
+        <td>${Math.round(entry.Rank)}</td>
         <td><span class="${entry.Hit === 1 ? 'hit' : 'miss'}">${entry.Hit === 1 ? 'Hit' : 'Miss'}</span></td>
       `;
       
       elements.playerStatsBody.appendChild(row);
-    });
+    }
     
     // Calculate and display stats
     updatePlayerStats(playerData);
@@ -284,9 +311,6 @@ function selectPlayer(playerName) {
     elements.playerStatsBody.parentElement.classList.add('hidden');
     elements.statsSection.classList.add('hidden');
   }
-  
-  // Clear search results
-  elements.searchResults.innerHTML = '';
 }
 
 // Reset player results
@@ -295,28 +319,109 @@ function resetPlayerResults() {
   elements.playerStatsBody.innerHTML = '';
   elements.noResultsMessage.classList.add('hidden');
   elements.statsSection.classList.add('hidden');
+  elements.showAllButton.classList.add('hidden');
   currentPlayer = null;
+  currentPlayerData = null;
 }
 
 // Update player stats summary
 function updatePlayerStats(playerData) {
-  // Calculate success rate
-  const totalEntries = playerData.length;
-  const hits = playerData.filter(entry => entry.Hit === 1).length;
-  const successRate = (hits / totalEntries) * 100;
+  // Clear previous stats
+  elements.successRateByTarget.innerHTML = '';
+  elements.avgRankSection.innerHTML = '';
   
-  // Calculate average target value
-  const totalTargetValue = playerData.reduce((sum, entry) => sum + entry['Target Value'], 0);
-  const avgTarget = totalTargetValue / totalEntries;
+  // Calculate success rate by target value
+  const targetValueMap = new Map();
   
-  // Calculate average rank
-  const totalRank = playerData.reduce((sum, entry) => sum + entry.Rank, 0);
-  const avgRank = totalRank / totalEntries;
+  // Group data by target value
+  playerData.forEach(entry => {
+    const targetValue = entry['Target Value'];
+    if (!targetValueMap.has(targetValue)) {
+      targetValueMap.set(targetValue, { total: 0, hits: 0 });
+    }
+    
+    const stats = targetValueMap.get(targetValue);
+    stats.total += 1;
+    stats.hits += entry.Hit;
+  });
   
-  // Update the DOM
-  elements.successRate.textContent = `${successRate.toFixed(1)}%`;
-  elements.avgTarget.textContent = avgTarget.toFixed(1);
-  elements.avgRank.textContent = avgRank.toFixed(1);
+  // Create success rate by target value display
+  if (targetValueMap.size > 0) {
+    const targetHeader = document.createElement('h3');
+    targetHeader.textContent = 'Success Rate by Target Value';
+    elements.successRateByTarget.appendChild(targetHeader);
+    
+    const targetTable = document.createElement('table');
+    targetTable.classList.add('stats-table');
+    
+    // Create table header
+    const tableHeader = document.createElement('tr');
+    tableHeader.innerHTML = '<th>Target</th><th>Success Rate</th><th>Record</th>';
+    targetTable.appendChild(tableHeader);
+    
+    // Sort target values numerically
+    const sortedTargets = Array.from(targetValueMap.keys()).sort((a, b) => a - b);
+    
+    // Add rows for each target value
+    sortedTargets.forEach(target => {
+      const stats = targetValueMap.get(target);
+      const successRate = (stats.hits / stats.total) * 100;
+      
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${target}</td>
+        <td>${successRate.toFixed(1)}%</td>
+        <td>${stats.hits}/${stats.total}</td>
+      `;
+      
+      targetTable.appendChild(row);
+    });
+    
+    elements.successRateByTarget.appendChild(targetTable);
+  }
+  
+  // Calculate average ranks for different periods
+  const calculateAvgRank = (data) => {
+    if (data.length === 0) return 0;
+    const totalRank = data.reduce((sum, entry) => sum + entry.Rank, 0);
+    return totalRank / data.length;
+  };
+  
+  const overallAvgRank = calculateAvgRank(playerData);
+  const last5AvgRank = calculateAvgRank(playerData.slice(0, Math.min(5, playerData.length)));
+  const last10AvgRank = calculateAvgRank(playerData.slice(0, Math.min(10, playerData.length)));
+  
+  // Create average rank display
+  const rankHeader = document.createElement('h3');
+  rankHeader.textContent = 'Average Rank';
+  elements.avgRankSection.appendChild(rankHeader);
+  
+  const rankTable = document.createElement('table');
+  rankTable.classList.add('stats-table');
+  
+  // Create table header
+  const rankTableHeader = document.createElement('tr');
+  rankTableHeader.innerHTML = '<th>Period</th><th>Avg. Rank</th>';
+  rankTable.appendChild(rankTableHeader);
+  
+  // Add rows for each period
+  const periods = [
+    { name: 'Last 5', value: Math.round(last5AvgRank) },
+    { name: 'Last 10', value: Math.round(last10AvgRank) },
+    { name: 'Overall', value: Math.round(overallAvgRank) }
+  ];
+  
+  periods.forEach(period => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${period.name}</td>
+      <td>${period.value}</td>
+    `;
+    
+    rankTable.appendChild(row);
+  });
+  
+  elements.avgRankSection.appendChild(rankTable);
 }
 
 // Get full category name
