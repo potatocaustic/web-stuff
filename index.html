@@ -3,43 +3,58 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>caustic.info</title>
-    <link rel="stylesheet" href="style.css" />
+    <title>caustic.info - Sports Analytics Tools</title>
+    <link rel="stylesheet" href="home-style.css" />
     <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
   </head>
   <body>
     <header>
-      <h1>2025 WNBA Buy List Generator</h1>
+      <h1>caustic.info</h1>
+      <nav>
+        <ul>
+          <li><a href="wnba-tool.html">WNBA Buy List Generator</a></li>
+          <li><a href="karma-calculator.html">Karma Betting Calculator</a></li>
+        </ul>
+      </nav>
     </header>
     <main>
-      <section class="info">
-        <p>Use this tool to select WNBA teams and players based on your budget.</p>
-        <p>Also check out the <a href="karma-calculator.html">Karma Betting Expected Value Calculator</a>!</p>
+      <section class="hero">
+        <h2>Welcome to caustic.info</h2>
+        <p>Your resource for sports analytics tools and betting calculators</p>
       </section>
-      <section class="form-section">
-        <h2>Input your Budget and Select Team Cards</h2>
-        <label for="budget">Enter your budget (rax):</label>
-        <input type="number" id="budget" placeholder="Enter your budget" />
-        <div class="team-selection">
-          <h3>Select Desired Team Cards (max. 5)</h3>
-          <!-- Team checkboxes will be dynamically populated here -->
+      
+      <section class="tools">
+        <div class="tool-card">
+          <h3>WNBA Buy List Generator</h3>
+          <p>Select WNBA teams and players based on your budget. This tool helps you create optimized player lists while staying within your budget constraints.</p>
+          <div class="tool-features">
+            <ul>
+              <li>Select team cards from all WNBA teams</li>
+              <li>Automatic player selection based on rankings</li>
+              <li>Budget constraint handling</li>
+              <li>Export your list as CSV</li>
+            </ul>
+          </div>
+          <a href="wnba-tool.html" class="button">Launch Tool</a>
         </div>
         
-        <!-- Create a container for the buttons -->
-        <div id="buttonContainer">
-          <button id="buildButton">Build My List</button>
+        <div class="tool-card">
+          <h3>Karma Betting Calculator</h3>
+          <p>Calculate the expected value of karma bets by comparing Real App odds with Sportsbook odds. Find positive EV opportunities for smarter betting.</p>
+          <div class="tool-features">
+            <ul>
+              <li>Compare odds from different sources</li>
+              <li>Calculate no-vig probabilities</li>
+              <li>Max and zero bet EV calculations</li>
+              <li>Support for American and Decimal odds</li>
+            </ul>
+          </div>
+          <a href="karma-calculator.html" class="button">Launch Tool</a>
         </div>
-      </section>
-      <section class="result-section">
-        <h2>Recommended Buys:</h2>
-        <ul id="recommendationsList">
-          <!-- Recommended buys will appear here -->
-        </ul>
       </section>
     </main>
     <footer>
-      <p>&copy; caustic.info</p>
+      <p>&copy; 2025 caustic.info</p>
     </footer>
-    <script src="wnba-script.js"></script>
   </body>
 </html>
