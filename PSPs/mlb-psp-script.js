@@ -11,7 +11,7 @@ let dataLastUpdated = null;
 // Configuration - update these with your actual data sources
 const CONFIG = {
   // Set DATA_SOURCE to 'google_sheets' or 'server' based on your preferred method
-  DATA_SOURCE: 'server',
+  DATA_SOURCE: 'google_sheets',
   
   // Google Sheet direct URLs (if using 'google_sheets' source)
   GOOGLE_SHEET_URLS: {
