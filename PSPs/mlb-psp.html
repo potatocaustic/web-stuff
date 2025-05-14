@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MLB PSP Database - caustic.info</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="mlb-psp-style.css" />
+    <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
+  </head>
+  <body>
+    <header>
+      <h1>MLB Player Stat Picks Database</h1>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="wnba-tool.html">WNBA Buy List Generator</a></li>
+          <li><a href="karma-calculator.html">Karma Betting Calculator</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <section class="info">
+        <p>Search historical MLB player stat pick poll results. Select a category, find a player, and view their performance history.</p>
+        <p id="last-updated">Last updated: Loading...</p>
+      </section>
+      
+      <section class="search-section">
+        <div class="category-selection">
+          <h3>Select Category</h3>
+          <div class="category-buttons">
+            <button id="tbButton" class="category-button active">Total Bases (TB)</button>
+            <button id="rbiButton" class="category-button">RBIs</button>
+            <button id="pkButton" class="category-button">Strikeouts (PK)</button>
+          </div>
+        </div>
+        
+        <div class="player-search">
+          <h3>Search Player</h3>
+          <input type="text" id="playerSearchInput" placeholder="Type player name..." />
+          <div id="searchResults" class="search-results"></div>
+        </div>
+      </section>
+      
+      <section class="results-section">
+        <h2 id="resultsTitle">Select a player to view results</h2>
+        <div id="playerStatsContainer" class="player-stats-container">
+          <table id="playerStatsTable" class="player-stats-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Target Value</th>
+                <th>Rank</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody id="playerStatsBody">
+              <!-- Results will be populated here -->
+            </tbody>
+          </table>
+          <div id="noResultsMessage" class="no-results hidden">
+            No results found for this player in the selected category.
+          </div>
+        </div>
+      </section>
+      
+      <section class="stats-section hidden" id="statsSection">
+        <h2>Performance Summary</h2>
+        <div class="stats-container">
+          <div class="stat-card">
+            <div class="stat-title">Success Rate</div>
+            <div class="stat-value" id="successRate">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Average Target</div>
+            <div class="stat-value" id="avgTarget">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Average Rank</div>
+            <div class="stat-value" id="avgRank">-</div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <p>&copy; caustic.info</p>
+    </footer>
+    <script src="mlb-psp-script.js"></script>
+  </body>
+</html>
