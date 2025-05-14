@@ -10,7 +10,26 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <!-- Babel for JSX -->
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>Karma Betting Expected Value Calculator</h1>
+    </header>
+    <main>
+      <section class="info">
+        <p>Calculate the expected value of karma bets by comparing Real App odds with Sportsbook odds.</p>
+      </section>
+      <section class="form-section">
+        <!-- This is where our React component will be rendered -->
+        <div id="calculator-root"></div>
+      </section>
+    </main>
+    <footer>
+      <p>&copy; caustic.info</p>
+    </footer>
+
     <style>
+      /* Base styles */
       * {
         box-sizing: border-box;
         margin: 0;
@@ -253,23 +272,6 @@
         font-weight: bold;
       }
     </style>
-  </head>
-  <body>
-    <header>
-      <h1>Karma Betting Expected Value Calculator</h1>
-    </header>
-    <main>
-      <section class="info">
-        <p>Calculate the expected value of karma bets by comparing Real App odds with Sportsbook odds.</p>
-      </section>
-      <section class="form-section">
-        <!-- This is where our React component will be rendered -->
-        <div id="calculator-root"></div>
-      </section>
-    </main>
-    <footer>
-      <p>&copy; caustic.info</p>
-    </footer>
 
     <!-- Calculator Script -->
     <script type="text/babel">
@@ -467,6 +469,12 @@
         
         return (
           <div className="container">
+            <div style={{textAlign: 'center', marginBottom: '1rem'}}>
+              <button type="button" onClick={resetAllInputs} className="reset-button">
+                Reset All Values
+              </button>
+            </div>
+            
             <div className="section">
               <h2 className="section-title">Maximum Bet Size</h2>
               <div className="radio-group">
@@ -552,6 +560,9 @@
                     </div>
                   </div>
                 </div>
+                <button type="button" onClick={resetRealAppOdds} className="text-button">
+                  Clear Real App Odds
+                </button>
               </div>
               
               <div className="section">
@@ -649,12 +660,45 @@
                     )}
                   </div>
                 </div>
+                <button type="button" onClick={resetSbOdds} className="text-button">
+                  Clear Sportsbook Odds
+                </button>
               </div>
             </div>
             
             {evMaxOver !== null && evMaxUnder !== null && evZeroOver !== null && evZeroUnder !== null && (
               <div className="section">
                 <h2 className="section-title">Expected Value Results</h2>
+                
+                {/* Recommendation at the top */}
+                <div className="recommendation" style={{marginTop: 0, marginBottom: '1rem'}}>
+                  <div style={{fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.5rem'}}>Recommended Bet:</div>
+                  {(() => {
+                    // Find the highest EV among all options
+                    const evOptions = [
+                      { type: "Max Over", value: evMaxOver, side: "Over/Home Team", amount: maxBetSize },
+                      { type: "Zero Over", value: evZeroOver, side: "Over/Home Team", amount: maxBetSize >= 100 ? 10 : 5 },
+                      { type: "Max Under", value: evMaxUnder, side: "Under/Away Team", amount: maxBetSize },
+                      { type: "Zero Under", value: evZeroUnder, side: "Under/Away Team", amount: maxBetSize >= 100 ? 10 : 5 }
+                    ];
+                    
+                    const bestOption = evOptions.reduce((best, current) => 
+                      current.value > best.value ? current : best, { value: -Infinity });
+                    
+                    if (bestOption.value <= 0) {
+                      return <div style={{fontSize: '1.1rem'}}>None - all bets have negative or zero EV</div>;
+                    }
+                    
+                    return (
+                      <div style={{fontSize: '1.1rem'}}>
+                        {bestOption.type.includes("Max") ? "Max" : "Zero"} bet on {bestOption.side} ({bestOption.amount} karma)
+                        <div className="ev-positive" style={{marginTop: '0.5rem'}}>
+                          Expected Value: {bestOption.value.toFixed(2)} karma
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
                 
                 <div className="grid">
                   <div className="result-card">
@@ -692,35 +736,6 @@
                       </div>
                     </div>
                   </div>
-                </div>
-                
-                <div className="recommendation">
-                  <div style={{fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.5rem'}}>Recommended Bet:</div>
-                  {(() => {
-                    // Find the highest EV among all options
-                    const evOptions = [
-                      { type: "Max Over", value: evMaxOver, side: "Over/Home Team", amount: maxBetSize },
-                      { type: "Zero Over", value: evZeroOver, side: "Over/Home Team", amount: maxBetSize >= 100 ? 10 : 5 },
-                      { type: "Max Under", value: evMaxUnder, side: "Under/Away Team", amount: maxBetSize },
-                      { type: "Zero Under", value: evZeroUnder, side: "Under/Away Team", amount: maxBetSize >= 100 ? 10 : 5 }
-                    ];
-                    
-                    const bestOption = evOptions.reduce((best, current) => 
-                      current.value > best.value ? current : best, { value: -Infinity });
-                    
-                    if (bestOption.value <= 0) {
-                      return <div style={{fontSize: '1.1rem'}}>None - all bets have negative or zero EV</div>;
-                    }
-                    
-                    return (
-                      <div style={{fontSize: '1.1rem'}}>
-                        {bestOption.type.includes("Max") ? "Max" : "Zero"} bet on {bestOption.side} ({bestOption.amount} karma)
-                        <div className="ev-positive" style={{marginTop: '0.5rem'}}>
-                          Expected Value: {bestOption.value.toFixed(2)} karma
-                        </div>
-                      </div>
-                    );
-                  })()}
                 </div>
               </div>
             )}
