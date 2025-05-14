@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MLB PSP Database - caustic.info</title>
-    <link rel="stylesheet" href="../style.css" />
     <link rel="stylesheet" href="mlb-psp-style.css" />
     <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
   </head>
@@ -58,6 +57,7 @@
               <!-- Results will be populated here -->
             </tbody>
           </table>
+          <button id="showAllButton" class="show-all-button hidden">Show All Results</button>
           <div id="noResultsMessage" class="no-results hidden">
             No results found for this player in the selected category.
           </div>
@@ -67,17 +67,11 @@
       <section class="stats-section hidden" id="statsSection">
         <h2>Performance Summary</h2>
         <div class="stats-container">
-          <div class="stat-card">
-            <div class="stat-title">Success Rate</div>
-            <div class="stat-value" id="successRate">-</div>
+          <div id="successRateByTarget" class="stat-block">
+            <!-- Success rate by target will be populated here -->
           </div>
-          <div class="stat-card">
-            <div class="stat-title">Average Target</div>
-            <div class="stat-value" id="avgTarget">-</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-title">Average Rank</div>
-            <div class="stat-value" id="avgRank">-</div>
+          <div id="avgRankSection" class="stat-block">
+            <!-- Average rank data will be populated here -->
           </div>
         </div>
       </section>
