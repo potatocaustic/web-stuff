@@ -142,6 +142,42 @@
         justify-content: center;
       }
       
+      .text-button {
+        background-color: #f1f1f1;
+        border: 1px solid #ddd;
+        color: #333;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+        border-radius: 4px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 0.5rem;
+      }
+      
+      .text-button:hover {
+        background-color: #e1e1e1;
+      }
+      
+      .reset-button {
+        background-color: #f8d7da;
+        border: 1px solid #f5c2c7;
+        color: #842029;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-bottom: 1rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .reset-button:hover {
+        background-color: #f5c2c7;
+      }
+      
       .radio-group {
         display: flex;
         flex-wrap: wrap;
@@ -254,6 +290,37 @@
         const [evMaxUnder, setEvMaxUnder] = React.useState(null);
         const [evZeroOver, setEvZeroOver] = React.useState(null);
         const [evZeroUnder, setEvZeroUnder] = React.useState(null);
+        
+        // Default values for reset functions
+        const defaultRealAppOdds = {
+          over: '+100',
+          under: '+100'
+        };
+        
+        const defaultSbOdds = {
+          over: '',
+          under: ''
+        };
+        
+        // Reset functions
+        const resetAllInputs = () => {
+          setRealAppOver(defaultRealAppOdds.over);
+          setRealAppUnder(defaultRealAppOdds.under);
+          setSbOver(defaultSbOdds.over);
+          setSbUnder(defaultSbOdds.under);
+          setOddsFormat('american');
+          setMaxBetSize(100);
+        };
+        
+        const resetRealAppOdds = () => {
+          setRealAppOver(defaultRealAppOdds.over);
+          setRealAppUnder(defaultRealAppOdds.under);
+        };
+        
+        const resetSbOdds = () => {
+          setSbOver(defaultSbOdds.over);
+          setSbUnder(defaultSbOdds.under);
+        };
         
         // Refs for input fields to manage focus
         const realAppOverRef = React.useRef(null);
