@@ -7,49 +7,87 @@
     <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
     <style>
       /* Reset and General Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
       body {
         font-family: Arial, sans-serif;
         background-color: #f4f4f4;
         color: #333;
         line-height: 1.6;
-        margin: 0;
-        padding: 20px;
-        max-width: 1200px;
-        margin: 0 auto;
       }
-
+      
       h1, h2, h3 {
         color: #333;
       }
 
-      /* Header */
+      /* Main site header style - matching your other pages */
       header {
-        margin-bottom: 2rem;
+        background-color: #333;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
       }
-
+      
       header h1 {
-        margin-bottom: 0.5rem;
-      }
-
-      header nav ul {
-        list-style-type: none;
-        padding: 0;
+        color: white !important;
+        font-size: 1.5rem;
         margin: 0;
       }
-
-      header nav ul li {
-        display: inline;
-        margin-right: 1rem;
+      
+      /* Navigation styling */
+      nav ul {
+        display: flex;
+        justify-content: center;
+        list-style: none;
+        margin-top: 1rem;
+      }
+      
+      nav ul li {
+        margin: 0 1rem;
+      }
+      
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 1.1rem;
+        transition: color 0.3s ease;
+      }
+      
+      nav ul li a:hover {
+        color: #ccc;
+      }
+      
+      @media (min-width: 768px) {
+        header h1 {
+          font-size: 2rem;
+        }
       }
 
+      /* Main content area */
+      main {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      
       /* Info Section */
       .info {
-        margin-bottom: 2rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
       }
-
+      
+      .info p {
+        margin-bottom: 0.5rem;
+      }
+      
       #last-updated {
         font-style: italic;
         color: #666;
+        margin-top: 0.5rem;
       }
 
       /* Search Section */
@@ -268,12 +306,11 @@
 
       /* Footer */
       footer {
-        margin-top: 2rem;
-        padding-top: 1rem;
-        border-top: 1px solid #eee;
         text-align: center;
-        color: #666;
-        font-size: 0.9rem;
+        margin-top: 2rem;
+        padding: 1rem;
+        background-color: #333;
+        color: #fff;
       }
     </style>
   </head>
