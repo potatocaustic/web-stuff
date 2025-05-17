@@ -74,21 +74,6 @@ function addDebugLog(message) {
   if (typeof console !== 'undefined') {
     console.log(message);
   }
-  
-  // Optional: If you want to see debug messages in the UI itself
-  // Uncomment these lines for debugging:
-  /*
-  const logDiv = document.getElementById('debugLog') || document.createElement('div');
-  if (!logDiv.id) {
-    logDiv.id = 'debugLog';
-    logDiv.style.display = 'none'; // Hidden by default
-    document.body.appendChild(logDiv);
-  }
-  
-  const logEntry = document.createElement('p');
-  logEntry.textContent = message;
-  logDiv.appendChild(logEntry);
-  */
 }
 
 // Load metadata from server (only for server data source)
@@ -268,13 +253,37 @@ function getUniquePlayers(category, searchTerm) {
   return Array.from(playerSet).sort();
 }
 
+// Convert date string to a format that can be compared
+function getDateParts(dateString) {
+  if (!dateString) return [0, 0, 0];
+  
+  // Check if the date is in format MM-DD-YY
+  const hyphenMatch = /^(\d{1,2})-(\d{1,2})-(\d{2})$/.exec(dateString);
+  if (hyphenMatch) {
+    let [_, month, day, year] = hyphenMatch;
+    // Convert 2-digit year to 4-digit year
+    year = parseInt(year) + 2000; // Assuming all years are post-2000
+    return [parseInt(year), parseInt(month), parseInt(day)];
+  }
+  
+  // Check if the date is in format MM/DD/YYYY
+  const slashMatch = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(dateString);
+  if (slashMatch) {
+    let [_, month, day, year] = slashMatch;
+    return [parseInt(year), parseInt(month), parseInt(day)];
+  }
+  
+  // Default return if format is not recognized
+  return [0, 0, 0];
+}
+
 // Function to compare dates and sort from newest to oldest
 function sortByDateDescending(a, b) {
-  // Extract the date components
-  const [monthA, dayA, yearA] = a.Date.split('/').map(Number);
-  const [monthB, dayB, yearB] = b.Date.split('/').map(Number);
+  // Get date parts [year, month, day] for each date
+  const [yearA, monthA, dayA] = getDateParts(a.Date);
+  const [yearB, monthB, dayB] = getDateParts(b.Date);
   
-  // Compare years first (descending order)
+  // Compare years first (descending order for newest first)
   if (yearA !== yearB) {
     return yearB - yearA;
   }
@@ -302,14 +311,25 @@ function selectPlayer(playerName) {
   addDebugLog(`Found ${playerData.length} entries for ${playerName}`);
   if (playerData.length > 0) {
     addDebugLog(`Before sorting - First entry: ${playerData[0].Date}`);
+    
+    // Check date format of first entry
+    const firstDate = playerData[0].Date;
+    addDebugLog(`Date format check: ${firstDate} -> Parts: ${getDateParts(firstDate).join('/')}`);
   }
   
-  // Sort data from newest to oldest
-  // This is a HARD sort implementation that must work on all browsers
+  // IMPORTANT: Sort data from newest to oldest
   playerData.sort(sortByDateDescending);
   
   if (playerData.length > 0) {
     addDebugLog(`After sorting - First entry: ${playerData[0].Date}`);
+  }
+  
+  // Verify sort by printing first few entries
+  if (playerData.length > 1) {
+    addDebugLog("First few entries after sorting:");
+    playerData.slice(0, Math.min(5, playerData.length)).forEach((entry, i) => {
+      addDebugLog(`${i+1}. ${entry.Date}`);
+    });
   }
   
   // Store current player data globally
@@ -517,20 +537,12 @@ function getCategoryFullName(category) {
   }
 }
 
-// Format date from MM/DD/YYYY to a more readable format
+// Format date from M-D-YY or MM/DD/YYYY to a more readable format
 function formatDate(dateString) {
   if (!dateString) return '';
   
-  const parts = dateString.split('/');
-  if (parts.length !== 3) return dateString;
-  
-  const month = parseInt(parts[0]);
-  const day = parseInt(parts[1]);
-  const year = parseInt(parts[2]);
-  
-  if (isNaN(month) || isNaN(day) || isNaN(year)) {
-    return dateString;
-  }
+  // Get date parts [year, month, day]
+  const [year, month, day] = getDateParts(dateString);
   
   // Manual formatting to avoid browser inconsistencies
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
