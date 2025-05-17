@@ -44,6 +44,9 @@ document.addEventListener('DOMContentLoaded', init);
 
 // Initialize the application
 async function init() {
+  // Add debug log to page
+  addDebugLog("Initialize application");
+  
   // Set up event listeners
   elements.tbButton.addEventListener('click', () => switchCategory('TB'));
   elements.rbiButton.addEventListener('click', () => switchCategory('RBI'));
@@ -64,6 +67,28 @@ async function init() {
     console.error('Failed to load initial data:', error);
     elements.lastUpdated.textContent = 'Error loading data. Please try refreshing the page.';
   }
+}
+
+// Add debug log message to page (for troubleshooting)
+function addDebugLog(message) {
+  if (typeof console !== 'undefined') {
+    console.log(message);
+  }
+  
+  // Optional: If you want to see debug messages in the UI itself
+  // Uncomment these lines for debugging:
+  /*
+  const logDiv = document.getElementById('debugLog') || document.createElement('div');
+  if (!logDiv.id) {
+    logDiv.id = 'debugLog';
+    logDiv.style.display = 'none'; // Hidden by default
+    document.body.appendChild(logDiv);
+  }
+  
+  const logEntry = document.createElement('p');
+  logEntry.textContent = message;
+  logDiv.appendChild(logEntry);
+  */
 }
 
 // Load metadata from server (only for server data source)
@@ -117,6 +142,8 @@ async function loadData(category) {
     
     // Store the data
     allData[category] = filtered;
+    
+    addDebugLog(`Loaded ${filtered.length} entries for category ${category}`);
     
     return filtered;
   } catch (error) {
@@ -241,41 +268,29 @@ function getUniquePlayers(category, searchTerm) {
   return Array.from(playerSet).sort();
 }
 
-// Helper function to compare dates in MM/DD/YYYY format
-function compareDates(a, b) {
-  // Parse date strings to component parts
-  const partsA = a.split('/');
-  const partsB = b.split('/');
+// Function to compare dates and sort from newest to oldest
+function sortByDateDescending(a, b) {
+  // Extract the date components
+  const [monthA, dayA, yearA] = a.Date.split('/').map(Number);
+  const [monthB, dayB, yearB] = b.Date.split('/').map(Number);
   
-  if (partsA.length !== 3 || partsB.length !== 3) {
-    return 0; // Can't compare invalid dates
-  }
-  
-  // Extract parts
-  const yearA = parseInt(partsA[2]);
-  const monthA = parseInt(partsA[0]);
-  const dayA = parseInt(partsA[1]);
-  
-  const yearB = parseInt(partsB[2]);
-  const monthB = parseInt(partsB[0]);
-  const dayB = parseInt(partsB[1]);
-  
-  // Compare years first
+  // Compare years first (descending order)
   if (yearA !== yearB) {
-    return yearB - yearA; // Descending (newer first)
+    return yearB - yearA;
   }
   
-  // Then months
+  // Then compare months (descending order)
   if (monthA !== monthB) {
-    return monthB - monthA; // Descending
+    return monthB - monthA;
   }
   
-  // Finally days
-  return dayB - dayA; // Descending
+  // Finally compare days (descending order)
+  return dayB - dayA;
 }
 
 // Select a player and display their stats
 function selectPlayer(playerName) {
+  addDebugLog(`Selecting player: ${playerName}`);
   currentPlayer = playerName;
   
   // Update results title
@@ -284,8 +299,18 @@ function selectPlayer(playerName) {
   // Filter data for the selected player
   let playerData = allData[currentCategory].filter(entry => entry.Name === playerName);
   
-  // Sort by date (newest first) using the custom comparator
-  playerData.sort((a, b) => compareDates(a.Date, b.Date));
+  addDebugLog(`Found ${playerData.length} entries for ${playerName}`);
+  if (playerData.length > 0) {
+    addDebugLog(`Before sorting - First entry: ${playerData[0].Date}`);
+  }
+  
+  // Sort data from newest to oldest
+  // This is a HARD sort implementation that must work on all browsers
+  playerData.sort(sortByDateDescending);
+  
+  if (playerData.length > 0) {
+    addDebugLog(`After sorting - First entry: ${playerData[0].Date}`);
+  }
   
   // Store current player data globally
   currentPlayerData = playerData;
@@ -306,6 +331,8 @@ function selectPlayer(playerName) {
 
 // Display player data
 function displayPlayerData(playerData, limitToFive) {
+  addDebugLog(`Displaying player data. Limit to five: ${limitToFive}`);
+  
   // Clear previous results
   elements.playerStatsBody.innerHTML = '';
   
@@ -315,16 +342,27 @@ function displayPlayerData(playerData, limitToFive) {
     elements.noResultsMessage.classList.add('hidden');
     elements.playerStatsBody.parentElement.classList.remove('hidden');
     
-    // Copy the array to avoid modifying the original
-    let displayData = [...playerData];
+    // Make a copy of the player data to avoid modifying the original
+    let dataToDisplay = [...playerData];
     
-    // If limiting, only show the first 5 entries
-    if (limitToFive) {
-      displayData = displayData.slice(0, Math.min(5, displayData.length));
+    // Sort again to ensure newest first (redundant but safe)
+    dataToDisplay.sort(sortByDateDescending);
+    
+    // Limit to first 5 if requested
+    if (limitToFive && dataToDisplay.length > 5) {
+      dataToDisplay = dataToDisplay.slice(0, 5);
+    }
+    
+    // Log first and last entries for debugging
+    if (dataToDisplay.length > 0) {
+      addDebugLog(`First displayed entry date: ${dataToDisplay[0].Date}`);
+      if (dataToDisplay.length > 1) {
+        addDebugLog(`Last displayed entry date: ${dataToDisplay[dataToDisplay.length-1].Date}`);
+      }
     }
     
     // Populate table with player data
-    displayData.forEach(entry => {
+    dataToDisplay.forEach(entry => {
       const row = document.createElement('tr');
       
       // Format the date
@@ -373,7 +411,7 @@ function updatePlayerStats(playerData) {
   let sortedData = [...playerData];
   
   // Sort by date (newest first)
-  sortedData.sort((a, b) => compareDates(a.Date, b.Date));
+  sortedData.sort(sortByDateDescending);
   
   // Calculate success rate by target value
   const targetValueMap = new Map();
