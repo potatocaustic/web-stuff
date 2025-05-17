@@ -1,75 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>caustic.info</title>
-    <link rel="stylesheet" href="home-style.css" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - caustic.info</title>
     <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
-  </head>
-  <body>
+    <style>
+        /* Your existing homepage styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        h1, h2, h3 {
+            color: #333;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        header h1 {
+            color: white !important;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        nav ul li {
+            margin: 0.5rem 1rem;
+        }
+        
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+        
+        nav ul li a:hover {
+            color: #ccc;
+        }
+        
+        main {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .tools-section {
+            margin-top: 2rem;
+        }
+        
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+        
+        .tool-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .tool-card-content {
+            padding: 1.5rem;
+        }
+        
+        .tool-card h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .tool-card p {
+            margin-bottom: 1.5rem;
+            color: #666;
+        }
+        
+        .button {
+            display: inline-block;
+            background-color: #333;
+            color: #fff;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        
+        .button:hover {
+            background-color: #555;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #333;
+            color: #fff;
+        }
+        
+        @media (min-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
     <header>
-      <h1>caustic.info</h1>
-      <nav>
-        <ul>
-          <li><a href="wnba-tool.html">WNBA Buy List Generator</a></li>
-          <li><a href="karma-calculator.html">Karma Betting Calculator</a></li>
-          <li><a href="PSPs/mlb-psp.html">MLB PSP Database</a></li>
-        </ul>
-      </nav>
+        <h1>caustic.info</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="PSPs/mlb-psp.html">MLB PSP Database</a></li>
+                <li><a href="PSPs-WNBA/wnba-psp.html">WNBA PSP Database</a></li>
+                <li><a href="wnba-tool.html">WNBA Buy List Generator</a></li>
+                <li><a href="karma-calculator.html">Karma Betting Calculator</a></li>
+            </ul>
+        </nav>
     </header>
     <main>
-      <section class="hero">
-        <h2>Welcome to caustic.info!</h2>
-        <p>Work in progress</p>
-      </section>
-      
-      <section class="tools">
-        <div class="tool-card">
-          <h3>WNBA Buy List Generator</h3>
-          <p>Select WNBA teams and players based on your budget. This tool helps you create optimized player lists while staying within your budget constraints.</p>
-          <div class="tool-features">
-            <ul>
-              <li>Select up to five desired team cards</li>
-              <li>Automatic player selection based on rankings</li>
-              <li>Budget constraint handling</li>
-              <li>Export your list as CSV</li>
-            </ul>
-          </div>
-          <a href="wnba-tool.html" class="button">Launch Tool</a>
-        </div>
+        <section class="intro">
+            <h2>Welcome to caustic.info</h2>
+            <p>Your source for sports analytics tools and databases. Explore our collection of tools designed to help you analyze sports data and make informed decisions.</p>
+        </section>
         
-        <div class="tool-card">
-          <h3>Karma Betting Calculator</h3>
-          <p>Calculate the expected value of karma bets by comparing Real App odds with sportsbook odds. Find positive EV opportunities for smarter betting.</p>
-          <div class="tool-features">
-            <ul>
-              <li>Compare odds from different sources</li>
-              <li>Calculate no-vig probabilities</li>
-              <li>Max and zero bet EV calculations</li>
-              <li>Support for American and Decimal odds</li>
-            </ul>
-          </div>
-          <a href="karma-calculator.html" class="button">Launch Tool</a>
-        </div>
-        
-        <div class="tool-card">
-          <h3>MLB PSP Database</h3>
-          <p>Search and analyze historical MLB player stat pick poll results. Track player performance across total bases, RBIs, and strikeouts categories.</p>
-          <div class="tool-features">
-            <ul>
-              <li>Search players across three categories</li>
-              <li>View historical performance data</li>
-              <li>Track hit rates and average targets</li>
-              <li>Updated daily with the latest results</li>
-            </ul>
-          </div>
-          <a href="PSPs/mlb-psp.html" class="button">Launch Tool</a>
-        </div>
-      </section>
+        <section class="tools-section">
+            <h2>Available Tools</h2>
+            <div class="tools-grid">
+                <div class="tool-card">
+                    <div class="tool-card-content">
+                        <h3>MLB PSP Database</h3>
+                        <p>Search historical MLB player stat pick poll results. View player performance history, success rates, and average rankings.</p>
+                        <a href="PSPs/mlb-psp.html" class="button">Open Tool</a>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-card-content">
+                        <h3>WNBA PSP Database</h3>
+                        <p>Search historical WNBA player stat pick poll results. View player performance history, success rates, and average rankings.</p>
+                        <a href="PSPs-WNBA/wnba-psp.html" class="button">Open Tool</a>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-card-content">
+                        <h3>WNBA Buy List Generator</h3>
+                        <p>Generate optimized buy lists for WNBA betting based on custom parameters and statistical analysis.</p>
+                        <a href="wnba-tool.html" class="button">Open Tool</a>
+                    </div>
+                </div>
+                
+                <div class="tool-card">
+                    <div class="tool-card-content">
+                        <h3>Karma Betting Calculator</h3>
+                        <p>Calculate optimal betting strategies and expected returns using the Karma betting system.</p>
+                        <a href="karma-calculator.html" class="button">Open Tool</a>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
     <footer>
-      <p>&copy; 2025 caustic.info</p>
+        <p>&copy; caustic.info</p>
     </footer>
-  </body>
+</body>
 </html>
