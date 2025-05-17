@@ -140,14 +140,19 @@ function parseCSV(csvText) {
     
     headers.forEach((header, index) => {
       // Convert numeric values
-      if (['Target Value', 'Rank', 'Votes', 'Hit', 'Projection', 'Delta'].includes(header)) {
-        entry[header] = parseFloat(values[index]);
-      } else {
-        entry[header] = values[index];
+      if (index < values.length) { // Ensure index is valid
+        if (['Target Value', 'Rank', 'Votes', 'Hit', 'Projection', 'Delta'].includes(header)) {
+          entry[header] = parseFloat(values[index]);
+        } else {
+          entry[header] = values[index];
+        }
       }
     });
     
-    result.push(entry);
+    // Only add entry if it has all required fields
+    if (entry.Date && entry.Name && entry['Target Value'] !== undefined) {
+      result.push(entry);
+    }
   }
   
   return result;
@@ -228,12 +233,36 @@ function getUniquePlayers(category, searchTerm) {
   const playerSet = new Set();
   
   allData[category].forEach(entry => {
-    if (entry.Name.toLowerCase().includes(searchTerm)) {
+    if (entry.Name && entry.Name.toLowerCase().includes(searchTerm)) {
       playerSet.add(entry.Name);
     }
   });
   
   return Array.from(playerSet).sort();
+}
+
+// Convert string date to Date object for consistent sorting
+function parseDate(dateString) {
+  // Check if dateString is defined and is a string
+  if (!dateString || typeof dateString !== 'string') {
+    return new Date(0); // Return epoch if invalid
+  }
+  
+  // Handle MM/DD/YYYY format
+  const parts = dateString.split('/');
+  if (parts.length === 3) {
+    const month = parseInt(parts[0], 10);
+    const day = parseInt(parts[1], 10);
+    const year = parseInt(parts[2], 10);
+    
+    // Check if parsed parts are valid numbers
+    if (!isNaN(month) && !isNaN(day) && !isNaN(year)) {
+      return new Date(year, month - 1, day);
+    }
+  }
+  
+  // Fallback to standard Date parsing if not MM/DD/YYYY
+  return new Date(dateString);
 }
 
 // Select a player and display their stats
@@ -246,11 +275,14 @@ function selectPlayer(playerName) {
   // Filter data for the selected player
   const playerData = allData[currentCategory].filter(entry => entry.Name === playerName);
   
-  // Sort data by date (newest first)
+  // Ensure we have valid dates for sorting
+  playerData.forEach(entry => {
+    entry._dateObj = parseDate(entry.Date);
+  });
+  
+  // Sort data by date (newest first) using the date objects
   playerData.sort((a, b) => {
-    const dateA = new Date(a.Date);
-    const dateB = new Date(b.Date);
-    return dateB - dateA;
+    return b._dateObj - a._dateObj;
   });
   
   // Store current player data globally
@@ -281,12 +313,19 @@ function displayPlayerData(playerData, limitToFive) {
     elements.noResultsMessage.classList.add('hidden');
     elements.playerStatsBody.parentElement.classList.remove('hidden');
     
+    // Copy and sort data again to ensure newest first
+    const sortedData = [...playerData].sort((a, b) => {
+      return b._dateObj - a._dateObj;
+    });
+    
     // Determine how many entries to display
-    const entriesToDisplay = limitToFive ? Math.min(5, playerData.length) : playerData.length;
+    const entriesToDisplay = limitToFive ? Math.min(5, sortedData.length) : sortedData.length;
+    
+    // Take from the start of the array (newest entries)
+    const displayData = sortedData.slice(0, entriesToDisplay);
     
     // Populate table with player data
-    for (let i = 0; i < entriesToDisplay; i++) {
-      const entry = playerData[i];
+    displayData.forEach(entry => {
       const row = document.createElement('tr');
       
       // Format the date
@@ -301,7 +340,7 @@ function displayPlayerData(playerData, limitToFive) {
       `;
       
       elements.playerStatsBody.appendChild(row);
-    }
+    });
     
     // Calculate and display stats
     updatePlayerStats(playerData);
@@ -331,11 +370,16 @@ function updatePlayerStats(playerData) {
   elements.successRateByTarget.innerHTML = '';
   elements.avgRankSection.innerHTML = '';
   
+  // Sort data by date (newest first) to ensure correct calculations
+  const sortedData = [...playerData].sort((a, b) => {
+    return b._dateObj - a._dateObj;
+  });
+  
   // Calculate success rate by target value
   const targetValueMap = new Map();
   
   // Group data by target value
-  playerData.forEach(entry => {
+  sortedData.forEach(entry => {
     const targetValue = entry['Target Value'];
     if (!targetValueMap.has(targetValue)) {
       targetValueMap.set(targetValue, { total: 0, hits: 0 });
@@ -388,9 +432,10 @@ function updatePlayerStats(playerData) {
     return totalRank / data.length;
   };
   
-  const overallAvgRank = calculateAvgRank(playerData);
-  const last5AvgRank = calculateAvgRank(playerData.slice(0, Math.min(5, playerData.length)));
-  const last10AvgRank = calculateAvgRank(playerData.slice(0, Math.min(10, playerData.length)));
+  // Use sorted data for these calculations to ensure we're using newest entries
+  const overallAvgRank = calculateAvgRank(sortedData);
+  const last5AvgRank = calculateAvgRank(sortedData.slice(0, Math.min(5, sortedData.length)));
+  const last10AvgRank = calculateAvgRank(sortedData.slice(0, Math.min(10, sortedData.length)));
   
   // Create average rank display
   const rankHeader = document.createElement('h3');
@@ -437,14 +482,30 @@ function getCategoryFullName(category) {
 
 // Format date from MM/DD/YYYY to a more readable format
 function formatDate(dateString) {
+  // Validate input
+  if (!dateString || typeof dateString !== 'string') {
+    return 'Invalid Date';
+  }
+
   const parts = dateString.split('/');
   if (parts.length !== 3) return dateString;
   
-  const month = parseInt(parts[0]);
-  const day = parseInt(parts[1]);
-  const year = parseInt(parts[2]);
+  const month = parseInt(parts[0], 10);
+  const day = parseInt(parts[1], 10);
+  const year = parseInt(parts[2], 10);
   
+  // Validate parsed values
+  if (isNaN(month) || isNaN(day) || isNaN(year)) {
+    return dateString;
+  }
+  
+  // Use the 0-based month index for Date constructor
   const date = new Date(year, month - 1, day);
+  
+  // Validate the created date
+  if (isNaN(date.getTime())) {
+    return dateString;
+  }
   
   // Format as "Mon DD, YYYY"
   const options = { month: 'short', day: 'numeric', year: 'numeric' };
