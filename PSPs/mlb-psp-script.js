@@ -44,8 +44,6 @@ document.addEventListener('DOMContentLoaded', init);
 
 // Initialize the application
 async function init() {
-  console.log("Initializing MLB PSP Database...");
-  
   // Set up event listeners
   elements.tbButton.addEventListener('click', () => switchCategory('TB'));
   elements.rbiButton.addEventListener('click', () => switchCategory('RBI'));
@@ -117,27 +115,8 @@ async function loadData(category) {
     // Filter out entries with Projection = 0
     const filtered = data.filter(entry => entry.Projection !== 0);
     
-    // Process and add sortable date
-    filtered.forEach(entry => {
-      // Convert MM/DD/YYYY to YYYY-MM-DD for consistent sorting
-      if (entry.Date && typeof entry.Date === 'string') {
-        const parts = entry.Date.split('/');
-        if (parts.length === 3) {
-          const month = parts[0].padStart(2, '0');
-          const day = parts[1].padStart(2, '0');
-          const year = parts[2];
-          entry.sortableDate = `${year}-${month}-${day}`;
-        } else {
-          entry.sortableDate = '0000-00-00'; // Fallback
-        }
-      } else {
-        entry.sortableDate = '0000-00-00'; // Fallback
-      }
-    });
-    
     // Store the data
     allData[category] = filtered;
-    console.log(`Loaded ${filtered.length} entries for category ${category}`);
     
     return filtered;
   } catch (error) {
@@ -148,8 +127,6 @@ async function loadData(category) {
 
 // Parse CSV text to JSON (only needed for Google Sheets source)
 function parseCSV(csvText) {
-  console.log("Parsing CSV data...");
-  
   const lines = csvText.split('\n');
   const headers = lines[0].split(',').map(header => header.trim());
   
@@ -162,7 +139,7 @@ function parseCSV(csvText) {
     const entry = {};
     
     headers.forEach((header, index) => {
-      // Convert numeric values if in range
+      // Convert numeric values
       if (index < values.length) {
         if (['Target Value', 'Rank', 'Votes', 'Hit', 'Projection', 'Delta'].includes(header)) {
           entry[header] = parseFloat(values[index]) || 0;
@@ -172,20 +149,17 @@ function parseCSV(csvText) {
       }
     });
     
-    // Only add entry if it has all required fields
+    // Only add entry if it has the necessary fields
     if (entry.Date && entry.Name && entry['Target Value'] !== undefined) {
       result.push(entry);
     }
   }
   
-  console.log(`Parsed ${result.length} rows from CSV`);
   return result;
 }
 
 // Switch between categories
 async function switchCategory(category) {
-  console.log(`Switching to category: ${category}`);
-  
   // Update active button
   elements.tbButton.classList.toggle('active', category === 'TB');
   elements.rbiButton.classList.toggle('active', category === 'RBI');
@@ -247,8 +221,6 @@ function handlePlayerSearch() {
 function handleShowAll() {
   if (!currentPlayerData) return;
   
-  console.log("Show All button clicked");
-  
   // Display all player data
   displayPlayerData(currentPlayerData, false);
   
@@ -269,9 +241,41 @@ function getUniquePlayers(category, searchTerm) {
   return Array.from(playerSet).sort();
 }
 
+// Helper function to compare dates in MM/DD/YYYY format
+function compareDates(a, b) {
+  // Parse date strings to component parts
+  const partsA = a.split('/');
+  const partsB = b.split('/');
+  
+  if (partsA.length !== 3 || partsB.length !== 3) {
+    return 0; // Can't compare invalid dates
+  }
+  
+  // Extract parts
+  const yearA = parseInt(partsA[2]);
+  const monthA = parseInt(partsA[0]);
+  const dayA = parseInt(partsA[1]);
+  
+  const yearB = parseInt(partsB[2]);
+  const monthB = parseInt(partsB[0]);
+  const dayB = parseInt(partsB[1]);
+  
+  // Compare years first
+  if (yearA !== yearB) {
+    return yearB - yearA; // Descending (newer first)
+  }
+  
+  // Then months
+  if (monthA !== monthB) {
+    return monthB - monthA; // Descending
+  }
+  
+  // Finally days
+  return dayB - dayA; // Descending
+}
+
 // Select a player and display their stats
 function selectPlayer(playerName) {
-  console.log(`Selecting player: ${playerName}`);
   currentPlayer = playerName;
   
   // Update results title
@@ -280,17 +284,8 @@ function selectPlayer(playerName) {
   // Filter data for the selected player
   let playerData = allData[currentCategory].filter(entry => entry.Name === playerName);
   
-  // Sort by sortableDate (newest first)
-  playerData.sort((a, b) => {
-    // Reverse order for descending (newest first)
-    return b.sortableDate.localeCompare(a.sortableDate);
-  });
-  
-  console.log(`Found ${playerData.length} records for ${playerName}, sorted newest first`);
-  if (playerData.length > 0) {
-    console.log(`First entry date: ${playerData[0].Date}, sortable: ${playerData[0].sortableDate}`);
-    console.log(`Last entry date: ${playerData[playerData.length-1].Date}, sortable: ${playerData[playerData.length-1].sortableDate}`);
-  }
+  // Sort by date (newest first) using the custom comparator
+  playerData.sort((a, b) => compareDates(a.Date, b.Date));
   
   // Store current player data globally
   currentPlayerData = playerData;
@@ -311,8 +306,6 @@ function selectPlayer(playerName) {
 
 // Display player data
 function displayPlayerData(playerData, limitToFive) {
-  console.log(`Displaying player data. Limit to five: ${limitToFive}`);
-  
   // Clear previous results
   elements.playerStatsBody.innerHTML = '';
   
@@ -322,21 +315,16 @@ function displayPlayerData(playerData, limitToFive) {
     elements.noResultsMessage.classList.add('hidden');
     elements.playerStatsBody.parentElement.classList.remove('hidden');
     
-    // Make a copy of the data for display
-    const dataToDisplay = [...playerData];
+    // Copy the array to avoid modifying the original
+    let displayData = [...playerData];
     
-    // Sort again by sortableDate (newest first) to ensure proper order
-    dataToDisplay.sort((a, b) => b.sortableDate.localeCompare(a.sortableDate));
-    
-    // Take only the first N entries if limiting
-    const displayEntries = limitToFive 
-      ? dataToDisplay.slice(0, Math.min(5, dataToDisplay.length)) 
-      : dataToDisplay;
-    
-    console.log(`Displaying ${displayEntries.length} entries. First entry date: ${displayEntries[0].Date}`);
+    // If limiting, only show the first 5 entries
+    if (limitToFive) {
+      displayData = displayData.slice(0, Math.min(5, displayData.length));
+    }
     
     // Populate table with player data
-    displayEntries.forEach(entry => {
+    displayData.forEach(entry => {
       const row = document.createElement('tr');
       
       // Format the date
@@ -381,14 +369,17 @@ function updatePlayerStats(playerData) {
   elements.successRateByTarget.innerHTML = '';
   elements.avgRankSection.innerHTML = '';
   
-  // Make a copy and sort by sortableDate (newest first)
-  const sortedData = [...playerData].sort((a, b) => b.sortableDate.localeCompare(a.sortableDate));
+  // Copy data array to avoid modifying original
+  let sortedData = [...playerData];
+  
+  // Sort by date (newest first)
+  sortedData.sort((a, b) => compareDates(a.Date, b.Date));
   
   // Calculate success rate by target value
   const targetValueMap = new Map();
   
   // Group data by target value
-  sortedData.forEach(entry => {
+  playerData.forEach(entry => {
     const targetValue = entry['Target Value'];
     if (!targetValueMap.has(targetValue)) {
       targetValueMap.set(targetValue, { total: 0, hits: 0 });
@@ -441,7 +432,6 @@ function updatePlayerStats(playerData) {
     return totalRank / data.length;
   };
   
-  // Use sorted data for these calculations
   const overallAvgRank = calculateAvgRank(sortedData);
   const last5AvgRank = calculateAvgRank(sortedData.slice(0, Math.min(5, sortedData.length)));
   const last10AvgRank = calculateAvgRank(sortedData.slice(0, Math.min(10, sortedData.length)));
@@ -491,50 +481,54 @@ function getCategoryFullName(category) {
 
 // Format date from MM/DD/YYYY to a more readable format
 function formatDate(dateString) {
-  // Validate input
-  if (!dateString || typeof dateString !== 'string') {
-    return 'Invalid Date';
-  }
-
+  if (!dateString) return '';
+  
   const parts = dateString.split('/');
   if (parts.length !== 3) return dateString;
   
-  const month = parseInt(parts[0], 10);
-  const day = parseInt(parts[1], 10);
-  const year = parseInt(parts[2], 10);
+  const month = parseInt(parts[0]);
+  const day = parseInt(parts[1]);
+  const year = parseInt(parts[2]);
   
-  // Validate parsed values
   if (isNaN(month) || isNaN(day) || isNaN(year)) {
     return dateString;
   }
   
-  // Format as "Mon DD, YYYY" manually to avoid browser inconsistencies
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  return `${monthNames[month-1]} ${day}, ${year}`;
+  // Manual formatting to avoid browser inconsistencies
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const monthName = monthNames[month - 1] || '';
+  
+  return `${monthName} ${day}, ${year}`;
 }
 
 // Update last updated text
 function updateLastUpdatedText() {
   if (dataLastUpdated) {
-    const options = { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    };
-    
-    let formattedDate;
-    try {
-      formattedDate = dataLastUpdated.toLocaleDateString('en-US', options);
-    } catch (e) {
-      // Fallback if toLocaleDateString fails
-      formattedDate = dataLastUpdated.toString();
-    }
-    
+    const formattedDate = formatDateWithTime(dataLastUpdated);
     elements.lastUpdated.textContent = `Last updated: ${formattedDate}`;
   } else {
     elements.lastUpdated.textContent = 'Data successfully loaded';
+  }
+}
+
+// Helper function to format date with time
+function formatDateWithTime(date) {
+  try {
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    const month = monthNames[date.getMonth()];
+    const day = date.getDate();
+    const year = date.getFullYear();
+    
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    
+    hours = hours % 12;
+    hours = hours ? hours : 12; // Convert 0 to 12
+    
+    return `${month} ${day}, ${year} ${hours}:${minutes} ${ampm}`;
+  } catch (e) {
+    return date.toString();
   }
 }
