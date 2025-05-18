@@ -83,6 +83,8 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
         }
         
         .tool-card:hover {
@@ -91,6 +93,9 @@
         
         .tool-card-content {
             padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
         }
         
         .tool-card h3 {
@@ -101,6 +106,7 @@
         .tool-card p {
             margin-bottom: 1.5rem;
             color: #666;
+            flex-grow: 1;
         }
         
         .button {
@@ -111,6 +117,8 @@
             border-radius: 4px;
             text-decoration: none;
             transition: background-color 0.3s ease;
+            align-self: flex-start;
+            margin-top: auto;
         }
         
         .button:hover {
@@ -147,7 +155,7 @@
     <main>
         <section class="intro">
             <h2>Welcome to caustic.info</h2>
-            <p>Work in progress!</p>
+            <p>Your source for sports analytics tools and databases. Explore our collection of tools designed to help you analyze sports data and make informed decisions.</p>
         </section>
         
         <section class="tools-section">
@@ -172,7 +180,7 @@
                 <div class="tool-card">
                     <div class="tool-card-content">
                         <h3>Karma Betting Calculator</h3>
-                        <p>Calculate optimal karma betting strategies and expected returns by comparing sportsbook odds to Real app odds.</p>
+                        <p>Calculate optimal betting strategies and expected returns using the Karma betting system.</p>
                         <a href="karma-calculator.html" class="button">Open Tool</a>
                     </div>
                 </div>
