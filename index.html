@@ -54,10 +54,36 @@
             text-decoration: none;
             font-size: 1.1rem;
             transition: color 0.3s ease;
+            white-space: nowrap;
         }
         
         nav ul li a:hover {
             color: #ccc;
+        }
+        
+        @media (max-width: 600px) {
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            nav ul li {
+                margin: 0.2rem 0;
+                width: 100%;
+                text-align: center;
+            }
+            
+            nav ul li a {
+                display: block;
+                padding: 0.5rem 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                width: 80%;
+            }
+            
+            nav ul li:last-child a {
+                border-bottom: none;
+            }
         }
         
         main {
@@ -155,7 +181,7 @@
     <main>
         <section class="intro">
             <h2>Welcome to caustic.info</h2>
-            <p>Work in progress!</p>
+            <p>Your source for sports analytics tools and databases. Explore our collection of tools designed to help you analyze sports data and make informed decisions.</p>
         </section>
         
         <section class="tools-section">
@@ -180,7 +206,7 @@
                 <div class="tool-card">
                     <div class="tool-card-content">
                         <h3>Karma Betting Calculator</h3>
-                        <p>Calculate optimal betting strategies and expected returns for various bet types.</p>
+                        <p>Calculate optimal betting strategies and expected returns using the Karma betting system.</p>
                         <a href="karma-calculator.html" class="button">Open Tool</a>
                     </div>
                 </div>
