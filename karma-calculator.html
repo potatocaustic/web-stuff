@@ -10,56 +10,35 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <!-- Babel for JSX -->
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-  </head>
-  <body>
-    <header>
-      <h1>Karma Betting Expected Value Calculator</h1>
-      <nav>
-        <ul>
-          <li><a href="index.html" class="active">Home</a></li>
-          <li><a href="PSPs/mlb-psp.html">MLB PSP Database</a></li>
-          <li><a href="PSPs-WNBA/wnba-psp.html">WNBA PSP Database</a></li>
-        </ul>
-      </nav>
-    </header>
-    <main>
-      <section class="info">
-        <p>Calculate the expected value of karma bets by comparing Real App odds with sportsbook odds.</p>
-      </section>
-      <section class="form-section">
-        <!-- This is where our React component will be rendered -->
-        <div id="calculator-root"></div>
-      </section>
-    </main>
-    <footer>
-      <p>&copy; caustic.info</p>
-    </footer>
-
     <style>
-      /* Base styles */
+      /* Reset and General Styles */
       * {
-        box-sizing: border-box;
         margin: 0;
         padding: 0;
+        box-sizing: border-box;
       }
       
       body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        line-height: 1.6;
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
         color: #333;
-        background-color: #f5f5f5;
-        padding: 0;
-        margin: 0;
+        line-height: 1.6;
       }
       
+      h1, h2, h3 {
+        color: #333;
+      }
+
+      /* Main site header style - matching your other pages */
       header {
         background-color: #333;
-        color: white;
-        text-align: center;
+        color: #fff;
         padding: 1rem;
+        text-align: center;
       }
       
-      h1 {
+      header h1 {
+        color: white !important;
         font-size: 1.5rem;
         margin: 0;
       }
@@ -124,34 +103,61 @@
           border-bottom: none;
         }
       }
+
+      /* Main content area */
+      main {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
       
-      /* Custom styles */
+      /* Info Section */
+      .info {
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      
+      .info p {
+        margin-bottom: 0.5rem;
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        margin-top: 2rem;
+        padding: 1rem;
+        background-color: #333;
+        color: #fff;
+      }
+      
+      /* Calculator specific styles */
       .container {
         width: 100%;
         margin: 0 auto;
         background-color: #fff;
         border-radius: 8px;
-        padding: 1rem;
+        padding: 1.5rem;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       }
       
       .section {
-        margin-bottom: 1rem;
-        padding: 0.75rem;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
         border-radius: 8px;
         background-color: #f9f9f9;
         border: 1px solid #eee;
       }
       
       .section-title {
-        margin-bottom: 0.75rem;
+        margin-bottom: 1rem;
         font-size: 1.2rem;
         font-weight: bold;
+        color: #333;
       }
       
       .grid {
         display: grid;
-        gap: 1rem;
+        gap: 1.5rem;
       }
       
       @media (min-width: 768px) {
@@ -161,7 +167,7 @@
       }
       
       .input-group {
-        margin-bottom: 0.75rem;
+        margin-bottom: 1rem;
       }
       
       .label {
@@ -169,14 +175,20 @@
         margin-bottom: 0.5rem;
         font-weight: bold;
         font-size: 0.95rem;
+        color: #333;
       }
       
       .input {
         width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #ccc;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
         border-radius: 4px;
         font-size: 1rem;
+      }
+      
+      .input:focus {
+        outline: none;
+        border-color: #333;
       }
       
       .input-wrapper {
@@ -190,9 +202,9 @@
       }
       
       .button {
-        background-color: #e3f2fd;
-        border: 1px solid #bbdefb;
-        color: #0d47a1;
+        background-color: #f4f4f4;
+        border: 1px solid #ddd;
+        color: #333;
         width: 40px;
         height: 40px;
         font-size: 1.25rem;
@@ -203,13 +215,18 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: background-color 0.3s ease;
+      }
+      
+      .button:hover {
+        background-color: #e0e0e0;
       }
       
       .text-button {
-        background-color: #f1f1f1;
+        background-color: #f4f4f4;
         border: 1px solid #ddd;
         color: #333;
-        padding: 0.5rem 0.75rem;
+        padding: 0.6rem 1rem;
         font-size: 0.9rem;
         border-radius: 4px;
         cursor: pointer;
@@ -217,24 +234,26 @@
         align-items: center;
         justify-content: center;
         margin-top: 0.5rem;
+        transition: background-color 0.3s ease;
       }
       
       .text-button:hover {
-        background-color: #e1e1e1;
+        background-color: #e0e0e0;
       }
       
       .reset-button {
         background-color: #f8d7da;
         border: 1px solid #f5c2c7;
         color: #842029;
-        padding: 0.5rem 1rem;
+        padding: 0.6rem 1.2rem;
         font-size: 1rem;
         border-radius: 4px;
         cursor: pointer;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        transition: background-color 0.3s ease;
       }
       
       .reset-button:hover {
@@ -245,20 +264,21 @@
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem;
-        margin-bottom: 0.75rem;
+        margin-bottom: 1rem;
       }
       
       .radio-label {
         display: inline-flex;
         align-items: center;
-        padding: 0.5rem;
+        padding: 0.6rem;
         border: 1px solid #ddd;
         border-radius: 4px;
-        background-color: #f5f5f5;
+        background-color: #fff;
         cursor: pointer;
         flex: 1;
         min-width: calc(33.33% - 0.5rem);
         justify-content: center;
+        transition: all 0.3s ease;
       }
       
       @media (max-width: 767px) {
@@ -267,9 +287,14 @@
         }
       }
       
+      .radio-label:hover {
+        background-color: #f4f4f4;
+      }
+      
       .radio-label-selected {
-        background-color: #e3f2fd;
-        border-color: #2196f3;
+        background-color: #333;
+        color: #fff;
+        border-color: #333;
       }
       
       .radio-input {
@@ -278,44 +303,70 @@
       
       .result-card {
         background-color: #fff;
-        padding: 0.75rem;
-        border-radius: 4px;
+        padding: 1rem;
+        border-radius: 8px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        margin-bottom: 0.75rem;
+        margin-bottom: 1rem;
+        border: 1px solid #eee;
       }
       
       .result-title {
         font-size: 1.1rem;
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.75rem;
         text-align: center;
         font-weight: bold;
+        color: #333;
       }
       
       .result-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 0.75rem;
+        gap: 1rem;
       }
       
       .recommendation {
         background-color: #f0f8ff;
-        padding: 0.75rem;
-        border-radius: 4px;
+        padding: 1rem;
+        border-radius: 8px;
         text-align: center;
-        margin: 0.75rem 0;
+        margin: 0 0 1.5rem 0;
         border: 1px solid #cce5ff;
       }
       
       .ev-positive {
-        color: #008800;
+        color: #155724;
         font-weight: bold;
       }
       
       .ev-negative {
-        color: #cc0000;
+        color: #721c24;
         font-weight: bold;
       }
     </style>
+  </head>
+  <body>
+    <header>
+      <h1>Karma Betting Expected Value Calculator</h1>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="PSPs/mlb-psp.html">MLB PSP Database</a></li>
+          <li><a href="PSPs-WNBA/wnba-psp.html">WNBA PSP Database</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <section class="info">
+        <p>Calculate the expected value of karma bets by comparing Real App odds with sportsbook odds.</p>
+      </section>
+      <section class="form-section">
+        <!-- This is where our React component will be rendered -->
+        <div id="calculator-root"></div>
+      </section>
+    </main>
+    <footer>
+      <p>&copy; caustic.info</p>
+    </footer>
 
     <!-- The React component script remains unchanged -->
     <script type="text/babel">
@@ -782,13 +833,3 @@
                   </div>
                 </div>
               </div>
-            )}
-          </div>
-        );
-      };
-
-      // Render the component to the DOM
-      ReactDOM.render(<KarmaBettingCalculator />, document.getElementById('calculator-root'));
-    </script>
-  </body>
-</html>
