@@ -277,17 +277,17 @@
       
       <div class="section">
         <h2>Why Expected Value Matters for Karma Betting</h2>
-        <p>In karma betting apps, you want to find situations where the "true" probability of an outcome (estimated from sportsbook odds) differs from the payout odds offered by the karma app. When the karma app offers better odds than the true probability suggests, you have a positive EV bet.</p>
+        <p>On the Real app, you want to find situations where the "true" probability of an outcome (estimated from sportsbook odds) differs from the payout odds offered by Real. When Real offers better odds than the true probability suggests, you have a positive EV bet.</p>
         
         <div class="highlight-box">
           <h3>Key Insight</h3>
-          <p>Sportsbooks are generally more accurate at setting odds because they have more sophisticated models and handle much larger volumes. By using sportsbook odds to estimate true probabilities, we can identify when karma apps are offering favorable bets.</p>
+          <p>Sportsbooks are generally more accurate at setting odds because they have more sophisticated models and handle much larger volumes. By using sportsbook odds to estimate true probabilities, we can identify when Real is offering favorable bets.</p>
         </div>
         
         <h3>What are "No-Vig" Probabilities?</h3>
         <p>Sportsbooks build in a profit margin called "vig" or "juice." For example, both sides of a bet might have -110 odds, implying a 52.4% probability each, totaling 104.8%. The extra 4.8% is the vig.</p>
         
-        <p>To get true probabilities, we remove this vig by normalizing the implied probabilities so they add up to 100%.</p>
+        <p>To get true probabilities, we remove this vig by normalizing the implied probabilities so they add up to 100%. The calculator does this for you; this is simply for informational purposes.</p>
         
         <div class="example">
           <h4>No-Vig Example:</h4>
@@ -310,12 +310,12 @@
         
         <div class="step">
           <div class="step-number">Step 1: Set Your Maximum Bet Size</div>
-          <p>Choose 50, 100, or 200 karma. This determines your potential maximum bet and affects the calculations.</p>
+          <p>Choose 50, 100, or 200 karma, depending on the maximum bet allowed by Real.</p>
         </div>
         
         <div class="step">
           <div class="step-number">Step 2: Enter Real App Odds</div>
-          <p>Input the odds offered by your karma betting app for both Over/Home Team and Under/Away Team. These are typically in American format (like +150 or -120).</p>
+          <p>Input the odds offered by Real for both Over/Home Team and Under/Away Team. These are in American format (like +150 or -120). When no odds are displayed on Real, it is an even money wager (+100 for each side). </p>
           <ul>
             <li>Use the +/- buttons to quickly add signs</li>
             <li>Press Enter to move between fields</li>
@@ -328,7 +328,7 @@
           <p>Find the same bet on a major sportsbook (DraftKings, FanDuel, etc.) and enter those odds.</p>
           <ul>
             <li>Choose between American (+150, -120) or Decimal (2.50, 1.83) format</li>
-            <li>Make sure you're comparing the exact same bet (same totals, same teams, etc.)</li>
+            <li>Make sure you're comparing the exact same bet (same totals, sides, teams, etc.)</li>
           </ul>
         </div>
         
@@ -337,7 +337,7 @@
           <p>The calculator shows four different expected values:</p>
           <ul>
             <li><strong>Max Bet EV:</strong> Expected value of betting your maximum karma amount</li>
-            <li><strong>Zero Bet EV:</strong> Expected value of making a small bet (10 or 5 karma) that you can afford to lose</li>
+            <li><strong>Zero Bet EV:</strong> Expected value of making a zero bet.</li>
           </ul>
           <p>The recommendation section highlights the best bet based on highest expected value.</p>
         </div>
