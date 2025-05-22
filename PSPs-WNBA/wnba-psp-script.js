@@ -96,6 +96,23 @@ async function loadMetadata() {
   }
 }
 
+// Helper function to check if a date is 5-18-25
+function isDate51825(dateString) {
+  if (!dateString) return false;
+  
+  // Check for various date formats that could represent 5-18-25
+  const patterns = [
+    /^5-18-25$/,           // 5-18-25
+    /^05-18-25$/,          // 05-18-25
+    /^5\/18\/2025$/,       // 5/18/2025
+    /^05\/18\/2025$/,      // 05/18/2025
+    /^5-18-2025$/,         // 5-18-2025
+    /^05-18-2025$/         // 05-18-2025
+  ];
+  
+  return patterns.some(pattern => pattern.test(dateString.trim()));
+}
+
 // Function to load data for a specific category
 async function loadData(category) {
   if (allData[category].length > 0) {
@@ -126,8 +143,15 @@ async function loadData(category) {
       }
     }
     
-    // Filter out entries with Projection = 0
-    const filtered = data.filter(entry => entry.Projection !== 0);
+    // Modified filter: Keep entries with Projection !== 0 OR entries from 5-18-25
+    const filtered = data.filter(entry => {
+      // Always include entries from 5-18-25, regardless of Projection value
+      if (isDate51825(entry.Date)) {
+        return true;
+      }
+      // For all other dates, filter out entries with Projection = 0
+      return entry.Projection !== 0;
+    });
     
     // Store the data
     allData[category] = filtered;
