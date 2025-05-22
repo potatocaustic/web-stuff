@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Access - caustic.info</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        
+        .auth-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            margin-bottom: 1rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn.secondary {
+            background: #6c757d;
+        }
+        
+        .error {
+            color: #e74c3c;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .success {
+            color: #27ae60;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .device-info {
+            background: #e8f4fd;
+            border: 1px solid #bee5eb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+        }
+        
+        .device-id {
+            font-family: monospace;
+            background: #f1f3f4;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+        
+        .authenticated {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            color: #155724;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .admin-panel {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            text-align: left;
+        }
+        
+        .device-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .device-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .device-item:last-child {
+            border-bottom: none;
+        }
+        
+        .device-name {
+            font-weight: bold;
+        }
+        
+        .device-details {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .revoke-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .code-display {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 0.5rem;
+            font-family: monospace;
+            font-size: 1.1rem;
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <!-- Authentication Form -->
+        <div id="authSection">
+            <div class="logo">caustic.info</div>
+            <div class="subtitle">Team Access Portal</div>
+            
+            <div class="info-box">
+                Enter your team access code to authenticate this device. Each device must be registered individually to prevent unauthorized sharing.
+            </div>
+            
+            <form id="authForm">
+                <div class="form-group">
+                    <label for="teamCode">Team Access Code:</label>
+                    <input type="text" id="teamCode" placeholder="e.g., TEAM-ALPHA-2025" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="playerName">Your Name:</label>
+                    <input type="text" id="playerName" placeholder="Enter your name" required>
+                </div>
+                
+                <button type="submit" class="btn" id="submitBtn">
+                    Authenticate Device
+                </button>
+            </form>
+            
+            <div id="message"></div>
+            
+            <div class="device-info">
+                <strong>Device ID:</strong><br>
+                <span class="device-id" id="deviceId">Generating...</span>
+                <br><br>
+                <small>This unique ID identifies your device and cannot be shared.</small>
+            </div>
+        </div>
+        
+        <!-- Success Section -->
+        <div id="successSection" class="hidden">
+            <div class="authenticated">
+                <h3>✅ Device Authenticated!</h3>
+                <p id="welcomeMessage">Welcome! You now have access to the team tools.</p>
+                <button class="btn" onclick="window.location.href='index.html'">
+                    Access Team Tools
+                </button>
+                <button class="btn secondary" onclick="showAuthSection()">
+                    Register Another Device
+                </button>
+            </div>
+        </div>
+        
+        <!-- Admin Panel -->
+        <div id="adminPanel" class="hidden">
+            <div class="admin-panel">
+                <h4>🔧 Admin Panel</h4>
+                <p><strong>Current Team Code:</strong></p>
+                <div class="code-display" id="currentTeamCode">TEAM-ALPHA-2025</div>
+                
+                <button class="btn" onclick="generateNewCode()">Generate New Code</button>
+                
+                <h5 style="margin-top: 1rem;">Registered Devices:</h5>
+                <div class="device-list" id="deviceList">
+                    <!-- Device list will be populated here -->
+                </div>
+                
+                <button class="btn secondary" onclick="exportDeviceList()">Export Device List</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const ADMIN_CODE = 'ADMIN-MASTER-KEY-2025'; // Change this to your secret admin code
+        let currentTeamCode = 'TEAM-ALPHA-2025'; // Default team code
+        
+        // Generate device fingerprint
+        function generateDeviceFingerprint() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.textBaseline = 'top';
+            ctx.font = '14px Arial';
+            ctx.fillText('Device fingerprint', 2, 2);
+            
+            const fingerprint = [
+                navigator.userAgent,
+                navigator.language,
+                screen.width + 'x' + screen.height,
+                new Date().getTimezoneOffset(),
+                canvas.toDataURL(),
+                navigator.hardwareConcurrency || 'unknown',
+                navigator.deviceMemory || 'unknown'
+            ].join('|');
+            
+            // Simple hash function
+            let hash = 0;
+            for (let i = 0; i < fingerprint.length; i++) {
+                const char = fingerprint.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32-bit integer
+            }
+            
+            return Math.abs(hash).toString(36).toUpperCase().slice(0, 12);
+        }
+        
+        // Storage functions
+        function getStoredDevices() {
+            return JSON.parse(localStorage.getItem('teamDevices') || '[]');
+        }
+        
+        function storeDevice(deviceId, name, code) {
+            const devices = getStoredDevices();
+            const deviceData = {
+                id: deviceId,
+                name: name,
+                code: code,
+                registeredAt: new Date().toISOString(),
+                lastAccess: new Date().toISOString()
+            };
+            
+            // Remove existing device with same ID if any
+            const filteredDevices = devices.filter(d => d.id !== deviceId);
+            filteredDevices.push(deviceData);
+            
+            localStorage.setItem('teamDevices', JSON.stringify(filteredDevices));
+            return deviceData;
+        }
+        
+        function isDeviceAuthenticated(deviceId) {
+            const devices = getStoredDevices();
+            const device = devices.find(d => d.id === deviceId);
+            return device && device.code === currentTeamCode;
+        }
+        
+        function updateLastAccess(deviceId) {
+            const devices = getStoredDevices();
+            const deviceIndex = devices.findIndex(d => d.id === deviceId);
+            if (deviceIndex !== -1) {
+                devices[deviceIndex].lastAccess = new Date().toISOString();
+                localStorage.setItem('teamDevices', JSON.stringify(devices));
+            }
+        }
+        
+        function revokeDevice(deviceId) {
+            const devices = getStoredDevices();
+            const filteredDevices = devices.filter(d => d.id !== deviceId);
+            localStorage.setItem('teamDevices', JSON.stringify(filteredDevices));
+            updateDeviceList();
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            const deviceId = generateDeviceFingerprint();
+            document.getElementById('deviceId').textContent = deviceId;
+            
+            // Check if device is already authenticated
+            if (isDeviceAuthenticated(deviceId)) {
+                const devices = getStoredDevices();
+                const device = devices.find(d => d.id === deviceId);
+                updateLastAccess(deviceId);
+                showSuccessSection(device.name);
+                return;
+            }
+            
+            // Check if accessing with admin code in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('admin') === ADMIN_CODE) {
+                showAdminPanel();
+                return;
+            }
+        });
+        
+        // Form submission
+        document.getElementById('authForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const teamCode = document.getElementById('teamCode').value.trim().toUpperCase();
+            const playerName = document.getElementById('playerName').value.trim();
+            const deviceId = document.getElementById('deviceId').textContent;
+            const messageDiv = document.getElementById('message');
+            
+            // Clear previous messages
+            messageDiv.innerHTML = '';
+            
+            // Validate inputs
+            if (!teamCode || !playerName) {
+                showMessage('Please fill in all fields.', 'error');
+                return;
+            }
+            
+            // Check if it's admin code
+            if (teamCode === ADMIN_CODE) {
+                showAdminPanel();
+                return;
+            }
+            
+            // Check if it's the correct team code
+            if (teamCode !== currentTeamCode) {
+                showMessage('Invalid team code. Please check with your team leader.', 'error');
+                return;
+            }
+            
+            // Register device
+            try {
+                storeDevice(deviceId, playerName, teamCode);
+                showSuccessSection(playerName);
+                showMessage('Device successfully authenticated!', 'success');
+            } catch (error) {
+                showMessage('Error registering device. Please try again.', 'error');
+            }
+        });
+        
+        function showMessage(message, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+        
+        function showSuccessSection(playerName) {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('successSection').classList.remove('hidden');
+            document.getElementById('welcomeMessage').textContent = `Welcome, ${playerName}! You now have access to the team tools.`;
+        }
+        
+        function showAuthSection() {
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('successSection').classList.add('hidden');
+            document.getElementById('adminPanel').classList.add('hidden');
+            
+            // Clear form
+            document.getElementById('teamCode').value = '';
+            document.getElementById('playerName').value = '';
+            document.getElementById('message').innerHTML = '';
+        }
+        
+        function showAdminPanel() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('successSection').classList.add('hidden');
+            document.getElementById('adminPanel').classList.remove('hidden');
+            document.getElementById('currentTeamCode').textContent = currentTeamCode;
+            updateDeviceList();
+        }
+        
+        function updateDeviceList() {
+            const devices = getStoredDevices();
+            const deviceListDiv = document.getElementById('deviceList');
+            
+            if (devices.length === 0) {
+                deviceListDiv.innerHTML = '<p style="text-align: center; color: #666;">No devices registered yet.</p>';
+                return;
+            }
+            
+            deviceListDiv.innerHTML = devices.map(device => `
+                <div class="device-item">
+                    <div>
+                        <div class="device-name">${device.name}</div>
+                        <div class="device-details">
+                            ID: ${device.id}<br>
+                            Registered: ${new Date(device.registeredAt).toLocaleDateString()}<br>
+                            Last Access: ${new Date(device.lastAccess).toLocaleDateString()}
+                        </div>
+                    </div>
+                    <button class="revoke-btn" onclick="revokeDevice('${device.id}')">Revoke</button>
+                </div>
+            `).join('');
+        }
+        
+        function generateNewCode() {
+            const adjectives = ['ALPHA', 'BETA', 'GAMMA', 'DELTA', 'ECHO', 'FOXTROT', 'GOLF', 'HOTEL'];
+            const nouns = ['WARRIORS', 'CHAMPIONS', 'LEGENDS', 'TITANS', 'EAGLES', 'HAWKS', 'LIONS', 'BEARS'];
+            const year = new Date().getFullYear();
+            
+            const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+            const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+            const randomNumber = Math.floor(Math.random() * 1000);
+            
+            currentTeamCode = `TEAM-${randomAdjective}-${randomNoun}-${randomNumber}`;
+            document.getElementById('currentTeamCode').textContent = currentTeamCode;
+            
+            showMessage('New team code generated! Share this with your teammates.', 'success');
+        }
+        
+        function exportDeviceList() {
+            const devices = getStoredDevices();
+            const csvContent = [
+                'Name,Device ID,Registered Date,Last Access',
+                ...devices.map(d => `"${d.name}","${d.id}","${new Date(d.registeredAt).toLocaleDateString()}","${new Date(d.lastAccess).toLocaleDateString()}"`)
+            ].join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `team-devices-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
