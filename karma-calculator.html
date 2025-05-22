@@ -6,10 +6,10 @@
     <title>Karma Betting Calculator - caustic.info</title>
     <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
     <!-- React and ReactDOM -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <!-- Babel for JSX -->
-    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
       /* Reset and General Styles */
       * {
@@ -368,9 +368,9 @@
       <p>&copy; caustic.info</p>
     </footer>
 
-    <!-- The React component script remains unchanged -->
     <script type="text/babel">
-      // React component for the Karma Betting Calculator
+      const { useState, useRef, useEffect } = React;
+      
       const KarmaBettingCalculator = () => {
         // State for form inputs
         const [realAppOver, setRealAppOver] = React.useState('+100');
@@ -420,10 +420,10 @@
         };
         
         // Refs for input fields to manage focus
-        const realAppOverRef = React.useRef(null);
-        const realAppUnderRef = React.useRef(null);
-        const sbOverRef = React.useRef(null);
-        const sbUnderRef = React.useRef(null);
+        const realAppOverRef = useRef(null);
+        const realAppUnderRef = useRef(null);
+        const sbOverRef = useRef(null);
+        const sbUnderRef = useRef(null);
         
         // Focus order for keyboard navigation
         const inputOrder = [realAppOverRef, realAppUnderRef, sbOverRef, sbUnderRef];
@@ -527,7 +527,7 @@
         };
         
         // Update calculations when inputs change
-        React.useEffect(() => {
+        useEffect(() => {
           if (!realAppOver || !realAppUnder || !sbOver || !sbUnder) {
             // Don't calculate if inputs are missing
             return;
