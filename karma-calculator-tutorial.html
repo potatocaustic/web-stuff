@@ -3,13 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Karma Betting Calculator - caustic.info</title>
+    <title>Karma Betting Calculator Tutorial - caustic.info</title>
     <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
-    <!-- React and ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
       /* Reset and General Styles */
       * {
@@ -27,9 +22,10 @@
       
       h1, h2, h3 {
         color: #333;
+        margin-bottom: 1rem;
       }
 
-      /* Main site header style - matching your other pages */
+      /* Main site header style */
       header {
         background-color: #333;
         color: #fff;
@@ -107,20 +103,86 @@
       /* Main content area */
       main {
         padding: 2rem;
-        max-width: 1200px;
+        max-width: 1000px;
         margin: 0 auto;
       }
       
-      /* Info Section */
-      .info {
-        text-align: center;
-        margin-bottom: 1.5rem;
+      /* Content sections */
+      .section {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       }
       
-      .info p {
-        margin-bottom: 0.5rem;
+      .highlight-box {
+        background-color: #f0f8ff;
+        border: 1px solid #cce5ff;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
       }
-
+      
+      .warning-box {
+        background-color: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+      }
+      
+      .example {
+        background-color: #f8f9fa;
+        border-left: 4px solid #333;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+      }
+      
+      .formula {
+        background-color: #f1f3f4;
+        border-radius: 4px;
+        padding: 0.5rem 1rem;
+        font-family: 'Courier New', monospace;
+        margin: 0.5rem 0;
+        display: inline-block;
+      }
+      
+      .step {
+        background-color: #e8f5e8;
+        border-left: 4px solid #28a745;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+      }
+      
+      .step-number {
+        font-weight: bold;
+        color: #28a745;
+        font-size: 1.1rem;
+      }
+      
+      /* Table styles */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+      }
+      
+      th, td {
+        border: 1px solid #ddd;
+        padding: 0.75rem;
+        text-align: left;
+      }
+      
+      th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+      }
+      
+      tr:nth-child(even) {
+        background-color: #f8f9fa;
+      }
+      
       /* Footer */
       footer {
         text-align: center;
@@ -130,722 +192,162 @@
         color: #fff;
       }
       
-      /* Calculator specific styles */
-      .container {
-        width: 100%;
-        margin: 0 auto;
-        background-color: #fff;
-        border-radius: 8px;
-        padding: 1.5rem;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      /* Links */
+      a {
+        color: #007bff;
+        text-decoration: none;
       }
       
-      .section {
-        margin-bottom: 1.5rem;
-        padding: 1rem;
-        border-radius: 8px;
-        background-color: #f9f9f9;
-        border: 1px solid #eee;
+      a:hover {
+        text-decoration: underline;
       }
       
-      .section-title {
-        margin-bottom: 1rem;
-        font-size: 1.2rem;
-        font-weight: bold;
-        color: #333;
-      }
-      
-      .grid {
-        display: grid;
-        gap: 1.5rem;
-      }
-      
-      @media (min-width: 768px) {
-        .grid {
-          grid-template-columns: repeat(2, 1fr);
-        }
-      }
-      
-      .input-group {
-        margin-bottom: 1rem;
-      }
-      
-      .label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: bold;
-        font-size: 0.95rem;
-        color: #333;
-      }
-      
-      .input {
-        width: 100%;
-        padding: 0.8rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 1rem;
-      }
-      
-      .input:focus {
-        outline: none;
-        border-color: #333;
-      }
-      
-      .input-wrapper {
-        position: relative;
-        display: flex;
-      }
-      
-      .button-group {
-        display: flex;
-        margin-left: 0.5rem;
-      }
-      
-      .button {
-        background-color: #f4f4f4;
-        border: 1px solid #ddd;
-        color: #333;
-        width: 40px;
-        height: 40px;
-        font-size: 1.25rem;
-        font-weight: bold;
-        border-radius: 4px;
-        cursor: pointer;
-        margin-right: 0.25rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background-color 0.3s ease;
-      }
-      
-      .button:hover {
-        background-color: #e0e0e0;
-      }
-      
-      .text-button {
-        background-color: #f4f4f4;
-        border: 1px solid #ddd;
-        color: #333;
-        padding: 0.6rem 1rem;
-        font-size: 0.9rem;
-        border-radius: 4px;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        margin-top: 0.5rem;
-        transition: background-color 0.3s ease;
-      }
-      
-      .text-button:hover {
-        background-color: #e0e0e0;
-      }
-      
-      .reset-button {
-        background-color: #f8d7da;
-        border: 1px solid #f5c2c7;
-        color: #842029;
-        padding: 0.6rem 1.2rem;
-        font-size: 1rem;
-        border-radius: 4px;
-        cursor: pointer;
-        margin-bottom: 1.5rem;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transition: background-color 0.3s ease;
-      }
-      
-      .reset-button:hover {
-        background-color: #f5c2c7;
-      }
-      
-      .radio-group {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-      }
-      
-      .radio-label {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.6rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        background-color: #fff;
-        cursor: pointer;
-        flex: 1;
-        min-width: calc(33.33% - 0.5rem);
-        justify-content: center;
-        transition: all 0.3s ease;
-      }
-      
-      @media (max-width: 767px) {
-        .radio-label {
-          min-width: calc(50% - 0.5rem);
-        }
-      }
-      
-      .radio-label:hover {
-        background-color: #f4f4f4;
-      }
-      
-      .radio-label-selected {
+      /* Button styles */
+      .cta-button {
+        display: inline-block;
         background-color: #333;
-        color: #fff;
-        border-color: #333;
-      }
-      
-      .radio-input {
-        margin-right: 0.5rem;
-      }
-      
-      .result-card {
-        background-color: #fff;
-        padding: 1rem;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        margin-bottom: 1rem;
-        border: 1px solid #eee;
-      }
-      
-      .result-title {
-        font-size: 1.1rem;
-        margin-bottom: 0.75rem;
-        text-align: center;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        text-decoration: none;
         font-weight: bold;
-        color: #333;
+        margin: 1rem 0;
+        transition: background-color 0.3s ease;
       }
       
-      .result-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+      .cta-button:hover {
+        background-color: #555;
+        color: white;
+        text-decoration: none;
       }
       
-      .recommendation {
-        background-color: #f0f8ff;
-        padding: 1rem;
-        border-radius: 8px;
-        text-align: center;
-        margin: 0 0 1.5rem 0;
-        border: 1px solid #cce5ff;
+      /* List styles */
+      ul, ol {
+        margin: 1rem 0;
+        padding-left: 2rem;
       }
       
-      .ev-positive {
-        color: #155724;
-        font-weight: bold;
+      li {
+        margin: 0.5rem 0;
       }
       
-      .ev-negative {
-        color: #721c24;
-        font-weight: bold;
+      /* Math notation */
+      .math {
+        font-style: italic;
       }
     </style>
   </head>
   <body>
     <header>
-      <h1>Karma Betting Expected Value Calculator</h1>
+      <h1>Karma Betting Calculator Tutorial</h1>
       <nav>
         <ul>
           <li><a href="index.html">Home</a></li>
+          <li><a href="karma-calculator.html">Karma Calculator</a></li>
           <li><a href="PSPs/mlb-psp.html">MLB PSP Database</a></li>
           <li><a href="PSPs-WNBA/wnba-psp.html">WNBA PSP Database</a></li>
         </ul>
       </nav>
     </header>
+    
     <main>
-      <section class="info">
-        <p>Calculate the expected value of karma bets by comparing Real App odds with sportsbook odds.</p>
-        <p style="margin-top: 1rem;">
-          <a href="karma-calculator-tutorial.html" style="color: #007bff; text-decoration: none; font-weight: bold;">
-            📚 New to expected value or need help using this calculator? Check out our tutorial!
-          </a>
-        </p>
-      </section>
-      <section class="form-section">
-        <!-- This is where our React component will be rendered -->
-        <div id="calculator-root"></div>
-      </section>
+      <div class="section">
+        <h2>What is Expected Value (EV)?</h2>
+        <p>Expected Value is a fundamental concept in probability and gambling that tells you the average amount you can expect to win or lose per bet in the long run. It's calculated by weighing all possible outcomes by their probability of occurring.</p>
+        
+        <div class="highlight-box">
+          <h3>The Basic Formula</h3>
+          <div class="formula">EV = (Probability of Winning × Amount Won) + (Probability of Losing × Amount Lost)</div>
+          <p>Since losing means you lose your bet amount, the "Amount Lost" is negative (e.g., -$100 for a $100 bet).</p>
+        </div>
+        
+        <div class="example">
+          <h4>Simple Example:</h4>
+          <p>You bet $100 on a coin flip at +100 odds (even money):</p>
+          <ul>
+            <li>Probability of winning: 50% (0.5)</li>
+            <li>Amount won if you win: $100</li>
+            <li>Probability of losing: 50% (0.5)</li>
+            <li>Amount lost if you lose: -$100</li>
+          </ul>
+          <div class="formula">EV = (0.5 × $100) + (0.5 × -$100) = $50 - $50 = $0</div>
+          <p><strong>Result:</strong> This is a fair bet with zero expected value.</p>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h2>Why Expected Value Matters for Karma Betting</h2>
+        <p>In karma betting apps, you want to find situations where the "true" probability of an outcome (estimated from sportsbook odds) differs from the payout odds offered by the karma app. When the karma app offers better odds than the true probability suggests, you have a positive EV bet.</p>
+        
+        <div class="highlight-box">
+          <h3>Key Insight</h3>
+          <p>Sportsbooks are generally more accurate at setting odds because they have more sophisticated models and handle much larger volumes. By using sportsbook odds to estimate true probabilities, we can identify when karma apps are offering favorable bets.</p>
+        </div>
+        
+        <h3>What are "No-Vig" Probabilities?</h3>
+        <p>Sportsbooks build in a profit margin called "vig" or "juice." For example, both sides of a bet might have -110 odds, implying a 52.4% probability each, totaling 104.8%. The extra 4.8% is the vig.</p>
+        
+        <p>To get true probabilities, we remove this vig by normalizing the implied probabilities so they add up to 100%.</p>
+        
+        <div class="example">
+          <h4>No-Vig Example:</h4>
+          <p>Sportsbook odds: Over -110, Under -110</p>
+          <ul>
+            <li>Implied probability Over: 52.4%</li>
+            <li>Implied probability Under: 52.4%</li>
+            <li>Total: 104.8% (4.8% vig)</li>
+          </ul>
+          <p><strong>No-vig probabilities:</strong></p>
+          <ul>
+            <li>Over: 52.4% ÷ 104.8% = 50%</li>
+            <li>Under: 52.4% ÷ 104.8% = 50%</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h2>How to Use the Karma Betting Calculator</h2>
+        
+        <div class="step">
+          <div class="step-number">Step 1: Set Your Maximum Bet Size</div>
+          <p>Choose 50, 100, or 200 karma. This determines your potential maximum bet and affects the calculations.</p>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">Step 2: Enter Real App Odds</div>
+          <p>Input the odds offered by your karma betting app for both Over/Home Team and Under/Away Team. These are typically in American format (like +150 or -120).</p>
+          <ul>
+            <li>Use the +/- buttons to quickly add signs</li>
+            <li>Press Enter to move between fields</li>
+            <li>Default values are +100 (even money)</li>
+          </ul>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">Step 3: Enter Sportsbook Odds</div>
+          <p>Find the same bet on a major sportsbook (DraftKings, FanDuel, etc.) and enter those odds.</p>
+          <ul>
+            <li>Choose between American (+150, -120) or Decimal (2.50, 1.83) format</li>
+            <li>Make sure you're comparing the exact same bet (same totals, same teams, etc.)</li>
+          </ul>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">Step 4: Review Results</div>
+          <p>The calculator shows four different expected values:</p>
+          <ul>
+            <li><strong>Max Bet EV:</strong> Expected value of betting your maximum karma amount</li>
+            <li><strong>Zero Bet EV:</strong> Expected value of making a small bet (10 or 5 karma) that you can afford to lose</li>
+          </ul>
+          <p>The recommendation section highlights the best bet based on highest expected value.</p>
+        </div>
+      </div>
+      
+
     </main>
+    
     <footer>
       <p>&copy; caustic.info</p>
     </footer>
-
-    <script type="text/babel">
-      const { useState, useRef, useEffect } = React;
-      
-      const KarmaBettingCalculator = () => {
-        // State for form inputs
-        const [realAppOver, setRealAppOver] = React.useState('+100');
-        const [realAppUnder, setRealAppUnder] = React.useState('+100');
-        const [sbOver, setSbOver] = React.useState('');
-        const [sbUnder, setSbUnder] = React.useState('');
-        const [oddsFormat, setOddsFormat] = React.useState('american');
-        const [maxBetSize, setMaxBetSize] = React.useState(100);
-        
-        // State for calculated values
-        const [noVigProbOver, setNoVigProbOver] = React.useState(null);
-        const [noVigProbUnder, setNoVigProbUnder] = React.useState(null);
-        const [evMaxOver, setEvMaxOver] = React.useState(null);
-        const [evMaxUnder, setEvMaxUnder] = React.useState(null);
-        const [evZeroOver, setEvZeroOver] = React.useState(null);
-        const [evZeroUnder, setEvZeroUnder] = React.useState(null);
-        
-        // Default values for reset functions
-        const defaultRealAppOdds = {
-          over: '+100',
-          under: '+100'
-        };
-        
-        const defaultSbOdds = {
-          over: '',
-          under: ''
-        };
-        
-        // Reset functions
-        const resetAllInputs = () => {
-          setRealAppOver(defaultRealAppOdds.over);
-          setRealAppUnder(defaultRealAppOdds.under);
-          setSbOver(defaultSbOdds.over);
-          setSbUnder(defaultSbOdds.under);
-          setOddsFormat('american');
-          setMaxBetSize(100);
-        };
-        
-        const resetRealAppOdds = () => {
-          setRealAppOver(defaultRealAppOdds.over);
-          setRealAppUnder(defaultRealAppOdds.under);
-        };
-        
-        const resetSbOdds = () => {
-          setSbOver(defaultSbOdds.over);
-          setSbUnder(defaultSbOdds.under);
-        };
-        
-        // Refs for input fields to manage focus
-        const realAppOverRef = useRef(null);
-        const realAppUnderRef = useRef(null);
-        const sbOverRef = useRef(null);
-        const sbUnderRef = useRef(null);
-        
-        // Focus order for keyboard navigation
-        const inputOrder = [realAppOverRef, realAppUnderRef, sbOverRef, sbUnderRef];
-        
-        // Handle enter key to move to next input
-        const handleKeyDown = (e, currentIndex) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            const nextIndex = (currentIndex + 1) % inputOrder.length;
-            inputOrder[nextIndex].current.focus();
-          }
-        };
-        
-        // Helper function to add plus or minus sign
-        const addSign = (value, sign) => {
-          if (!value) return sign;
-          // Remove any existing sign
-          const numberPart = value.replace(/^[+-]/, '');
-          return sign + numberPart;
-        };
-        
-        // Helper functions for odds conversion
-        const americanToDecimal = (american) => {
-          if (!american) return null;
-          let value = parseFloat(american);
-          if (isNaN(value)) return null;
-          
-          // If the string doesn't start with "+", but is a positive number
-          // it should be treated as positive American odds
-          if (!american.toString().startsWith('-') && !american.toString().startsWith('+')) {
-            value = Math.abs(value);
-          }
-          
-          if (value > 0) {
-            return (value / 100) + 1;
-          } else {
-            return (100 / Math.abs(value)) + 1;
-          }
-        };
-        
-        const americanToImpliedProb = (american) => {
-          const decimal = americanToDecimal(american);
-          if (!decimal) return null;
-          return 1 / decimal;
-        };
-        
-        const decimalToImpliedProb = (decimal) => {
-          if (!decimal) return null;
-          const value = parseFloat(decimal);
-          if (isNaN(value) || value <= 0) return null;
-          return 1 / value;
-        };
-        
-        const calculateNoVigProbabilities = () => {
-          let probOver, probUnder;
-          
-          // Calculate implied probabilities based on selected odds format
-          if (oddsFormat === 'american') {
-            probOver = americanToImpliedProb(sbOver);
-            probUnder = americanToImpliedProb(sbUnder);
-          } else {
-            probOver = decimalToImpliedProb(sbOver);
-            probUnder = decimalToImpliedProb(sbUnder);
-          }
-          
-          if (!probOver || !probUnder) return { over: null, under: null };
-          
-          // Calculate the vig
-          const vig = probOver + probUnder - 1;
-          
-          // Remove the vig to get the no-vig probabilities
-          const noVigProbOver = probOver / (probOver + probUnder);
-          const noVigProbUnder = probUnder / (probOver + probUnder);
-          
-          return { over: noVigProbOver, under: noVigProbUnder };
-        };
-        
-        const calculateWinValue = (odds, betSize) => {
-          if (!odds) return null;
-          let value = parseFloat(odds);
-          if (isNaN(value)) return null;
-          
-          // If the string doesn't start with "+", but is a positive number
-          // it should be treated as positive American odds
-          if (!odds.toString().startsWith('-') && !odds.toString().startsWith('+')) {
-            value = Math.abs(value);
-          }
-          
-          if (value > 0) {
-            return (value / 100) * betSize;
-          } else {
-            return (100 / Math.abs(value)) * betSize;
-          }
-        };
-        
-        const calculateExpectedValue = (winProb, winValue, lossProb, lossValue) => {
-          if (winProb === null || winValue === null || lossProb === null || lossValue === null) {
-            return null;
-          }
-          return (winProb * winValue) + (lossProb * lossValue);
-        };
-        
-        // Update calculations when inputs change
-        useEffect(() => {
-          if (!realAppOver || !realAppUnder || !sbOver || !sbUnder) {
-            // Don't calculate if inputs are missing
-            return;
-          }
-          
-          const { over: overProb, under: underProb } = calculateNoVigProbabilities();
-          setNoVigProbOver(overProb);
-          setNoVigProbUnder(underProb);
-          
-          if (overProb === null || underProb === null) {
-            return;
-          }
-          
-          // Calculate max bet EVs
-          const winValueMaxOver = calculateWinValue(realAppOver, maxBetSize);
-          const lossValueMax = -maxBetSize;
-          const evMaxOverCalc = calculateExpectedValue(overProb, winValueMaxOver, underProb, lossValueMax);
-          setEvMaxOver(evMaxOverCalc);
-          
-          const winValueMaxUnder = calculateWinValue(realAppUnder, maxBetSize);
-          const evMaxUnderCalc = calculateExpectedValue(underProb, winValueMaxUnder, overProb, lossValueMax);
-          setEvMaxUnder(evMaxUnderCalc);
-          
-          // Calculate zero bet EVs
-          const zeroBetSize = maxBetSize >= 100 ? 10 : 5;
-          const winValueZeroOver = calculateWinValue(realAppOver, zeroBetSize);
-          const evZeroOverCalc = calculateExpectedValue(overProb, winValueZeroOver, 0, 0);
-          setEvZeroOver(evZeroOverCalc);
-          
-          const winValueZeroUnder = calculateWinValue(realAppUnder, zeroBetSize);
-          const evZeroUnderCalc = calculateExpectedValue(underProb, winValueZeroUnder, 0, 0);
-          setEvZeroUnder(evZeroUnderCalc);
-        }, [realAppOver, realAppUnder, sbOver, sbUnder, oddsFormat, maxBetSize]);
-        
-        return (
-          <div className="container">
-            <div style={{textAlign: 'center', marginBottom: '1rem'}}>
-              <button type="button" onClick={resetAllInputs} className="reset-button">
-                Reset All Values
-              </button>
-            </div>
-            
-            <div className="section">
-              <h2 className="section-title">Maximum Bet Size</h2>
-              <div className="radio-group">
-                {[50, 100, 200].map(size => (
-                  <label 
-                    key={size}
-                    className={`radio-label ${maxBetSize === size ? 'radio-label-selected' : ''}`}
-                  >
-                    <input
-                      type="radio"
-                      checked={maxBetSize === size}
-                      onChange={() => setMaxBetSize(size)}
-                      className="radio-input"
-                    />
-                    {size} Karma
-                  </label>
-                ))}
-              </div>
-            </div>
-            
-            <div className="grid">
-              <div className="section">
-                <h2 className="section-title">Real App Odds</h2>
-                <div className="input-group">
-                  <label className="label">Over/Home Team Odds:</label>
-                  <div className="input-wrapper">
-                    <input
-                      type="text"
-                      inputMode="text"
-                      value={realAppOver}
-                      onChange={(e) => setRealAppOver(e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(e, 0)}
-                      placeholder="e.g. +150 or -120"
-                      className="input"
-                      ref={realAppOverRef}
-                    />
-                    <div className="button-group">
-                      <button
-                        type="button"
-                        onClick={() => setRealAppOver(prev => addSign(prev, '+'))}
-                        className="button"
-                      >
-                        +
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setRealAppOver(prev => addSign(prev, '-'))}
-                        className="button"
-                      >
-                        -
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div className="input-group">
-                  <label className="label">Under/Away Team Odds:</label>
-                  <div className="input-wrapper">
-                    <input
-                      type="text"
-                      inputMode="text"
-                      value={realAppUnder}
-                      onChange={(e) => setRealAppUnder(e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(e, 1)}
-                      placeholder="e.g. +150 or -120"
-                      className="input"
-                      ref={realAppUnderRef}
-                    />
-                    <div className="button-group">
-                      <button
-                        type="button"
-                        onClick={() => setRealAppUnder(prev => addSign(prev, '+'))}
-                        className="button"
-                      >
-                        +
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setRealAppUnder(prev => addSign(prev, '-'))}
-                        className="button"
-                      >
-                        -
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <button type="button" onClick={resetRealAppOdds} className="text-button">
-                  Clear Real App Odds
-                </button>
-              </div>
-              
-              <div className="section">
-                <h2 className="section-title">Sportsbook Odds</h2>
-                <div className="input-group">
-                  <label className="label">Odds Format:</label>
-                  <div className="radio-group">
-                    <label 
-                      className={`radio-label ${oddsFormat === 'american' ? 'radio-label-selected' : ''}`}
-                    >
-                      <input
-                        type="radio"
-                        checked={oddsFormat === 'american'}
-                        onChange={() => setOddsFormat('american')}
-                        className="radio-input"
-                      />
-                      American (+/-)
-                    </label>
-                    <label 
-                      className={`radio-label ${oddsFormat === 'decimal' ? 'radio-label-selected' : ''}`}
-                    >
-                      <input
-                        type="radio"
-                        checked={oddsFormat === 'decimal'}
-                        onChange={() => setOddsFormat('decimal')}
-                        className="radio-input"
-                      />
-                      Decimal
-                    </label>
-                  </div>
-                </div>
-                <div className="input-group">
-                  <label className="label">Over/Home Team Odds:</label>
-                  <div className="input-wrapper">
-                    <input
-                      type="text"
-                      inputMode="text"
-                      value={sbOver}
-                      onChange={(e) => setSbOver(e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(e, 2)}
-                      placeholder={oddsFormat === 'american' ? "e.g. +150 or -120" : "e.g. 2.50"}
-                      className="input"
-                      ref={sbOverRef}
-                    />
-                    {oddsFormat === 'american' && (
-                      <div className="button-group">
-                        <button
-                          type="button"
-                          onClick={() => setSbOver(prev => addSign(prev, '+'))}
-                          className="button"
-                        >
-                          +
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setSbOver(prev => addSign(prev, '-'))}
-                          className="button"
-                        >
-                          -
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="input-group">
-                  <label className="label">Under/Away Team Odds:</label>
-                  <div className="input-wrapper">
-                    <input
-                      type="text"
-                      inputMode="text"
-                      value={sbUnder}
-                      onChange={(e) => setSbUnder(e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(e, 3)}
-                      placeholder={oddsFormat === 'american' ? "e.g. +150 or -120" : "e.g. 2.50"}
-                      className="input"
-                      ref={sbUnderRef}
-                    />
-                    {oddsFormat === 'american' && (
-                      <div className="button-group">
-                        <button
-                          type="button"
-                          onClick={() => setSbUnder(prev => addSign(prev, '-'))}
-                          className="button"
-                        >
-                          -
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setSbUnder(prev => addSign(prev, '+'))}
-                          className="button"
-                        >
-                          +
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <button type="button" onClick={resetSbOdds} className="text-button">
-                  Clear Sportsbook Odds
-                </button>
-              </div>
-            </div>
-            
-            {evMaxOver !== null && evMaxUnder !== null && evZeroOver !== null && evZeroUnder !== null && (
-              <div className="section">
-                <h2 className="section-title">Expected Value Results</h2>
-                
-                {/* Recommendation at the top */}
-                <div className="recommendation" style={{marginTop: 0, marginBottom: '1rem'}}>
-                  <div style={{fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.5rem'}}>Recommended Bet:</div>
-                  {(() => {
-                    // Find the highest EV among all options
-                    const evOptions = [
-                      { type: "Max Over", value: evMaxOver, side: "Over/Home Team", amount: maxBetSize },
-                      { type: "Zero Over", value: evZeroOver, side: "Over/Home Team", amount: maxBetSize >= 100 ? 10 : 5 },
-                      { type: "Max Under", value: evMaxUnder, side: "Under/Away Team", amount: maxBetSize },
-                      { type: "Zero Under", value: evZeroUnder, side: "Under/Away Team", amount: maxBetSize >= 100 ? 10 : 5 }
-                    ];
-                    
-                    const bestOption = evOptions.reduce((best, current) => 
-                      current.value > best.value ? current : best, { value: -Infinity });
-                    
-                    if (bestOption.value <= 0) {
-                      return <div style={{fontSize: '1.1rem'}}>None - all bets have negative or zero EV</div>;
-                    }
-                    
-                    return (
-                      <div style={{fontSize: '1.1rem'}}>
-                        {bestOption.type.includes("Max") ? "Max" : "Zero"} bet on {bestOption.side} ({bestOption.amount} karma)
-                        <div className="ev-positive" style={{marginTop: '0.5rem'}}>
-                          Expected Value: {bestOption.value.toFixed(2)} karma
-                        </div>
-                      </div>
-                    );
-                  })()}
-                </div>
-                
-                <div className="grid">
-                  <div className="result-card">
-                    <h3 className="result-title">Over/Home Team</h3>
-                    <div className="result-grid">
-                      <div>
-                        <div style={{fontWeight: 'bold'}}>Max Bet EV:</div>
-                        <div className={evMaxOver >= 0 ? 'ev-positive' : 'ev-negative'}>
-                          {evMaxOver.toFixed(2)} karma
-                        </div>
-                      </div>
-                      <div>
-                        <div style={{fontWeight: 'bold'}}>Zero Bet EV:</div>
-                        <div className={evZeroOver >= 0 ? 'ev-positive' : 'ev-negative'}>
-                          {evZeroOver.toFixed(2)} karma
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="result-card">
-                    <h3 className="result-title">Under/Away Team</h3>
-                    <div className="result-grid">
-                      <div>
-                        <div style={{fontWeight: 'bold'}}>Max Bet EV:</div>
-                        <div className={evMaxUnder >= 0 ? 'ev-positive' : 'ev-negative'}>
-                          {evMaxUnder.toFixed(2)} karma
-                        </div>
-                      </div>
-                      <div>
-                        <div style={{fontWeight: 'bold'}}>Zero Bet EV:</div>
-                        <div className={evZeroUnder >= 0 ? 'ev-positive' : 'ev-negative'}>
-                          {evZeroUnder.toFixed(2)} karma
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      };
-      
-      // Render the component to the DOM
-      const root = ReactDOM.createRoot(document.getElementById('calculator-root'));
-      root.render(<KarmaBettingCalculator />);
-    </script>
   </body>
 </html>
