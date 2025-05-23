@@ -323,7 +323,7 @@
     </div>
 
     <!-- Conflict Resolution Dialog -->
-    <div id="conflictDialog" class="conflict-dialog hidden">
+    <div id="conflictDialog" class="conflict-dialog hidden" style="display: none;">
         <div class="conflict-content">
             <h3>⚠️ Username Already Registered</h3>
             <p id="conflictMessage">This username is already registered to another device.</p>
@@ -443,7 +443,19 @@
         }
         
         function showConflictDialog(username, existingDevice, teamCode, deviceId) {
-            console.log('Showing conflict dialog for username:', username, 'existing device:', existingDevice);
+            console.log('=== CONFLICT DIALOG DEBUG ===');
+            console.log('Username:', username);
+            console.log('Existing device:', existingDevice);
+            console.log('Team code:', teamCode);
+            console.log('Device ID:', deviceId);
+            console.log('Stack trace:', new Error().stack);
+            console.log('===========================');
+            
+            // Validate that we have all required data
+            if (!username || !existingDevice || !teamCode || !deviceId) {
+                console.error('Missing required data for conflict dialog');
+                return;
+            }
             
             // Store all the data we need for the pending auth
             pendingAuth = {
@@ -452,35 +464,58 @@
                 code: teamCode
             };
             
+            console.log('Setting pendingAuth to:', pendingAuth);
+            
             const conflictMessage = document.getElementById('conflictMessage');
             const lastAccess = new Date(existingDevice.lastAccess).toLocaleDateString();
             conflictMessage.textContent = `Username "${username}" is already registered to a device (last accessed: ${lastAccess}).`;
             
-            document.getElementById('conflictDialog').classList.remove('hidden');
+            const dialog = document.getElementById('conflictDialog');
+            dialog.style.display = 'flex';
+            dialog.classList.remove('hidden');
         }
         
         function cancelAuth() {
-            console.log('Canceling auth');
+            console.log('=== CANCEL AUTH ===');
+            console.log('Current pendingAuth:', pendingAuth);
+            
             pendingAuth = null;
-            document.getElementById('conflictDialog').classList.add('hidden');
+            const dialog = document.getElementById('conflictDialog');
+            dialog.style.display = 'none';
+            dialog.classList.add('hidden');
+            
+            console.log('Dialog hidden, pendingAuth cleared');
         }
         
         function confirmOverride() {
-            console.log('Confirming override with pending auth:', pendingAuth);
-            if (pendingAuth) {
-                try {
-                    // Store the device with override
-                    storeDevice(pendingAuth.deviceId, pendingAuth.username, pendingAuth.code, true);
-                    showSuccessSection(pendingAuth.username);
-                    showMessage('Device successfully authenticated! Previous device access has been revoked.', 'success');
-                    
-                    // Clear conflict dialog
-                    document.getElementById('conflictDialog').classList.add('hidden');
-                    pendingAuth = null;
-                } catch (error) {
-                    console.error('Error during override:', error);
-                    showMessage('Error registering device. Please try again.', 'error');
-                }
+            console.log('=== CONFIRM OVERRIDE ===');
+            console.log('Current pendingAuth:', pendingAuth);
+            
+            if (!pendingAuth) {
+                console.error('No pending auth data available');
+                showMessage('Error: No pending authentication data. Please try again.', 'error');
+                return;
+            }
+            
+            try {
+                console.log('Storing device with override...');
+                // Store the device with override
+                storeDevice(pendingAuth.deviceId, pendingAuth.username, pendingAuth.code, true);
+                
+                console.log('Device stored successfully');
+                showSuccessSection(pendingAuth.username);
+                showMessage('Device successfully authenticated! Previous device access has been revoked.', 'success');
+                
+                // Clear conflict dialog
+                const dialog = document.getElementById('conflictDialog');
+                dialog.style.display = 'none';
+                dialog.classList.add('hidden');
+                pendingAuth = null;
+                
+                console.log('Override complete');
+            } catch (error) {
+                console.error('Error during override:', error);
+                showMessage('Error registering device. Please try again.', 'error');
             }
         }
         
@@ -495,8 +530,10 @@
             console.log('Initializing with device ID:', deviceId);
             
             // Check if device is already authenticated
+            const devices = getStoredDevices();
+            console.log('Stored devices:', devices);
+            
             if (isDeviceAuthenticated(deviceId)) {
-                const devices = getStoredDevices();
                 const device = devices.find(d => d.id === deviceId);
                 console.log('Device already authenticated:', device);
                 updateLastAccess(deviceId);
@@ -513,6 +550,13 @@
             }
             
             console.log('Showing auth form');
+            // Make sure conflict dialog is hidden on startup
+            const dialog = document.getElementById('conflictDialog');
+            dialog.style.display = 'none';
+            dialog.classList.add('hidden');
+            
+            // Clear any existing pendingAuth
+            pendingAuth = null;
         });
         
         // Form submission
