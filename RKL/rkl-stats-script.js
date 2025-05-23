@@ -75,7 +75,12 @@ async function loadData() {
       ).sort((a, b) => {
         const dateA = parseDate(a);
         const dateB = parseDate(b);
-        return dateA - dateB;
+        
+        // Sort by week first, then by day within week
+        if (dateA.week !== dateB.week) {
+          return dateA.week - dateB.week;
+        }
+        return dateA.day - dateB.day;
       });
       
       console.log('Date columns found:', dateColumns.length);
