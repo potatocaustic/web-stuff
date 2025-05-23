@@ -171,19 +171,43 @@
      * Page Protection Logic: Redirects to auth.html if not authenticated
      * and not on a public page.
      */
+// Inside auth-middleware.js
+
+// ... (keep the rest of your AuthManager and other functions as they are) ...
+
+    /**
+     * Page Protection Logic: Redirects to auth.html if not authenticated
+     * and not on a public page.
+     */
     function handlePageProtection() {
-        const currentPage = window.location.pathname.split('/').pop().toLowerCase();
-        // auth.html can also have query params like ?admin=... or ?redirect=...
-        const isAuthPage = currentPage.startsWith('auth.html') || currentPage === 'index.html' || currentPage === '';
+        // Check if the current page is auth.html or index.html (public pages)
+        // This check needs to be robust for different ways paths might appear.
+        const pathname = window.location.pathname;
+        const isAuthPage = pathname.endsWith('/auth.html') || 
+                           pathname.endsWith('/') || // Root of the site, often index.html
+                           pathname.endsWith('/index.html'); // Explicit index.html
 
         if (!isAuthPage && !AuthManager.isAuthenticated()) {
-            console.log(`Access to [${currentPage}] denied. User not authenticated. Redirecting to login.`);
-            // Preserve the intended destination to redirect after login
-            const currentPath = window.location.pathname + window.location.search;
-            window.location.href = `auth.html?redirect=${encodeURIComponent(currentPath)}`;
+            const attemptedPath = pathname + window.location.search; // The page user tried to access
+            console.log(`Access to [${attemptedPath}] denied. User not authenticated. Redirecting to login.`);
+            
+            // --- MODIFIED LINE ---
+            // Ensure auth.html is referenced from the site root.
+            // This assumes auth.html is located at the root of your website.
+            let authPageUrl = '/auth.html'; 
+
+            window.location.href = `${authPageUrl}?redirect=${encodeURIComponent(attemptedPath)}`;
         }
     }
 
+    // Run page protection on DOMContentLoaded or immediately if already loaded.
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', handlePageProtection);
+    } else {
+        handlePageProtection();
+    }
+
+// })(); // Make sure your IIFE is correctly closed if you're using one.
     // Run page protection on DOMContentLoaded or immediately if already loaded.
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', handlePageProtection);
