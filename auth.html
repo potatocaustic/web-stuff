@@ -403,10 +403,10 @@
                 return;
             }
             
-            // Check if it's the correct team code
-            if (teamCode !== currentTeamCode) {
-                showMessage('Invalid team code. Please check with your team leader.', 'error');
-                return;
+            // Check if it's the correct team code (case-insensitive comparison)
+            if (teamCode !== currentTeamCode.toUpperCase()) {
+              showMessage('Invalid team code. Please check with your team leader.', 'error');
+              return;
             }
             
             // Register device
