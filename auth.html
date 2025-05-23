@@ -867,6 +867,7 @@
             
             // Check for admin access
             const urlParams = new URLSearchParams(window.location.search);
+            const ADMIN_PASSWORD = "potato-alfalfa-kumquat-zebra";
             if (urlParams.get('admin') === ADMIN_PASSWORD) {
                 showAdminPanel();
                 return;
