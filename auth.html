@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Firebase Authentication</title>
+    <title>Firebase Authentication with Usernames</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; line-height: 1.6; }
@@ -25,7 +25,6 @@
     </style>
     <script>
         // Define ADMIN_PASSWORD for the admin query parameter check.
-        // This is separate from Firebase user authentication.
         const ADMIN_PASSWORD = "potato-alfalfa-kumquat-zebra"; // Use your desired admin access key
     </script>
 </head>
@@ -33,8 +32,8 @@
     <div class="container">
 
         <div id="loggedInSection" style="display:none;" class="logged-in-status">
-            <p>Welcome! You are logged in as: <strong id="userEmailDisplay"></strong></p>
-            <p><a href="dashboard.html">Go to Dashboard (Example Protected Page)</a></p> {/* Example link - ensure dashboard.html exists */}
+            <p>Welcome, <strong id="userDisplayNameDisplay">User</strong>! (<span id="userEmailDisplay"></span>)</p>
+            <p><a href="dashboard.html">Go to Dashboard (Example Protected Page)</a></p>
             <button id="logoutButton" class="secondary">Logout</button>
         </div>
 
@@ -42,7 +41,11 @@
             <div id="registrationSection" class="auth-section">
                 <h2>Create New Account</h2>
                 <div>
-                    <label for="regEmail">Email:</label>
+                    <label for="regDisplayName">Username (Display Name):</label>
+                    <input type="text" id="regDisplayName" placeholder="Choose a public username" required>
+                </div>
+                <div>
+                    <label for="regEmail">Email (for login):</label>
                     <input type="email" id="regEmail" placeholder="Enter your email" required>
                 </div>
                 <div>
@@ -74,44 +77,42 @@
 
         <div id="adminSection" style="display:none;" class="admin-info">
             <h2>Admin Information</h2>
-            <p>This view is for site administration (e.g., viewing current Firebase user details).</p>
-            <div id="adminCurrentUserDisplay">
-                <p>Current Firebase User in this session:</p>
-                <pre id="firebaseUserInfo"></pre>
-            </div>
-            <p><small>Note: Client-side Firebase cannot list all registered users for security reasons.</small></p>
+            <p>Current Firebase User details for this browser session:</p>
+            <pre id="firebaseUserInfo"></pre>
+            <p><small>Note: Client-side Firebase cannot list all registered users. Manage users in the Firebase Console.</small></p>
             <button id="adminLogoutButton" class="secondary">Logout Firebase User (Admin View)</button>
         </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
     <script>
-        // Your web app's Firebase configuration (FROM YOUR FIREBASE CONSOLE)
+        // Your web app's Firebase configuration (PASTE YOURS HERE)
         const firebaseConfig = {
-            apiKey: "AIzaSyC36oIVrjnLvAdDY66MODI_dI-vVn7HWAw",
-            authDomain: "webcaustic-5ccd4.firebaseapp.com",
-            projectId: "webcaustic-5ccd4",
-            storageBucket: "webcaustic-5ccd4.firebasestorage.app", // Make sure this matches your config
-            messagingSenderId: "1021802602852",
-            appId: "1:1021802602852:web:7cf7dac0ff5b2a2fffda71",
-            measurementId: "G-S1QW5SSXDP" 
+            apiKey: "AIzaSyC36oIVrjnLvAdDY66MODI_dI-vVn7HWAw", // YOURS
+            authDomain: "webcaustic-5ccd4.firebaseapp.com",   // YOURS
+            projectId: "webcaustic-5ccd4",                   // YOURS
+            storageBucket: "webcaustic-5ccd4.firebasestorage.app", // YOURS
+            messagingSenderId: "1021802602852",              // YOURS
+            appId: "1:1021802602852:web:7cf7dac0ff5b2a2fffda71", // YOURS
+            measurementId: "G-S1QW5SSXDP"                    // YOURS (optional)
         };
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(); // Get the Firebase Auth instance
+        const auth = firebase.auth();
 
         // DOM Elements
         const loggedInSection = document.getElementById('loggedInSection');
+        const userDisplayNameDisplay = document.getElementById('userDisplayNameDisplay'); // New
         const userEmailDisplay = document.getElementById('userEmailDisplay');
         const logoutButton = document.getElementById('logoutButton');
         const adminLogoutButton = document.getElementById('adminLogoutButton');
 
         const authFormsSection = document.getElementById('authFormsSection');
-        const registrationSection = document.getElementById('registrationSection');
-        const loginSection = document.getElementById('loginSection');
-
+        
+        const regDisplayNameInput = document.getElementById('regDisplayName'); // New
         const regEmailInput = document.getElementById('regEmail');
         const regPasswordInput = document.getElementById('regPassword');
         const regPasswordConfirmInput = document.getElementById('regPasswordConfirm');
@@ -126,14 +127,12 @@
         const adminSection = document.getElementById('adminSection');
         const firebaseUserInfoDisplay = document.getElementById('firebaseUserInfo');
 
-        // Helper to show messages
         function showMessage(element, messageText, isSuccess) {
             element.textContent = messageText;
             element.className = 'message ' + (isSuccess ? 'success' : 'error');
             element.style.display = 'block';
-            // Automatically hide after 5 seconds
             setTimeout(() => { 
-                if (element.textContent === messageText) { // Only hide if message hasn't changed
+                if (element.textContent === messageText) {
                     element.style.display = 'none'; 
                 }
             }, 5000);
@@ -142,17 +141,18 @@
         // --- Registration ---
         if (registerButton) {
             registerButton.addEventListener('click', async () => {
+                const displayName = regDisplayNameInput.value.trim(); // Get display name
                 const email = regEmailInput.value.trim();
                 const password = regPasswordInput.value;
                 const confirmPassword = regPasswordConfirmInput.value;
 
                 registrationMessage.style.display = 'none'; 
 
-                if (!email || !password || !confirmPassword) {
+                if (!displayName || !email || !password || !confirmPassword) { // Check display name
                     showMessage(registrationMessage, 'All fields are required.', false);
                     return;
                 }
-                if (!email.includes('@') || !email.includes('.')) { // Basic email format check
+                if (!email.includes('@') || !email.includes('.')) { 
                     showMessage(registrationMessage, 'Please enter a valid email address.', false);
                     return;
                 }
@@ -166,21 +166,30 @@
                 }
 
                 try {
-                    await auth.createUserWithEmailAndPassword(email, password);
-                    // Firebase onAuthStateChanged will handle UI updates.
-                    // Success message can be shown here or handled by onAuthStateChanged if desired
-                    showMessage(registrationMessage, 'Registration successful! You are now logged in.', true);
-                    regEmailInput.value = ''; // Clear form
+                    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                    const user = userCredential.user;
+                    
+                    // After creating user, update their profile with the displayName
+                    await user.updateProfile({
+                        displayName: displayName
+                    });
+                    
+                    console.log(`User [${email}] registered with display name [${displayName}].`);
+                    showMessage(registrationMessage, `Registration successful for ${displayName}! You are logged in.`, true);
+                    
+                    regDisplayNameInput.value = ''; // Clear form
+                    regEmailInput.value = '';
                     regPasswordInput.value = '';
                     regPasswordConfirmInput.value = '';
+                    // onAuthStateChanged will handle further UI updates/redirects
                 } catch (error) {
                     console.error("Registration Error:", error);
-                    showMessage(registrationMessage, error.message, false); // Firebase provides good error messages
+                    showMessage(registrationMessage, error.message, false);
                 }
             });
         }
 
-        // --- Login ---
+        // --- Login --- (No changes needed here for displayName, login is by email)
         if (loginButton) {
             loginButton.addEventListener('click', async () => {
                 const email = loginEmailInput.value.trim();
@@ -194,8 +203,8 @@
 
                 try {
                     await auth.signInWithEmailAndPassword(email, password);
-                    // Firebase onAuthStateChanged will handle UI updates and redirection.
                     showMessage(loginMessage, 'Login successful! Please wait...', true);
+                    // onAuthStateChanged will handle UI update and redirection.
                 } catch (error) {
                     console.error("Login Error:", error);
                     showMessage(loginMessage, error.message, false);
@@ -203,14 +212,12 @@
             });
         }
 
-        // --- Logout ---
+        // --- Logout --- (No changes needed here)
         async function handleLogout() {
             try {
                 await auth.signOut();
-                // onAuthStateChanged will handle UI updates.
-                // Forcing a reload to auth.html can ensure a clean state.
                 console.log("User signed out. Redirecting to auth.html");
-                window.location.href = 'auth.html'; // Redirect to ensure clean state for forms
+                window.location.href = 'auth.html'; 
             } catch (error) {
                 console.error("Logout Error:", error);
                 showMessage(loggedInSection.querySelector('.message') || loginMessage, "Error logging out: " + error.message, false);
@@ -220,7 +227,7 @@
         if (adminLogoutButton) adminLogoutButton.addEventListener('click', handleLogout);
 
 
-        // --- Observe Authentication State (This is the core for UI updates) ---
+        // --- Observe Authentication State ---
         auth.onAuthStateChanged(user => {
             const urlParams = new URLSearchParams(window.location.search);
             const isAdminAccessMode = urlParams.has('admin') && urlParams.get('admin') === ADMIN_PASSWORD;
@@ -230,7 +237,12 @@
                 loggedInSection.style.display = 'none';
                 adminSection.style.display = 'block';
                 if (user) {
-                    firebaseUserInfoDisplay.textContent = `Email: ${user.email}\nUID: ${user.uid}\nEmail Verified: ${user.emailVerified}\nLast Sign-in: ${new Date(user.metadata.lastSignInTime).toLocaleString()}`;
+                    firebaseUserInfoDisplay.textContent = 
+                        `Email: ${user.email}\n` +
+                        `Display Name: ${user.displayName || '(Not set)'}\n` + // Display the displayName
+                        `UID: ${user.uid}\n` +
+                        `Email Verified: ${user.emailVerified}\n` +
+                        `Last Sign-in: ${new Date(user.metadata.lastSignInTime).toLocaleString()}`;
                     adminLogoutButton.style.display = 'block';
                 } else {
                     firebaseUserInfoDisplay.textContent = 'No Firebase user is currently logged in for this browser session.';
@@ -238,35 +250,29 @@
                 }
             } else if (user) {
                 // User is signed in
-                console.log("Firebase Auth: User is signed in -", user.email);
+                console.log("Firebase Auth: User is signed in -", user.email, "DisplayName:", user.displayName);
                 authFormsSection.style.display = 'none';
                 adminSection.style.display = 'none';
                 loggedInSection.style.display = 'block';
-                userEmailDisplay.textContent = user.email;
+                userDisplayNameDisplay.textContent = user.displayName || user.email; // Show displayName, fallback to email
+                userEmailDisplay.textContent = user.email; // Still show email if desired
 
-                // Handle redirect after login if specified
                 const redirectUrl = urlParams.get('redirect');
                 if (redirectUrl) {
-                    // Prevent redirect loop if already on auth.html and redirect is to auth.html
                     const decodedRedirect = decodeURIComponent(redirectUrl);
                     if (window.location.pathname !== decodedRedirect.split('?')[0] || window.location.search !== decodedRedirect.split('?')[1]) {
                          console.log("Firebase Auth: Redirecting to:", decodedRedirect);
                          window.location.href = decodedRedirect;
-                    } else {
-                        console.log("Firebase Auth: Already on redirect target or default view after login.");
                     }
-                } else {
-                     console.log("Firebase Auth: User logged in, no specific redirect. Staying on auth.html (logged in view).");
                 }
             } else {
-                // User is signed out or not yet signed in
+                // User is signed out
                 console.log("Firebase Auth: User is signed out.");
                 authFormsSection.style.display = 'block';
                 loggedInSection.style.display = 'none';
                 adminSection.style.display = 'none';
             }
         });
-
     </script>
 </body>
 </html>
