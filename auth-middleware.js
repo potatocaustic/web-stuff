@@ -1,70 +1,31 @@
 // auth-middleware.js
-// Add this script to all pages you want to protect
+// Simple account/password authentication middleware
 
 (function() {
     'use strict';
     
-    // Configuration - must match your auth page settings
-    const CURRENT_TEAM_CODE = '7JAMMERS2025'; // Update this when you change team codes
+    // Configuration
     const AUTH_PAGE_URL = '../auth.html'; // Path to your auth page
     
-    // Generate device fingerprint (same method as auth page)
-    function generateDeviceFingerprint() {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        ctx.textBaseline = 'top';
-        ctx.font = '14px Arial';
-        ctx.fillText('Device fingerprint', 2, 2);
+    // Check if user is currently logged in
+    function isLoggedIn() {
+        const session = localStorage.getItem('teamSession');
+        if (!session) return false;
         
-        const fingerprint = [
-            navigator.userAgent,
-            navigator.language,
-            screen.width + 'x' + screen.height,
-            new Date().getTimezoneOffset(),
-            canvas.toDataURL(),
-            navigator.hardwareConcurrency || 'unknown',
-            navigator.deviceMemory || 'unknown'
-        ].join('|');
-        
-        // Simple hash function
-        let hash = 0;
-        for (let i = 0; i < fingerprint.length; i++) {
-            const char = fingerprint.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
-        }
-        
-        return Math.abs(hash).toString(36).toUpperCase().slice(0, 12);
-    }
-    
-    // Check if device is authenticated
-    function isDeviceAuthenticated() {
         try {
-            const devices = JSON.parse(localStorage.getItem('teamDevices') || '[]');
-            const deviceId = generateDeviceFingerprint();
-            console.log('Checking auth - Device ID:', deviceId);
-            console.log('Stored devices:', devices);
+            const sessionData = JSON.parse(session);
+            const now = new Date().getTime();
             
-            const device = devices.find(d => d.id === deviceId);
-            console.log('Found device:', device);
-            console.log('Expected team code:', CURRENT_TEAM_CODE);
-            
-            if (!device || device.code !== CURRENT_TEAM_CODE) {
-                console.log('Auth failed - device not found or wrong code');
+            // Check if session is expired (24 hours)
+            if (now - sessionData.loginTime > 24 * 60 * 60 * 1000) {
+                localStorage.removeItem('teamSession');
                 return false;
             }
             
-            // Update last access time
-            const deviceIndex = devices.findIndex(d => d.id === deviceId);
-            if (deviceIndex !== -1) {
-                devices[deviceIndex].lastAccess = new Date().toISOString();
-                localStorage.setItem('teamDevices', JSON.stringify(devices));
-            }
-            
-            console.log('Auth successful');
-            return { success: true, username: device.username };
+            return sessionData;
         } catch (error) {
             console.error('Auth check failed:', error);
+            localStorage.removeItem('teamSession');
             return false;
         }
     }
@@ -104,7 +65,7 @@
             <h2 style="margin-bottom: 1rem; color: #333;">Access Restricted</h2>
             <p style="margin-bottom: 1.5rem; color: #666;">
                 This page is restricted to authenticated team members only. 
-                Please authenticate your device to continue.
+                Please sign in to continue.
             </p>
             <button onclick="window.location.href='${AUTH_PAGE_URL}'" 
                     style="
@@ -118,7 +79,7 @@
                         cursor: pointer;
                         margin-right: 0.5rem;
                     ">
-                Authenticate Device
+                Sign In
             </button>
             <button onclick="window.location.href='index.html'" 
                     style="
@@ -170,7 +131,7 @@
                 font-size: 0.8rem;
                 cursor: pointer;
                 margin-left: 0.5rem;
-            ">Logout</button>
+            ">Sign Out</button>
         `;
         
         // Insert at the very beginning of body
@@ -179,12 +140,8 @@
     
     // Logout function
     window.teamAuthLogout = function() {
-        if (confirm('Are you sure you want to logout? You will need to re-authenticate this device.')) {
-            // Only remove this specific device, not all devices
-            const devices = JSON.parse(localStorage.getItem('teamDevices') || '[]');
-            const deviceId = generateDeviceFingerprint();
-            const filteredDevices = devices.filter(d => d.id !== deviceId);
-            localStorage.setItem('teamDevices', JSON.stringify(filteredDevices));
+        if (confirm('Are you sure you want to sign out?')) {
+            localStorage.removeItem('teamSession');
             window.location.href = AUTH_PAGE_URL;
         }
     };
@@ -192,20 +149,20 @@
     // Run authentication check when DOM is loaded
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
-            const authResult = isDeviceAuthenticated();
-            if (!authResult || !authResult.success) {
+            const session = isLoggedIn();
+            if (!session) {
                 showAccessDenied();
             } else {
-                addTeamHeader(authResult.username);
+                addTeamHeader(session.username);
             }
         });
     } else {
         // DOM already loaded
-        const authResult = isDeviceAuthenticated();
-        if (!authResult || !authResult.success) {
+        const session = isLoggedIn();
+        if (!session) {
             showAccessDenied();
         } else {
-            addTeamHeader(authResult.username);
+            addTeamHeader(session.username);
         }
     }
     
