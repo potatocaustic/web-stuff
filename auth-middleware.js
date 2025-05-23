@@ -1,169 +1,194 @@
 // auth-middleware.js
-// Simple account/password authentication middleware
-
 (function() {
     'use strict';
-    
-    // Configuration
-    const AUTH_PAGE_URL = '../auth.html'; // Path to your auth page
-    
-    // Check if user is currently logged in
-    function isLoggedIn() {
-        const session = localStorage.getItem('teamSession');
-        if (!session) return false;
-        
+
+    const USERS_STORAGE_KEY = 'appUsersDemo';
+    const SESSION_TOKEN_KEY = 'appSessionToken';
+    const LOGGED_IN_USER_KEY = 'appLoggedInUser';
+
+    /**
+     * Hashes a password using SHA-256.
+     * IMPORTANT: For client-side hashing, this is better than plaintext, but still not
+     * as secure as server-side hashing with proper salting (e.g., Argon2, bcrypt).
+     * A salt should ideally be unique per user and stored with the hash.
+     * This example does not include salting for simplicity of demonstration.
+     * @param {string} password
+     * @returns {Promise<string>} Hex string of the hashed password
+     */
+    async function hashPassword(password) {
+        if (!password) {
+            // console.warn("Password is empty, cannot hash."); // Or throw error
+            return "empty_password_hash_placeholder"; // Or handle as error upstream
+        }
         try {
-            const sessionData = JSON.parse(session);
-            const now = new Date().getTime();
-            
-            // Check if session is expired (24 hours)
-            if (now - sessionData.loginTime > 24 * 60 * 60 * 1000) {
-                localStorage.removeItem('teamSession');
-                return false;
-            }
-            
-            return sessionData;
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
         } catch (error) {
-            console.error('Auth check failed:', error);
-            localStorage.removeItem('teamSession');
-            return false;
+            console.error("Error hashing password:", error);
+            throw new Error("Could not process password.");
         }
     }
-    
-    // Show access denied overlay
-    function showAccessDenied() {
-        // Create overlay
-        const overlay = document.createElement('div');
-        overlay.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 999999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: Arial, sans-serif;
-        `;
-        
-        // Create message box
-        const messageBox = document.createElement('div');
-        messageBox.style.cssText = `
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            text-align: center;
-            max-width: 400px;
-            margin: 1rem;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-        `;
-        
-        messageBox.innerHTML = `
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
-            <h2 style="margin-bottom: 1rem; color: #333;">Access Restricted</h2>
-            <p style="margin-bottom: 1.5rem; color: #666;">
-                This page is restricted to authenticated team members only. 
-                Please sign in to continue.
-            </p>
-            <button onclick="window.location.href='${AUTH_PAGE_URL}'" 
-                    style="
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        color: white;
-                        border: none;
-                        padding: 0.75rem 1.5rem;
-                        border-radius: 8px;
-                        font-size: 1rem;
-                        font-weight: bold;
-                        cursor: pointer;
-                        margin-right: 0.5rem;
-                    ">
-                Sign In
-            </button>
-            <button onclick="window.location.href='index.html'" 
-                    style="
-                        background: #6c757d;
-                        color: white;
-                        border: none;
-                        padding: 0.75rem 1.5rem;
-                        border-radius: 8px;
-                        font-size: 1rem;
-                        cursor: pointer;
-                    ">
-                Go to Home
-            </button>
-        `;
-        
-        overlay.appendChild(messageBox);
-        document.body.appendChild(overlay);
-        
-        // Hide main content
-        document.body.style.overflow = 'hidden';
-        const mainContent = document.querySelector('main') || document.body;
-        if (mainContent !== document.body) {
-            mainContent.style.display = 'none';
+
+    /**
+     * Retrieves all users from localStorage.
+     * @returns {object} The users object or an empty object.
+     */
+    function getUsers() {
+        try {
+            const usersJson = localStorage.getItem(USERS_STORAGE_KEY);
+            return usersJson ? JSON.parse(usersJson) : {};
+        } catch (e) {
+            console.error("Error parsing users from localStorage:", e);
+            return {}; // Return empty if corrupt
         }
     }
-    
-    // Add team header automatically
-    function addTeamHeader(username) {
-        // Create team header
-        const teamHeader = document.createElement('div');
-        teamHeader.style.cssText = `
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 0.5rem;
-            text-align: center;
-            font-size: 0.9rem;
-            position: relative;
-            z-index: 100;
-        `;
-        
-        teamHeader.innerHTML = `
-            🔒 Team Access Mode - Welcome, ${username}
-            <button onclick="teamAuthLogout()" style="
-                background: rgba(255, 255, 255, 0.2);
-                color: white;
-                border: 1px solid rgba(255, 255, 255, 0.3);
-                padding: 0.25rem 0.5rem;
-                border-radius: 4px;
-                font-size: 0.8rem;
-                cursor: pointer;
-                margin-left: 0.5rem;
-            ">Sign Out</button>
-        `;
-        
-        // Insert at the very beginning of body
-        document.body.insertBefore(teamHeader, document.body.firstChild);
+
+    /**
+     * Saves all users to localStorage.
+     * @param {object} users
+     */
+    function saveUsers(users) {
+        try {
+            localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
+        } catch (e) {
+            console.error("Error saving users to localStorage:", e);
+            // Consider implications if storage is full
+        }
     }
-    
-    // Logout function
-    window.teamAuthLogout = function() {
-        if (confirm('Are you sure you want to sign out?')) {
-            localStorage.removeItem('teamSession');
-            window.location.href = AUTH_PAGE_URL;
+
+    /**
+     * Generates a simple pseudo-random session token.
+     * For a real app, use a cryptographically secure random string generator.
+     * @returns {string}
+     */
+    function generateSessionToken() {
+        return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    }
+
+    const AuthManager = {
+        /**
+         * Registers a new user.
+         * @param {string} username
+         * @param {string} password
+         * @returns {Promise<boolean>} True if registration is successful.
+         * @throws {Error} If username exists or other registration error.
+         */
+        async registerUser(username, password) {
+            if (!username || !password) {
+                throw new Error("Username and password are required.");
+            }
+            const users = getUsers();
+            if (users[username]) {
+                throw new Error("Username already exists. Please choose another.");
+            }
+
+            const hashedPassword = await hashPassword(password);
+            users[username] = { hashedPassword: hashedPassword };
+            saveUsers(users);
+            console.log(`User [${username}] registered.`);
+            return true;
+        },
+
+        /**
+         * Logs in an existing user.
+         * @param {string} username
+         * @param {string} password
+         * @returns {Promise<boolean>} True if login is successful.
+         * @throws {Error} If login fails (user not found, wrong password).
+         */
+        async loginUser(username, password) {
+            if (!username || !password) {
+                throw new Error("Username and password are required.");
+            }
+            const users = getUsers();
+            const user = users[username];
+
+            if (!user) {
+                throw new Error("Username not found.");
+            }
+
+            const hashedPasswordAttempt = await hashPassword(password);
+            if (hashedPasswordAttempt !== user.hashedPassword) {
+                throw new Error("Incorrect password.");
+            }
+
+            // Login successful, create session
+            const sessionToken = generateSessionToken();
+            localStorage.setItem(SESSION_TOKEN_KEY, sessionToken);
+            localStorage.setItem(LOGGED_IN_USER_KEY, username);
+            console.log(`User [${username}] logged in. Session token created.`);
+            return true;
+        },
+
+        /**
+         * Logs out the current user.
+         */
+        logoutUser() {
+            localStorage.removeItem(SESSION_TOKEN_KEY);
+            localStorage.removeItem(LOGGED_IN_USER_KEY);
+            console.log("User logged out.");
+            // Optionally, redirect or update UI after logout
+            // window.location.href = 'auth.html'; // Handled by UI script in auth.html or page protection
+        },
+
+        /**
+         * Checks if a user is currently logged in (valid session).
+         * @returns {boolean} True if user is logged in.
+         */
+        isAuthenticated() {
+            const token = localStorage.getItem(SESSION_TOKEN_KEY);
+            // Basic check: In a real app, this token would be validated (e.g., against a server or expiry).
+            // For this client-side demo, presence of token means "authenticated".
+            return !!token; 
+        },
+
+        /**
+         * Gets the username of the currently logged-in user.
+         * @returns {string|null} Username or null if not logged in.
+         */
+        getLoggedInUser() {
+            return localStorage.getItem(LOGGED_IN_USER_KEY);
+        },
+        
+        /**
+         * For Admin: Gets all registered users (usernames and their stored data).
+         * CAUTION: Exposing all user data, even just for admin view, needs care.
+         * Here, we're just getting it from localStorage for the demo.
+         */
+        getAllUsersForAdmin() {
+            return getUsers();
         }
     };
-    
-    // Run authentication check when DOM is loaded
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            const session = isLoggedIn();
-            if (!session) {
-                showAccessDenied();
-            } else {
-                addTeamHeader(session.username);
-            }
-        });
-    } else {
-        // DOM already loaded
-        const session = isLoggedIn();
-        if (!session) {
-            showAccessDenied();
-        } else {
-            addTeamHeader(session.username);
+
+    // Expose AuthManager to the global window scope to be accessible by auth.html
+    window.AuthManager = AuthManager;
+
+    /**
+     * Page Protection Logic: Redirects to auth.html if not authenticated
+     * and not on a public page.
+     */
+    function handlePageProtection() {
+        const currentPage = window.location.pathname.split('/').pop().toLowerCase();
+        // auth.html can also have query params like ?admin=... or ?redirect=...
+        const isAuthPage = currentPage.startsWith('auth.html') || currentPage === 'index.html' || currentPage === '';
+
+        if (!isAuthPage && !AuthManager.isAuthenticated()) {
+            console.log(`Access to [${currentPage}] denied. User not authenticated. Redirecting to login.`);
+            // Preserve the intended destination to redirect after login
+            const currentPath = window.location.pathname + window.location.search;
+            window.location.href = `auth.html?redirect=${encodeURIComponent(currentPath)}`;
         }
     }
-    
+
+    // Run page protection on DOMContentLoaded or immediately if already loaded.
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', handlePageProtection);
+    } else {
+        handlePageProtection();
+    }
+
 })();
