@@ -2,270 +2,271 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>User Authentication Demo</title>
+    <title>Firebase Authentication</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; line-height: 1.6; }
         .container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); max-width: 500px; margin: auto; }
-        h2 { text-align: center; color: #333; }
+        h2 { text-align: center; color: #333; margin-top: 0; }
         .auth-section { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
-        .auth-section:last-child { border-bottom: none; }
+        .auth-section:last-child { border-bottom: none; margin-bottom: 0; }
         label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="text"], input[type="password"] { width: calc(100% - 22px); padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button { background-color: #5cb85c; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; width: 100%; }
-        button:hover { background-color: #4cae4c; }
-        .message { text-align: center; padding: 10px; margin-top: 10px; border-radius: 4px; }
-        .success { background-color: #dff0d8; color: #3c763d; }
-        .error { background-color: #f2dede; color: #a94442; }
-        .admin-info { background-color: #f9f9f9; padding: 15px; border-radius: 4px; margin-top: 20px; }
-        .admin-info ul { list-style-type: none; padding: 0; }
-        .admin-info li { background-color: #e9e9e9; margin-bottom: 5px; padding: 8px; border-radius: 3px; }
-        #logoutButton { background-color: #d9534f; margin-top: 20px; }
-        #logoutButton:hover { background-color: #c9302c; }
-        .logged-in-as { text-align: center; margin-bottom: 15px; font-weight: bold; }
+        input[type="email"], input[type="password"], input[type="text"] { width: calc(100% - 24px); padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; width: 100%; display: block; }
+        button:hover { background-color: #0056b3; }
+        button.secondary { background-color: #6c757d; margin-top:10px;}
+        button.secondary:hover { background-color: #5a6268;}
+        .message { text-align: center; padding: 10px; margin-top: 15px; border-radius: 4px; display: none; /* Hidden by default */ }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .admin-info { background-color: #fefefe; border: 1px solid #ddd; padding: 15px; border-radius: 4px; margin-top: 20px; }
+        .admin-info pre { background-color: #f0f0f0; padding: 10px; border-radius: 3px; white-space: pre-wrap; word-wrap: break-word; font-size: 0.9em; }
+        .logged-in-status { padding:15px; background-color: #e9ecef; border-radius:4px; margin-bottom:20px; text-align:center; }
     </style>
     <script>
         // Define ADMIN_PASSWORD for the admin query parameter check.
-        // WARNING: Hardcoding passwords in client-side JS is insecure. For demo only.
-        const ADMIN_PASSWORD = "potato-alfalfa-kumquat-zebra"; // Keep your admin password
+        // This is separate from Firebase user authentication.
+        const ADMIN_PASSWORD = "potato-alfalfa-kumquat-zebra"; // Use your desired admin access key
     </script>
 </head>
 <body>
     <div class="container">
-        <div id="main-content">
-            <div id="registration-section" class="auth-section">
-                <h2>Register New Account</h2>
+
+        <div id="loggedInSection" style="display:none;" class="logged-in-status">
+            <p>Welcome! You are logged in as: <strong id="userEmailDisplay"></strong></p>
+            <p><a href="dashboard.html">Go to Dashboard (Example Protected Page)</a></p> {/* Example link - ensure dashboard.html exists */}
+            <button id="logoutButton" class="secondary">Logout</button>
+        </div>
+
+        <div id="authFormsSection">
+            <div id="registrationSection" class="auth-section">
+                <h2>Create New Account</h2>
                 <div>
-                    <label for="regUsername">Username:</label>
-                    <input type="text" id="regUsername" placeholder="Choose a username">
+                    <label for="regEmail">Email:</label>
+                    <input type="email" id="regEmail" placeholder="Enter your email" required>
                 </div>
                 <div>
                     <label for="regPassword">Password:</label>
-                    <input type="password" id="regPassword" placeholder="Choose a password">
+                    <input type="password" id="regPassword" placeholder="Choose a password (min. 6 characters)" required>
                 </div>
                 <div>
                     <label for="regPasswordConfirm">Confirm Password:</label>
-                    <input type="password" id="regPasswordConfirm" placeholder="Confirm your password">
+                    <input type="password" id="regPasswordConfirm" placeholder="Confirm your password" required>
                 </div>
                 <button id="registerButton">Register</button>
-                <p id="registrationMessage" class="message" style="display:none;"></p>
+                <p id="registrationMessage" class="message"></p>
             </div>
 
-            <div id="login-section" class="auth-section">
+            <div id="loginSection" class="auth-section">
                 <h2>Login to Your Account</h2>
                 <div>
-                    <label for="loginUsername">Username:</label>
-                    <input type="text" id="loginUsername" placeholder="Enter your username">
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
                 </div>
                 <div>
                     <label for="loginPassword">Password:</label>
-                    <input type="password" id="loginPassword" placeholder="Enter your password">
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
                 </div>
                 <button id="loginButton">Login</button>
-                <p id="loginMessage" class="message" style="display:none;"></p>
+                <p id="loginMessage" class="message"></p>
             </div>
         </div>
 
-        <div id="protected-content-section" style="display:none;">
-            <p class="logged-in-as">Logged in as: <span id="loggedInUserDisplay"></span></p>
-            <h2>Welcome!</h2>
-            <p>This is a protected area. You are successfully logged in.</p>
-            <p><a href="home.html">Go to Home Page (example protected page)</a></p>
-            <button id="logoutButton">Logout</button>
-        </div>
-        
-        <div id="admin-section" style="display:none;" class="admin-info">
+        <div id="adminSection" style="display:none;" class="admin-info">
             <h2>Admin Information</h2>
-            <p>This section is visible when accessed with the correct admin URL parameter.</p>
-            <h3>Registered Users:</h3>
-            <ul id="userList">
-                <li>No users found or unable to load.</li>
-            </ul>
-            <p><small>Note: This lists usernames only. For demo purposes.</small></p>
-            <button id="adminLogoutButton">Logout (from Admin View)</button>
+            <p>This view is for site administration (e.g., viewing current Firebase user details).</p>
+            <div id="adminCurrentUserDisplay">
+                <p>Current Firebase User in this session:</p>
+                <pre id="firebaseUserInfo"></pre>
+            </div>
+            <p><small>Note: Client-side Firebase cannot list all registered users for security reasons.</small></p>
+            <button id="adminLogoutButton" class="secondary">Logout Firebase User (Admin View)</button>
         </div>
     </div>
 
-    <script src="auth-middleware.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script>
-        // auth.html specific UI logic
-        document.addEventListener('DOMContentLoaded', function() {
-            const authManager = window.AuthManager; // Get the manager from auth-middleware.js
+        // Your web app's Firebase configuration (FROM YOUR FIREBASE CONSOLE)
+        const firebaseConfig = {
+            apiKey: "AIzaSyC36oIVrjnLvAdDY66MODI_dI-vVn7HWAw",
+            authDomain: "webcaustic-5ccd4.firebaseapp.com",
+            projectId: "webcaustic-5ccd4",
+            storageBucket: "webcaustic-5ccd4.firebasestorage.app", // Make sure this matches your config
+            messagingSenderId: "1021802602852",
+            appId: "1:1021802602852:web:7cf7dac0ff5b2a2fffda71",
+            measurementId: "G-S1QW5SSXDP" 
+        };
 
-            // Section elements
-            const registrationSect = document.getElementById('registration-section');
-            const loginSect = document.getElementById('login-section');
-            const protectedSect = document.getElementById('protected-content-section');
-            const adminSect = document.getElementById('admin-section');
-            const mainContent = document.getElementById('main-content'); // Wrapper for reg/login
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth(); // Get the Firebase Auth instance
 
-            // Message elements
-            const regMsg = document.getElementById('registrationMessage');
-            const loginMsg = document.getElementById('loginMessage');
-            const loggedInUserDisplay = document.getElementById('loggedInUserDisplay');
+        // DOM Elements
+        const loggedInSection = document.getElementById('loggedInSection');
+        const userEmailDisplay = document.getElementById('userEmailDisplay');
+        const logoutButton = document.getElementById('logoutButton');
+        const adminLogoutButton = document.getElementById('adminLogoutButton');
 
-            // Buttons
-            const registerBtn = document.getElementById('registerButton');
-            const loginBtn = document.getElementById('loginButton');
-            const logoutBtn = document.getElementById('logoutButton');
-            const adminLogoutBtn = document.getElementById('adminLogoutButton');
-            
-            // Inputs
-            const regUsernameInput = document.getElementById('regUsername');
-            const regPasswordInput = document.getElementById('regPassword');
-            const regPasswordConfirmInput = document.getElementById('regPasswordConfirm');
-            const loginUsernameInput = document.getElementById('loginUsername');
-            const loginPasswordInput = document.getElementById('loginPassword');
+        const authFormsSection = document.getElementById('authFormsSection');
+        const registrationSection = document.getElementById('registrationSection');
+        const loginSection = document.getElementById('loginSection');
 
-            function showMessage(element, message, isSuccess) {
-                element.textContent = message;
-                element.className = 'message ' + (isSuccess ? 'success' : 'error');
-                element.style.display = 'block';
-            }
+        const regEmailInput = document.getElementById('regEmail');
+        const regPasswordInput = document.getElementById('regPassword');
+        const regPasswordConfirmInput = document.getElementById('regPasswordConfirm');
+        const registerButton = document.getElementById('registerButton');
+        const registrationMessage = document.getElementById('registrationMessage');
 
-            function hideMessage(element) {
-                element.style.display = 'none';
-            }
+        const loginEmailInput = document.getElementById('loginEmail');
+        const loginPasswordInput = document.getElementById('loginPassword');
+        const loginButton = document.getElementById('loginButton');
+        const loginMessage = document.getElementById('loginMessage');
 
-            function updateUIBasedOnAuthState() {
-                const currentUser = authManager.getLoggedInUser();
-                const urlParams = new URLSearchParams(window.location.search);
-                const isAdminAccess = urlParams.has('admin') && urlParams.get('admin') === ADMIN_PASSWORD;
+        const adminSection = document.getElementById('adminSection');
+        const firebaseUserInfoDisplay = document.getElementById('firebaseUserInfo');
 
-                if (isAdminAccess) {
-                    mainContent.style.display = 'none';
-                    registrationSect.style.display = 'none';
-                    loginSect.style.display = 'none';
-                    protectedSect.style.display = 'none';
-                    adminSect.style.display = 'block';
-                    loadAdminData();
-                } else if (currentUser) {
-                    mainContent.style.display = 'none';
-                    registrationSect.style.display = 'none';
-                    loginSect.style.display = 'none';
-                    protectedSect.style.display = 'block';
-                    adminSect.style.display = 'none';
-                    loggedInUserDisplay.textContent = currentUser;
-                } else {
-                    mainContent.style.display = 'block';
-                    registrationSect.style.display = 'block'; // Or show login first
-                    loginSect.style.display = 'block';
-                    protectedSect.style.display = 'none';
-                    adminSect.style.display = 'none';
+        // Helper to show messages
+        function showMessage(element, messageText, isSuccess) {
+            element.textContent = messageText;
+            element.className = 'message ' + (isSuccess ? 'success' : 'error');
+            element.style.display = 'block';
+            // Automatically hide after 5 seconds
+            setTimeout(() => { 
+                if (element.textContent === messageText) { // Only hide if message hasn't changed
+                    element.style.display = 'none'; 
                 }
-            }
-            
-            async function handleRegistration() {
-                hideMessage(regMsg);
-                const username = regUsernameInput.value.trim();
+            }, 5000);
+        }
+
+        // --- Registration ---
+        if (registerButton) {
+            registerButton.addEventListener('click', async () => {
+                const email = regEmailInput.value.trim();
                 const password = regPasswordInput.value;
                 const confirmPassword = regPasswordConfirmInput.value;
 
-                if (!username || !password || !confirmPassword) {
-                    showMessage(regMsg, 'All fields are required.', false);
+                registrationMessage.style.display = 'none'; 
+
+                if (!email || !password || !confirmPassword) {
+                    showMessage(registrationMessage, 'All fields are required.', false);
+                    return;
+                }
+                if (!email.includes('@') || !email.includes('.')) { // Basic email format check
+                    showMessage(registrationMessage, 'Please enter a valid email address.', false);
                     return;
                 }
                 if (password !== confirmPassword) {
-                    showMessage(regMsg, 'Passwords do not match.', false);
+                    showMessage(registrationMessage, 'Passwords do not match.', false);
+                    return;
+                }
+                if (password.length < 6) {
+                    showMessage(registrationMessage, 'Password should be at least 6 characters.', false);
                     return;
                 }
 
                 try {
-                    const success = await authManager.registerUser(username, password);
-                    if (success) {
-                        showMessage(regMsg, 'Registration successful! Please log in.', true);
-                        regUsernameInput.value = '';
-                        regPasswordInput.value = '';
-                        regPasswordConfirmInput.value = '';
-                         // Optionally switch to login view or clear form
-                    }
+                    await auth.createUserWithEmailAndPassword(email, password);
+                    // Firebase onAuthStateChanged will handle UI updates.
+                    // Success message can be shown here or handled by onAuthStateChanged if desired
+                    showMessage(registrationMessage, 'Registration successful! You are now logged in.', true);
+                    regEmailInput.value = ''; // Clear form
+                    regPasswordInput.value = '';
+                    regPasswordConfirmInput.value = '';
                 } catch (error) {
-                    showMessage(regMsg, error.message, false);
+                    console.error("Registration Error:", error);
+                    showMessage(registrationMessage, error.message, false); // Firebase provides good error messages
                 }
-            }
+            });
+        }
 
-            async function handleLogin() {
-                hideMessage(loginMsg);
-                const username = loginUsernameInput.value.trim();
+        // --- Login ---
+        if (loginButton) {
+            loginButton.addEventListener('click', async () => {
+                const email = loginEmailInput.value.trim();
                 const password = loginPasswordInput.value;
+                loginMessage.style.display = 'none';
 
-                if (!username || !password) {
-                    showMessage(loginMsg, 'Username and password are required.', false);
+                if (!email || !password) {
+                    showMessage(loginMessage, 'Email and password are required.', false);
                     return;
                 }
 
                 try {
-                    const success = await authManager.loginUser(username, password);
-                    if (success) {
-                        showMessage(loginMsg, 'Login successful! Loading your space...', true);
-                        updateUIBasedOnAuthState(); // Update UI to show protected content
-                        // Potentially redirect to another page if auth.html is only for login/reg
-                        // window.location.href = 'home.html'; 
-                    }
+                    await auth.signInWithEmailAndPassword(email, password);
+                    // Firebase onAuthStateChanged will handle UI updates and redirection.
+                    showMessage(loginMessage, 'Login successful! Please wait...', true);
                 } catch (error) {
-                    showMessage(loginMsg, error.message, false);
+                    console.error("Login Error:", error);
+                    showMessage(loginMessage, error.message, false);
                 }
-            }
+            });
+        }
 
-            function handleLogout() {
-                authManager.logoutUser();
-                updateUIBasedOnAuthState(); // Update UI to show login/reg forms
-                // Could redirect to a logged-out confirmation page or back to login
-                // window.location.href = 'auth.html'; // Reload to ensure clean state
+        // --- Logout ---
+        async function handleLogout() {
+            try {
+                await auth.signOut();
+                // onAuthStateChanged will handle UI updates.
+                // Forcing a reload to auth.html can ensure a clean state.
+                console.log("User signed out. Redirecting to auth.html");
+                window.location.href = 'auth.html'; // Redirect to ensure clean state for forms
+            } catch (error) {
+                console.error("Logout Error:", error);
+                showMessage(loggedInSection.querySelector('.message') || loginMessage, "Error logging out: " + error.message, false);
             }
-            
-            function loadAdminData() {
-                const userListUl = document.getElementById('userList');
-                userListUl.innerHTML = ''; // Clear existing
-                try {
-                    const users = authManager.getAllUsersForAdmin(); // Expects {username: data}
-                    const usernames = Object.keys(users);
-                    if (usernames.length > 0) {
-                        usernames.forEach(username => {
-                            const li = document.createElement('li');
-                            li.textContent = username;
-                            userListUl.appendChild(li);
-                        });
-                    } else {
-                        userListUl.innerHTML = '<li>No users registered yet.</li>';
-                    }
-                } catch (e) {
-                    console.error("Admin: Error loading users", e);
-                    userListUl.innerHTML = '<li>Error loading user list.</li>';
-                }
-            }
+        }
+        if (logoutButton) logoutButton.addEventListener('click', handleLogout);
+        if (adminLogoutButton) adminLogoutButton.addEventListener('click', handleLogout);
 
-            // Attach event listeners
-            if (registerBtn) registerBtn.addEventListener('click', handleRegistration);
-            if (loginBtn) loginBtn.addEventListener('click', handleLogin);
-            if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
-            if (adminLogoutBtn) adminLogoutBtn.addEventListener('click', handleLogout); // Admin logout also logs out user
 
-            // Initial UI setup
-            updateUIBasedOnAuthState();
-            
-            // Handle page protection for other pages (if user navigates away and comes back)
-            // This assumes auth-middleware.js also has its own page protection logic for non-auth pages
-            // For auth.html itself, the logic above handles visibility of sections.
-            // If not admin and already logged in, maybe redirect from auth.html.
-            const currentUser = authManager.getLoggedInUser();
+        // --- Observe Authentication State (This is the core for UI updates) ---
+        auth.onAuthStateChanged(user => {
             const urlParams = new URLSearchParams(window.location.search);
-            const isAdminAccess = urlParams.has('admin') && urlParams.get('admin') === ADMIN_PASSWORD;
-            const redirectTarget = urlParams.get('redirect');
+            const isAdminAccessMode = urlParams.has('admin') && urlParams.get('admin') === ADMIN_PASSWORD;
 
-            if (currentUser && !isAdminAccess) {
-                if (redirectTarget) {
-                    // If there was a redirect target (e.g. tried to access protected page)
-                    // window.location.href = decodeURIComponent(redirectTarget);
-                    // For now, if on auth.html and logged in, just show protected content area
-                    // or user can navigate via links.
-                    console.log("User is logged in. On auth.html, showing protected content section if applicable.");
+            if (isAdminAccessMode) {
+                authFormsSection.style.display = 'none';
+                loggedInSection.style.display = 'none';
+                adminSection.style.display = 'block';
+                if (user) {
+                    firebaseUserInfoDisplay.textContent = `Email: ${user.email}\nUID: ${user.uid}\nEmail Verified: ${user.emailVerified}\nLast Sign-in: ${new Date(user.metadata.lastSignInTime).toLocaleString()}`;
+                    adminLogoutButton.style.display = 'block';
                 } else {
-                    // If just landing on auth.html and already logged in, show protected content
-                    // This is handled by updateUIBasedOnAuthState
+                    firebaseUserInfoDisplay.textContent = 'No Firebase user is currently logged in for this browser session.';
+                    adminLogoutButton.style.display = 'none';
                 }
+            } else if (user) {
+                // User is signed in
+                console.log("Firebase Auth: User is signed in -", user.email);
+                authFormsSection.style.display = 'none';
+                adminSection.style.display = 'none';
+                loggedInSection.style.display = 'block';
+                userEmailDisplay.textContent = user.email;
+
+                // Handle redirect after login if specified
+                const redirectUrl = urlParams.get('redirect');
+                if (redirectUrl) {
+                    // Prevent redirect loop if already on auth.html and redirect is to auth.html
+                    const decodedRedirect = decodeURIComponent(redirectUrl);
+                    if (window.location.pathname !== decodedRedirect.split('?')[0] || window.location.search !== decodedRedirect.split('?')[1]) {
+                         console.log("Firebase Auth: Redirecting to:", decodedRedirect);
+                         window.location.href = decodedRedirect;
+                    } else {
+                        console.log("Firebase Auth: Already on redirect target or default view after login.");
+                    }
+                } else {
+                     console.log("Firebase Auth: User logged in, no specific redirect. Staying on auth.html (logged in view).");
+                }
+            } else {
+                // User is signed out or not yet signed in
+                console.log("Firebase Auth: User is signed out.");
+                authFormsSection.style.display = 'block';
+                loggedInSection.style.display = 'none';
+                adminSection.style.display = 'none';
             }
         });
+
     </script>
 </body>
 </html>
