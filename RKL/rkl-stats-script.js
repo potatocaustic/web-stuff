@@ -57,38 +57,44 @@ async function loadData() {
     
     console.log('All parsed data entries:', allData.length);
     
-    // Look for the specific median row: Team="RKL" AND Player="Average Player (Median)"
+    // Look for the specific median row - it appears the parsing is wrong
+    // Let's look for the median data in a more flexible way
     let medianRow = allData.find(row => 
-      row.Team === 'RKL' && row.Player === 'Average Player (Median)'
+      (row.Team === 'RKL' && row.Player && row.Player.includes('Median')) ||
+      (row.Player === 'Average Player (Median)') ||
+      (row.Team === 'RKL' && row.Player === '(Median)')
     );
     
-    console.log('Found median row with exact match:', medianRow ? 'YES' : 'NO');
+    console.log('Found median row with flexible search:', medianRow ? 'YES' : 'NO');
     
     if (!medianRow) {
-      // Debug: show what RKL rows we do have
+      // Debug: show what RKL rows we do have with full content
       const rklRows = allData.filter(row => row.Team === 'RKL');
       console.log('All RKL rows found:', rklRows.length);
       
-      // Let's also check the exact string content and any whitespace issues
       rklRows.forEach((row, index) => {
-        console.log(`RKL row ${index}:`, {
-          Team: `"${row.Team}"`,
-          Player: `"${row.Player}"`,
-          TeamLength: row.Team ? row.Team.length : 'null',
-          PlayerLength: row.Player ? row.Player.length : 'null'
+        console.log(`RKL row ${index} full data:`, {
+          Team: row.Team,
+          Player: row.Player,
+          GP: row.GP,
+          firstDateCol: row[dateColumns[0]] // Show first date column value
         });
       });
       
-      // Try to find median row with more flexible matching
-      medianRow = allData.find(row => 
-        row.Team && row.Team.trim() === 'RKL' && 
-        row.Player && row.Player.includes('Average Player') && row.Player.includes('Median')
-      );
+      // Try to find any row that has median data by looking for the first RKL row
+      // that has actual score data in the date columns
+      medianRow = rklRows.find(row => {
+        const firstDateValue = dateColumns.length > 0 ? row[dateColumns[0]] : null;
+        return firstDateValue !== null && !isNaN(firstDateValue) && firstDateValue > 0;
+      });
       
       if (medianRow) {
-        console.log('Found median row with flexible matching!');
-        console.log('Flexible match details:', { Team: medianRow.Team, Player: medianRow.Player });
+        console.log('Found median row by checking for score data!');
       }
+    }
+    
+    if (medianRow) {
+      console.log('Using median row:', { Team: medianRow.Team, Player: medianRow.Player });
     }
     
     // Filter out summary/average rows, keep only actual player data
