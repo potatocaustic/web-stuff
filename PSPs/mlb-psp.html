@@ -22,9 +22,6 @@
         };
 
         // Initialize Firebase
-        // This ensures Firebase is initialized before auth-middleware.js might need it.
-        // auth-middleware.js also contains an initialization block, which is fine;
-        // Firebase's initializeApp is idempotent (safe to call multiple times with the same config).
         if (!firebase.apps.length) { 
             firebase.initializeApp(firebaseConfig);
         }
@@ -50,7 +47,6 @@
         color: #333;
       }
 
-      /* Main site header style - matching your other pages */
       header {
         background-color: #333;
         color: #fff;
@@ -64,7 +60,6 @@
         margin: 0;
       }
       
-      /* Navigation styling */
       nav ul {
         display: flex;
         justify-content: center;
@@ -89,7 +84,6 @@
         color: #ccc;
       }
       
-      /* Mobile navigation styles */
       @media (max-width: 600px) {
         nav {
           width: 100%;
@@ -125,14 +119,12 @@
         }
       }
 
-      /* Main content area */
       main {
         padding: 2rem;
         max-width: 1200px;
         margin: 0 auto;
       }
       
-      /* Info Section */
       .info {
         text-align: center;
         margin-bottom: 1.5rem;
@@ -148,7 +140,6 @@
         margin-top: 0.5rem;
       }
 
-      /* Search Section */
       .search-section {
         display: grid;
         grid-template-columns: 1fr 2fr;
@@ -169,7 +160,6 @@
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       }
 
-      /* Category Buttons */
       .category-buttons {
         display: flex;
         flex-direction: column;
@@ -198,7 +188,6 @@
         border-color: #333;
       }
 
-      /* Player Search */
       #playerSearchInput {
         width: 100%;
         padding: 0.8rem;
@@ -226,7 +215,6 @@
         background-color: #f4f4f4;
       }
 
-      /* Results Section */
       .results-section {
         background-color: #fff;
         padding: 1.5rem;
@@ -258,7 +246,6 @@
         font-weight: bold;
       }
 
-      /* Hit and Miss styles */
       .hit, .miss {
         font-weight: bold;
         padding: 0.3rem 0.6rem;
@@ -278,7 +265,6 @@
         color: #721c24;
       }
 
-      /* Show All Button */
       .show-all-button {
         margin-top: 1rem;
         padding: 0.6rem 1.2rem;
@@ -297,7 +283,6 @@
         background-color: #e0e0e0;
       }
 
-      /* Stats Section */
       .stats-section {
         background-color: #fff;
         padding: 1.5rem;
@@ -350,7 +335,6 @@
         font-weight: bold;
       }
 
-      /* Helper Classes */
       .hidden {
         display: none !important;
       }
@@ -361,14 +345,40 @@
         color: #666;
         font-style: italic;
       }
-
-      /* Footer */
+      
       footer {
         text-align: center;
         margin-top: 2rem;
         padding: 1rem;
         background-color: #333;
         color: #fff;
+      }
+
+      /* Added style for the dynamically added Firebase status div */
+      #firebasePageAuthStatusDisplay { 
+            position: fixed; 
+            bottom: 10px; 
+            right: 10px; 
+            background-color: rgba(255,255,255,0.9); 
+            padding: 8px 12px; 
+            border: 1px solid #ccc; 
+            border-radius: 5px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            font-size: 0.9em; 
+            z-index: 10001; /* Ensure it's on top of other content */
+      }
+      #firebasePageAuthStatusDisplay button { 
+            margin-left: 10px; 
+            padding: 3px 8px; 
+            font-size: 0.95em;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+      }
+      #firebasePageAuthStatusDisplay button:hover {
+            background-color: #5a6268;
       }
     </style>
   </head>
@@ -441,6 +451,58 @@
     <footer>
       <p>&copy; caustic.info</p>
     </footer>
+
     <script src="mlb-psp-script.js"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Ensure Firebase auth is available. It should be initialized in the <head>.
+        if (typeof firebase === 'undefined' || typeof firebase.auth !== 'function') {
+            console.error("Firebase or Firebase Auth is not available. Check SDK loading and initialization.");
+            return;
+        }
+        const auth = firebase.auth();
+
+        auth.onAuthStateChanged(user => {
+          let statusDiv = document.getElementById('firebasePageAuthStatusDisplay');
+          
+          if (user) {
+            // User is signed in.
+            console.log(`MLB PSP Page: User is authenticated (${user.displayName || user.email}).`);
+            
+            if (!statusDiv) {
+              statusDiv = document.createElement('div');
+              statusDiv.id = 'firebasePageAuthStatusDisplay';
+              document.body.appendChild(statusDiv); // Append to body, will float due to CSS
+            }
+            
+            const displayNameToShow = user.displayName || user.email; // Use displayName, fallback to email
+            statusDiv.innerHTML = `Logged in as: <strong>${displayNameToShow}</strong> <button id="pageAuthLogoutBtn">Logout</button>`;
+            statusDiv.style.display = 'block';
+
+            const logoutButton = document.getElementById('pageAuthLogoutBtn');
+            if (logoutButton) {
+              logoutButton.addEventListener('click', async () => {
+                try {
+                  await auth.signOut();
+                  // auth-middleware.js should handle redirect on next page load attempt.
+                  // Forcing redirect here for immediate effect:
+                  window.location.href = '/auth.html'; 
+                } catch (error) {
+                  console.error("Page Logout Error:", error);
+                  alert("Error logging out: " + error.message);
+                }
+              });
+            }
+          } else {
+            // User is signed out. auth-middleware.js should have redirected if this page requires auth.
+            console.log("MLB PSP Page: No user authenticated. Middleware should handle redirect.");
+            if (statusDiv) {
+              statusDiv.style.display = 'none'; // Hide if it exists
+            }
+          }
+        });
+      });
+    </script>
     </body>
 </html>
