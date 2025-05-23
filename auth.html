@@ -375,6 +375,17 @@
                 navigator.deviceMemory || 'unknown'
             ].join('|');
             
+            console.log('=== DEVICE FINGERPRINT DEBUG ===');
+            console.log('User Agent:', navigator.userAgent);
+            console.log('Language:', navigator.language);
+            console.log('Screen:', screen.width + 'x' + screen.height);
+            console.log('Timezone Offset:', new Date().getTimezoneOffset());
+            console.log('Hardware Concurrency:', navigator.hardwareConcurrency || 'unknown');
+            console.log('Device Memory:', navigator.deviceMemory || 'unknown');
+            console.log('Canvas Data Length:', canvas.toDataURL().length);
+            console.log('Full Fingerprint String:', fingerprint);
+            console.log('================================');
+            
             // Simple hash function
             let hash = 0;
             for (let i = 0; i < fingerprint.length; i++) {
@@ -383,16 +394,36 @@
                 hash = hash & hash;
             }
             
-            return Math.abs(hash).toString(36).toUpperCase().slice(0, 12);
+            const deviceId = Math.abs(hash).toString(36).toUpperCase().slice(0, 12);
+            console.log('Generated Device ID:', deviceId);
+            
+            return deviceId;
         }
         
         // Storage functions
         function getStoredDevices() {
-            return JSON.parse(localStorage.getItem('teamDevices') || '[]');
+            try {
+                const stored = localStorage.getItem('teamDevices');
+                console.log('Raw localStorage data:', stored);
+                const parsed = JSON.parse(stored || '[]');
+                console.log('Parsed devices:', parsed);
+                return parsed;
+            } catch (error) {
+                console.error('Error getting stored devices:', error);
+                return [];
+            }
         }
         
         function storeDevice(deviceId, username, code, override = false) {
+            console.log('=== STORE DEVICE DEBUG ===');
+            console.log('Device ID:', deviceId);
+            console.log('Username:', username);
+            console.log('Code:', code);
+            console.log('Override:', override);
+            
             const devices = getStoredDevices();
+            console.log('Current devices before storage:', devices);
+            
             const deviceData = {
                 id: deviceId,
                 username: username,
@@ -403,19 +434,56 @@
             
             // Remove any existing device with the same username (single device per user)
             const filteredDevices = devices.filter(d => d.username !== username);
+            console.log('After removing same username:', filteredDevices);
             
             // Remove existing device with same ID if any
             const finalDevices = filteredDevices.filter(d => d.id !== deviceId);
             finalDevices.push(deviceData);
             
-            localStorage.setItem('teamDevices', JSON.stringify(finalDevices));
+            console.log('Final devices to store:', finalDevices);
+            
+            try {
+                localStorage.setItem('teamDevices', JSON.stringify(finalDevices));
+                console.log('Successfully stored to localStorage');
+                
+                // Verify storage
+                const verification = JSON.parse(localStorage.getItem('teamDevices') || '[]');
+                console.log('Verification - stored devices:', verification);
+            } catch (error) {
+                console.error('Error storing to localStorage:', error);
+            }
+            
+            console.log('=========================');
             return deviceData;
         }
         
         function isDeviceAuthenticated(deviceId) {
-            const devices = getStoredDevices();
-            const device = devices.find(d => d.id === deviceId);
-            return device && device.code === currentTeamCode;
+            try {
+                const devices = getStoredDevices();
+                console.log('=== AUTHENTICATION CHECK ===');
+                console.log('Checking device ID:', deviceId);
+                console.log('Against stored devices:', devices);
+                
+                const device = devices.find(d => d.id === deviceId);
+                console.log('Found matching device:', device);
+                
+                if (!device) {
+                    console.log('No device found');
+                    return false;
+                }
+                
+                if (device.code !== currentTeamCode) {
+                    console.log('Wrong team code - Expected:', currentTeamCode, 'Got:', device.code);
+                    return false;
+                }
+                
+                console.log('Device authenticated successfully');
+                console.log('============================');
+                return device && device.code === currentTeamCode;
+            } catch (error) {
+                console.error('Error in authentication check:', error);
+                return false;
+            }
         }
         
         function findUserDevice(username) {
