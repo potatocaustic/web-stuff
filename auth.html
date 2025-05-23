@@ -355,7 +355,6 @@
             'goose',
             'icy',
             'skysmores'
-            'testcase1'
         ];
         
         // Pending authentication data for conflict resolution
@@ -444,6 +443,8 @@
         }
         
         function showConflictDialog(username, existingDevice) {
+            console.log('Showing conflict dialog for username:', username, 'existing device:', existingDevice);
+            
             pendingAuth = {
                 username: username,
                 deviceId: document.getElementById('deviceId').textContent,
@@ -479,11 +480,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             const deviceId = generateDeviceFingerprint();
             document.getElementById('deviceId').textContent = deviceId;
+            console.log('Initializing with device ID:', deviceId);
             
             // Check if device is already authenticated
             if (isDeviceAuthenticated(deviceId)) {
                 const devices = getStoredDevices();
                 const device = devices.find(d => d.id === deviceId);
+                console.log('Device already authenticated:', device);
                 updateLastAccess(deviceId);
                 showSuccessSection(device.username);
                 return;
@@ -492,9 +495,12 @@
             // Check if accessing with admin code in URL
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('admin') === ADMIN_CODE) {
+                console.log('Admin access detected');
                 showAdminPanel();
                 return;
             }
+            
+            console.log('Showing auth form');
         });
         
         // Form submission
@@ -533,14 +539,15 @@
                 return;
             }
             
-            // Check if username is already registered to another device
+            // Check if username is already registered to a DIFFERENT device
             const existingUserDevice = findUserDevice(username);
             if (existingUserDevice && existingUserDevice.id !== deviceId) {
+                // Username is registered to a different device - show conflict dialog
                 showConflictDialog(username, existingUserDevice);
                 return;
             }
             
-            // Register device
+            // Register device (this covers both new registrations and re-registrations of the same device)
             try {
                 storeDevice(deviceId, username, teamCode);
                 showSuccessSection(username);
