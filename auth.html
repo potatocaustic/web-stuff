@@ -97,6 +97,10 @@
             background: #6c757d;
         }
         
+        .btn.warning {
+            background: #fd7e14;
+        }
+        
         .error {
             color: #e74c3c;
             margin-top: 0.5rem;
@@ -117,6 +121,15 @@
             margin-bottom: 1.5rem;
             font-size: 0.9rem;
             color: #6c757d;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            color: #856404;
         }
         
         .device-info {
@@ -206,6 +219,37 @@
             font-size: 1.1rem;
             margin: 0.5rem 0;
         }
+        
+        .conflict-dialog {
+            background: rgba(0, 0, 0, 0.5);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .conflict-content {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .conflict-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .conflict-buttons button {
+            flex: 1;
+        }
     </style>
 </head>
 <body>
@@ -216,7 +260,7 @@
             <div class="subtitle">Team Access Portal</div>
             
             <div class="info-box">
-                Enter your team access code to authenticate this device. Each device must be registered individually to prevent unauthorized sharing.
+                Enter your authorized username to authenticate this device. Each username can only be registered to one device at a time.
             </div>
             
             <form id="authForm">
@@ -226,8 +270,8 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="playerName">Username:</label>
-                    <input type="text" id="playerName" placeholder="Enter your Real username" required>
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" placeholder="Enter your authorized username" required>
                 </div>
                 
                 <button type="submit" class="btn" id="submitBtn">
@@ -278,10 +322,44 @@
         </div>
     </div>
 
+    <!-- Conflict Resolution Dialog -->
+    <div id="conflictDialog" class="conflict-dialog hidden">
+        <div class="conflict-content">
+            <h3>⚠️ Username Already Registered</h3>
+            <p id="conflictMessage">This username is already registered to another device.</p>
+            <div class="warning-box">
+                <strong>Warning:</strong> Proceeding will revoke access for the previously registered device and register this device instead.
+            </div>
+            <div class="conflict-buttons">
+                <button class="btn secondary" onclick="cancelAuth()">Cancel</button>
+                <button class="btn warning" onclick="confirmOverride()">Continue & Override</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Configuration
-        const ADMIN_CODE = 'potato-alfalfa-kumquat-zebra'; // Change this to your secret admin code
-        let currentTeamCode = '7jammers2025'; 
+        const ADMIN_CODE = 'potato-alfalfa-kumquat-zebra';
+        let currentTeamCode = '7jammers2025';
+        
+        // Authorized usernames
+        const AUTHORIZED_USERNAMES = [
+            'minnesuffering',
+            'swouse',
+            'cteszn',
+            'mccasual',
+            'saquon',
+            'dortch',
+            'caustic',
+            'beansprouts',
+            'goose',
+            'icy',
+            'skysmores'
+            'testcase1'
+        ];
+        
+        // Pending authentication data for conflict resolution
+        let pendingAuth = null;
         
         // Generate device fingerprint
         function generateDeviceFingerprint() {
@@ -306,7 +384,7 @@
             for (let i = 0; i < fingerprint.length; i++) {
                 const char = fingerprint.charCodeAt(i);
                 hash = ((hash << 5) - hash) + char;
-                hash = hash & hash; // Convert to 32-bit integer
+                hash = hash & hash;
             }
             
             return Math.abs(hash).toString(36).toUpperCase().slice(0, 12);
@@ -317,21 +395,24 @@
             return JSON.parse(localStorage.getItem('teamDevices') || '[]');
         }
         
-        function storeDevice(deviceId, name, code) {
+        function storeDevice(deviceId, username, code, override = false) {
             const devices = getStoredDevices();
             const deviceData = {
                 id: deviceId,
-                name: name,
+                username: username,
                 code: code,
                 registeredAt: new Date().toISOString(),
                 lastAccess: new Date().toISOString()
             };
             
-            // Remove existing device with same ID if any
-            const filteredDevices = devices.filter(d => d.id !== deviceId);
-            filteredDevices.push(deviceData);
+            // Remove any existing device with the same username (single device per user)
+            const filteredDevices = devices.filter(d => d.username !== username);
             
-            localStorage.setItem('teamDevices', JSON.stringify(filteredDevices));
+            // Remove existing device with same ID if any
+            const finalDevices = filteredDevices.filter(d => d.id !== deviceId);
+            finalDevices.push(deviceData);
+            
+            localStorage.setItem('teamDevices', JSON.stringify(finalDevices));
             return deviceData;
         }
         
@@ -339,6 +420,11 @@
             const devices = getStoredDevices();
             const device = devices.find(d => d.id === deviceId);
             return device && device.code === currentTeamCode;
+        }
+        
+        function findUserDevice(username) {
+            const devices = getStoredDevices();
+            return devices.find(d => d.username === username);
         }
         
         function updateLastAccess(deviceId) {
@@ -357,6 +443,38 @@
             updateDeviceList();
         }
         
+        function showConflictDialog(username, existingDevice) {
+            pendingAuth = {
+                username: username,
+                deviceId: document.getElementById('deviceId').textContent,
+                code: document.getElementById('teamCode').value.trim().toUpperCase()
+            };
+            
+            const conflictMessage = document.getElementById('conflictMessage');
+            const lastAccess = new Date(existingDevice.lastAccess).toLocaleDateString();
+            conflictMessage.textContent = `Username "${username}" is already registered to a device (last accessed: ${lastAccess}).`;
+            
+            document.getElementById('conflictDialog').classList.remove('hidden');
+        }
+        
+        function cancelAuth() {
+            pendingAuth = null;
+            document.getElementById('conflictDialog').classList.add('hidden');
+        }
+        
+        function confirmOverride() {
+            if (pendingAuth) {
+                // Store the device with override
+                storeDevice(pendingAuth.deviceId, pendingAuth.username, pendingAuth.code, true);
+                showSuccessSection(pendingAuth.username);
+                showMessage('Device successfully authenticated! Previous device access has been revoked.', 'success');
+                
+                // Clear conflict dialog
+                document.getElementById('conflictDialog').classList.add('hidden');
+                pendingAuth = null;
+            }
+        }
+        
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             const deviceId = generateDeviceFingerprint();
@@ -367,7 +485,7 @@
                 const devices = getStoredDevices();
                 const device = devices.find(d => d.id === deviceId);
                 updateLastAccess(deviceId);
-                showSuccessSection(device.name);
+                showSuccessSection(device.username);
                 return;
             }
             
@@ -384,7 +502,7 @@
             e.preventDefault();
             
             const teamCode = document.getElementById('teamCode').value.trim().toUpperCase();
-            const playerName = document.getElementById('playerName').value.trim();
+            const username = document.getElementById('username').value.trim().toLowerCase();
             const deviceId = document.getElementById('deviceId').textContent;
             const messageDiv = document.getElementById('message');
             
@@ -392,7 +510,7 @@
             messageDiv.innerHTML = '';
             
             // Validate inputs
-            if (!teamCode || !playerName) {
+            if (!teamCode || !username) {
                 showMessage('Please fill in all fields.', 'error');
                 return;
             }
@@ -403,16 +521,29 @@
                 return;
             }
             
-            // Check if it's the correct team code (case-insensitive comparison)
+            // Check if username is authorized
+            if (!AUTHORIZED_USERNAMES.includes(username)) {
+                showMessage('Username not authorized. Please contact the administrator.', 'error');
+                return;
+            }
+            
+            // Check if it's the correct team code
             if (teamCode !== currentTeamCode.toUpperCase()) {
-              showMessage('Invalid team code. Please check with the website administrator.', 'error');
-              return;
+                showMessage('Invalid team code. Please check with the website administrator.', 'error');
+                return;
+            }
+            
+            // Check if username is already registered to another device
+            const existingUserDevice = findUserDevice(username);
+            if (existingUserDevice && existingUserDevice.id !== deviceId) {
+                showConflictDialog(username, existingUserDevice);
+                return;
             }
             
             // Register device
             try {
-                storeDevice(deviceId, playerName, teamCode);
-                showSuccessSection(playerName);
+                storeDevice(deviceId, username, teamCode);
+                showSuccessSection(username);
                 showMessage('Device successfully authenticated!', 'success');
             } catch (error) {
                 showMessage('Error registering device. Please try again.', 'error');
@@ -424,10 +555,10 @@
             messageDiv.innerHTML = `<div class="${type}">${message}</div>`;
         }
         
-        function showSuccessSection(playerName) {
+        function showSuccessSection(username) {
             document.getElementById('authSection').classList.add('hidden');
             document.getElementById('successSection').classList.remove('hidden');
-            document.getElementById('welcomeMessage').textContent = `Welcome, ${playerName}! You now have access to the team tools.`;
+            document.getElementById('welcomeMessage').textContent = `Welcome, ${username}! You now have access to the team tools.`;
         }
         
         function showAuthSection() {
@@ -437,7 +568,7 @@
             
             // Clear form
             document.getElementById('teamCode').value = '';
-            document.getElementById('playerName').value = '';
+            document.getElementById('username').value = '';
             document.getElementById('message').innerHTML = '';
         }
         
@@ -461,7 +592,7 @@
             deviceListDiv.innerHTML = devices.map(device => `
                 <div class="device-item">
                     <div>
-                        <div class="device-name">${device.name}</div>
+                        <div class="device-name">${device.username}</div>
                         <div class="device-details">
                             ID: ${device.id}<br>
                             Registered: ${new Date(device.registeredAt).toLocaleDateString()}<br>
@@ -491,8 +622,8 @@
         function exportDeviceList() {
             const devices = getStoredDevices();
             const csvContent = [
-                'Name,Device ID,Registered Date,Last Access',
-                ...devices.map(d => `"${d.name}","${d.id}","${new Date(d.registeredAt).toLocaleDateString()}","${new Date(d.lastAccess).toLocaleDateString()}"`)
+                'Username,Device ID,Registered Date,Last Access',
+                ...devices.map(d => `"${d.username}","${d.id}","${new Date(d.registeredAt).toLocaleDateString()}","${new Date(d.lastAccess).toLocaleDateString()}"`)
             ].join('\n');
             
             const blob = new Blob([csvContent], { type: 'text/csv' });
