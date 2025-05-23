@@ -197,7 +197,7 @@
             font-size: 0.8rem;
         }
         
-        .code-display {
+        .-display {
             background: #f8f9fa;
             border: 1px solid #dee2e6;
             border-radius: 4px;
@@ -216,12 +216,12 @@
             <div class="subtitle">Team Access Portal</div>
             
             <div class="info-box">
-                Enter your team access code to authenticate this device. Each device must be registered individually to prevent unauthorized sharing.
+                Enter your team access  to authenticate this device. Each device must be registered individually to prevent unauthorized sharing.
             </div>
             
             <form id="authForm">
                 <div class="form-group">
-                    <label for="teamCode">Team Access Code:</label>
+                    <label for="team">Team Access Code:</label>
                     <input type="text" id="teamCode" placeholder="e.g., TEAM-ALPHA-2025" required>
                 </div>
                 
@@ -281,7 +281,7 @@
     <script>
         // Configuration
         const ADMIN_CODE = 'potato-alfalfa-kumquat-zebra'; // Change this to your secret admin code
-        let currentTeamCode = 'jammers-szn7'; // Default team code
+        let currentTeamCode = '7jammers2025'; 
         
         // Generate device fingerprint
         function generateDeviceFingerprint() {
@@ -338,7 +338,7 @@
         function isDeviceAuthenticated(deviceId) {
             const devices = getStoredDevices();
             const device = devices.find(d => d.id === deviceId);
-            return device && device.code === currentTeamCode;
+            return device && device. === currentTeam;
         }
         
         function updateLastAccess(deviceId) {
@@ -371,9 +371,9 @@
                 return;
             }
             
-            // Check if accessing with admin code in URL
+            // Check if accessing with admin  in URL
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('admin') === ADMIN_CODE) {
+            if (urlParams.get('admin') === ADMIN_) {
                 showAdminPanel();
                 return;
             }
@@ -383,7 +383,7 @@
         document.getElementById('authForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const teamCode = document.getElementById('teamCode').value.trim().toUpperCase();
+            const team = document.getElementById('team').value.trim().toUpperCase();
             const playerName = document.getElementById('playerName').value.trim();
             const deviceId = document.getElementById('deviceId').textContent;
             const messageDiv = document.getElementById('message');
@@ -392,26 +392,26 @@
             messageDiv.innerHTML = '';
             
             // Validate inputs
-            if (!teamCode || !playerName) {
+            if (!team || !playerName) {
                 showMessage('Please fill in all fields.', 'error');
                 return;
             }
             
-            // Check if it's admin code
-            if (teamCode === ADMIN_CODE) {
+            // Check if it's admin 
+            if (team === ADMIN_) {
                 showAdminPanel();
                 return;
             }
             
-            // Check if it's the correct team code
-            if (teamCode !== currentTeamCode) {
-                showMessage('Invalid team code. Please check with your team leader.', 'error');
+            // Check if it's the correct team 
+            if (team !== currentTeam) {
+                showMessage('Invalid team . Please check with your team leader.', 'error');
                 return;
             }
             
             // Register device
             try {
-                storeDevice(deviceId, playerName, teamCode);
+                storeDevice(deviceId, playerName, team);
                 showSuccessSection(playerName);
                 showMessage('Device successfully authenticated!', 'success');
             } catch (error) {
@@ -436,7 +436,7 @@
             document.getElementById('adminPanel').classList.add('hidden');
             
             // Clear form
-            document.getElementById('teamCode').value = '';
+            document.getElementById('team').value = '';
             document.getElementById('playerName').value = '';
             document.getElementById('message').innerHTML = '';
         }
@@ -445,7 +445,7 @@
             document.getElementById('authSection').classList.add('hidden');
             document.getElementById('successSection').classList.add('hidden');
             document.getElementById('adminPanel').classList.remove('hidden');
-            document.getElementById('currentTeamCode').textContent = currentTeamCode;
+            document.getElementById('currentTeam').textContent = currentTeam;
             updateDeviceList();
         }
         
@@ -473,7 +473,7 @@
             `).join('');
         }
         
-        function generateNewCode() {
+        function generateNew() {
             const adjectives = ['ALPHA', 'BETA', 'GAMMA', 'DELTA', 'ECHO', 'FOXTROT', 'GOLF', 'HOTEL'];
             const nouns = ['WARRIORS', 'CHAMPIONS', 'LEGENDS', 'TITANS', 'EAGLES', 'HAWKS', 'LIONS', 'BEARS'];
             const year = new Date().getFullYear();
@@ -482,10 +482,10 @@
             const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
             const randomNumber = Math.floor(Math.random() * 1000);
             
-            currentTeamCode = `TEAM-${randomAdjective}-${randomNoun}-${randomNumber}`;
-            document.getElementById('currentTeamCode').textContent = currentTeamCode;
+            currentTeam = `TEAM-${randomAdjective}-${randomNoun}-${randomNumber}`;
+            document.getElementById('currentTeam').textContent = currentTeam;
             
-            showMessage('New team code generated! Share this with your teammates.', 'success');
+            showMessage('New team  generated! Share this with your teammates.', 'success');
         }
         
         function exportDeviceList() {
