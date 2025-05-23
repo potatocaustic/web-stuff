@@ -366,30 +366,84 @@
         // Default accounts - empty by default, use admin panel to add accounts
         const DEFAULT_ACCOUNTS = [];
         
-        // Initialize accounts if not already stored
+        // Initialize accounts if not already stored with better error handling
         function initializeAccounts() {
-            const stored = localStorage.getItem('teamAccounts');
-            if (!stored) {
-                localStorage.setItem('teamAccounts', JSON.stringify(DEFAULT_ACCOUNTS));
+            try {
+                const stored = localStorage.getItem('teamAccounts') || sessionStorage.getItem('teamAccounts');
+                if (!stored) {
+                    console.log('No existing accounts found, initializing empty array');
+                    const success = storeAccounts(DEFAULT_ACCOUNTS);
+                    if (!success) {
+                        console.error('Failed to initialize accounts storage');
+                        // Show user a warning about storage issues
+                        const warningDiv = document.createElement('div');
+                        warningDiv.style.cssText = `
+                            background: #fff3cd;
+                            border: 1px solid #ffeaa7;
+                            color: #856404;
+                            padding: 1rem;
+                            border-radius: 8px;
+                            margin-bottom: 1rem;
+                            font-size: 0.9rem;
+                        `;
+                        warningDiv.innerHTML = `
+                            <strong>⚠️ Storage Warning:</strong> Your browser may have restricted storage access. 
+                            Account creation might not work properly. Try refreshing the page or using a different browser.
+                        `;
+                        document.querySelector('.auth-container').insertBefore(warningDiv, document.querySelector('.auth-container').firstChild);
+                    }
+                } else {
+                    console.log('Found existing accounts');
+                }
+            } catch (error) {
+                console.error('Error initializing accounts:', error);
             }
         }
         
-        // Get stored accounts
+        // Get stored accounts with fallback to sessionStorage
         function getAccounts() {
             try {
-                return JSON.parse(localStorage.getItem('teamAccounts') || '[]');
+                // Try localStorage first
+                let stored = localStorage.getItem('teamAccounts');
+                if (stored) {
+                    return JSON.parse(stored);
+                }
+                
+                // Fallback to sessionStorage
+                stored = sessionStorage.getItem('teamAccounts');
+                if (stored) {
+                    console.log('Using sessionStorage fallback');
+                    return JSON.parse(stored);
+                }
+                
+                return [];
             } catch (error) {
                 console.error('Error getting accounts:', error);
                 return [];
             }
         }
         
-        // Store accounts
+        // Store accounts with better error handling
         function storeAccounts(accounts) {
             try {
                 localStorage.setItem('teamAccounts', JSON.stringify(accounts));
+                // Verify storage worked
+                const verification = localStorage.getItem('teamAccounts');
+                if (!verification) {
+                    throw new Error('Storage verification failed - data not saved');
+                }
+                return true;
             } catch (error) {
                 console.error('Error storing accounts:', error);
+                // Try to use sessionStorage as fallback
+                try {
+                    sessionStorage.setItem('teamAccounts', JSON.stringify(accounts));
+                    console.log('Fell back to sessionStorage');
+                    return true;
+                } catch (sessionError) {
+                    console.error('SessionStorage also failed:', sessionError);
+                    return false;
+                }
             }
         }
         
@@ -513,26 +567,36 @@
             return password.length >= 8;
         }
         
-        // Create new account
+        // Create new account with enhanced debugging
         function createAccount(username, password) {
+            console.log('Creating account for:', username);
+            
+            // Log current storage state
+            console.log('Current accounts before creation:', getAccounts());
+            
             // Validate username
             if (!isValidUsername(username)) {
+                console.log('Username validation failed:', username);
                 return { success: false, error: 'Username must be 3-20 characters, letters and numbers only.' };
             }
             
             // Validate password
             if (!isValidPassword(password)) {
+                console.log('Password validation failed - length:', password.length);
                 return { success: false, error: 'Password must be at least 8 characters long.' };
             }
             
             const accounts = getAccounts();
+            console.log('Retrieved accounts for duplicate check:', accounts.length);
             
             // Check if username already exists (case insensitive)
-            if (accounts.find(acc => acc.username.toLowerCase() === username.toLowerCase())) {
+            const existingAccount = accounts.find(acc => acc.username.toLowerCase() === username.toLowerCase());
+            if (existingAccount) {
+                console.log('Username already exists:', username);
                 return { success: false, error: 'Username already exists. Please choose a different one.' };
             }
             
-            // Add new account with creation timestamp
+            // Create new account with creation timestamp
             const newAccount = {
                 username: username,
                 password: password,
@@ -540,8 +604,32 @@
                 createdBy: 'user'
             };
             
+            console.log('Adding new account:', newAccount);
             accounts.push(newAccount);
-            storeAccounts(accounts);
+            
+            // Try to store accounts
+            const storeSuccess = storeAccounts(accounts);
+            console.log('Storage success:', storeSuccess);
+            
+            if (!storeSuccess) {
+                return { 
+                    success: false, 
+                    error: 'Unable to save account. Please check your browser settings and try again.' 
+                };
+            }
+            
+            // Verify the account was actually stored
+            const verifyAccounts = getAccounts();
+            const accountExists = verifyAccounts.find(acc => acc.username === username);
+            console.log('Verification - account exists:', !!accountExists);
+            console.log('Total accounts after creation:', verifyAccounts.length);
+            
+            if (!accountExists) {
+                return { 
+                    success: false, 
+                    error: 'Account creation failed - storage verification failed. Please try again.' 
+                };
+            }
             
             return { success: true, account: newAccount };
         }
