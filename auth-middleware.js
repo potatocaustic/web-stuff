@@ -38,36 +38,36 @@
     }
     
     // Check if device is authenticated
-function isDeviceAuthenticated() {
-    try {
-        const devices = JSON.parse(localStorage.getItem('teamDevices') || '[]');
-        const deviceId = generateDeviceFingerprint();
-        console.log('Checking auth - Device ID:', deviceId);
-        console.log('Stored devices:', devices);
-        
-        const device = devices.find(d => d.id === deviceId);
-        console.log('Found device:', device);
-        console.log('Expected team code:', CURRENT_TEAM_CODE);
-        
-        if (!device || device.code !== CURRENT_TEAM_CODE) {
-            console.log('Auth failed - device not found or wrong code');
+    function isDeviceAuthenticated() {
+        try {
+            const devices = JSON.parse(localStorage.getItem('teamDevices') || '[]');
+            const deviceId = generateDeviceFingerprint();
+            console.log('Checking auth - Device ID:', deviceId);
+            console.log('Stored devices:', devices);
+            
+            const device = devices.find(d => d.id === deviceId);
+            console.log('Found device:', device);
+            console.log('Expected team code:', CURRENT_TEAM_CODE);
+            
+            if (!device || device.code !== CURRENT_TEAM_CODE) {
+                console.log('Auth failed - device not found or wrong code');
+                return false;
+            }
+            
+            // Update last access time
+            const deviceIndex = devices.findIndex(d => d.id === deviceId);
+            if (deviceIndex !== -1) {
+                devices[deviceIndex].lastAccess = new Date().toISOString();
+                localStorage.setItem('teamDevices', JSON.stringify(devices));
+            }
+            
+            console.log('Auth successful');
+            return { success: true, username: device.username };
+        } catch (error) {
+            console.error('Auth check failed:', error);
             return false;
         }
-        
-        // Update last access time
-        const deviceIndex = devices.findIndex(d => d.id === deviceId);
-        if (deviceIndex !== -1) {
-            devices[deviceIndex].lastAccess = new Date().toISOString();
-            localStorage.setItem('teamDevices', JSON.stringify(devices));
-        }
-        
-        console.log('Auth successful');
-        return true;
-    } catch (error) {
-        console.error('Auth check failed:', error);
-        return false;
     }
-}
     
     // Show access denied overlay
     function showAccessDenied() {
@@ -146,12 +146,7 @@ function isDeviceAuthenticated() {
     }
     
     // Add team header automatically
-    function addTeamHeader() {
-        const devices = JSON.parse(localStorage.getItem('teamDevices') || '[]');
-        const deviceId = generateDeviceFingerprint();
-        const device = devices.find(d => d.id === deviceId);
-        const userName = device ? device.name : 'Team Member';
-        
+    function addTeamHeader(username) {
         // Create team header
         const teamHeader = document.createElement('div');
         teamHeader.style.cssText = `
@@ -165,7 +160,7 @@ function isDeviceAuthenticated() {
         `;
         
         teamHeader.innerHTML = `
-            🔒 Team Access Mode - Welcome, ${userName}
+            🔒 Team Access Mode - Welcome, ${username}
             <button onclick="teamAuthLogout()" style="
                 background: rgba(255, 255, 255, 0.2);
                 color: white;
@@ -185,7 +180,11 @@ function isDeviceAuthenticated() {
     // Logout function
     window.teamAuthLogout = function() {
         if (confirm('Are you sure you want to logout? You will need to re-authenticate this device.')) {
-            localStorage.removeItem('teamDevices');
+            // Only remove this specific device, not all devices
+            const devices = JSON.parse(localStorage.getItem('teamDevices') || '[]');
+            const deviceId = generateDeviceFingerprint();
+            const filteredDevices = devices.filter(d => d.id !== deviceId);
+            localStorage.setItem('teamDevices', JSON.stringify(filteredDevices));
             window.location.href = AUTH_PAGE_URL;
         }
     };
@@ -193,18 +192,20 @@ function isDeviceAuthenticated() {
     // Run authentication check when DOM is loaded
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
-            if (!isDeviceAuthenticated()) {
+            const authResult = isDeviceAuthenticated();
+            if (!authResult || !authResult.success) {
                 showAccessDenied();
             } else {
-                addTeamHeader();
+                addTeamHeader(authResult.username);
             }
         });
     } else {
         // DOM already loaded
-        if (!isDeviceAuthenticated()) {
+        const authResult = isDeviceAuthenticated();
+        if (!authResult || !authResult.success) {
             showAccessDenied();
         } else {
-            addTeamHeader();
+            addTeamHeader(authResult.username);
         }
     }
     
