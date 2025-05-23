@@ -56,20 +56,23 @@ async function loadData() {
     const allData = parseCSV(csvText);
     
     console.log('All parsed data entries:', allData.length);
-    console.log('First few entries:', allData.slice(0, 3).map(row => ({ Team: row.Team, Player: row.Player })));
     
-    // Look for median row with different possible names
+    // Look for the specific median row: Team="RKL" AND Player="Average Player (Median)"
     const medianRow = allData.find(row => 
-      row.Player && (
-        row.Player.includes('Average Player (Median)') ||
-        row.Player.includes('Average Player') ||
-        row.Team === 'RKL'
-      )
+      row.Team === 'RKL' && row.Player === 'Average Player (Median)'
     );
     
-    console.log('Found median row:', medianRow ? { Team: medianRow.Team, Player: medianRow.Player } : 'Not found');
+    console.log('Found median row:', medianRow ? 'YES' : 'NO');
+    if (medianRow) {
+      console.log('Median row details:', { Team: medianRow.Team, Player: medianRow.Player });
+    } else {
+      // Debug: show what RKL rows we do have
+      const rklRows = allData.filter(row => row.Team === 'RKL');
+      console.log('All RKL rows found:', rklRows.map(row => ({ Team: row.Team, Player: row.Player })));
+    }
     
-    // Filter out summary/average rows, keep only actual players
+    // Filter out summary/average rows, keep only actual player data
+    // Exclude: Team="RKL" or any Player containing "Average Player"
     rklData = allData.filter(row => 
       row.Player && 
       row.Team && 
@@ -88,24 +91,24 @@ async function loadData() {
         return dateA - dateB;
       });
       
-      console.log('Date columns found:', dateColumns.length, dateColumns.slice(0, 3));
+      console.log('Date columns found:', dateColumns.length);
+      console.log('First few date columns:', dateColumns.slice(0, 3));
       
       // Store daily medians for relative calculations
       if (medianRow) {
+        let mediansExtracted = 0;
         dateColumns.forEach(col => {
           const value = medianRow[col];
-          if (value !== null && value !== undefined && value !== '' && !isNaN(value)) {
+          if (value !== null && value !== undefined && value !== '' && !isNaN(value) && value > 0) {
             dailyMedians[col] = parseFloat(value);
+            mediansExtracted++;
           }
         });
+        console.log(`Successfully extracted ${mediansExtracted} median values`);
         console.log('Sample median values:', Object.entries(dailyMedians).slice(0, 3));
-      } else {
-        console.warn('No median row found! Looking for rows with Team="RKL"');
-        const rklRows = allData.filter(row => row.Team === 'RKL');
-        console.log('RKL rows found:', rklRows.map(row => ({ Team: row.Team, Player: row.Player })));
       }
       
-      // Get unique teams
+      // Get unique teams (exclude RKL)
       rklData.forEach(row => {
         if (row.Team && row.Team !== 'RKL') {
           teams.add(row.Team.trim());
