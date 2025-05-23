@@ -58,17 +58,37 @@ async function loadData() {
     console.log('All parsed data entries:', allData.length);
     
     // Look for the specific median row: Team="RKL" AND Player="Average Player (Median)"
-    const medianRow = allData.find(row => 
+    let medianRow = allData.find(row => 
       row.Team === 'RKL' && row.Player === 'Average Player (Median)'
     );
     
-    console.log('Found median row:', medianRow ? 'YES' : 'NO');
-    if (medianRow) {
-      console.log('Median row details:', { Team: medianRow.Team, Player: medianRow.Player });
-    } else {
+    console.log('Found median row with exact match:', medianRow ? 'YES' : 'NO');
+    
+    if (!medianRow) {
       // Debug: show what RKL rows we do have
       const rklRows = allData.filter(row => row.Team === 'RKL');
-      console.log('All RKL rows found:', rklRows.map(row => ({ Team: row.Team, Player: row.Player })));
+      console.log('All RKL rows found:', rklRows.length);
+      
+      // Let's also check the exact string content and any whitespace issues
+      rklRows.forEach((row, index) => {
+        console.log(`RKL row ${index}:`, {
+          Team: `"${row.Team}"`,
+          Player: `"${row.Player}"`,
+          TeamLength: row.Team ? row.Team.length : 'null',
+          PlayerLength: row.Player ? row.Player.length : 'null'
+        });
+      });
+      
+      // Try to find median row with more flexible matching
+      medianRow = allData.find(row => 
+        row.Team && row.Team.trim() === 'RKL' && 
+        row.Player && row.Player.includes('Average Player') && row.Player.includes('Median')
+      );
+      
+      if (medianRow) {
+        console.log('Found median row with flexible matching!');
+        console.log('Flexible match details:', { Team: medianRow.Team, Player: medianRow.Player });
+      }
     }
     
     // Filter out summary/average rows, keep only actual player data
