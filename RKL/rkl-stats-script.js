@@ -57,48 +57,7 @@ async function loadData() {
     
     console.log('All parsed data entries:', allData.length);
     
-    // Look for the specific median row - it appears the parsing is wrong
-    // Let's look for the median data in a more flexible way
-    let medianRow = allData.find(row => 
-      (row.Team === 'RKL' && row.Player && row.Player.includes('Median')) ||
-      (row.Player === 'Average Player (Median)') ||
-      (row.Team === 'RKL' && row.Player === '(Median)')
-    );
-    
-    console.log('Found median row with flexible search:', medianRow ? 'YES' : 'NO');
-    
-    if (!medianRow) {
-      // Debug: show what RKL rows we do have with full content
-      const rklRows = allData.filter(row => row.Team === 'RKL');
-      console.log('All RKL rows found:', rklRows.length);
-      
-      rklRows.forEach((row, index) => {
-        console.log(`RKL row ${index} full data:`, {
-          Team: row.Team,
-          Player: row.Player,
-          GP: row.GP,
-          firstDateCol: row[dateColumns[0]] // Show first date column value
-        });
-      });
-      
-      // Try to find any row that has median data by looking for the first RKL row
-      // that has actual score data in the date columns
-      medianRow = rklRows.find(row => {
-        const firstDateValue = dateColumns.length > 0 ? row[dateColumns[0]] : null;
-        return firstDateValue !== null && !isNaN(firstDateValue) && firstDateValue > 0;
-      });
-      
-      if (medianRow) {
-        console.log('Found median row by checking for score data!');
-      }
-    }
-    
-    if (medianRow) {
-      console.log('Using median row:', { Team: medianRow.Team, Player: medianRow.Player });
-    }
-    
-    // Filter out summary/average rows, keep only actual player data
-    // Exclude: Team="RKL" or any Player containing "Average Player"
+    // Filter to get only actual player data (exclude summary rows)
     rklData = allData.filter(row => 
       row.Player && 
       row.Team && 
@@ -106,7 +65,9 @@ async function loadData() {
       !row.Player.includes('Average Player')
     );
     
-    // Extract date columns and daily medians
+    console.log(`Filtered to ${rklData.length} actual player records`);
+    
+    // Extract date columns
     if (allData.length > 0) {
       const firstRow = allData[0];
       dateColumns = Object.keys(firstRow).filter(key => 
@@ -120,19 +81,8 @@ async function loadData() {
       console.log('Date columns found:', dateColumns.length);
       console.log('First few date columns:', dateColumns.slice(0, 3));
       
-      // Store daily medians for relative calculations
-      if (medianRow) {
-        let mediansExtracted = 0;
-        dateColumns.forEach(col => {
-          const value = medianRow[col];
-          if (value !== null && value !== undefined && value !== '' && !isNaN(value) && value > 0) {
-            dailyMedians[col] = parseFloat(value);
-            mediansExtracted++;
-          }
-        });
-        console.log(`Successfully extracted ${mediansExtracted} median values`);
-        console.log('Sample median values:', Object.entries(dailyMedians).slice(0, 3));
-      }
+      // Calculate daily medians from actual player data
+      calculateDailyMedians();
       
       // Get unique teams (exclude RKL)
       rklData.forEach(row => {
@@ -143,12 +93,42 @@ async function loadData() {
     }
     
     console.log(`Loaded ${rklData.length} player records with ${dateColumns.length} match days`);
-    console.log(`Daily medians loaded for ${Object.keys(dailyMedians).length} days`);
+    console.log(`Daily medians calculated for ${Object.keys(dailyMedians).length} days`);
     console.log('Teams found:', Array.from(teams).slice(0, 5));
   } catch (error) {
     console.error('Error loading data:', error);
     throw error;
   }
+}
+
+// Calculate daily medians from actual player data
+function calculateDailyMedians() {
+  dateColumns.forEach(dateCol => {
+    // Get all valid scores for this date
+    const dayScores = rklData
+      .map(player => player[dateCol])
+      .filter(score => score !== null && score !== undefined && !isNaN(score) && score > 0);
+    
+    if (dayScores.length > 0) {
+      // Sort scores and find median
+      const sortedScores = dayScores.sort((a, b) => a - b);
+      const middleIndex = Math.floor(sortedScores.length / 2);
+      
+      let median;
+      if (sortedScores.length % 2 === 0) {
+        // Even number of scores - average the two middle values
+        median = (sortedScores[middleIndex - 1] + sortedScores[middleIndex]) / 2;
+      } else {
+        // Odd number of scores - take the middle value
+        median = sortedScores[middleIndex];
+      }
+      
+      dailyMedians[dateCol] = median;
+    }
+  });
+  
+  console.log('Sample calculated medians:', Object.entries(dailyMedians).slice(0, 5));
+  console.log('Median calculation complete');
 }
 
 // Parse CSV to JSON
