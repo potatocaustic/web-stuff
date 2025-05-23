@@ -6,7 +6,7 @@
     
     // Configuration - must match your auth page settings
     const CURRENT_TEAM_CODE = 'jammers-szn7'; // Update this when you change team codes
-    const AUTH_PAGE_URL = 'auth.html'; // Path to your auth page
+    const AUTH_PAGE_URL = '../auth.html'; // Path to your auth page
     
     // Generate device fingerprint (same method as auth page)
     function generateDeviceFingerprint() {
