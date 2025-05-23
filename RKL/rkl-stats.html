@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Real Karma League Stats - caustic.info</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="rkl-stats-style.css" />
+    <style>
+      /* Reset and General Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        line-height: 1.6;
+      }
+      
+      h1, h2, h3 {
+        color: #333;
+      }
+
+      /* Main site header style - matching your other pages */
+      header {
+        background-color: #333;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+      
+      header h1 {
+        color: white !important;
+        font-size: 1.5rem;
+        margin: 0;
+      }
+      
+      /* Navigation styling */
+      nav ul {
+        display: flex;
+        justify-content: center;
+        list-style: none;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+      }
+      
+      nav ul li {
+        margin: 0.5rem 1rem;
+      }
+      
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 1.1rem;
+        transition: color 0.3s ease;
+        white-space: nowrap;
+      }
+      
+      nav ul li a:hover {
+        color: #ccc;
+      }
+      
+      /* Mobile navigation styles */
+      @media (max-width: 600px) {
+        nav {
+          width: 100%;
+          padding: 0;
+        }
+        
+        nav ul {
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0;
+          width: 100%;
+          margin-left: 0;
+          margin-right: 0;
+        }
+        
+        nav ul li {
+          margin: 0.2rem 0;
+          width: 100%;
+          text-align: center;
+        }
+        
+        nav ul li a {
+          display: block;
+          padding: 0.5rem 0;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          width: 100%;
+          margin: 0 auto;
+        }
+        
+        nav ul li:last-child a {
+          border-bottom: none;
+        }
+      }
+
+      /* Main content area */
+      main {
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+      
+      /* Info Section */
+      .info {
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      
+      .info p {
+        margin-bottom: 0.5rem;
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        margin-top: 2rem;
+        padding: 1rem;
+        background-color: #333;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Real Karma League Stats</h1>
+      <nav>
+        <ul>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="../PSPs/mlb-psp.html">MLB PSP Database</a></li>
+          <li><a href="../PSPs-WNBA/wnba-psp.html">WNBA PSP Database</a></li>
+          <li><a href="../karma-calculator.html">Karma Betting Calculator</a></li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <section class="info">
+        <p>Analyze Real Karma League Season 6 player performance data and track trends over time.</p>
+        <p id="last-updated">Data from RKL Season 6: March 6 - April 23</p>
+      </section>
+      
+      <section class="controls-section">
+        <div class="view-selector">
+          <h3>Select View</h3>
+          <div class="view-buttons">
+            <button id="playerViewBtn" class="view-button active">Player Analysis</button>
+            <button id="teamViewBtn" class="view-button">Team Overview</button>
+            <button id="leaderboardViewBtn" class="view-button">Leaderboards</button>
+            <button id="trendsViewBtn" class="view-button">Performance Trends</button>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Player Analysis View -->
+      <section id="playerView" class="view-section">
+        <div class="search-section">
+          <div class="player-search">
+            <h3>Search Player</h3>
+            <input type="text" id="playerSearchInput" placeholder="Type player name..." />
+            <div id="searchResults" class="search-results"></div>
+          </div>
+          
+          <div class="team-filter">
+            <h3>Filter by Team</h3>
+            <select id="teamSelect">
+              <option value="">All Teams</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="player-results-section">
+          <h2 id="playerResultsTitle">Select a player to view results</h2>
+          <div id="playerStatsContainer" class="player-stats-container">
+            <div id="playerOverview" class="player-overview"></div>
+            <div id="playerChart" class="chart-container"></div>
+            <div id="playerStatsTable" class="stats-table-container"></div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Team Overview View -->
+      <section id="teamView" class="view-section hidden">
+        <div class="team-grid" id="teamGrid">
+          <!-- Team cards will be populated here -->
+        </div>
+      </section>
+      
+      <!-- Leaderboards View -->
+      <section id="leaderboardView" class="view-section hidden">
+        <div class="leaderboard-controls">
+          <h3>Select Metric</h3>
+          <div class="metric-buttons">
+            <button class="metric-button active" data-metric="avg">Average Performance</button>
+            <button class="metric-button" data-metric="recent">Recent Form (Last 5 Games)</button>
+            <button class="metric-button" data-metric="consistency">Most Consistent</button>
+            <button class="metric-button" data-metric="improvement">Biggest Improvement</button>
+          </div>
+        </div>
+        <div id="leaderboardTable" class="leaderboard-table"></div>
+      </section>
+      
+      <!-- Performance Trends View -->
+      <section id="trendsView" class="view-section hidden">
+        <div class="trends-controls">
+          <h3>League-wide Performance Trends</h3>
+          <div class="trend-options">
+            <label>
+              <input type="checkbox" id="showAverage" checked> League Average
+            </label>
+            <label>
+              <input type="checkbox" id="showMedian" checked> League Median
+            </label>
+            <label>
+              <input type="checkbox" id="showTop10"> Top 10 Average
+            </label>
+          </div>
+        </div>
+        <div id="trendsChart" class="chart-container large"></div>
+        <div id="trendsInsights" class="insights-container"></div>
+      </section>
+    </main>
+    <footer>
+      <p>&copy; caustic.info</p>
+    </footer>
+    <script src="rkl-stats-script.js"></script>
+  </body>
+</html>
