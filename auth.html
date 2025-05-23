@@ -442,13 +442,14 @@
             updateDeviceList();
         }
         
-        function showConflictDialog(username, existingDevice) {
+        function showConflictDialog(username, existingDevice, teamCode, deviceId) {
             console.log('Showing conflict dialog for username:', username, 'existing device:', existingDevice);
             
+            // Store all the data we need for the pending auth
             pendingAuth = {
                 username: username,
-                deviceId: document.getElementById('deviceId').textContent,
-                code: document.getElementById('teamCode').value.trim().toUpperCase()
+                deviceId: deviceId,
+                code: teamCode
             };
             
             const conflictMessage = document.getElementById('conflictMessage');
@@ -459,22 +460,33 @@
         }
         
         function cancelAuth() {
+            console.log('Canceling auth');
             pendingAuth = null;
             document.getElementById('conflictDialog').classList.add('hidden');
         }
         
         function confirmOverride() {
+            console.log('Confirming override with pending auth:', pendingAuth);
             if (pendingAuth) {
-                // Store the device with override
-                storeDevice(pendingAuth.deviceId, pendingAuth.username, pendingAuth.code, true);
-                showSuccessSection(pendingAuth.username);
-                showMessage('Device successfully authenticated! Previous device access has been revoked.', 'success');
-                
-                // Clear conflict dialog
-                document.getElementById('conflictDialog').classList.add('hidden');
-                pendingAuth = null;
+                try {
+                    // Store the device with override
+                    storeDevice(pendingAuth.deviceId, pendingAuth.username, pendingAuth.code, true);
+                    showSuccessSection(pendingAuth.username);
+                    showMessage('Device successfully authenticated! Previous device access has been revoked.', 'success');
+                    
+                    // Clear conflict dialog
+                    document.getElementById('conflictDialog').classList.add('hidden');
+                    pendingAuth = null;
+                } catch (error) {
+                    console.error('Error during override:', error);
+                    showMessage('Error registering device. Please try again.', 'error');
+                }
             }
         }
+        
+        // Make functions globally accessible
+        window.cancelAuth = cancelAuth;
+        window.confirmOverride = confirmOverride;
         
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
@@ -543,7 +555,7 @@
             const existingUserDevice = findUserDevice(username);
             if (existingUserDevice && existingUserDevice.id !== deviceId) {
                 // Username is registered to a different device - show conflict dialog
-                showConflictDialog(username, existingUserDevice);
+                showConflictDialog(username, existingUserDevice, teamCode, deviceId);
                 return;
             }
             
