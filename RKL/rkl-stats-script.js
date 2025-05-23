@@ -47,7 +47,7 @@ async function init() {
 // Load and parse CSV data
 async function loadData() {
   try {
-    const response = await fetch('Copy of RKL S6 Karma  Data Reg.csv');
+    const response = await fetch('s6-data.csv');
     if (!response.ok) {
       throw new Error('Failed to fetch CSV file');
     }
