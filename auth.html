@@ -222,12 +222,12 @@
             <form id="authForm">
                 <div class="form-group">
                     <label for="teamCode">Team Access Code:</label>
-                    <input type="text" id="teamCode" placeholder="e.g., TEAM-ALPHA-2025" required>
+                    <input type="text" id="teamCode" placeholder="Required" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="playerName">Your Name:</label>
-                    <input type="text" id="playerName" placeholder="Enter your name" required>
+                    <label for="playerName">Username:</label>
+                    <input type="text" id="playerName" placeholder="Enter your Real username" required>
                 </div>
                 
                 <button type="submit" class="btn" id="submitBtn">
@@ -405,7 +405,7 @@
             
             // Check if it's the correct team code (case-insensitive comparison)
             if (teamCode !== currentTeamCode.toUpperCase()) {
-              showMessage('Invalid team code. Please check with your team leader.', 'error');
+              showMessage('Invalid team code. Please check with the website administrator.', 'error');
               return;
             }
             
