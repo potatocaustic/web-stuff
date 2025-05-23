@@ -297,9 +297,6 @@
                 <button class="btn" onclick="window.location.href='index.html'">
                     Access Team Tools
                 </button>
-                <button class="btn secondary" onclick="showAuthSection()">
-                    Register Another Device
-                </button>
             </div>
         </div>
         
@@ -423,7 +420,11 @@
         
         function findUserDevice(username) {
             const devices = getStoredDevices();
-            return devices.find(d => d.username === username);
+            console.log('Looking for username:', username);
+            console.log('In devices:', devices);
+            const found = devices.find(d => d.username === username);
+            console.log('Found device:', found);
+            return found;
         }
         
         function updateLastAccess(deviceId) {
@@ -597,10 +598,24 @@
             
             // Check if username is already registered to a DIFFERENT device
             const existingUserDevice = findUserDevice(username);
-            if (existingUserDevice && existingUserDevice.id !== deviceId) {
-                // Username is registered to a different device - show conflict dialog
-                showConflictDialog(username, existingUserDevice, teamCode, deviceId);
-                return;
+            console.log('Checking for existing user device:', existingUserDevice);
+            console.log('Current device ID:', deviceId);
+            
+            if (existingUserDevice) {
+                console.log('Found existing device for user:', existingUserDevice.id);
+                console.log('Current device:', deviceId);
+                console.log('Are they different?', existingUserDevice.id !== deviceId);
+                
+                if (existingUserDevice.id !== deviceId) {
+                    // Username is registered to a different device - show conflict dialog
+                    console.log('Username registered to different device, showing conflict dialog');
+                    showConflictDialog(username, existingUserDevice, teamCode, deviceId);
+                    return;
+                } else {
+                    console.log('Same device re-authenticating, allowing through');
+                }
+            } else {
+                console.log('No existing device found for this username');
             }
             
             // Register device (this covers both new registrations and re-registrations of the same device)
@@ -622,6 +637,18 @@
             document.getElementById('authSection').classList.add('hidden');
             document.getElementById('successSection').classList.remove('hidden');
             document.getElementById('welcomeMessage').textContent = `Welcome, ${username}! You now have access to the team tools.`;
+            
+            // Update the success section HTML to remove the "Register Another Device" button
+            const successSection = document.getElementById('successSection');
+            successSection.innerHTML = `
+                <div class="authenticated">
+                    <h3>✅ Device Authenticated!</h3>
+                    <p id="welcomeMessage">Welcome, ${username}! You now have access to the team tools.</p>
+                    <button class="btn" onclick="window.location.href='index.html'">
+                        Access Team Tools
+                    </button>
+                </div>
+            `;
         }
         
         function showAuthSection() {
