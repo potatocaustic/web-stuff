@@ -38,29 +38,36 @@
     }
     
     // Check if device is authenticated
-    function isDeviceAuthenticated() {
-        try {
-            const devices = JSON.parse(localStorage.getItem('teamDevices') || '[]');
-            const deviceId = generateDeviceFingerprint();
-            const device = devices.find(d => d.id === deviceId);
-            
-            if (!device || device.code !== CURRENT_TEAM_CODE) {
-                return false;
-            }
-            
-            // Update last access time
-            const deviceIndex = devices.findIndex(d => d.id === deviceId);
-            if (deviceIndex !== -1) {
-                devices[deviceIndex].lastAccess = new Date().toISOString();
-                localStorage.setItem('teamDevices', JSON.stringify(devices));
-            }
-            
-            return true;
-        } catch (error) {
-            console.error('Auth check failed:', error);
+function isDeviceAuthenticated() {
+    try {
+        const devices = JSON.parse(localStorage.getItem('teamDevices') || '[]');
+        const deviceId = generateDeviceFingerprint();
+        console.log('Checking auth - Device ID:', deviceId);
+        console.log('Stored devices:', devices);
+        
+        const device = devices.find(d => d.id === deviceId);
+        console.log('Found device:', device);
+        console.log('Expected team code:', CURRENT_TEAM_CODE);
+        
+        if (!device || device.code !== CURRENT_TEAM_CODE) {
+            console.log('Auth failed - device not found or wrong code');
             return false;
         }
+        
+        // Update last access time
+        const deviceIndex = devices.findIndex(d => d.id === deviceId);
+        if (deviceIndex !== -1) {
+            devices[deviceIndex].lastAccess = new Date().toISOString();
+            localStorage.setItem('teamDevices', JSON.stringify(devices));
+        }
+        
+        console.log('Auth successful');
+        return true;
+    } catch (error) {
+        console.error('Auth check failed:', error);
+        return false;
     }
+}
     
     // Show access denied overlay
     function showAccessDenied() {
