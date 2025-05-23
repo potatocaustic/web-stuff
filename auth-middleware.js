@@ -1,4 +1,4 @@
-// auth-middleware-with-header.js
+// auth-middleware.js
 // Add this script to all pages you want to protect
 
 (function() {
