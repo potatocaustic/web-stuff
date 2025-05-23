@@ -139,16 +139,16 @@
         }
 
         // --- Registration ---
-        if (registerButton) {
+       if (registerButton) {
             registerButton.addEventListener('click', async () => {
-                const displayName = regDisplayNameInput.value.trim(); // Get display name
+                const displayName = regDisplayNameInput.value.trim();
                 const email = regEmailInput.value.trim();
                 const password = regPasswordInput.value;
                 const confirmPassword = regPasswordConfirmInput.value;
 
                 registrationMessage.style.display = 'none'; 
 
-                if (!displayName || !email || !password || !confirmPassword) { // Check display name
+                if (!displayName || !email || !password || !confirmPassword) {
                     showMessage(registrationMessage, 'All fields are required.', false);
                     return;
                 }
@@ -165,26 +165,35 @@
                     return;
                 }
 
+                console.log("Attempting registration with Display Name:", displayName, "Email:", email); // New log
+
                 try {
                     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                     const user = userCredential.user;
-                    
+                    console.log("Firebase user created successfully. UID:", user.uid, "Email:", user.email); // New log
+
                     // After creating user, update their profile with the displayName
+                    console.log("Attempting to update profile with displayName:", displayName); // New log
                     await user.updateProfile({
                         displayName: displayName
                     });
                     
-                    console.log(`User [${email}] registered with display name [${displayName}].`);
+                    // To confirm, check auth.currentUser (which should be the same user)
+                    if (auth.currentUser) {
+                        console.log("Profile update call completed. Current user's displayName from auth.currentUser:", auth.currentUser.displayName); // New log
+                    } else {
+                        console.log("Profile update call completed, but auth.currentUser is null (unexpected here).");
+                    }
+                    
                     showMessage(registrationMessage, `Registration successful for ${displayName}! You are logged in.`, true);
                     
-                    regDisplayNameInput.value = ''; // Clear form
+                    regDisplayNameInput.value = ''; 
                     regEmailInput.value = '';
                     regPasswordInput.value = '';
                     regPasswordConfirmInput.value = '';
-                    // onAuthStateChanged will handle further UI updates/redirects
                 } catch (error) {
-                    console.error("Registration Error:", error);
-                    showMessage(registrationMessage, error.message, false);
+                    console.error("Registration or Profile Update Error:", error); // Enhanced error logging
+                    showMessage(registrationMessage, `Error: ${error.message}`, false); // Show Firebase error message
                 }
             });
         }
