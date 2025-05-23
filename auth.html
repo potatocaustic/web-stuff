@@ -2,945 +2,270 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>User Authentication Demo</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Access - caustic.info</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #333;
-        }
-        
-        .auth-container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            width: 100%;
-            max-width: 450px;
-            text-align: center;
-        }
-        
-        .logo {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            color: #333;
-        }
-        
-        .subtitle {
-            color: #666;
-            margin-bottom: 2rem;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-            text-align: left;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-        
-        input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .btn {
-            width: 100%;
-            padding: 0.75rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-            margin-bottom: 1rem;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-        
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .btn.secondary {
-            background: #6c757d;
-        }
-        
-        .btn.warning {
-            background: #fd7e14;
-        }
-        
-        .error {
-            color: #e74c3c;
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
-        }
-        
-        .success {
-            color: #27ae60;
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
-        }
-        
-        .info-box {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            font-size: 0.9rem;
-            color: #6c757d;
-        }
-        
-        .authenticated {
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
-            border-radius: 8px;
-            padding: 1.5rem;
-            color: #155724;
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        .admin-panel {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-top: 1rem;
-            text-align: left;
-        }
-        
-        .account-list {
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            padding: 0.5rem;
-            margin-top: 0.5rem;
-        }
-        
-        .account-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.5rem;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .account-item:last-child {
-            border-bottom: none;
-        }
-        
-        .account-name {
-            font-weight: bold;
-        }
-        
-        .account-details {
-            font-size: 0.8rem;
-            color: #666;
-        }
-        
-        .delete-btn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-        
-        .code-display {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            padding: 0.5rem;
-            font-family: monospace;
-            font-size: 1.1rem;
-            margin: 0.5rem 0;
-        }
-        
-        .toggle-password {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #666;
-        }
-        
-        .password-input-container {
-            position: relative;
-        }
-        
-        .new-account-form {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .new-account-form input {
-            margin-bottom: 0.5rem;
-        }
-        
-        .new-account-form .btn {
-            width: auto;
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-        
-        .login-attempts {
-            font-size: 0.8rem;
-            color: #666;
-            margin-top: 0.5rem;
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); max-width: 500px; margin: auto; }
+        h2 { text-align: center; color: #333; }
+        .auth-section { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+        .auth-section:last-child { border-bottom: none; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], input[type="password"] { width: calc(100% - 22px); padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #5cb85c; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; width: 100%; }
+        button:hover { background-color: #4cae4c; }
+        .message { text-align: center; padding: 10px; margin-top: 10px; border-radius: 4px; }
+        .success { background-color: #dff0d8; color: #3c763d; }
+        .error { background-color: #f2dede; color: #a94442; }
+        .admin-info { background-color: #f9f9f9; padding: 15px; border-radius: 4px; margin-top: 20px; }
+        .admin-info ul { list-style-type: none; padding: 0; }
+        .admin-info li { background-color: #e9e9e9; margin-bottom: 5px; padding: 8px; border-radius: 3px; }
+        #logoutButton { background-color: #d9534f; margin-top: 20px; }
+        #logoutButton:hover { background-color: #c9302c; }
+        .logged-in-as { text-align: center; margin-bottom: 15px; font-weight: bold; }
     </style>
+    <script>
+        // Define ADMIN_PASSWORD for the admin query parameter check.
+        // WARNING: Hardcoding passwords in client-side JS is insecure. For demo only.
+        const ADMIN_PASSWORD = "potato-alfalfa-kumquat-zebra"; // Keep your admin password
+    </script>
 </head>
 <body>
-    <div class="auth-container">
-        <!-- Login Form -->
-        <div id="loginSection">
-            <div class="logo">caustic.info</div>
-            <div class="subtitle">Team Access Portal</div>
-            
-            <div class="info-box">
-                Enter your username and password to access team tools, or create a new account.
+    <div class="container">
+        <div id="main-content">
+            <div id="registration-section" class="auth-section">
+                <h2>Register New Account</h2>
+                <div>
+                    <label for="regUsername">Username:</label>
+                    <input type="text" id="regUsername" placeholder="Choose a username">
+                </div>
+                <div>
+                    <label for="regPassword">Password:</label>
+                    <input type="password" id="regPassword" placeholder="Choose a password">
+                </div>
+                <div>
+                    <label for="regPasswordConfirm">Confirm Password:</label>
+                    <input type="password" id="regPasswordConfirm" placeholder="Confirm your password">
+                </div>
+                <button id="registerButton">Register</button>
+                <p id="registrationMessage" class="message" style="display:none;"></p>
             </div>
-            
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="username">Username:</label>
-                    <input type="text" id="username" placeholder="Enter your username" required autocomplete="username">
+
+            <div id="login-section" class="auth-section">
+                <h2>Login to Your Account</h2>
+                <div>
+                    <label for="loginUsername">Username:</label>
+                    <input type="text" id="loginUsername" placeholder="Enter your username">
                 </div>
-                
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <div class="password-input-container">
-                        <input type="password" id="password" placeholder="Enter your password" required autocomplete="current-password">
-                        <button type="button" class="toggle-password" onclick="togglePassword('password')">👁</button>
-                    </div>
+                <div>
+                    <label for="loginPassword">Password:</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password">
                 </div>
-                
-                <button type="submit" class="btn" id="loginBtn">
-                    Sign In
-                </button>
-                
-                <button type="button" class="btn secondary" onclick="showCreateAccount()">
-                    Create New Account
-                </button>
-            </form>
-            
-            <div id="message"></div>
-            <div id="loginAttempts" class="login-attempts"></div>
-        </div>
-        
-        <!-- Create Account Form -->
-        <div id="createAccountSection" class="hidden">
-            <div class="logo">caustic.info</div>
-            <div class="subtitle">Create New Account</div>
-            
-            <div class="info-box">
-                Create your account to access team tools. Choose a username and secure password.
-            </div>
-            
-            <form id="createAccountForm">
-                <div class="form-group">
-                    <label for="newAccountUsername">Username:</label>
-                    <input type="text" id="newAccountUsername" placeholder="Choose a username" required autocomplete="username">
-                    <small style="color: #666; font-size: 0.8rem;">Must be 3-20 characters, letters and numbers only</small>
-                </div>
-                
-                <div class="form-group">
-                    <label for="newAccountPassword">Password:</label>
-                    <div class="password-input-container">
-                        <input type="password" id="newAccountPassword" placeholder="Choose a password" required autocomplete="new-password">
-                        <button type="button" class="toggle-password" onclick="togglePassword('newAccountPassword')">👁</button>
-                    </div>
-                    <small style="color: #666; font-size: 0.8rem;">Must be at least 8 characters</small>
-                </div>
-                
-                <div class="form-group">
-                    <label for="confirmPassword">Confirm Password:</label>
-                    <div class="password-input-container">
-                        <input type="password" id="confirmPassword" placeholder="Confirm your password" required autocomplete="new-password">
-                        <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')">👁</button>
-                    </div>
-                </div>
-                
-                <button type="submit" class="btn" id="createAccountBtn">
-                    Create Account
-                </button>
-                
-                <button type="button" class="btn secondary" onclick="showLogin()">
-                    Back to Sign In
-                </button>
-            </form>
-            
-            <div id="createAccountMessage"></div>
-        </div>
-        
-        <!-- Success Section -->
-        <div id="successSection" class="hidden">
-            <div class="authenticated">
-                <h3>✅ Successfully Signed In!</h3>
-                <p id="welcomeMessage">Welcome! You now have access to the team tools.</p>
-                <button class="btn" onclick="window.location.href='index.html'">
-                    Access Team Tools
-                </button>
-                <button class="btn secondary" onclick="logout()" style="margin-top: 0.5rem;">
-                    Sign Out
-                </button>
+                <button id="loginButton">Login</button>
+                <p id="loginMessage" class="message" style="display:none;"></p>
             </div>
         </div>
+
+        <div id="protected-content-section" style="display:none;">
+            <p class="logged-in-as">Logged in as: <span id="loggedInUserDisplay"></span></p>
+            <h2>Welcome!</h2>
+            <p>This is a protected area. You are successfully logged in.</p>
+            <p><a href="home.html">Go to Home Page (example protected page)</a></p>
+            <button id="logoutButton">Logout</button>
+        </div>
         
-        <!-- Admin Panel -->
-        <div id="adminPanel" class="hidden">
-            <div class="admin-panel">
-                <h4>🔧 Admin Panel</h4>
-                
-                <h5>Team Accounts:</h5>
-                <div class="account-list" id="accountList">
-                    <!-- Account list will be populated here -->
-                </div>
-                
-                <div class="new-account-form">
-                    <h5>Add New Account (Admin):</h5>
-                    <input type="text" id="newUsername" placeholder="Username" required>
-                    <div class="password-input-container">
-                        <input type="password" id="newPassword" placeholder="Password" required>
-                        <button type="button" class="toggle-password" onclick="togglePassword('newPassword')">👁</button>
-                    </div>
-                    <button class="btn" onclick="addAccount()">Add Account</button>
-                </div>
-                
-                <button class="btn secondary" onclick="exportAccounts()" style="margin-top: 1rem;">Export Account List</button>
-                <button class="btn secondary" onclick="showLogin()">Back to Login</button>
-            </div>
+        <div id="admin-section" style="display:none;" class="admin-info">
+            <h2>Admin Information</h2>
+            <p>This section is visible when accessed with the correct admin URL parameter.</p>
+            <h3>Registered Users:</h3>
+            <ul id="userList">
+                <li>No users found or unable to load.</li>
+            </ul>
+            <p><small>Note: This lists usernames only. For demo purposes.</small></p>
+            <button id="adminLogoutButton">Logout (from Admin View)</button>
         </div>
     </div>
 
+    <script src="auth-middleware.js"></script>
     <script>
-        // Robust storage system with multiple fallbacks
-        const StorageManager = {
-            // Try multiple storage methods in order of preference
-            setItem: function(key, value) {
-                const methods = [
-                    () => localStorage.setItem(key, value),
-                    () => sessionStorage.setItem(key, value),
-                    () => this.cookieStorage.setItem(key, value),
-                    () => this.memoryStorage.setItem(key, value)
-                ];
-                
-                for (let i = 0; i < methods.length; i++) {
-                    try {
-                        methods[i]();
-                        // Verify it worked
-                        const testValue = this.getItem(key);
-                        if (testValue === value) {
-                            console.log(`Storage method ${i} successful for ${key}`);
-                            return true;
-                        }
-                    } catch (error) {
-                        console.log(`Storage method ${i} failed:`, error.message);
-                        continue;
-                    }
-                }
-                console.error('All storage methods failed');
-                return false;
-            },
-            
-            getItem: function(key) {
-                const methods = [
-                    () => localStorage.getItem(key),
-                    () => sessionStorage.getItem(key),
-                    () => this.cookieStorage.getItem(key),
-                    () => this.memoryStorage.getItem(key)
-                ];
-                
-                for (let method of methods) {
-                    try {
-                        const value = method();
-                        if (value !== null) {
-                            return value;
-                        }
-                    } catch (error) {
-                        continue;
-                    }
-                }
-                return null;
-            },
-            
-            // Cookie storage fallback
-            cookieStorage: {
-                setItem: function(key, value) {
-                    const expiryDate = new Date();
-                    expiryDate.setTime(expiryDate.getTime() + (30 * 24 * 60 * 60 * 1000)); // 30 days
-                    document.cookie = `${key}=${encodeURIComponent(value)};expires=${expiryDate.toUTCString()};path=/;SameSite=Lax`;
-                },
-                getItem: function(key) {
-                    const cookies = document.cookie.split(';');
-                    for (let cookie of cookies) {
-                        const [name, value] = cookie.trim().split('=');
-                        if (name === key) {
-                            return decodeURIComponent(value);
-                        }
-                    }
-                    return null;
-                }
-            },
-            
-            // Memory storage fallback (session only)
-            memoryStorage: {
-                data: {},
-                setItem: function(key, value) {
-                    this.data[key] = value;
-                },
-                getItem: function(key) {
-                    return this.data[key] || null;
-                }
-            }
-        };
-        
-        // Default accounts - empty by default, use admin panel to add accounts
-        const DEFAULT_ACCOUNTS = [];
-        
-        // Initialize accounts with robust storage
-        function initializeAccounts() {
-            try {
-                const stored = StorageManager.getItem('teamAccounts');
-                if (!stored) {
-                    // Initialize with empty array
-                    const success = storeAccounts(DEFAULT_ACCOUNTS);
-                    if (!success) {
-                        console.error('Failed to initialize accounts storage');
-                        // Don't show error on initialization - wait for user action
-                    }
-                }
-            } catch (error) {
-                console.error('Error initializing accounts:', error);
-            }
-        }
-        
-        // Get stored accounts with fallback to sessionStorage
-        function getAccounts() {
-            try {
-                // Try localStorage first
-                let stored = localStorage.getItem('teamAccounts');
-                if (stored) {
-                    return JSON.parse(stored);
-                }
-                
-                // Fallback to sessionStorage
-                stored = sessionStorage.getItem('teamAccounts');
-                if (stored) {
-                    console.log('Using sessionStorage fallback');
-                    return JSON.parse(stored);
-                }
-                
-                return [];
-            } catch (error) {
-                console.error('Error getting accounts:', error);
-                return [];
-            }
-        }
-        
-        // Store accounts with better error handling
-        function storeAccounts(accounts) {
-            try {
-                localStorage.setItem('teamAccounts', JSON.stringify(accounts));
-                // Verify storage worked
-                const verification = localStorage.getItem('teamAccounts');
-                if (!verification) {
-                    throw new Error('Storage verification failed - data not saved');
-                }
-                return true;
-            } catch (error) {
-                console.error('Error storing accounts:', error);
-                // Try to use sessionStorage as fallback
-                try {
-                    sessionStorage.setItem('teamAccounts', JSON.stringify(accounts));
-                    console.log('Fell back to sessionStorage');
-                    return true;
-                } catch (sessionError) {
-                    console.error('SessionStorage also failed:', sessionError);
-                    return false;
-                }
-            }
-        }
-        
-        // Check if user is currently logged in with robust storage
-        function isLoggedIn() {
-            const session = StorageManager.getItem('teamSession');
-            if (!session) return false;
-            
-            try {
-                const sessionData = JSON.parse(session);
-                const now = new Date().getTime();
-                
-                // Check if session is expired (24 hours)
-                if (now - sessionData.loginTime > 24 * 60 * 60 * 1000) {
-                    StorageManager.setItem('teamSession', ''); // Clear expired session
-                    return false;
-                }
-                
-                return sessionData;
-            } catch (error) {
-                console.error('Auth check failed:', error);
-                StorageManager.setItem('teamSession', ''); // Clear corrupted session
-                return false;
-            }
-        }
-        
-        // Create login session with robust storage
-        function createSession(username) {
-            const sessionData = {
-                username: username,
-                loginTime: new Date().getTime()
-            };
-            
-            if (StorageManager.setItem('teamSession', JSON.stringify(sessionData))) {
-                return sessionData;
-            } else {
-                showStorageError();
-                return null;
-            }
-        }
-        
-        // Get login attempts for rate limiting with robust storage
-        function getLoginAttempts() {
-            try {
-                const attempts = StorageManager.getItem('loginAttempts');
-                return attempts ? JSON.parse(attempts) : { count: 0, lastAttempt: 0 };
-            } catch {
-                return { count: 0, lastAttempt: 0 };
-            }
-        }
-        
-        // Update login attempts with robust storage
-        function updateLoginAttempts(success = false) {
-            const now = new Date().getTime();
-            let attempts = getLoginAttempts();
-            
-            if (success) {
-                // Reset attempts on successful login
-                attempts = { count: 0, lastAttempt: 0 };
-            } else {
-                // Check if lockout period has passed
-                if (now - attempts.lastAttempt > LOCKOUT_TIME) {
-                    attempts = { count: 1, lastAttempt: now };
-                } else {
-                    attempts.count++;
-                    attempts.lastAttempt = now;
-                }
-            }
-            
-            StorageManager.setItem('loginAttempts', JSON.stringify(attempts));
-            return attempts;
-        }
-        
-        // Check if account is locked out
-        function isLockedOut() {
-            const attempts = getLoginAttempts();
-            const now = new Date().getTime();
-            
-            if (attempts.count >= MAX_LOGIN_ATTEMPTS) {
-                const timeLeft = LOCKOUT_TIME - (now - attempts.lastAttempt);
-                if (timeLeft > 0) {
-                    return Math.ceil(timeLeft / 60000); // Return minutes left
-                }
-            }
-            return false;
-        }
-        
-        // Authenticate user
-        function authenticate(username, password) {
-            const accounts = getAccounts();
-            return accounts.find(account => 
-                account.username.toLowerCase() === username.toLowerCase() && 
-                account.password === password
-            );
-        }
-        
-        // Show message
-        function showMessage(message, type) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.innerHTML = `<div class="${type}">${message}</div>`;
-        }
-        
-        // Toggle password visibility
-        function togglePassword(fieldId) {
-            const passwordInput = document.getElementById(fieldId || 'password');
-            const toggleBtn = passwordInput.parentElement.querySelector('.toggle-password');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleBtn.textContent = '🙈';
-            } else {
-                passwordInput.type = 'password';
-                toggleBtn.textContent = '👁';
-            }
-        }
-        
-        // Validate username format
-        function isValidUsername(username) {
-            // 3-20 characters, letters and numbers only
-            const usernameRegex = /^[a-zA-Z0-9]{3,20}$/;
-            return usernameRegex.test(username);
-        }
-        
-        // Validate password strength
-        function isValidPassword(password) {
-            // At least 8 characters
-            return password.length >= 8;
-        }
-        
-        // Create new account with simplified, robust approach
-        function createAccount(username, password) {
-            // Validate username
-            if (!isValidUsername(username)) {
-                return { success: false, error: 'Username must be 3-20 characters, letters and numbers only.' };
-            }
-            
-            // Validate password
-            if (!isValidPassword(password)) {
-                return { success: false, error: 'Password must be at least 8 characters long.' };
-            }
-            
-            const accounts = getAccounts();
-            
-            // Check if username already exists (case insensitive)
-            const existingAccount = accounts.find(acc => 
-                acc.username && acc.username.toLowerCase() === username.toLowerCase()
-            );
-            if (existingAccount) {
-                return { success: false, error: 'Username already exists. Please choose a different one.' };
-            }
-            
-            // Create new account
-            const newAccount = {
-                username: username,
-                password: password,
-                createdAt: new Date().toISOString(),
-                createdBy: 'user'
-            };
-            
-            accounts.push(newAccount);
-            
-            // Try to store accounts
-            if (!storeAccounts(accounts)) {
-                return { 
-                    success: false, 
-                    error: 'Unable to save account due to browser restrictions. Please try a different browser or check your settings.' 
-                };
-            }
-            
-            // Double-check the account was saved
-            const verifyAccounts = getAccounts();
-            const accountExists = verifyAccounts.find(acc => 
-                acc.username && acc.username.toLowerCase() === username.toLowerCase()
-            );
-            
-            if (!accountExists) {
-                return { 
-                    success: false, 
-                    error: 'Account creation failed. Please try refreshing the page and trying again.' 
-                };
-            }
-            
-            return { success: true, account: newAccount };
-        }
-        
-        // Show create account form
-        function showCreateAccount() {
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('successSection').classList.add('hidden');
-            document.getElementById('adminPanel').classList.add('hidden');
-            document.getElementById('createAccountSection').classList.remove('hidden');
-            
-            // Clear form
-            document.getElementById('newAccountUsername').value = '';
-            document.getElementById('newAccountPassword').value = '';
-            document.getElementById('confirmPassword').value = '';
-            document.getElementById('createAccountMessage').innerHTML = '';
-        }
-        
-        // Show message in create account section
-        function showCreateAccountMessage(message, type) {
-            const messageDiv = document.getElementById('createAccountMessage');
-            messageDiv.innerHTML = `<div class="${type}">${message}</div>`;
-        }
-        
-        // Show success section
-        function showSuccessSection(username) {
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('adminPanel').classList.add('hidden');
-            document.getElementById('successSection').classList.remove('hidden');
-            document.getElementById('welcomeMessage').textContent = `Welcome, ${username}! You now have access to the team tools.`;
-        }
-        
-        // Show login section
-        function showLogin() {
-            document.getElementById('loginSection').classList.remove('hidden');
-            document.getElementById('successSection').classList.add('hidden');
-            document.getElementById('adminPanel').classList.add('hidden');
-            document.getElementById('createAccountSection').classList.add('hidden');
-            
-            // Clear form
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-            document.getElementById('message').innerHTML = '';
-            
-            updateLoginAttemptsDisplay();
-        }
-        
-        // Show admin panel
-        function showAdminPanel() {
-            document.getElementById('loginSection').classList.add('hidden');
-            document.getElementById('successSection').classList.add('hidden');
-            document.getElementById('adminPanel').classList.remove('hidden');
-            document.getElementById('createAccountSection').classList.add('hidden');
-            updateAccountList();
-        }
-        
-        // Update login attempts display
-        function updateLoginAttemptsDisplay() {
-            const attempts = getLoginAttempts();
-            const attemptsDiv = document.getElementById('loginAttempts');
-            
-            if (attempts.count > 0) {
-                const remaining = MAX_LOGIN_ATTEMPTS - attempts.count;
-                attemptsDiv.textContent = `Login attempts remaining: ${remaining}`;
-            } else {
-                attemptsDiv.textContent = '';
-            }
-        }
-        
-        // Logout with robust storage cleanup
-        function logout() {
-            StorageManager.setItem('teamSession', '');
-            showLogin();
-        }
-        
-        // Add new account (admin function)
-        function addAccount() {
-            const username = document.getElementById('newUsername').value.trim();
-            const password = document.getElementById('newPassword').value.trim();
-            
-            if (!username || !password) {
-                alert('Please enter both username and password.');
-                return;
-            }
-            
-            const result = createAccount(username, password);
-            
-            if (result.success) {
-                // Mark as admin-created
-                const accounts = getAccounts();
-                const accountIndex = accounts.findIndex(acc => acc.username === username);
-                if (accountIndex !== -1) {
-                    accounts[accountIndex].createdBy = 'admin';
-                    storeAccounts(accounts);
-                }
-                
-                // Clear form
-                document.getElementById('newUsername').value = '';
-                document.getElementById('newPassword').value = '';
-                
-                // Update display
-                updateAccountList();
-                alert('Account added successfully!');
-            } else {
-                alert(result.error);
-            }
-        }
-        
-        // Delete account
-        function deleteAccount(username) {
-            if (confirm(`Are you sure you want to delete account "${username}"?`)) {
-                const accounts = getAccounts();
-                const filtered = accounts.filter(acc => acc.username !== username);
-                storeAccounts(filtered);
-                updateAccountList();
-            }
-        }
-        
-        // Update account list display
-        function updateAccountList() {
-            const accounts = getAccounts();
-            const listDiv = document.getElementById('accountList');
-            
-            if (accounts.length === 0) {
-                listDiv.innerHTML = '<p style="text-align: center; color: #666;">No accounts found.</p>';
-                return;
-            }
-            
-            listDiv.innerHTML = accounts.map(account => {
-                const createdDate = account.createdAt ? new Date(account.createdAt).toLocaleDateString() : 'Unknown';
-                const createdBy = account.createdBy || 'legacy';
-                const createdByBadge = createdBy === 'admin' ? 
-                    '<span style="background: #007bff; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.7rem;">Admin</span>' :
-                    '<span style="background: #28a745; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.7rem;">User</span>';
-                
-                return `
-                <div class="account-item">
-                    <div>
-                        <div class="account-name">${account.username} ${createdByBadge}</div>
-                        <div class="account-details">
-                            Password: ${account.password}<br>
-                            Created: ${createdDate}
-                        </div>
-                    </div>
-                    <button class="delete-btn" onclick="deleteAccount('${account.username}')">Delete</button>
-                </div>
-            `}).join('');
-        }
-        
-        // Export accounts
-        function exportAccounts() {
-            const accounts = getAccounts();
-            const csvContent = [
-                'Username,Password,Created Date,Created By',
-                ...accounts.map(acc => {
-                    const createdDate = acc.createdAt ? new Date(acc.createdAt).toLocaleDateString() : '';
-                    const createdBy = acc.createdBy || 'legacy';
-                    return `"${acc.username}","${acc.password}","${createdDate}","${createdBy}"`;
-                })
-            ].join('\n');
-            
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `team-accounts-${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            window.URL.revokeObjectURL(url);
-        }
-        
-        // Initialize page
+        // auth.html specific UI logic
         document.addEventListener('DOMContentLoaded', function() {
-            initializeAccounts();
+            const authManager = window.AuthManager; // Get the manager from auth-middleware.js
+
+            // Section elements
+            const registrationSect = document.getElementById('registration-section');
+            const loginSect = document.getElementById('login-section');
+            const protectedSect = document.getElementById('protected-content-section');
+            const adminSect = document.getElementById('admin-section');
+            const mainContent = document.getElementById('main-content'); // Wrapper for reg/login
+
+            // Message elements
+            const regMsg = document.getElementById('registrationMessage');
+            const loginMsg = document.getElementById('loginMessage');
+            const loggedInUserDisplay = document.getElementById('loggedInUserDisplay');
+
+            // Buttons
+            const registerBtn = document.getElementById('registerButton');
+            const loginBtn = document.getElementById('loginButton');
+            const logoutBtn = document.getElementById('logoutButton');
+            const adminLogoutBtn = document.getElementById('adminLogoutButton');
             
-            // Check if already logged in
-            const session = isLoggedIn();
-            if (session) {
-                showSuccessSection(session.username);
-                return;
+            // Inputs
+            const regUsernameInput = document.getElementById('regUsername');
+            const regPasswordInput = document.getElementById('regPassword');
+            const regPasswordConfirmInput = document.getElementById('regPasswordConfirm');
+            const loginUsernameInput = document.getElementById('loginUsername');
+            const loginPasswordInput = document.getElementById('loginPassword');
+
+            function showMessage(element, message, isSuccess) {
+                element.textContent = message;
+                element.className = 'message ' + (isSuccess ? 'success' : 'error');
+                element.style.display = 'block';
+            }
+
+            function hideMessage(element) {
+                element.style.display = 'none';
+            }
+
+            function updateUIBasedOnAuthState() {
+                const currentUser = authManager.getLoggedInUser();
+                const urlParams = new URLSearchParams(window.location.search);
+                const isAdminAccess = urlParams.has('admin') && urlParams.get('admin') === ADMIN_PASSWORD;
+
+                if (isAdminAccess) {
+                    mainContent.style.display = 'none';
+                    registrationSect.style.display = 'none';
+                    loginSect.style.display = 'none';
+                    protectedSect.style.display = 'none';
+                    adminSect.style.display = 'block';
+                    loadAdminData();
+                } else if (currentUser) {
+                    mainContent.style.display = 'none';
+                    registrationSect.style.display = 'none';
+                    loginSect.style.display = 'none';
+                    protectedSect.style.display = 'block';
+                    adminSect.style.display = 'none';
+                    loggedInUserDisplay.textContent = currentUser;
+                } else {
+                    mainContent.style.display = 'block';
+                    registrationSect.style.display = 'block'; // Or show login first
+                    loginSect.style.display = 'block';
+                    protectedSect.style.display = 'none';
+                    adminSect.style.display = 'none';
+                }
             }
             
-            // Check for admin access
+            async function handleRegistration() {
+                hideMessage(regMsg);
+                const username = regUsernameInput.value.trim();
+                const password = regPasswordInput.value;
+                const confirmPassword = regPasswordConfirmInput.value;
+
+                if (!username || !password || !confirmPassword) {
+                    showMessage(regMsg, 'All fields are required.', false);
+                    return;
+                }
+                if (password !== confirmPassword) {
+                    showMessage(regMsg, 'Passwords do not match.', false);
+                    return;
+                }
+
+                try {
+                    const success = await authManager.registerUser(username, password);
+                    if (success) {
+                        showMessage(regMsg, 'Registration successful! Please log in.', true);
+                        regUsernameInput.value = '';
+                        regPasswordInput.value = '';
+                        regPasswordConfirmInput.value = '';
+                         // Optionally switch to login view or clear form
+                    }
+                } catch (error) {
+                    showMessage(regMsg, error.message, false);
+                }
+            }
+
+            async function handleLogin() {
+                hideMessage(loginMsg);
+                const username = loginUsernameInput.value.trim();
+                const password = loginPasswordInput.value;
+
+                if (!username || !password) {
+                    showMessage(loginMsg, 'Username and password are required.', false);
+                    return;
+                }
+
+                try {
+                    const success = await authManager.loginUser(username, password);
+                    if (success) {
+                        showMessage(loginMsg, 'Login successful! Loading your space...', true);
+                        updateUIBasedOnAuthState(); // Update UI to show protected content
+                        // Potentially redirect to another page if auth.html is only for login/reg
+                        // window.location.href = 'home.html'; 
+                    }
+                } catch (error) {
+                    showMessage(loginMsg, error.message, false);
+                }
+            }
+
+            function handleLogout() {
+                authManager.logoutUser();
+                updateUIBasedOnAuthState(); // Update UI to show login/reg forms
+                // Could redirect to a logged-out confirmation page or back to login
+                // window.location.href = 'auth.html'; // Reload to ensure clean state
+            }
+            
+            function loadAdminData() {
+                const userListUl = document.getElementById('userList');
+                userListUl.innerHTML = ''; // Clear existing
+                try {
+                    const users = authManager.getAllUsersForAdmin(); // Expects {username: data}
+                    const usernames = Object.keys(users);
+                    if (usernames.length > 0) {
+                        usernames.forEach(username => {
+                            const li = document.createElement('li');
+                            li.textContent = username;
+                            userListUl.appendChild(li);
+                        });
+                    } else {
+                        userListUl.innerHTML = '<li>No users registered yet.</li>';
+                    }
+                } catch (e) {
+                    console.error("Admin: Error loading users", e);
+                    userListUl.innerHTML = '<li>Error loading user list.</li>';
+                }
+            }
+
+            // Attach event listeners
+            if (registerBtn) registerBtn.addEventListener('click', handleRegistration);
+            if (loginBtn) loginBtn.addEventListener('click', handleLogin);
+            if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+            if (adminLogoutBtn) adminLogoutBtn.addEventListener('click', handleLogout); // Admin logout also logs out user
+
+            // Initial UI setup
+            updateUIBasedOnAuthState();
+            
+            // Handle page protection for other pages (if user navigates away and comes back)
+            // This assumes auth-middleware.js also has its own page protection logic for non-auth pages
+            // For auth.html itself, the logic above handles visibility of sections.
+            // If not admin and already logged in, maybe redirect from auth.html.
+            const currentUser = authManager.getLoggedInUser();
             const urlParams = new URLSearchParams(window.location.search);
-            const ADMIN_PASSWORD = "potato-alfalfa-kumquat-zebra";
-            if (urlParams.get('admin') === ADMIN_PASSWORD) {
-                showAdminPanel();
-                return;
-            }
-            
-            // Show login form
-            showLogin();
-        });
-        
-        // Handle login form submission
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
-            
-            // Clear previous messages
-            document.getElementById('message').innerHTML = '';
-            
-            // Check if locked out
-            const lockoutMinutes = isLockedOut();
-            if (lockoutMinutes) {
-                showMessage(`Too many failed attempts. Please try again in ${lockoutMinutes} minutes.`, 'error');
-                return;
-            }
-            
-            // Validate inputs
-            if (!username || !password) {
-                showMessage('Please enter both username and password.', 'error');
-                return;
-            }
-            
-            // Check for admin access
-            if (password === ADMIN_PASSWORD) {
-                showAdminPanel();
-                return;
-            }
-            
-            // Authenticate user
-            const user = authenticate(username, password);
-            
-            if (user) {
-                // Successful login
-                updateLoginAttempts(true);
-                const session = createSession(user.username);
-                if (session) {
-                    showSuccessSection(user.username);
-                    showMessage('Login successful!', 'success');
+            const isAdminAccess = urlParams.has('admin') && urlParams.get('admin') === ADMIN_PASSWORD;
+            const redirectTarget = urlParams.get('redirect');
+
+            if (currentUser && !isAdminAccess) {
+                if (redirectTarget) {
+                    // If there was a redirect target (e.g. tried to access protected page)
+                    // window.location.href = decodeURIComponent(redirectTarget);
+                    // For now, if on auth.html and logged in, just show protected content area
+                    // or user can navigate via links.
+                    console.log("User is logged in. On auth.html, showing protected content section if applicable.");
                 } else {
-                    showMessage('Login successful but session could not be saved. You may need to log in again.', 'error');
+                    // If just landing on auth.html and already logged in, show protected content
+                    // This is handled by updateUIBasedOnAuthState
                 }
-            } else {
-                // Failed login
-                const attempts = updateLoginAttempts(false);
-                const remaining = MAX_LOGIN_ATTEMPTS - attempts.count;
-                
-                if (remaining > 0) {
-                    showMessage(`Invalid username or password. ${remaining} attempts remaining.`, 'error');
-                } else {
-                    showMessage('Too many failed attempts. Account locked for 15 minutes.', 'error');
-                }
-                
-                updateLoginAttemptsDisplay();
             }
         });
-        
-        // Make functions globally accessible
-        window.logout = logout;
-        window.togglePassword = togglePassword;
-        window.addAccount = addAccount;
-        window.deleteAccount = deleteAccount;
-        window.exportAccounts = exportAccounts;
-        window.showLogin = showLogin;
     </script>
 </body>
 </html>
