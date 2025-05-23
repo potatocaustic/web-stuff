@@ -1,5 +1,6 @@
 // Global variables
 let rklData = [];
+let dailyMedians = {}; // Store daily median scores
 let currentView = 'player';
 let currentPlayer = null;
 let teams = new Set();
@@ -52,19 +53,31 @@ async function loadData() {
       throw new Error('Failed to fetch CSV file');
     }
     const csvText = await response.text();
-    rklData = parseCSV(csvText);
+    const allData = parseCSV(csvText);
     
-    // Extract date columns and teams
-    if (rklData.length > 0) {
-      const firstRow = rklData[0];
+    // Separate median data from player data
+    const medianRow = allData.find(row => row.Player === 'Average Player (Median)');
+    rklData = allData.filter(row => row.Player !== 'Average Player (Median)' && row.Player !== 'Average Player (Mean)');
+    
+    // Extract date columns and daily medians
+    if (allData.length > 0) {
+      const firstRow = allData[0];
       dateColumns = Object.keys(firstRow).filter(key => 
         key.includes('/') && !['AAG% (Median)', 'AAG% (Mean)'].includes(key)
       ).sort((a, b) => {
-        // Sort by date
         const dateA = parseDate(a);
         const dateB = parseDate(b);
         return dateA - dateB;
       });
+      
+      // Store daily medians for relative calculations
+      if (medianRow) {
+        dateColumns.forEach(col => {
+          if (medianRow[col] !== null && medianRow[col] !== undefined) {
+            dailyMedians[col] = medianRow[col];
+          }
+        });
+      }
       
       // Get unique teams
       rklData.forEach(row => {
@@ -75,6 +88,7 @@ async function loadData() {
     }
     
     console.log(`Loaded ${rklData.length} player records with ${dateColumns.length} match days`);
+    console.log(`Daily medians loaded for ${Object.keys(dailyMedians).length} days`);
   } catch (error) {
     console.error('Error loading data:', error);
     throw error;
@@ -112,13 +126,27 @@ function parseCSV(csvText) {
       }
     });
     
-    // Only add entries with player data (exclude summary rows)
-    if (entry.Player && entry.Team && entry.Team !== 'RKL') {
+    // Include all entries (players and summary rows)
+    if (entry.Player) {
       result.push(entry);
     }
   }
   
   return result;
+}
+
+// Calculate relative score (percentage of median)
+function getRelativeScore(rawScore, dateColumn) {
+  if (rawScore === null || rawScore === undefined) return null;
+  const median = dailyMedians[dateColumn];
+  if (!median || median === 0) return null;
+  return (rawScore / median) * 100;
+}
+
+// Format relative score for display
+function formatRelativeScore(relativeScore) {
+  if (relativeScore === null) return 'N/A';
+  return `${relativeScore.toFixed(1)}%`;
 }
 
 // Parse date from column header (e.g., "1.1 3/6" -> Date object)
@@ -292,17 +320,24 @@ function selectPlayer(playerName) {
 function displayPlayerOverview(playerData) {
   elements.playerOverview.innerHTML = '';
   
-  // Calculate stats
-  const scores = dateColumns.map(col => playerData[col]).filter(val => val !== null);
-  const avgScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
-  const recentScores = scores.slice(-5);
-  const recentAvg = recentScores.length > 0 ? Math.round(recentScores.reduce((a, b) => a + b, 0) / recentScores.length) : 0;
-  const bestScore = scores.length > 0 ? Math.max(...scores) : 0;
-  const worstScore = scores.length > 0 ? Math.min(...scores) : 0;
+  // Calculate relative scores
+  const relativeScores = dateColumns
+    .map(col => getRelativeScore(playerData[col], col))
+    .filter(val => val !== null);
+  
+  const avgRelative = relativeScores.length > 0 ? 
+    relativeScores.reduce((a, b) => a + b, 0) / relativeScores.length : 0;
+  
+  const recentRelativeScores = relativeScores.slice(-5);
+  const recentAvgRelative = recentRelativeScores.length > 0 ? 
+    recentRelativeScores.reduce((a, b) => a + b, 0) / recentRelativeScores.length : 0;
+  
+  const bestRelative = relativeScores.length > 0 ? Math.max(...relativeScores) : 0;
+  const worstRelative = relativeScores.length > 0 ? Math.min(...relativeScores) : 0;
   
   // Performance trend
-  const firstHalf = scores.slice(0, Math.floor(scores.length / 2));
-  const secondHalf = scores.slice(Math.floor(scores.length / 2));
+  const firstHalf = relativeScores.slice(0, Math.floor(relativeScores.length / 2));
+  const secondHalf = relativeScores.slice(Math.floor(relativeScores.length / 2));
   const firstHalfAvg = firstHalf.length > 0 ? firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length : 0;
   const secondHalfAvg = secondHalf.length > 0 ? secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length : 0;
   const trend = secondHalfAvg - firstHalfAvg;
@@ -310,15 +345,15 @@ function displayPlayerOverview(playerData) {
   const stats = [
     { label: 'Team', value: playerData.Team },
     { label: 'Games Played', value: playerData.GP || 'N/A' },
-    { label: 'Season Average', value: avgScore.toLocaleString() },
-    { label: 'Recent Form (Last 5)', value: recentAvg.toLocaleString() },
-    { label: 'Best Performance', value: bestScore.toLocaleString() },
-    { label: 'Worst Performance', value: worstScore.toLocaleString() },
+    { label: 'Season Average', value: formatRelativeScore(avgRelative) },
+    { label: 'Recent Form (Last 5)', value: formatRelativeScore(recentAvgRelative) },
+    { label: 'Best Performance', value: formatRelativeScore(bestRelative) },
+    { label: 'Worst Performance', value: formatRelativeScore(worstRelative) },
     { 
       label: 'Season Trend', 
-      value: Math.abs(trend).toFixed(0), 
-      change: trend > 50 ? 'positive' : trend < -50 ? 'negative' : 'neutral',
-      changeText: trend > 50 ? '↗ Improving' : trend < -50 ? '↘ Declining' : '→ Stable'
+      value: Math.abs(trend).toFixed(1) + '%', 
+      change: trend > 5 ? 'positive' : trend < -5 ? 'negative' : 'neutral',
+      changeText: trend > 5 ? '↗ Improving' : trend < -5 ? '↘ Declining' : '→ Stable'
     }
   ];
   
@@ -347,12 +382,12 @@ function displayPlayerOverview(playerData) {
   });
 }
 
-// Display player performance chart (simple text-based for now)
+// Display player performance chart
 function displayPlayerChart(playerData) {
   elements.playerChart.innerHTML = '';
   
   const chartTitle = document.createElement('h3');
-  chartTitle.textContent = 'Performance Over Time';
+  chartTitle.textContent = 'Performance vs Daily Median';
   chartTitle.style.marginBottom = '1rem';
   chartTitle.style.textAlign = 'center';
   
@@ -367,24 +402,51 @@ function displayPlayerChart(playerData) {
   chart.style.padding = '1rem';
   chart.style.minWidth = `${dateColumns.length * 30}px`;
   
-  // Find min and max for scaling
-  const values = dateColumns.map(col => playerData[col]).filter(val => val !== null);
-  const minVal = Math.min(...values);
-  const maxVal = Math.max(...values);
+  // Find min and max relative scores for scaling
+  const relativeValues = dateColumns
+    .map(col => getRelativeScore(playerData[col], col))
+    .filter(val => val !== null);
+  
+  if (relativeValues.length === 0) {
+    const noData = document.createElement('div');
+    noData.textContent = 'No performance data available';
+    noData.style.textAlign = 'center';
+    noData.style.padding = '2rem';
+    elements.playerChart.appendChild(noData);
+    return;
+  }
+  
+  const minVal = Math.min(...relativeValues, 50); // Ensure 50% is visible
+  const maxVal = Math.max(...relativeValues, 150); // Ensure 150% is visible
   const range = maxVal - minVal;
   
   dateColumns.forEach(col => {
-    const value = playerData[col];
-    if (value !== null) {
+    const relativeScore = getRelativeScore(playerData[col], col);
+    if (relativeScore !== null) {
       const bar = document.createElement('div');
       bar.style.width = '25px';
-      bar.style.backgroundColor = '#333';
       bar.style.marginRight = '2px';
       bar.style.position = 'relative';
       
+      // Color based on performance vs median
+      if (relativeScore >= 110) {
+        bar.style.backgroundColor = '#28a745'; // Green for great performance
+      } else if (relativeScore >= 90) {
+        bar.style.backgroundColor = '#17a2b8'; // Blue for good performance
+      } else if (relativeScore >= 70) {
+        bar.style.backgroundColor = '#ffc107'; // Yellow for below average
+      } else {
+        bar.style.backgroundColor = '#dc3545'; // Red for poor performance
+      }
+      
       // Calculate height (20px to 250px)
-      const height = range > 0 ? 20 + ((value - minVal) / range) * 230 : 100;
+      const height = range > 0 ? 20 + ((relativeScore - minVal) / range) * 230 : 100;
       bar.style.height = `${height}px`;
+      
+      // Add median line reference at 100%
+      if (relativeScore === 100 || Math.abs(relativeScore - 100) < 5) {
+        bar.style.border = '2px solid #000';
+      }
       
       // Add value label
       const label = document.createElement('div');
@@ -394,7 +456,7 @@ function displayPlayerChart(playerData) {
       label.style.transform = 'translateX(-50%)';
       label.style.fontSize = '10px';
       label.style.fontWeight = 'bold';
-      label.textContent = Math.round(value).toLocaleString();
+      label.textContent = relativeScore.toFixed(0) + '%';
       
       // Add date label
       const dateLabel = document.createElement('div');
@@ -413,9 +475,18 @@ function displayPlayerChart(playerData) {
     }
   });
   
+  // Add median reference line explanation
+  const legend = document.createElement('div');
+  legend.style.textAlign = 'center';
+  legend.style.marginTop = '1rem';
+  legend.style.fontSize = '12px';
+  legend.style.color = '#666';
+  legend.innerHTML = '100% = Daily Median | <span style="color: #28a745;">Green</span>: 110%+ | <span style="color: #17a2b8;">Blue</span>: 90-109% | <span style="color: #ffc107;">Yellow</span>: 70-89% | <span style="color: #dc3545;">Red</span>: <70%';
+  
   elements.playerChart.appendChild(chartTitle);
   chartContainer.appendChild(chart);
   elements.playerChart.appendChild(chartContainer);
+  elements.playerChart.appendChild(legend);
 }
 
 // Display player stats table
@@ -434,25 +505,32 @@ function displayPlayerStatsTable(playerData) {
   dateHeader.className = 'date-col';
   
   const scoreHeader = document.createElement('th');
-  scoreHeader.textContent = 'Score';
+  scoreHeader.textContent = 'Raw Score';
   scoreHeader.className = 'score-col';
+  
+  const relativeHeader = document.createElement('th');
+  relativeHeader.textContent = 'vs Median';
+  relativeHeader.className = 'relative-col';
   
   const changeHeader = document.createElement('th');
   changeHeader.textContent = 'Change';
   
   headerRow.appendChild(dateHeader);
   headerRow.appendChild(scoreHeader);
+  headerRow.appendChild(relativeHeader);
   headerRow.appendChild(changeHeader);
   thead.appendChild(headerRow);
   table.appendChild(thead);
   
   // Create body
   const tbody = document.createElement('tbody');
-  let previousScore = null;
+  let previousRelative = null;
   
   dateColumns.forEach(col => {
-    const score = playerData[col];
-    if (score !== null) {
+    const rawScore = playerData[col];
+    const relativeScore = getRelativeScore(rawScore, col);
+    
+    if (rawScore !== null && relativeScore !== null) {
       const row = document.createElement('tr');
       
       const dateCell = document.createElement('td');
@@ -460,13 +538,25 @@ function displayPlayerStatsTable(playerData) {
       dateCell.className = 'date-col';
       
       const scoreCell = document.createElement('td');
-      scoreCell.textContent = Math.round(score).toLocaleString();
+      scoreCell.textContent = Math.round(rawScore).toLocaleString();
       scoreCell.className = 'score-col';
       
+      const relativeCell = document.createElement('td');
+      relativeCell.textContent = formatRelativeScore(relativeScore);
+      relativeCell.className = 'relative-col';
+      // Color code relative performance
+      if (relativeScore >= 110) {
+        relativeCell.style.color = '#28a745';
+        relativeCell.style.fontWeight = 'bold';
+      } else if (relativeScore < 70) {
+        relativeCell.style.color = '#dc3545';
+        relativeCell.style.fontWeight = 'bold';
+      }
+      
       const changeCell = document.createElement('td');
-      if (previousScore !== null) {
-        const change = score - previousScore;
-        changeCell.textContent = change > 0 ? `+${Math.round(change)}` : Math.round(change).toString();
+      if (previousRelative !== null) {
+        const change = relativeScore - previousRelative;
+        changeCell.textContent = change > 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
         changeCell.style.color = change > 0 ? '#28a745' : change < 0 ? '#dc3545' : '#6c757d';
       } else {
         changeCell.textContent = '—';
@@ -474,10 +564,11 @@ function displayPlayerStatsTable(playerData) {
       
       row.appendChild(dateCell);
       row.appendChild(scoreCell);
+      row.appendChild(relativeCell);
       row.appendChild(changeCell);
       tbody.appendChild(row);
       
-      previousScore = score;
+      previousRelative = relativeScore;
     }
   });
   
@@ -491,7 +582,7 @@ function populateTeamGrid() {
   
   const teamStats = new Map();
   
-  // Calculate team statistics
+  // Calculate team statistics using relative scores
   rklData.forEach(entry => {
     const team = entry.Team;
     if (!team || team === 'RKL') return;
@@ -501,27 +592,29 @@ function populateTeamGrid() {
         name: team,
         players: [],
         totalGames: 0,
-        avgScore: 0,
-        scores: []
+        relativeScores: []
       });
     }
     
     const teamData = teamStats.get(team);
     teamData.players.push(entry.Player);
     
-    // Calculate average score for this player
-    const playerScores = dateColumns.map(col => entry[col]).filter(val => val !== null);
-    if (playerScores.length > 0) {
-      const playerAvg = playerScores.reduce((a, b) => a + b, 0) / playerScores.length;
-      teamData.scores.push(playerAvg);
+    // Calculate average relative score for this player
+    const playerRelativeScores = dateColumns
+      .map(col => getRelativeScore(entry[col], col))
+      .filter(val => val !== null);
+    
+    if (playerRelativeScores.length > 0) {
+      const playerAvg = playerRelativeScores.reduce((a, b) => a + b, 0) / playerRelativeScores.length;
+      teamData.relativeScores.push(playerAvg);
       teamData.totalGames += entry.GP || 0;
     }
   });
   
   // Create team cards
   Array.from(teamStats.values()).sort((a, b) => {
-    const avgA = a.scores.length > 0 ? a.scores.reduce((a, b) => a + b, 0) / a.scores.length : 0;
-    const avgB = b.scores.length > 0 ? b.scores.reduce((a, b) => a + b, 0) / b.scores.length : 0;
+    const avgA = a.relativeScores.length > 0 ? a.relativeScores.reduce((a, b) => a + b, 0) / a.relativeScores.length : 0;
+    const avgB = b.relativeScores.length > 0 ? b.relativeScores.reduce((a, b) => a + b, 0) / b.relativeScores.length : 0;
     return avgB - avgA;
   }).forEach(team => {
     const card = document.createElement('div');
@@ -547,12 +640,13 @@ function populateTeamGrid() {
       <div class="team-stat-value">${team.players.length}</div>
     `;
     
-    const avgScore = team.scores.length > 0 ? team.scores.reduce((a, b) => a + b, 0) / team.scores.length : 0;
+    const avgRelative = team.relativeScores.length > 0 ? 
+      team.relativeScores.reduce((a, b) => a + b, 0) / team.relativeScores.length : 0;
     const teamAvg = document.createElement('div');
     teamAvg.className = 'team-stat';
     teamAvg.innerHTML = `
-      <div class="team-stat-label">Avg Score</div>
-      <div class="team-stat-value">${Math.round(avgScore).toLocaleString()}</div>
+      <div class="team-stat-label">Avg vs Median</div>
+      <div class="team-stat-value">${formatRelativeScore(avgRelative)}</div>
     `;
     
     const totalGames = document.createElement('div');
@@ -562,8 +656,8 @@ function populateTeamGrid() {
       <div class="team-stat-value">${team.totalGames}</div>
     `;
     
-    const bestPlayer = team.scores.length > 0 ? 
-      team.players[team.scores.indexOf(Math.max(...team.scores))] : 
+    const bestPlayer = team.relativeScores.length > 0 ? 
+      team.players[team.relativeScores.indexOf(Math.max(...team.relativeScores))] : 
       team.players[0];
     
     const topPlayer = document.createElement('div');
@@ -695,43 +789,49 @@ function updateLeaderboard(metric) {
   elements.leaderboardTable.appendChild(table);
 }
 
-// Calculate average performance leaderboard
+// Calculate average performance leaderboard (relative to median)
 function calculateAverageLeaderboard() {
   return rklData.map(entry => {
-    const scores = dateColumns.map(col => entry[col]).filter(val => val !== null);
-    const avg = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0;
+    const relativeScores = dateColumns
+      .map(col => getRelativeScore(entry[col], col))
+      .filter(val => val !== null);
+    const avg = relativeScores.length > 0 ? relativeScores.reduce((a, b) => a + b, 0) / relativeScores.length : 0;
     
     return {
       player: entry.Player,
       team: entry.Team,
       value: avg,
-      displayValue: Math.round(avg).toLocaleString()
+      displayValue: formatRelativeScore(avg)
     };
   }).sort((a, b) => b.value - a.value);
 }
 
-// Calculate recent form leaderboard
+// Calculate recent form leaderboard (relative to median)
 function calculateRecentFormLeaderboard() {
   return rklData.map(entry => {
-    const allScores = dateColumns.map(col => entry[col]).filter(val => val !== null);
-    const recentScores = allScores.slice(-5);
+    const allRelativeScores = dateColumns
+      .map(col => getRelativeScore(entry[col], col))
+      .filter(val => val !== null);
+    const recentScores = allRelativeScores.slice(-5);
     const recentAvg = recentScores.length > 0 ? recentScores.reduce((a, b) => a + b, 0) / recentScores.length : 0;
     
     return {
       player: entry.Player,
       team: entry.Team,
       value: recentAvg,
-      displayValue: Math.round(recentAvg).toLocaleString()
+      displayValue: formatRelativeScore(recentAvg)
     };
   }).sort((a, b) => b.value - a.value);
 }
 
-// Calculate consistency leaderboard (lowest standard deviation)
+// Calculate consistency leaderboard (lowest standard deviation of relative scores)
 function calculateConsistencyLeaderboard() {
   return rklData.map(entry => {
-    const scores = dateColumns.map(col => entry[col]).filter(val => val !== null);
+    const relativeScores = dateColumns
+      .map(col => getRelativeScore(entry[col], col))
+      .filter(val => val !== null);
     
-    if (scores.length < 3) {
+    if (relativeScores.length < 3) {
       return {
         player: entry.Player,
         team: entry.Team,
@@ -740,25 +840,27 @@ function calculateConsistencyLeaderboard() {
       };
     }
     
-    const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-    const variance = scores.reduce((sum, score) => sum + Math.pow(score - avg, 2), 0) / scores.length;
+    const avg = relativeScores.reduce((a, b) => a + b, 0) / relativeScores.length;
+    const variance = relativeScores.reduce((sum, score) => sum + Math.pow(score - avg, 2), 0) / relativeScores.length;
     const stdDev = Math.sqrt(variance);
     
     return {
       player: entry.Player,
       team: entry.Team,
       value: stdDev,
-      displayValue: Math.round(stdDev).toLocaleString()
+      displayValue: `${stdDev.toFixed(1)}%`
     };
   }).sort((a, b) => a.value - b.value);
 }
 
-// Calculate improvement leaderboard
+// Calculate improvement leaderboard (relative score improvement)
 function calculateImprovementLeaderboard() {
   return rklData.map(entry => {
-    const scores = dateColumns.map(col => entry[col]).filter(val => val !== null);
+    const relativeScores = dateColumns
+      .map(col => getRelativeScore(entry[col], col))
+      .filter(val => val !== null);
     
-    if (scores.length < 6) {
+    if (relativeScores.length < 6) {
       return {
         player: entry.Player,
         team: entry.Team,
@@ -767,8 +869,8 @@ function calculateImprovementLeaderboard() {
       };
     }
     
-    const firstHalf = scores.slice(0, Math.floor(scores.length / 2));
-    const secondHalf = scores.slice(Math.floor(scores.length / 2));
+    const firstHalf = relativeScores.slice(0, Math.floor(relativeScores.length / 2));
+    const secondHalf = relativeScores.slice(Math.floor(relativeScores.length / 2));
     
     const firstAvg = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
     const secondAvg = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
@@ -778,7 +880,7 @@ function calculateImprovementLeaderboard() {
       player: entry.Player,
       team: entry.Team,
       value: improvement,
-      displayValue: improvement > 0 ? `+${Math.round(improvement)}` : Math.round(improvement).toString()
+      displayValue: improvement > 0 ? `+${improvement.toFixed(1)}%` : `${improvement.toFixed(1)}%`
     };
   }).sort((a, b) => b.value - a.value);
 }
@@ -792,11 +894,13 @@ function updateTrends() {
   const showMedian = document.getElementById('showMedian').checked;
   const showTop10 = document.getElementById('showTop10').checked;
   
-  // Calculate league trends
+  // Calculate league trends using relative scores
   const trendData = dateColumns.map(col => {
-    const dayScores = rklData.map(entry => entry[col]).filter(val => val !== null);
+    const dayRelativeScores = rklData
+      .map(entry => getRelativeScore(entry[col], col))
+      .filter(val => val !== null);
     
-    if (dayScores.length === 0) {
+    if (dayRelativeScores.length === 0) {
       return {
         date: col,
         average: null,
@@ -805,8 +909,8 @@ function updateTrends() {
       };
     }
     
-    const sorted = [...dayScores].sort((a, b) => b - a);
-    const average = dayScores.reduce((a, b) => a + b, 0) / dayScores.length;
+    const sorted = [...dayRelativeScores].sort((a, b) => b - a);
+    const average = dayRelativeScores.reduce((a, b) => a + b, 0) / dayRelativeScores.length;
     const median = sorted[Math.floor(sorted.length / 2)];
     const top10 = sorted.slice(0, Math.min(10, sorted.length)).reduce((a, b) => a + b, 0) / Math.min(10, sorted.length);
     
@@ -818,9 +922,9 @@ function updateTrends() {
     };
   });
   
-  // Create trends chart (simple version)
+  // Create trends chart
   const chartTitle = document.createElement('h3');
-  chartTitle.textContent = 'League Performance Trends';
+  chartTitle.textContent = 'League Performance Trends (vs Daily Median)';
   chartTitle.style.textAlign = 'center';
   chartTitle.style.marginBottom = '1rem';
   
@@ -835,22 +939,6 @@ function updateTrends() {
   chart.style.minWidth = `${dateColumns.length * 40}px`;
   chart.style.margin = '20px';
   
-  // Find overall min/max for scaling
-  const allValues = [];
-  if (showAverage) allValues.push(...trendData.map(d => d.average).filter(v => v !== null));
-  if (showMedian) allValues.push(...trendData.map(d => d.median).filter(v => v !== null));
-  if (showTop10) allValues.push(...trendData.map(d => d.top10).filter(v => v !== null));
-  
-  const minVal = Math.min(...allValues);
-  const maxVal = Math.max(...allValues);
-  const range = maxVal - minVal;
-  
-  // Create lines
-  const lines = [];
-  if (showAverage) lines.push({ data: trendData.map(d => d.average), color: '#007bff', label: 'Average' });
-  if (showMedian) lines.push({ data: trendData.map(d => d.median), color: '#28a745', label: 'Median' });
-  if (showTop10) lines.push({ data: trendData.map(d => d.top10), color: '#ffc107', label: 'Top 10' });
-  
   // Create a simple text representation
   const textChart = document.createElement('div');
   textChart.style.fontFamily = 'monospace';
@@ -861,27 +949,27 @@ function updateTrends() {
   textChart.style.borderRadius = '4px';
   textChart.style.overflowX = 'auto';
   
-  let chartText = 'Performance Trends Over Time\n\n';
+  let chartText = 'Performance Trends Over Time (Relative to Daily Median)\n\n';
   chartText += 'Date'.padEnd(12);
-  if (showAverage) chartText += 'Average'.padEnd(12);
-  if (showMedian) chartText += 'Median'.padEnd(12);
-  if (showTop10) chartText += 'Top 10'.padEnd(12);
+  if (showAverage) chartText += 'Avg %'.padEnd(12);
+  if (showMedian) chartText += 'Med %'.padEnd(12);
+  if (showTop10) chartText += 'Top10 %'.padEnd(12);
   chartText += '\n' + '='.repeat(60) + '\n';
   
   trendData.forEach(data => {
     chartText += formatDate(data.date).padEnd(12);
     if (showAverage && data.average !== null) {
-      chartText += Math.round(data.average).toLocaleString().padEnd(12);
+      chartText += `${data.average.toFixed(1)}%`.padEnd(12);
     } else if (showAverage) {
       chartText += 'N/A'.padEnd(12);
     }
     if (showMedian && data.median !== null) {
-      chartText += Math.round(data.median).toLocaleString().padEnd(12);
+      chartText += `${data.median.toFixed(1)}%`.padEnd(12);
     } else if (showMedian) {
       chartText += 'N/A'.padEnd(12);
     }
     if (showTop10 && data.top10 !== null) {
-      chartText += Math.round(data.top10).toLocaleString().padEnd(12);
+      chartText += `${data.top10.toFixed(1)}%`.padEnd(12);
     } else if (showTop10) {
       chartText += 'N/A'.padEnd(12);
     }
@@ -893,6 +981,15 @@ function updateTrends() {
   elements.trendsChart.appendChild(chartTitle);
   chartContainer.appendChild(textChart);
   elements.trendsChart.appendChild(chartContainer);
+  
+  // Add explanation
+  const explanation = document.createElement('div');
+  explanation.style.textAlign = 'center';
+  explanation.style.marginTop = '1rem';
+  explanation.style.fontSize = '12px';
+  explanation.style.color = '#666';
+  explanation.textContent = '100% = Daily Median Performance | Values above 100% indicate above-median performance';
+  elements.trendsChart.appendChild(explanation);
   
   // Generate insights
   generateTrendsInsights(trendData);
@@ -914,29 +1011,35 @@ function generateTrendsInsights(trendData) {
     
     const overallTrend = lastWeekAvg - firstWeekAvg;
     
-    if (overallTrend > 200) {
-      insights.push('📈 League performance has improved significantly over the season');
-    } else if (overallTrend < -200) {
-      insights.push('📉 League performance has declined over the season');
+    if (overallTrend > 5) {
+      insights.push('📈 League performance has improved relative to daily medians over the season');
+    } else if (overallTrend < -5) {
+      insights.push('📉 League performance has declined relative to daily medians over the season');
     } else {
-      insights.push('📊 League performance has remained relatively stable');
+      insights.push('📊 League performance has remained relatively stable around the daily medians');
     }
     
     const highestDay = validData.reduce((max, d) => d.average > max.average ? d : max);
     const lowestDay = validData.reduce((min, d) => d.average < min.average ? d : min);
     
-    insights.push(`🏆 Highest scoring day: ${formatDate(highestDay.date)} (avg: ${Math.round(highestDay.average).toLocaleString()})`);
-    insights.push(`📉 Lowest scoring day: ${formatDate(lowestDay.date)} (avg: ${Math.round(lowestDay.average).toLocaleString()})`);
+    insights.push(`🏆 Best relative performance day: ${formatDate(highestDay.date)} (avg: ${highestDay.average.toFixed(1)}%)`);
+    insights.push(`📉 Lowest relative performance day: ${formatDate(lowestDay.date)} (avg: ${lowestDay.average.toFixed(1)}%)`);
+    
+    const aboveMedianDays = validData.filter(d => d.average > 100).length;
+    const totalDays = validData.length;
+    const aboveMedianPercent = (aboveMedianDays / totalDays) * 100;
+    
+    insights.push(`📊 League performed above daily median ${aboveMedianPercent.toFixed(1)}% of days (${aboveMedianDays}/${totalDays})`);
     
     const variance = validData.reduce((sum, d) => {
       const diff = d.average - (validData.reduce((s, x) => s + x.average, 0) / validData.length);
       return sum + (diff * diff);
     }, 0) / validData.length;
     
-    if (Math.sqrt(variance) > 1000) {
-      insights.push('📊 High variability in daily performance across the season');
+    if (Math.sqrt(variance) > 10) {
+      insights.push('📊 High variability in daily performance relative to medians across the season');
     } else {
-      insights.push('📊 Consistent performance levels maintained throughout the season');
+      insights.push('📊 Consistent performance levels relative to daily medians throughout the season');
     }
   }
   
