@@ -6,28 +6,6 @@
     <title>MLB PSP Database - caustic.info</title>
     <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
     
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-
-    <script>
-        // Your web app's Firebase configuration (FROM YOUR FIREBASE CONSOLE)
-        const firebaseConfig = {
-            apiKey: "AIzaSyC36oIVrjnLvAdDY66MODI_dI-vVn7HWAw", // Your actual API Key
-            authDomain: "webcaustic-5ccd4.firebaseapp.com",   // Your actual Auth Domain
-            projectId: "webcaustic-5ccd4",                   // Your actual Project ID
-            storageBucket: "webcaustic-5ccd4.firebasestorage.app", // Your actual Storage Bucket
-            messagingSenderId: "1021802602852",              // Your actual Messaging Sender ID
-            appId: "1:1021802602852:web:7cf7dac0ff5b2a2fffda71", // Your actual App ID
-            measurementId: "G-S1QW5SSXDP"                    // Your actual Measurement ID (optional)
-        };
-
-        // Initialize Firebase
-        if (!firebase.apps.length) { 
-            firebase.initializeApp(firebaseConfig);
-        }
-    </script>
-
-    <script src="../auth-middleware.js" defer></script>
     <style>
       /* YOUR EXISTING CSS - UNCHANGED */
       * {
@@ -353,33 +331,6 @@
         background-color: #333;
         color: #fff;
       }
-
-      /* Added style for the dynamically added Firebase status div */
-      #firebasePageAuthStatusDisplay { 
-            position: fixed; 
-            bottom: 10px; 
-            right: 10px; 
-            background-color: rgba(255,255,255,0.9); 
-            padding: 8px 12px; 
-            border: 1px solid #ccc; 
-            border-radius: 5px; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-            font-size: 0.9em; 
-            z-index: 10001; /* Ensure it's on top of other content */
-      }
-      #firebasePageAuthStatusDisplay button { 
-            margin-left: 10px; 
-            padding: 3px 8px; 
-            font-size: 0.95em;
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-      }
-      #firebasePageAuthStatusDisplay button:hover {
-            background-color: #5a6268;
-      }
     </style>
   </head>
   <body>
@@ -396,8 +347,7 @@
     <main>
       <section class="info">
         <p>Search historical MLB player stat pick poll results. Select a category, find a player, and view their performance history.</p>
-        <p id="last-updated">Last updated: Loading...</p>
-      </section>
+        <p id="last-updated">Last updated: Loading...</p> </section>
       
       <section class="search-section">
         <div class="category-selection">
@@ -452,57 +402,5 @@
       <p>&copy; caustic.info</p>
     </footer>
 
-    <script src="mlb-psp-script.js"></script>
-
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Ensure Firebase auth is available. It should be initialized in the <head>.
-        if (typeof firebase === 'undefined' || typeof firebase.auth !== 'function') {
-            console.error("Firebase or Firebase Auth is not available. Check SDK loading and initialization.");
-            return;
-        }
-        const auth = firebase.auth();
-
-        auth.onAuthStateChanged(user => {
-          let statusDiv = document.getElementById('firebasePageAuthStatusDisplay');
-          
-          if (user) {
-            // User is signed in.
-            console.log(`MLB PSP Page: User is authenticated (${user.displayName || user.email}).`);
-            
-            if (!statusDiv) {
-              statusDiv = document.createElement('div');
-              statusDiv.id = 'firebasePageAuthStatusDisplay';
-              document.body.appendChild(statusDiv); // Append to body, will float due to CSS
-            }
-            
-            const displayNameToShow = user.displayName || user.email; // Use displayName, fallback to email
-            statusDiv.innerHTML = `Logged in as: <strong>${displayNameToShow}</strong> <button id="pageAuthLogoutBtn">Logout</button>`;
-            statusDiv.style.display = 'block';
-
-            const logoutButton = document.getElementById('pageAuthLogoutBtn');
-            if (logoutButton) {
-              logoutButton.addEventListener('click', async () => {
-                try {
-                  await auth.signOut();
-                  // auth-middleware.js should handle redirect on next page load attempt.
-                  // Forcing redirect here for immediate effect:
-                  window.location.href = '/auth.html'; 
-                } catch (error) {
-                  console.error("Page Logout Error:", error);
-                  alert("Error logging out: " + error.message);
-                }
-              });
-            }
-          } else {
-            // User is signed out. auth-middleware.js should have redirected if this page requires auth.
-            console.log("MLB PSP Page: No user authenticated. Middleware should handle redirect.");
-            if (statusDiv) {
-              statusDiv.style.display = 'none'; // Hide if it exists
-            }
-          }
-        });
-      });
-    </script>
-    </body>
+    <script src="mlb-psp-script.js"></script> </body>
 </html>
