@@ -5,9 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MLB PSP Database - caustic.info</title>
     <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
-    <script src="../auth-middleware.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration (FROM YOUR FIREBASE CONSOLE)
+        const firebaseConfig = {
+            apiKey: "AIzaSyC36oIVrjnLvAdDY66MODI_dI-vVn7HWAw", // Your actual API Key
+            authDomain: "webcaustic-5ccd4.firebaseapp.com",   // Your actual Auth Domain
+            projectId: "webcaustic-5ccd4",                   // Your actual Project ID
+            storageBucket: "webcaustic-5ccd4.firebasestorage.app", // Your actual Storage Bucket
+            messagingSenderId: "1021802602852",              // Your actual Messaging Sender ID
+            appId: "1:1021802602852:web:7cf7dac0ff5b2a2fffda71", // Your actual App ID
+            measurementId: "G-S1QW5SSXDP"                    // Your actual Measurement ID (optional)
+        };
+
+        // Initialize Firebase
+        // This ensures Firebase is initialized before auth-middleware.js might need it.
+        // auth-middleware.js also contains an initialization block, which is fine;
+        // Firebase's initializeApp is idempotent (safe to call multiple times with the same config).
+        if (!firebase.apps.length) { 
+            firebase.initializeApp(firebaseConfig);
+        }
+    </script>
+
+    <script src="../auth-middleware.js" defer></script>
     <style>
-      /* Reset and General Styles */
+      /* YOUR EXISTING CSS - UNCHANGED */
       * {
         margin: 0;
         padding: 0;
@@ -394,8 +419,7 @@
               </tr>
             </thead>
             <tbody id="playerStatsBody">
-              <!-- Results will be populated here -->
-            </tbody>
+              </tbody>
           </table>
           <button id="showAllButton" class="show-all-button hidden">Show All Results</button>
           <div id="noResultsMessage" class="no-results hidden">
@@ -408,11 +432,9 @@
         <h2>Performance Summary</h2>
         <div class="stats-container">
           <div id="successRateByTarget" class="stat-block">
-            <!-- Success rate by target will be populated here -->
-          </div>
+            </div>
           <div id="avgRankSection" class="stat-block">
-            <!-- Average rank data will be populated here -->
-          </div>
+            </div>
         </div>
       </section>
     </main>
@@ -420,5 +442,5 @@
       <p>&copy; caustic.info</p>
     </footer>
     <script src="mlb-psp-script.js"></script>
-  </body>
+    </body>
 </html>
