@@ -1,12 +1,12 @@
-// auth-middleware.js
+// auth-middleware-with-header.js
 // Add this script to all pages you want to protect
 
 (function() {
     'use strict';
     
     // Configuration - must match your auth page settings
-    const CURRENT_TEAM_CODE = 'jammers-szn7'; // Update this when you change team codes
-    const AUTH_PAGE_URL = '../auth.html'; // Path to your auth page
+    const CURRENT_TEAM_CODE = 'TEAM-ALPHA-2025'; // Update this when you change team codes
+    const AUTH_PAGE_URL = 'auth.html'; // Path to your auth page
     
     // Generate device fingerprint (same method as auth page)
     function generateDeviceFingerprint() {
@@ -138,21 +138,44 @@
         }
     }
     
-    // Run authentication check when DOM is loaded
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            if (!isDeviceAuthenticated()) {
-                showAccessDenied();
-            }
-        });
-    } else {
-        // DOM already loaded
-        if (!isDeviceAuthenticated()) {
-            showAccessDenied();
-        }
+    // Add team header automatically
+    function addTeamHeader() {
+        const devices = JSON.parse(localStorage.getItem('teamDevices') || '[]');
+        const deviceId = generateDeviceFingerprint();
+        const device = devices.find(d => d.id === deviceId);
+        const userName = device ? device.name : 'Team Member';
+        
+        // Create team header
+        const teamHeader = document.createElement('div');
+        teamHeader.style.cssText = `
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 100;
+        `;
+        
+        teamHeader.innerHTML = `
+            🔒 Team Access Mode - Welcome, ${userName}
+            <button onclick="teamAuthLogout()" style="
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                padding: 0.25rem 0.5rem;
+                border-radius: 4px;
+                font-size: 0.8rem;
+                cursor: pointer;
+                margin-left: 0.5rem;
+            ">Logout</button>
+        `;
+        
+        // Insert at the very beginning of body
+        document.body.insertBefore(teamHeader, document.body.firstChild);
     }
     
-    // Optional: Add logout functionality
+    // Logout function
     window.teamAuthLogout = function() {
         if (confirm('Are you sure you want to logout? You will need to re-authenticate this device.')) {
             localStorage.removeItem('teamDevices');
@@ -160,28 +183,22 @@
         }
     };
     
-    // Optional: Add a small auth status indicator
-    window.addEventListener('load', function() {
-        if (isDeviceAuthenticated()) {
-            const indicator = document.createElement('div');
-            indicator.style.cssText = `
-                position: fixed;
-                bottom: 10px;
-                right: 10px;
-                background: #28a745;
-                color: white;
-                padding: 0.5rem;
-                border-radius: 4px;
-                font-size: 0.8rem;
-                z-index: 1000;
-                opacity: 0.8;
-            `;
-            indicator.innerHTML = '🔓 Authenticated';
-            indicator.title = 'Click to logout';
-            indicator.style.cursor = 'pointer';
-            indicator.onclick = window.teamAuthLogout;
-            document.body.appendChild(indicator);
+    // Run authentication check when DOM is loaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!isDeviceAuthenticated()) {
+                showAccessDenied();
+            } else {
+                addTeamHeader();
+            }
+        });
+    } else {
+        // DOM already loaded
+        if (!isDeviceAuthenticated()) {
+            showAccessDenied();
+        } else {
+            addTeamHeader();
         }
-    });
+    }
     
 })();
