@@ -487,12 +487,12 @@
       async function loadData() {
         try {
           // Load schedule data
-          const scheduleResponse = await fetch('Jammers S6  Schedule.csv');
+          const scheduleResponse = await fetch('Jammers-S6-Schedule.csv');
           const scheduleText = await scheduleResponse.text();
           scheduleData = parseCSV(scheduleText);
           
           // Load game stats data
-          const gameStatsResponse = await fetch('Jammers S6  GameStats.csv');
+          const gameStatsResponse = await fetch('Jammers-S6-GameStats.csv');
           const gameStatsText = await gameStatsResponse.text();
           gameStatsData = parseCSV(gameStatsText).filter(row => 
             row.User && row.User !== 'Total Score' && row.User.trim() !== ''
