@@ -628,7 +628,7 @@
           const resultClass = game.Result === 'Win' ? 'result-win' : 'result-loss';
           
           // Format postseason game labels
-          const gameLabel = game.Week.replace('R1-', 'Game ');
+          const gameLabel = game.Week.replace('R1-G', 'Game ');
           
           row.innerHTML = `
             <td class="week-col">${gameLabel}</td>
@@ -654,7 +654,7 @@
         // Format week title for display
         let weekTitle;
         if (week.toString().startsWith('R')) {
-          const gameNum = week.replace('R1-', '');
+          const gameNum = week.replace('R1-G', '');
           weekTitle = `Round 1 Game ${gameNum} vs ${scheduleInfo.Opponent} (${scheduleInfo.Result})`;
         } else {
           weekTitle = `Week ${week} vs ${scheduleInfo.Opponent} (${scheduleInfo.Result})`;
