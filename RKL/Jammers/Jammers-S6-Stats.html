@@ -501,7 +501,9 @@
     <script>
       // Configuration constants - easy to modify
       const CONFIG = {
-        DEFAULT_MIN_GAMES: 3,
+        DEFAULT_MIN_GAMES_REGULAR: 3,
+        DEFAULT_MIN_GAMES_POSTSEASON: 1,
+        DEFAULT_MIN_GAMES_TOTAL: 3,
         DEFAULT_SORT_COLUMN: 'avgRank',
         DEFAULT_SORT_DIRECTION: 'asc'
       };
@@ -622,7 +624,10 @@
       function setupEventListeners() {
         elements.scheduleViewBtn.addEventListener('click', () => switchView('schedule'));
         elements.playerStatsViewBtn.addEventListener('click', () => switchView('playerStats'));
-        elements.seasonFilter.addEventListener('change', updatePlayerStats);
+        elements.seasonFilter.addEventListener('change', () => {
+          updateMinGamesDefault();
+          updatePlayerStats();
+        });
         elements.applyFilter.addEventListener('click', updatePlayerStats);
         elements.backToSchedule.addEventListener('click', () => switchView('schedule'));
         
@@ -635,6 +640,9 @@
 
         // Add sorting functionality to player stats table
         setupTableSorting();
+        
+        // Set initial minimum games default
+        updateMinGamesDefault();
       }
 
       // Switch between views
@@ -782,10 +790,31 @@
         switchView('weekDetail');
       }
 
+      // Update minimum games default based on season type
+      function updateMinGamesDefault() {
+        const seasonType = elements.seasonFilter.value;
+        let defaultMinGames;
+        
+        switch (seasonType) {
+          case 'regular':
+            defaultMinGames = CONFIG.DEFAULT_MIN_GAMES_REGULAR;
+            break;
+          case 'postseason':
+            defaultMinGames = CONFIG.DEFAULT_MIN_GAMES_POSTSEASON;
+            break;
+          case 'total':
+          default:
+            defaultMinGames = CONFIG.DEFAULT_MIN_GAMES_TOTAL;
+            break;
+        }
+        
+        elements.minGamesFilter.value = defaultMinGames;
+      }
+
       // Update player stats with filter
       function updatePlayerStats() {
         const seasonType = elements.seasonFilter.value;
-        const minGames = parseInt(elements.minGamesFilter.value) || CONFIG.DEFAULT_MIN_GAMES;
+        const minGames = parseInt(elements.minGamesFilter.value) || 1;
         
         // Calculate player statistics based on season filter
         const playerStats = calculatePlayerStats(seasonType);
