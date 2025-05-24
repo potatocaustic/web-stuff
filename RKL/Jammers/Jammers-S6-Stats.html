@@ -273,8 +273,62 @@
         top: 0;
       }
 
-      .stats-table tr:hover {
-        background-color: #f9f9f9;
+      .stats-table .sortable {
+        cursor: pointer;
+        user-select: none;
+        position: relative;
+      }
+
+      .stats-table .sortable:hover {
+        background-color: #e9ecef;
+      }
+
+      .sort-indicator {
+        display: inline-block;
+        width: 0;
+        height: 0;
+        margin-left: 5px;
+        vertical-align: middle;
+        opacity: 0.3;
+      }
+
+      .sort-indicator.asc {
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-bottom: 6px solid #333;
+        opacity: 1;
+      }
+
+      .sort-indicator.desc {
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 6px solid #333;
+        opacity: 1;
+      }
+
+      /* Color coding for player stats */
+      .stats-table tbody tr.excellent {
+        background-color: #e8f5e8;
+      }
+
+      .stats-table tbody tr.good {
+        background-color: #f0f8f0;
+      }
+
+      .stats-table tbody tr.average {
+        background-color: #fff;
+      }
+
+      .stats-table tbody tr.below-average {
+        background-color: #fff3cd;
+      }
+
+      .stats-table tbody tr.poor {
+        background-color: #f8d7da;
+      }
+
+      .stats-table tbody tr:hover {
+        filter: brightness(0.95);
       }
 
       .stats-table .numeric {
@@ -409,19 +463,19 @@
           <button id="applyFilter" class="view-button">Apply Filter</button>
         </div>
         <div style="overflow-x: auto;">
-          <table class="stats-table">
+          <table class="stats-table" id="playerStatsTable">
             <thead>
               <tr>
-                <th>Player</th>
-                <th class="numeric"># Starts</th>
-                <th class="numeric">Avg Rank</th>
-                <th class="numeric">REL Mean</th>
-                <th class="numeric">REL Median</th>
-                <th class="numeric">AAG Mean</th>
-                <th class="numeric">AAG% Mean</th>
-                <th class="numeric">AAG Median</th>
-                <th class="numeric">AAG% Median</th>
-                <th class="numeric">WAR</th>
+                <th class="sortable" data-column="name">Player <span class="sort-indicator"></span></th>
+                <th class="numeric sortable" data-column="starts"># Starts <span class="sort-indicator"></span></th>
+                <th class="numeric sortable" data-column="avgRank">Avg Rank <span class="sort-indicator"></span></th>
+                <th class="numeric sortable" data-column="relMean">REL Mean <span class="sort-indicator"></span></th>
+                <th class="numeric sortable" data-column="relMedian">REL Median <span class="sort-indicator"></span></th>
+                <th class="numeric sortable" data-column="aagMean">AAG Mean <span class="sort-indicator"></span></th>
+                <th class="numeric sortable" data-column="aagMeanPct">AAG% Mean <span class="sort-indicator"></span></th>
+                <th class="numeric sortable" data-column="aagMedian">AAG Median <span class="sort-indicator"></span></th>
+                <th class="numeric sortable" data-column="aagMedianPct">AAG% Median <span class="sort-indicator"></span></th>
+                <th class="numeric sortable" data-column="war">WAR <span class="sort-indicator"></span></th>
               </tr>
             </thead>
             <tbody id="playerStatsTableBody">
@@ -450,6 +504,9 @@
       let scheduleData = [];
       let gameStatsData = [];
       let currentView = 'schedule';
+      let currentPlayerStats = [];
+      let currentSortColumn = 'war';
+      let currentSortDirection = 'desc';
 
       // DOM elements
       const elements = {
@@ -495,7 +552,14 @@
           const gameStatsResponse = await fetch('Jammers-S6-GameStats.csv');
           const gameStatsText = await gameStatsResponse.text();
           gameStatsData = parseCSV(gameStatsText).filter(row => 
-            row.User && row.User !== 'Total Score' && row.User.trim() !== ''
+            row.User && 
+            row.User !== 'Total Score' && 
+            row.User !== 'Score' &&
+            row.User.trim() !== '' &&
+            !row.User.toLowerCase().includes('total') &&
+            !row.User.toLowerCase().includes('avg') &&
+            row.Score && 
+            !isNaN(parseInt(row.Score.replace(/,/g, '')))
           );
           
           console.log('Loaded schedule data:', scheduleData.length, 'games');
@@ -563,6 +627,9 @@
             updatePlayerStats();
           }
         });
+
+        // Add sorting functionality to player stats table
+        setupTableSorting();
       }
 
       // Switch between views
@@ -634,11 +701,10 @@
           
           const resultClass = game.Result === 'Win' ? 'result-win' : 'result-loss';
           
-          // Format postseason game labels
-          const gameLabel = game.Week.replace('R1-G', 'Game ');
+          // Keep postseason game labels as R1-G1, R1-G2, etc.
           
           row.innerHTML = `
-            <td class="week-col">${gameLabel}</td>
+            <td class="week-col">${game.Week}</td>
             <td>${game.Date}</td>
             <td>${game.Opponent}</td>
             <td>${parseInt(game.Score).toLocaleString()}</td>
@@ -719,24 +785,108 @@
         // Calculate player statistics based on season filter
         const playerStats = calculatePlayerStats(seasonType);
         
+        // Store for sorting
+        currentPlayerStats = playerStats;
+        
         // Filter by minimum games
         const filteredStats = playerStats.filter(player => player.starts >= minGames);
         
-        // Sort by WAR descending
-        filteredStats.sort((a, b) => b.war - a.war);
+        // Sort by current sort column and direction
+        sortPlayerStats(filteredStats);
         
         // Populate table
+        populatePlayerStatsTable(filteredStats);
+      }
+
+      // Setup table sorting functionality
+      function setupTableSorting() {
+        const table = document.getElementById('playerStatsTable');
+        if (!table) return;
+
+        const headers = table.querySelectorAll('th.sortable');
+        headers.forEach(header => {
+          header.addEventListener('click', () => {
+            const column = header.dataset.column;
+            
+            // Toggle sort direction if same column, otherwise default to desc for most stats
+            if (currentSortColumn === column) {
+              currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+              currentSortColumn = column;
+              // Default direction based on column type
+              currentSortDirection = (column === 'name' || column === 'avgRank') ? 'asc' : 'desc';
+            }
+            
+            updatePlayerStats();
+          });
+        });
+      }
+
+      // Sort player stats based on current sort column and direction
+      function sortPlayerStats(stats) {
+        stats.sort((a, b) => {
+          let aVal = a[currentSortColumn];
+          let bVal = b[currentSortColumn];
+          
+          // Handle string vs number comparison
+          if (typeof aVal === 'string') {
+            aVal = aVal.toLowerCase();
+            bVal = bVal.toLowerCase();
+          }
+          
+          let comparison = 0;
+          if (aVal < bVal) comparison = -1;
+          else if (aVal > bVal) comparison = 1;
+          
+          return currentSortDirection === 'asc' ? comparison : -comparison;
+        });
+      }
+
+      // Update sort indicators in table headers
+      function updateSortIndicators() {
+        const headers = document.querySelectorAll('th.sortable .sort-indicator');
+        headers.forEach(indicator => {
+          indicator.className = 'sort-indicator';
+        });
+        
+        const currentHeader = document.querySelector(`th[data-column="${currentSortColumn}"] .sort-indicator`);
+        if (currentHeader) {
+          currentHeader.className = `sort-indicator ${currentSortDirection}`;
+        }
+      }
+
+      // Determine performance tier for color coding
+      function getPerformanceTier(player, allPlayers) {
+        // Use WAR as primary metric for tier determination
+        const wars = allPlayers.map(p => p.war).sort((a, b) => b - a);
+        const playerWar = player.war;
+        
+        const percentile = (wars.indexOf(playerWar) + 1) / wars.length;
+        
+        if (percentile <= 0.2) return 'excellent';      // Top 20%
+        else if (percentile <= 0.4) return 'good';      // 21-40%
+        else if (percentile <= 0.6) return 'average';   // 41-60%
+        else if (percentile <= 0.8) return 'below-average'; // 61-80%
+        else return 'poor';                             // Bottom 20%
+      }
+
+      // Populate player stats table with color coding
+      function populatePlayerStatsTable(filteredStats) {
         elements.playerStatsTableBody.innerHTML = '';
         
         if (filteredStats.length === 0) {
           const row = document.createElement('tr');
           row.innerHTML = `<td colspan="10" style="text-align: center; padding: 2rem;">No players meet the current filter criteria</td>`;
           elements.playerStatsTableBody.appendChild(row);
+          updateSortIndicators();
           return;
         }
         
         filteredStats.forEach(player => {
           const row = document.createElement('tr');
+          const tier = getPerformanceTier(player, filteredStats);
+          row.className = tier;
+          
           row.innerHTML = `
             <td>${player.name}</td>
             <td class="numeric">${player.starts}</td>
@@ -747,10 +897,12 @@
             <td class="numeric">${(player.aagMeanPct * 100).toFixed(1)}%</td>
             <td class="numeric">${player.aagMedian}</td>
             <td class="numeric">${(player.aagMedianPct * 100).toFixed(1)}%</td>
-            <td class="numeric">${player.war.toFixed(1)}</td>
+            <td class="numeric">${player.war.toFixed(2)}</td>
           `;
           elements.playerStatsTableBody.appendChild(row);
         });
+        
+        updateSortIndicators();
       }
 
       // Calculate comprehensive player statistics
@@ -829,10 +981,13 @@
           const aagMeanPct = player.starts > 0 ? player.aagMean / player.starts : 0;
           const aagMedianPct = player.starts > 0 ? player.aagMedian / player.starts : 0;
           
-          // Calculate WAR (Wins Above Replacement - assuming replacement = 400th place)
-          const replacementRank = 400;
+          // Calculate WAR (Wins Above Replacement) - using a more realistic formula
+          // Replacement level set at 250th place, scaled appropriately for game context
+          const replacementRank = 250;
           const war = player.games.reduce((sum, game) => {
-            return sum + Math.max(0, (replacementRank - game.rank) / 100);
+            // Each game contribution: positive for ranks better than replacement, scaled down
+            const contribution = Math.max(0, (replacementRank - game.rank) / 1000);
+            return sum + contribution;
           }, 0);
           
           return {
