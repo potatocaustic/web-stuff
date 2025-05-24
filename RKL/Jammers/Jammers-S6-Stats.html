@@ -354,6 +354,9 @@
       <section id="scheduleView" class="schedule-section">
         <h2>Season 6 Schedule & Results</h2>
         <p>Click on any week to see detailed player statistics from that game</p>
+        
+        <!-- Regular Season -->
+        <h3>Regular Season</h3>
         <table class="schedule-table">
           <thead>
             <tr>
@@ -366,8 +369,27 @@
               <th>Margin</th>
             </tr>
           </thead>
-          <tbody id="scheduleTableBody">
-            <!-- Schedule data will be populated here -->
+          <tbody id="regularSeasonTableBody">
+            <!-- Regular season data will be populated here -->
+          </tbody>
+        </table>
+        
+        <!-- Postseason -->
+        <h3 style="margin-top: 2rem;">Postseason</h3>
+        <table class="schedule-table">
+          <thead>
+            <tr>
+              <th class="week-col">Game</th>
+              <th>Date</th>
+              <th>Opponent</th>
+              <th>Score</th>
+              <th>Opp Score</th>
+              <th>Result</th>
+              <th>Margin</th>
+            </tr>
+          </thead>
+          <tbody id="postseasonTableBody">
+            <!-- Postseason data will be populated here -->
           </tbody>
         </table>
       </section>
@@ -376,6 +398,12 @@
       <section id="playerStatsView" class="player-stats-section hidden">
         <h2>Player Statistics - Season 6</h2>
         <div class="filter-controls">
+          <label for="seasonFilter">Season Type:</label>
+          <select id="seasonFilter">
+            <option value="total">Total (Regular + Postseason)</option>
+            <option value="regular">Regular Season Only</option>
+            <option value="postseason">Postseason Only</option>
+          </select>
           <label for="minGamesFilter">Minimum Games Played:</label>
           <input type="number" id="minGamesFilter" min="0" max="21" value="1">
           <button id="applyFilter" class="view-button">Apply Filter</button>
@@ -430,8 +458,10 @@
         scheduleView: document.getElementById('scheduleView'),
         playerStatsView: document.getElementById('playerStatsView'),
         weekDetailView: document.getElementById('weekDetailView'),
-        scheduleTableBody: document.getElementById('scheduleTableBody'),
+        regularSeasonTableBody: document.getElementById('regularSeasonTableBody'),
+        postseasonTableBody: document.getElementById('postseasonTableBody'),
         playerStatsTableBody: document.getElementById('playerStatsTableBody'),
+        seasonFilter: document.getElementById('seasonFilter'),
         minGamesFilter: document.getElementById('minGamesFilter'),
         applyFilter: document.getElementById('applyFilter'),
         backToSchedule: document.getElementById('backToSchedule'),
@@ -457,12 +487,12 @@
       async function loadData() {
         try {
           // Load schedule data
-          const scheduleResponse = await fetch('Jammers-S6-Schedule.csv');
+          const scheduleResponse = await fetch('Jammers S6  Schedule.csv');
           const scheduleText = await scheduleResponse.text();
           scheduleData = parseCSV(scheduleText);
           
           // Load game stats data
-          const gameStatsResponse = await fetch('Jammers-S6-GameStats.csv');
+          const gameStatsResponse = await fetch('Jammers S6  GameStats.csv');
           const gameStatsText = await gameStatsResponse.text();
           gameStatsData = parseCSV(gameStatsText).filter(row => 
             row.User && row.User !== 'Total Score' && row.User.trim() !== ''
@@ -519,6 +549,7 @@
       function setupEventListeners() {
         elements.scheduleViewBtn.addEventListener('click', () => switchView('schedule'));
         elements.playerStatsViewBtn.addEventListener('click', () => switchView('playerStats'));
+        elements.seasonFilter.addEventListener('change', updatePlayerStats);
         elements.applyFilter.addEventListener('click', updatePlayerStats);
         elements.backToSchedule.addEventListener('click', () => switchView('schedule'));
         
@@ -562,9 +593,15 @@
 
       // Populate schedule table
       function populateSchedule() {
-        elements.scheduleTableBody.innerHTML = '';
+        elements.regularSeasonTableBody.innerHTML = '';
+        elements.postseasonTableBody.innerHTML = '';
         
-        scheduleData.forEach(game => {
+        // Separate regular season and postseason games
+        const regularSeasonGames = scheduleData.filter(game => !game.Week.toString().startsWith('R'));
+        const postseasonGames = scheduleData.filter(game => game.Week.toString().startsWith('R'));
+        
+        // Populate regular season
+        regularSeasonGames.forEach(game => {
           const row = document.createElement('tr');
           row.addEventListener('click', () => showWeekDetail(game.Week));
           
@@ -580,7 +617,30 @@
             <td>${parseInt(game.Margin) > 0 ? '+' : ''}${parseInt(game.Margin).toLocaleString()}</td>
           `;
           
-          elements.scheduleTableBody.appendChild(row);
+          elements.regularSeasonTableBody.appendChild(row);
+        });
+        
+        // Populate postseason
+        postseasonGames.forEach(game => {
+          const row = document.createElement('tr');
+          row.addEventListener('click', () => showWeekDetail(game.Week));
+          
+          const resultClass = game.Result === 'Win' ? 'result-win' : 'result-loss';
+          
+          // Format postseason game labels
+          const gameLabel = game.Week.replace('R1-', 'Game ');
+          
+          row.innerHTML = `
+            <td class="week-col">${gameLabel}</td>
+            <td>${game.Date}</td>
+            <td>${game.Opponent}</td>
+            <td>${parseInt(game.Score).toLocaleString()}</td>
+            <td>${parseInt(game['Opp. Score']).toLocaleString()}</td>
+            <td class="${resultClass}">${game.Result}</td>
+            <td>${parseInt(game.Margin) > 0 ? '+' : ''}${parseInt(game.Margin).toLocaleString()}</td>
+          `;
+          
+          elements.postseasonTableBody.appendChild(row);
         });
       }
 
@@ -591,7 +651,16 @@
         
         if (!weekData.length || !scheduleInfo) return;
         
-        elements.weekDetailTitle.textContent = `Week ${week} vs ${scheduleInfo.Opponent} (${scheduleInfo.Result})`;
+        // Format week title for display
+        let weekTitle;
+        if (week.toString().startsWith('R')) {
+          const gameNum = week.replace('R1-', '');
+          weekTitle = `Round 1 Game ${gameNum} vs ${scheduleInfo.Opponent} (${scheduleInfo.Result})`;
+        } else {
+          weekTitle = `Week ${week} vs ${scheduleInfo.Opponent} (${scheduleInfo.Result})`;
+        }
+        
+        elements.weekDetailTitle.textContent = weekTitle;
         
         // Create week detail table
         let content = `
@@ -637,10 +706,11 @@
 
       // Update player stats with filter
       function updatePlayerStats() {
+        const seasonType = elements.seasonFilter.value;
         const minGames = parseInt(elements.minGamesFilter.value) || 1;
         
-        // Calculate player statistics
-        const playerStats = calculatePlayerStats();
+        // Calculate player statistics based on season filter
+        const playerStats = calculatePlayerStats(seasonType);
         
         // Filter by minimum games
         const filteredStats = playerStats.filter(player => player.starts >= minGames);
@@ -650,6 +720,13 @@
         
         // Populate table
         elements.playerStatsTableBody.innerHTML = '';
+        
+        if (filteredStats.length === 0) {
+          const row = document.createElement('tr');
+          row.innerHTML = `<td colspan="10" style="text-align: center; padding: 2rem;">No players meet the current filter criteria</td>`;
+          elements.playerStatsTableBody.appendChild(row);
+          return;
+        }
         
         filteredStats.forEach(player => {
           const row = document.createElement('tr');
@@ -670,11 +747,29 @@
       }
 
       // Calculate comprehensive player statistics
-      function calculatePlayerStats() {
+      function calculatePlayerStats(seasonType = 'total') {
         const players = {};
         
-        // Get unique players
-        gameStatsData.forEach(entry => {
+        // Filter games based on season type
+        let filteredGameStats;
+        let filteredScheduleData;
+        
+        switch (seasonType) {
+          case 'regular':
+            filteredGameStats = gameStatsData.filter(entry => !entry.Week.toString().startsWith('R'));
+            filteredScheduleData = scheduleData.filter(game => !game.Week.toString().startsWith('R'));
+            break;
+          case 'postseason':
+            filteredGameStats = gameStatsData.filter(entry => entry.Week.toString().startsWith('R'));
+            filteredScheduleData = scheduleData.filter(game => game.Week.toString().startsWith('R'));
+            break;
+          default: // 'total'
+            filteredGameStats = gameStatsData;
+            filteredScheduleData = scheduleData;
+        }
+        
+        // Get unique players from filtered data
+        filteredGameStats.forEach(entry => {
           if (!players[entry.User]) {
             players[entry.User] = {
               name: entry.User,
@@ -703,11 +798,11 @@
         // Calculate statistics for each player
         return Object.values(players).map(player => {
           // Calculate averages
-          const avgRank = player.totalRank / player.starts;
+          const avgRank = player.starts > 0 ? player.totalRank / player.starts : 0;
           
           // Calculate REL scores and AAG
           player.games.forEach(game => {
-            const scheduleInfo = scheduleData.find(s => s.Week === game.week);
+            const scheduleInfo = filteredScheduleData.find(s => s.Week === game.week);
             if (scheduleInfo) {
               player.totalAvgScore += scheduleInfo['Average Starter'];
               player.totalMedianScore += scheduleInfo['Median Starter'];
@@ -724,8 +819,8 @@
           
           const relMean = player.totalAvgScore > 0 ? player.totalScore / player.totalAvgScore : 0;
           const relMedian = player.totalMedianScore > 0 ? player.totalScore / player.totalMedianScore : 0;
-          const aagMeanPct = player.aagMean / player.starts;
-          const aagMedianPct = player.aagMedian / player.starts;
+          const aagMeanPct = player.starts > 0 ? player.aagMean / player.starts : 0;
+          const aagMedianPct = player.starts > 0 ? player.aagMedian / player.starts : 0;
           
           // Calculate WAR (Wins Above Replacement - assuming replacement = 400th place)
           const replacementRank = 400;
