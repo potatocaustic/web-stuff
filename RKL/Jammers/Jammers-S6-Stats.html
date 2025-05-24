@@ -774,7 +774,7 @@
       };
 
       // Sample data with average ranks from GameStats.csv
-      const scheduleData = [
+      const scheduleDataWithRanks = [
         {Week: "1", Date: "3-6-25", Opponent: "Stimmers", Score: "41,796", "Opp. Score": "36,316", Result: "Win", Margin: "5,480", AvgRank: 180},
         {Week: "2", Date: "3-10-25", Opponent: "Lean Team", Score: "36,201", "Opp. Score": "34,382", Result: "Win", Margin: "1,819", AvgRank: 270},
         {Week: "3", Date: "3-13-25", Opponent: "Gamblers", Score: "48,226", "Opp. Score": "44,326", Result: "Win", Margin: "3,900", AvgRank: 116},
@@ -795,29 +795,8 @@
         {Week: "R1-G3", Date: "4-30-25", Opponent: "Heroes", Score: "35,757", "Opp. Score": "38,763", Result: "Loss", Margin: "-3,006", AvgRank: 132}
       ];
 
-      // Calculate cumulative records
-      function calculateCumulativeRecords() {
-        const regularSeasonGames = scheduleData.filter(game => !game.Week.toString().startsWith('R'));
-        const postseasonGames = scheduleData.filter(game => game.Week.toString().startsWith('R'));
-        
-        // Regular season cumulative record
-        let wins = 0, losses = 0;
-        regularSeasonGames.forEach(game => {
-          if (game.Result === 'Win') wins++;
-          else losses++;
-          game.CumulativeRecord = `${wins}-${losses}`;
-        });
-        
-        // Postseason cumulative record (starts fresh)
-        wins = 0; losses = 0;
-        postseasonGames.forEach(game => {
-          if (game.Result === 'Win') wins++;
-          else losses++;
-          game.CumulativeRecord = `${wins}-${losses}`;
-        });
-      }
-
       // Global variables
+      let scheduleData = [];
       let gameStatsData = [];
       let currentView = 'schedule';
       let currentPlayerStats = [];
@@ -847,6 +826,7 @@
 
       async function init() {
         try {
+          await loadData();
           calculateCumulativeRecords();
           setupEventListeners();
           switchView('schedule');
@@ -854,6 +834,110 @@
           console.error('Failed to load data:', error);
           showError('Failed to load Jammers data. Please try refreshing the page.');
         }
+      }
+
+      // Load and parse CSV data
+      async function loadData() {
+        try {
+          // Load schedule data
+          const scheduleResponse = await fetch('Jammers-S6-Schedule.csv');
+          const scheduleText = await scheduleResponse.text();
+          const rawScheduleData = parseCSV(scheduleText);
+          
+          // Merge with rank data
+          scheduleData = rawScheduleData.map(game => {
+            const rankData = scheduleDataWithRanks.find(r => r.Week === game.Week);
+            return {
+              ...game,
+              AvgRank: rankData ? rankData.AvgRank : 0
+            };
+          });
+          
+          // Load game stats data
+          const gameStatsResponse = await fetch('Jammers-S6-GameStats.csv');
+          const gameStatsText = await gameStatsResponse.text();
+          gameStatsData = parseCSV(gameStatsText).filter(row => 
+            row.User && 
+            row.User !== 'Total Score' && 
+            row.User !== 'Score' &&
+            row.User.trim() !== '' &&
+            !row.User.toLowerCase().includes('total') &&
+            !row.User.toLowerCase().includes('avg') &&
+            row.Score && 
+            !isNaN(parseInt(row.Score.replace(/,/g, '')))
+          );
+          
+          console.log('Loaded schedule data:', scheduleData.length, 'games');
+          console.log('Loaded game stats data:', gameStatsData.length, 'entries');
+          
+        } catch (error) {
+          console.error('Error loading data:', error);
+          throw error;
+        }
+      }
+
+      // Parse CSV to JSON - FIXED VERSION
+      function parseCSV(csvText) {
+        const lines = csvText.split('\n');
+        const headers = lines[0].split(',').map(header => header.trim().replace(/"/g, ''));
+        const result = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+          if (!lines[i].trim()) continue;
+          
+          const values = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+          const entry = {};
+          
+          headers.forEach((header, index) => {
+            if (index < values.length) {
+              let value = values[index].trim().replace(/"/g, '');
+              
+              // FIXED: Handle Week field specially - keep as string if it contains letters (like R1-G1)
+              if (header === 'Week') {
+                entry[header] = value === '' ? null : value;
+              }
+              // Convert other numeric values where appropriate
+              else if (['Rank', 'Median Starter', 'Average Starter'].includes(header)) {
+                entry[header] = value === '' ? null : parseFloat(value);
+              } else if (header === 'Score' || header === 'Opp. Score' || header === 'Margin') {
+                // Remove commas from score values
+                entry[header] = value.replace(/,/g, '');
+              } else {
+                entry[header] = value === '' ? null : value;
+              }
+            } else {
+              entry[header] = null;
+            }
+          });
+          
+          if (Object.values(entry).some(val => val !== null && val !== '')) {
+            result.push(entry);
+          }
+        }
+        
+        return result;
+      }
+
+      // Calculate cumulative records
+      function calculateCumulativeRecords() {
+        const regularSeasonGames = scheduleData.filter(game => !game.Week.toString().startsWith('R'));
+        const postseasonGames = scheduleData.filter(game => game.Week.toString().startsWith('R'));
+        
+        // Regular season cumulative record
+        let wins = 0, losses = 0;
+        regularSeasonGames.forEach(game => {
+          if (game.Result === 'Win') wins++;
+          else losses++;
+          game.CumulativeRecord = `${wins}-${losses}`;
+        });
+        
+        // Postseason cumulative record (starts fresh)
+        wins = 0; losses = 0;
+        postseasonGames.forEach(game => {
+          if (game.Result === 'Win') wins++;
+          else losses++;
+          game.CumulativeRecord = `${wins}-${losses}`;
+        });
       }
 
       // Setup event listeners
@@ -984,18 +1068,60 @@
 
       // Show week detail
       function showWeekDetail(week) {
-        // This would be populated with actual game stats data
-        const weekTitle = week.toString().startsWith('R') ? 
-          `Round 1 Game ${week.replace('R1-G', '')} Details` : 
-          `Week ${week} Details`;
+        const weekData = gameStatsData.filter(entry => entry.Week === week);
+        const scheduleInfo = scheduleData.find(game => game.Week === week);
+        
+        if (!weekData.length || !scheduleInfo) return;
+        
+        // Format week title for display
+        let weekTitle;
+        if (week.toString().startsWith('R')) {
+          const gameNum = week.replace('R1-G', '');
+          weekTitle = `Round 1 Game ${gameNum} vs ${scheduleInfo.Opponent} (${scheduleInfo.Result})`;
+        } else {
+          weekTitle = `Week ${week} vs ${scheduleInfo.Opponent} (${scheduleInfo.Result})`;
+        }
         
         elements.weekDetailTitle.textContent = weekTitle;
-        elements.weekDetailContent.innerHTML = `
-          <div style="padding: 2rem; text-align: center; color: #666;">
-            <p>Player statistics for this game would be displayed here.</p>
-            <p>Click "Back to Schedule" to return to the main view.</p>
+        
+        // Create week detail table
+        let content = `
+          <div style="margin-bottom: 1rem;">
+            <strong>Game Result:</strong> ${scheduleInfo.Result} ${parseInt(scheduleInfo.Score).toLocaleString()} - ${parseInt(scheduleInfo['Opp. Score']).toLocaleString()} 
+            (${parseInt(scheduleInfo.Margin) > 0 ? '+' : ''}${parseInt(scheduleInfo.Margin).toLocaleString()})
           </div>
+          <div style="overflow-x: auto;">
+            <table class="stats-table">
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th class="numeric">Score</th>
+                  <th class="numeric">Rank</th>
+                  <th class="numeric">Team %</th>
+                  <th class="numeric">Cap Bonus</th>
+                </tr>
+              </thead>
+              <tbody>
         `;
+        
+        weekData.forEach(player => {
+          const score = parseInt(player.Score.replace(/,/g, ''));
+          const teamPct = player['Team %'] || '';
+          const capBonus = player['Cap. Bonus'] ? parseInt(player['Cap. Bonus'].replace(/,/g, '')).toLocaleString() : '';
+          
+          content += `
+            <tr>
+              <td>${player.User}</td>
+              <td class="numeric">${score.toLocaleString()}</td>
+              <td class="numeric">${player.Rank}</td>
+              <td class="numeric">${teamPct}</td>
+              <td class="numeric">${capBonus}</td>
+            </tr>
+          `;
+        });
+        
+        content += '</tbody></table></div>';
+        elements.weekDetailContent.innerHTML = content;
         
         switchView('weekDetail');
       }
@@ -1023,14 +1149,212 @@
 
       // Update player stats with filter
       function updatePlayerStats() {
-        // Placeholder for player stats functionality
-        elements.playerStatsTableBody.innerHTML = `
-          <tr>
-            <td colspan="9" style="text-align: center; padding: 2rem; color: #666;">
-              Player statistics functionality would be implemented here.
-            </td>
-          </tr>
-        `;
+        const seasonType = elements.seasonFilter.value;
+        const minGames = parseInt(elements.minGamesFilter.value) || 1;
+        
+        // Calculate player statistics based on season filter
+        const playerStats = calculatePlayerStats(seasonType);
+        
+        // Store for sorting
+        currentPlayerStats = playerStats;
+        
+        // Filter by minimum games
+        const filteredStats = playerStats.filter(player => player.starts >= minGames);
+        
+        // Sort by current sort column and direction
+        sortPlayerStats(filteredStats);
+        
+        // Populate table
+        populatePlayerStatsTable(filteredStats);
+      }
+
+      // Sort player stats based on current sort column and direction
+      function sortPlayerStats(stats) {
+        stats.sort((a, b) => {
+          let aVal = a[currentSortColumn];
+          let bVal = b[currentSortColumn];
+          
+          // Handle string vs number comparison
+          if (typeof aVal === 'string') {
+            aVal = aVal.toLowerCase();
+            bVal = bVal.toLowerCase();
+          }
+          
+          let comparison = 0;
+          if (aVal < bVal) comparison = -1;
+          else if (aVal > bVal) comparison = 1;
+          
+          return currentSortDirection === 'asc' ? comparison : -comparison;
+        });
+      }
+
+      // Update sort indicators in table headers
+      function updateSortIndicators() {
+        const headers = document.querySelectorAll('th.sortable .sort-indicator');
+        headers.forEach(indicator => {
+          indicator.className = 'sort-indicator';
+        });
+        
+        const currentHeader = document.querySelector(`th[data-column="${currentSortColumn}"] .sort-indicator`);
+        if (currentHeader) {
+          currentHeader.className = `sort-indicator ${currentSortDirection}`;
+        }
+      }
+
+      // Determine performance tier for color coding individual cells
+      function getCellPerformanceTier(value, values, isInverse = false) {
+        // Sort values for percentile calculation
+        const sortedValues = [...values].sort((a, b) => isInverse ? a - b : b - a);
+        const rank = sortedValues.indexOf(value) + 1;
+        const percentile = rank / sortedValues.length;
+        
+        if (percentile <= 0.2) return 'cell-excellent';      // Top 20%
+        else if (percentile <= 0.4) return 'cell-good';      // 21-40%
+        else if (percentile <= 0.6) return 'cell-average';   // 41-60%
+        else if (percentile <= 0.8) return 'cell-below-average'; // 61-80%
+        else return 'cell-poor';                             // Bottom 20%
+      }
+
+      // Populate player stats table with column-based color coding
+      function populatePlayerStatsTable(filteredStats) {
+        elements.playerStatsTableBody.innerHTML = '';
+        
+        if (filteredStats.length === 0) {
+          const row = document.createElement('tr');
+          row.innerHTML = `<td colspan="9" style="text-align: center; padding: 2rem;">No players meet the current filter criteria</td>`;
+          elements.playerStatsTableBody.appendChild(row);
+          updateSortIndicators();
+          return;
+        }
+        
+        // Extract values for each column for percentile calculations
+        const columnValues = {
+          avgRank: filteredStats.map(p => p.avgRank),
+          relMean: filteredStats.map(p => p.relMean),
+          relMedian: filteredStats.map(p => p.relMedian),
+          aagMean: filteredStats.map(p => p.aagMean),
+          aagMeanPct: filteredStats.map(p => p.aagMeanPct),
+          aagMedian: filteredStats.map(p => p.aagMedian),
+          aagMedianPct: filteredStats.map(p => p.aagMedianPct)
+        };
+        
+        filteredStats.forEach(player => {
+          const row = document.createElement('tr');
+          
+          // Get color classes for each stat (avgRank is inverse - lower is better)
+          const avgRankClass = getCellPerformanceTier(player.avgRank, columnValues.avgRank, true);
+          const relMeanClass = getCellPerformanceTier(player.relMean, columnValues.relMean);
+          const relMedianClass = getCellPerformanceTier(player.relMedian, columnValues.relMedian);
+          const aagMeanClass = getCellPerformanceTier(player.aagMean, columnValues.aagMean);
+          const aagMeanPctClass = getCellPerformanceTier(player.aagMeanPct, columnValues.aagMeanPct);
+          const aagMedianClass = getCellPerformanceTier(player.aagMedian, columnValues.aagMedian);
+          const aagMedianPctClass = getCellPerformanceTier(player.aagMedianPct, columnValues.aagMedianPct);
+          
+          row.innerHTML = `
+            <td>${player.name}</td>
+            <td class="numeric">${player.starts}</td>
+            <td class="numeric ${avgRankClass}">${player.avgRank.toFixed(1)}</td>
+            <td class="numeric ${relMeanClass}">${player.relMean.toFixed(3)}</td>
+            <td class="numeric ${relMedianClass}">${player.relMedian.toFixed(3)}</td>
+            <td class="numeric ${aagMeanClass}">${player.aagMean}</td>
+            <td class="numeric ${aagMeanPctClass}">${(player.aagMeanPct * 100).toFixed(1)}%</td>
+            <td class="numeric ${aagMedianClass}">${player.aagMedian}</td>
+            <td class="numeric ${aagMedianPctClass}">${(player.aagMedianPct * 100).toFixed(1)}%</td>
+          `;
+          elements.playerStatsTableBody.appendChild(row);
+        });
+        
+        updateSortIndicators();
+      }
+
+      // Calculate comprehensive player statistics
+      function calculatePlayerStats(seasonType = 'total') {
+        const players = {};
+        
+        // Filter games based on season type
+        let filteredGameStats;
+        let filteredScheduleData;
+        
+        switch (seasonType) {
+          case 'regular':
+            filteredGameStats = gameStatsData.filter(entry => !entry.Week.toString().startsWith('R'));
+            filteredScheduleData = scheduleData.filter(game => !game.Week.toString().startsWith('R'));
+            break;
+          case 'postseason':
+            filteredGameStats = gameStatsData.filter(entry => entry.Week.toString().startsWith('R'));
+            filteredScheduleData = scheduleData.filter(game => game.Week.toString().startsWith('R'));
+            break;
+          default: // 'total'
+            filteredGameStats = gameStatsData;
+            filteredScheduleData = scheduleData;
+        }
+        
+        // Get unique players from filtered data
+        filteredGameStats.forEach(entry => {
+          if (!players[entry.User]) {
+            players[entry.User] = {
+              name: entry.User,
+              games: [],
+              starts: 0,
+              totalRank: 0,
+              totalScore: 0,
+              totalAvgScore: 0,
+              totalMedianScore: 0,
+              aagMean: 0,
+              aagMedian: 0
+            };
+          }
+          
+          const score = parseInt(entry.Score.replace(/,/g, ''));
+          players[entry.User].games.push({
+            week: entry.Week,
+            score: score,
+            rank: entry.Rank
+          });
+          players[entry.User].starts++;
+          players[entry.User].totalRank += entry.Rank;
+          players[entry.User].totalScore += score;
+        });
+        
+        // Calculate statistics for each player
+        return Object.values(players).map(player => {
+          // Calculate averages
+          const avgRank = player.starts > 0 ? player.totalRank / player.starts : 0;
+          
+          // Calculate REL scores and AAG
+          player.games.forEach(game => {
+            const scheduleInfo = filteredScheduleData.find(s => s.Week === game.week);
+            if (scheduleInfo) {
+              player.totalAvgScore += scheduleInfo['Average Starter'];
+              player.totalMedianScore += scheduleInfo['Median Starter'];
+              
+              // Count above average games
+              if (game.score > scheduleInfo['Average Starter']) {
+                player.aagMean++;
+              }
+              if (game.score > scheduleInfo['Median Starter']) {
+                player.aagMedian++;
+              }
+            }
+          });
+          
+          const relMean = player.totalAvgScore > 0 ? player.totalScore / player.totalAvgScore : 0;
+          const relMedian = player.totalMedianScore > 0 ? player.totalScore / player.totalMedianScore : 0;
+          const aagMeanPct = player.starts > 0 ? player.aagMean / player.starts : 0;
+          const aagMedianPct = player.starts > 0 ? player.aagMedian / player.starts : 0;
+          
+          return {
+            name: player.name,
+            starts: player.starts,
+            avgRank: avgRank,
+            relMean: relMean,
+            relMedian: relMedian,
+            aagMean: player.aagMean,
+            aagMeanPct: aagMeanPct,
+            aagMedian: player.aagMedian,
+            aagMedianPct: aagMedianPct
+          };
+        });
       }
 
       // Setup table sorting functionality
