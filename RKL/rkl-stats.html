@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RKL Stats Database - caustic.info</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
+    <style>
+      /* Reset and General Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        line-height: 1.6;
+      }
+      
+      h1, h2, h3 {
+        color: #333;
+      }
+
+      /* Main site header style - matching your other pages */
+      header {
+        background-color: #333;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+      
+      header h1 {
+        color: white !important;
+        font-size: 1.5rem;
+        margin: 0;
+      }
+      
+      /* Navigation styling */
+      nav ul {
+        display: flex;
+        justify-content: center;
+        list-style: none;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+      }
+      
+      nav ul li {
+        margin: 0.5rem 1rem;
+      }
+      
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 1.1rem;
+        transition: color 0.3s ease;
+        white-space: nowrap;
+      }
+      
+      nav ul li a:hover {
+        color: #ccc;
+      }
+      
+      /* Mobile navigation styles */
+      @media (max-width: 600px) {
+        nav {
+          width: 100%;
+          padding: 0;
+        }
+        
+        nav ul {
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0;
+          width: 100%;
+          margin-left: 0;
+          margin-right: 0;
+        }
+        
+        nav ul li {
+          margin: 0.2rem 0;
+          width: 100%;
+          text-align: center;
+        }
+        
+        nav ul li a {
+          display: block;
+          padding: 0.5rem 0;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          width: 100%;
+          margin: 0 auto;
+        }
+        
+        nav ul li:last-child a {
+          border-bottom: none;
+        }
+      }
+
+      /* Main content area */
+      main {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      
+      /* Info Section */
+      .info {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      
+      .info h2 {
+        margin-bottom: 1rem;
+        font-size: 2rem;
+      }
+      
+      .info p {
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+      }
+
+      /* Stats Categories Container */
+      .stats-categories {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      /* Category Cards */
+      .category-card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .category-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .category-card h3 {
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+        color: #333;
+        border-bottom: 2px solid #333;
+        padding-bottom: 0.5rem;
+      }
+
+      .category-links {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .season-link {
+        display: block;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        color: #333;
+        text-decoration: none;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+        font-weight: 500;
+      }
+
+      .season-link:hover {
+        background-color: #333;
+        color: #fff;
+        border-color: #333;
+      }
+
+      .season-link.available {
+        background-color: #e8f5e8;
+        border-color: #28a745;
+      }
+
+      .season-link.available:hover {
+        background-color: #28a745;
+        color: #fff;
+      }
+
+      .season-link.coming-soon {
+        background-color: #fff3cd;
+        border-color: #ffc107;
+        color: #856404;
+        cursor: not-allowed;
+      }
+
+      .season-link.coming-soon:hover {
+        background-color: #fff3cd;
+        color: #856404;
+        transform: none;
+      }
+
+      /* Mobile Responsive */
+      @media (max-width: 768px) {
+        .stats-categories {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+        
+        .category-card {
+          padding: 1.5rem;
+        }
+        
+        .category-card h3 {
+          font-size: 1.3rem;
+        }
+        
+        .season-link {
+          font-size: 1rem;
+          padding: 0.8rem;
+        }
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        margin-top: 3rem;
+        padding: 1rem;
+        background-color: #333;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>RKL Stats Database</h1>
+      <nav>
+        <ul>
+          <li><a href="../index.html">Home</a></li>
+          <li><a href="../PSPs/mlb-psp.html">MLB PSP Database</a></li>
+          <li><a href="../PSPs-WNBA/wnba-psp.html">WNBA PSP Database</a></li>
+          <li><a href="../karma-calculator.html">Karma Betting Calculator</a></li>
+        </ul>
+      </nav>
+    </header>
+    
+    <main>
+      <section class="info">
+        <h2>Real Karma League Statistics</h2>
+        <p>Comprehensive analysis and performance tracking for all RKL seasons</p>
+        <p>Select a category below to explore the data</p>
+      </section>
+      
+      <div class="stats-categories">
+        <!-- Leaguewide Stats Column -->
+        <div class="category-card">
+          <h3>Leaguewide Stats by Season</h3>
+          <div class="category-links">
+            <span class="season-link coming-soon">Season 7 (Coming Soon)</span>
+            <span class="season-link coming-soon">Season 6 (Coming Soon)</span>
+          </div>
+        </div>
+        
+        <!-- Jammers Stats Column -->
+        <div class="category-card">
+          <h3>Jammers Stats by Season</h3>
+          <div class="category-links">
+            <span class="season-link coming-soon">Season 7 (Coming Soon)</span>
+            <span class="season-link coming-soon">Season 6 (Coming Soon)</span>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <footer>
+      <p>&copy; caustic.info</p>
+    </footer>
+  </body>
+</html>
