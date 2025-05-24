@@ -306,24 +306,24 @@
         opacity: 1;
       }
 
-      /* Color coding for player stats */
-      .stats-table tbody tr.excellent {
+      /* Color coding for individual cells in player stats */
+      .stats-table .cell-excellent {
         background-color: #e8f5e8;
       }
 
-      .stats-table tbody tr.good {
+      .stats-table .cell-good {
         background-color: #f0f8f0;
       }
 
-      .stats-table tbody tr.average {
+      .stats-table .cell-average {
         background-color: #fff;
       }
 
-      .stats-table tbody tr.below-average {
+      .stats-table .cell-below-average {
         background-color: #fff3cd;
       }
 
-      .stats-table tbody tr.poor {
+      .stats-table .cell-poor {
         background-color: #f8d7da;
       }
 
@@ -459,7 +459,7 @@
             <option value="postseason">Postseason Only</option>
           </select>
           <label for="minGamesFilter">Minimum Games Played:</label>
-          <input type="number" id="minGamesFilter" min="0" max="21" value="1">
+          <input type="number" id="minGamesFilter" min="0" max="21" value="3">
           <button id="applyFilter" class="view-button">Apply Filter</button>
         </div>
         <div style="overflow-x: auto;">
@@ -475,7 +475,6 @@
                 <th class="numeric sortable" data-column="aagMeanPct">AAG% Mean <span class="sort-indicator"></span></th>
                 <th class="numeric sortable" data-column="aagMedian">AAG Median <span class="sort-indicator"></span></th>
                 <th class="numeric sortable" data-column="aagMedianPct">AAG% Median <span class="sort-indicator"></span></th>
-                <th class="numeric sortable" data-column="war">WAR <span class="sort-indicator"></span></th>
               </tr>
             </thead>
             <tbody id="playerStatsTableBody">
@@ -500,13 +499,19 @@
     </footer>
 
     <script>
+      // Configuration constants - easy to modify
+      const CONFIG = {
+        DEFAULT_MIN_GAMES: 3,
+        DEFAULT_SORT_COLUMN: 'avgRank',
+        DEFAULT_SORT_DIRECTION: 'asc'
+      };
       // Global variables
       let scheduleData = [];
       let gameStatsData = [];
       let currentView = 'schedule';
       let currentPlayerStats = [];
-      let currentSortColumn = 'war';
-      let currentSortDirection = 'desc';
+      let currentSortColumn = CONFIG.DEFAULT_SORT_COLUMN;
+      let currentSortDirection = CONFIG.DEFAULT_SORT_DIRECTION;
 
       // DOM elements
       const elements = {
@@ -780,7 +785,7 @@
       // Update player stats with filter
       function updatePlayerStats() {
         const seasonType = elements.seasonFilter.value;
-        const minGames = parseInt(elements.minGamesFilter.value) || 1;
+        const minGames = parseInt(elements.minGamesFilter.value) || CONFIG.DEFAULT_MIN_GAMES;
         
         // Calculate player statistics based on season filter
         const playerStats = calculatePlayerStats(seasonType);
@@ -855,49 +860,65 @@
         }
       }
 
-      // Determine performance tier for color coding
-      function getPerformanceTier(player, allPlayers) {
-        // Use WAR as primary metric for tier determination
-        const wars = allPlayers.map(p => p.war).sort((a, b) => b - a);
-        const playerWar = player.war;
+      // Determine performance tier for color coding individual cells
+      function getCellPerformanceTier(value, values, isInverse = false) {
+        // Sort values for percentile calculation
+        const sortedValues = [...values].sort((a, b) => isInverse ? a - b : b - a);
+        const rank = sortedValues.indexOf(value) + 1;
+        const percentile = rank / sortedValues.length;
         
-        const percentile = (wars.indexOf(playerWar) + 1) / wars.length;
-        
-        if (percentile <= 0.2) return 'excellent';      // Top 20%
-        else if (percentile <= 0.4) return 'good';      // 21-40%
-        else if (percentile <= 0.6) return 'average';   // 41-60%
-        else if (percentile <= 0.8) return 'below-average'; // 61-80%
-        else return 'poor';                             // Bottom 20%
+        if (percentile <= 0.2) return 'cell-excellent';      // Top 20%
+        else if (percentile <= 0.4) return 'cell-good';      // 21-40%
+        else if (percentile <= 0.6) return 'cell-average';   // 41-60%
+        else if (percentile <= 0.8) return 'cell-below-average'; // 61-80%
+        else return 'cell-poor';                             // Bottom 20%
       }
 
-      // Populate player stats table with color coding
+      // Populate player stats table with column-based color coding
       function populatePlayerStatsTable(filteredStats) {
         elements.playerStatsTableBody.innerHTML = '';
         
         if (filteredStats.length === 0) {
           const row = document.createElement('tr');
-          row.innerHTML = `<td colspan="10" style="text-align: center; padding: 2rem;">No players meet the current filter criteria</td>`;
+          row.innerHTML = `<td colspan="9" style="text-align: center; padding: 2rem;">No players meet the current filter criteria</td>`;
           elements.playerStatsTableBody.appendChild(row);
           updateSortIndicators();
           return;
         }
         
+        // Extract values for each column for percentile calculations
+        const columnValues = {
+          avgRank: filteredStats.map(p => p.avgRank),
+          relMean: filteredStats.map(p => p.relMean),
+          relMedian: filteredStats.map(p => p.relMedian),
+          aagMean: filteredStats.map(p => p.aagMean),
+          aagMeanPct: filteredStats.map(p => p.aagMeanPct),
+          aagMedian: filteredStats.map(p => p.aagMedian),
+          aagMedianPct: filteredStats.map(p => p.aagMedianPct)
+        };
+        
         filteredStats.forEach(player => {
           const row = document.createElement('tr');
-          const tier = getPerformanceTier(player, filteredStats);
-          row.className = tier;
+          
+          // Get color classes for each stat (avgRank is inverse - lower is better)
+          const avgRankClass = getCellPerformanceTier(player.avgRank, columnValues.avgRank, true);
+          const relMeanClass = getCellPerformanceTier(player.relMean, columnValues.relMean);
+          const relMedianClass = getCellPerformanceTier(player.relMedian, columnValues.relMedian);
+          const aagMeanClass = getCellPerformanceTier(player.aagMean, columnValues.aagMean);
+          const aagMeanPctClass = getCellPerformanceTier(player.aagMeanPct, columnValues.aagMeanPct);
+          const aagMedianClass = getCellPerformanceTier(player.aagMedian, columnValues.aagMedian);
+          const aagMedianPctClass = getCellPerformanceTier(player.aagMedianPct, columnValues.aagMedianPct);
           
           row.innerHTML = `
             <td>${player.name}</td>
             <td class="numeric">${player.starts}</td>
-            <td class="numeric">${player.avgRank.toFixed(1)}</td>
-            <td class="numeric">${player.relMean.toFixed(3)}</td>
-            <td class="numeric">${player.relMedian.toFixed(3)}</td>
-            <td class="numeric">${player.aagMean}</td>
-            <td class="numeric">${(player.aagMeanPct * 100).toFixed(1)}%</td>
-            <td class="numeric">${player.aagMedian}</td>
-            <td class="numeric">${(player.aagMedianPct * 100).toFixed(1)}%</td>
-            <td class="numeric">${player.war.toFixed(2)}</td>
+            <td class="numeric ${avgRankClass}">${player.avgRank.toFixed(1)}</td>
+            <td class="numeric ${relMeanClass}">${player.relMean.toFixed(3)}</td>
+            <td class="numeric ${relMedianClass}">${player.relMedian.toFixed(3)}</td>
+            <td class="numeric ${aagMeanClass}">${player.aagMean}</td>
+            <td class="numeric ${aagMeanPctClass}">${(player.aagMeanPct * 100).toFixed(1)}%</td>
+            <td class="numeric ${aagMedianClass}">${player.aagMedian}</td>
+            <td class="numeric ${aagMedianPctClass}">${(player.aagMedianPct * 100).toFixed(1)}%</td>
           `;
           elements.playerStatsTableBody.appendChild(row);
         });
@@ -981,15 +1002,6 @@
           const aagMeanPct = player.starts > 0 ? player.aagMean / player.starts : 0;
           const aagMedianPct = player.starts > 0 ? player.aagMedian / player.starts : 0;
           
-          // Calculate WAR (Wins Above Replacement) - using a more realistic formula
-          // Replacement level set at 250th place, scaled appropriately for game context
-          const replacementRank = 250;
-          const war = player.games.reduce((sum, game) => {
-            // Each game contribution: positive for ranks better than replacement, scaled down
-            const contribution = Math.max(0, (replacementRank - game.rank) / 1000);
-            return sum + contribution;
-          }, 0);
-          
           return {
             name: player.name,
             starts: player.starts,
@@ -999,8 +1011,7 @@
             aagMean: player.aagMean,
             aagMeanPct: aagMeanPct,
             aagMedian: player.aagMedian,
-            aagMedianPct: aagMedianPct,
-            war: war
+            aagMedianPct: aagMedianPct
           };
         });
       }
