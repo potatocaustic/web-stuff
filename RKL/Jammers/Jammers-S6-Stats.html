@@ -507,7 +507,7 @@
         }
       }
 
-      // Parse CSV to JSON
+      // Parse CSV to JSON - FIXED VERSION
       function parseCSV(csvText) {
         const lines = csvText.split('\n');
         const headers = lines[0].split(',').map(header => header.trim().replace(/"/g, ''));
@@ -523,8 +523,12 @@
             if (index < values.length) {
               let value = values[index].trim().replace(/"/g, '');
               
-              // Convert numeric values where appropriate
-              if (['Week', 'Rank', 'Median Starter', 'Average Starter'].includes(header)) {
+              // FIXED: Handle Week field specially - keep as string if it contains letters (like R1-G1)
+              if (header === 'Week') {
+                entry[header] = value === '' ? null : value;
+              }
+              // Convert other numeric values where appropriate
+              else if (['Rank', 'Median Starter', 'Average Starter'].includes(header)) {
                 entry[header] = value === '' ? null : parseFloat(value);
               } else if (header === 'Score' || header === 'Opp. Score' || header === 'Margin') {
                 // Remove commas from score values
@@ -599,6 +603,9 @@
         // Separate regular season and postseason games
         const regularSeasonGames = scheduleData.filter(game => !game.Week.toString().startsWith('R'));
         const postseasonGames = scheduleData.filter(game => game.Week.toString().startsWith('R'));
+        
+        console.log('Regular season games found:', regularSeasonGames.length);
+        console.log('Postseason games found:', postseasonGames.length);
         
         // Populate regular season
         regularSeasonGames.forEach(game => {
