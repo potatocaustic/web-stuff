@@ -270,6 +270,10 @@
         border-left: 6px solid #6c757d;
       }
 
+      .game-card.scheduled {
+        border-left: 6px solid #6c757d;
+      }
+
       .game-card.win::before {
         content: '';
         position: absolute;
@@ -291,6 +295,16 @@
       }
 
       .game-card.in-progress::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #6c757d, #adb5bd);
+      }
+
+      .game-card.scheduled::before {
         content: '';
         position: absolute;
         top: 0;
@@ -326,33 +340,39 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 1rem;
+        padding: 0 0.5rem;
       }
 
       .team {
         display: flex;
+        flex-direction: column;
         align-items: center;
         gap: 0.5rem;
+        flex: 1;
       }
 
       .team-logo {
-        width: 32px;
-        height: 32px;
-        border-radius: 4px;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
         object-fit: cover;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        border: 2px solid #fff;
       }
 
       .team-info {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 0.3rem;
+        gap: 0.5rem;
+        min-width: 80px;
       }
 
       .team-name {
         font-weight: bold;
         font-size: 1rem;
         text-align: center;
+        line-height: 1.2;
       }
 
       .team-name.jammers {
@@ -366,11 +386,12 @@
       .score {
         font-size: 1.3rem;
         font-weight: bold;
-        padding: 0.3rem 0.6rem;
+        padding: 0.4rem 0.8rem;
         border-radius: 6px;
         background: #f8f9fa;
         min-width: 80px;
         text-align: center;
+        margin-top: 0.25rem;
       }
 
       .score.win {
@@ -386,6 +407,12 @@
       .score.in-progress {
         background: #e2e3e5;
         color: #383d41;
+      }
+
+      .score.scheduled {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
       }
 
       .game-stats {
@@ -410,8 +437,9 @@
       }
 
       .game-details {
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 1rem;
         align-items: center;
         padding-top: 1rem;
         border-top: 1px solid #e9ecef;
@@ -441,6 +469,24 @@
         color: white;
       }
 
+      .result-badge.scheduled {
+        background: #6c757d;
+        color: white;
+      }
+
+      .margin-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+      }
+
+      .margin-label {
+        font-size: 0.8rem;
+        color: #666;
+        font-weight: 500;
+      }
+
       .margin {
         font-weight: bold;
         font-size: 1.1rem;
@@ -458,6 +504,10 @@
         color: #6c757d;
       }
 
+      .margin.scheduled {
+        color: #6c757d;
+      }
+
       .margin::before {
         content: '';
         margin-right: 0.3rem;
@@ -472,6 +522,10 @@
       }
 
       .margin.in-progress::before {
+        content: '○';
+      }
+
+      .margin.scheduled::before {
         content: '○';
       }
 
@@ -665,6 +719,7 @@
         .game-matchup {
           flex-direction: column;
           gap: 1rem;
+          padding: 0;
         }
 
         .team {
@@ -672,10 +727,35 @@
           justify-content: space-between;
         }
 
+        .team-logo {
+          width: 40px;
+          height: 40px;
+        }
+        
+        .team-info {
+          min-width: 70px;
+        }
+        
+        .team-name {
+          font-size: 0.9rem;
+        }
+        
+        .score {
+          font-size: 1.1rem;
+          padding: 0.3rem 0.6rem;
+          min-width: 70px;
+        }
+
         .game-details {
-          flex-direction: column;
+          grid-template-columns: 1fr;
           gap: 0.8rem;
-          align-items: flex-start;
+          text-align: center;
+        }
+
+        .margin-container {
+          flex-direction: row;
+          justify-content: center;
+          gap: 0.5rem;
         }
 
         .game-stats {
@@ -1120,85 +1200,100 @@
         });
       }
 
-        // Create a game card
-        function createGameCard(game) {
-          const card = document.createElement('div');
-          
-          // Determine game status
-          let gameStatus, isWin = false, margin = 0;
-          if (game.Score === null || game.Score === '0') {
-            gameStatus = 'in-progress';
-          } else {
-            gameStatus = game.Result.toLowerCase();
-            isWin = game.Result === 'Win';
-            margin = parseInt(game.Margin) || 0;
-          }
-          
-          card.className = `game-card ${gameStatus}`;
-          
-          // Only make completed games clickable
-          if (gameStatus !== 'in-progress') {
-            card.addEventListener('click', () => showWeekDetail(game.Week));
-          }
-          
-          // Format week display
-          let weekDisplay;
-          if (game.Week.toString().startsWith('R')) {
-            const gameNum = game.Week.replace('R1-G', '');
-            weekDisplay = `R1 Game ${gameNum}`;
-          } else {
-            weekDisplay = `Week ${game.Week}`;
-          }
-          
-          // Format scores for display
-          let jammersScore, opponentScore, marginDisplay;
-          if (gameStatus === 'in-progress') {
-            jammersScore = 'TBD';
-            opponentScore = 'TBD';
-            marginDisplay = 'TBD';
-          } else {
-            jammersScore = `${(parseInt(game.Score) / 1000).toFixed(1)}K`;
-            opponentScore = `${(parseInt(game['Opp. Score']) / 1000).toFixed(1)}K`;
-            marginDisplay = `${margin > 0 ? '+' : ''}${(margin / 1000).toFixed(1)}K`;
-          }
-          
-          card.innerHTML = `
-            <div class="game-header">
-              <div class="week-label">${weekDisplay}</div>
-              <div class="game-date">${game.Date || 'TBD'}</div>
-            </div>
-            
-            <div class="game-matchup">
-              <div class="team">
-                <div class="team-info">
-                  <img src="../teamicons/Jammers.webp" alt="Jammers" class="team-logo" onerror="this.style.display='none'">
-                  <div class="team-name jammers">Jammers</div>
-                </div>
-                <div class="score ${gameStatus === 'in-progress' ? 'in-progress' : (isWin ? 'win' : 'loss')}">${jammersScore}</div>
-              </div>
-              <div class="vs-divider">vs</div>
-              <div class="team">
-                <div class="team-info">
-                  <img src="../teamicons/${game.Opponent}.webp" alt="${game.Opponent}" class="team-logo" onerror="this.style.display='none'">
-                  <div class="team-name opponent">${game.Opponent}</div>
-                </div>
-                <div class="score ${gameStatus === 'in-progress' ? 'in-progress' : (!isWin ? 'win' : 'loss')}">${opponentScore}</div>
-              </div>
-            </div>
-            
-            <div class="game-details">
-              <div class="result-badge ${gameStatus}">${gameStatus === 'in-progress' ? 'In Progress' : game.Result}</div>
-              <div class="game-stats">
-                <div class="record-stat">📊 ${game.CumulativeRecord || '0-0'}</div>
-                ${game.AvgRank ? `<div class="rank-stat">🎯 Avg Player Rank ${game.AvgRank}</div>` : ''}
-              </div>
-              <div class="margin ${gameStatus === 'in-progress' ? 'in-progress' : (margin > 0 ? 'positive' : 'negative')}">${marginDisplay}</div>
-            </div>
-          `;
-          
-          return card;
+      // Create a game card
+      function createGameCard(game) {
+        const card = document.createElement('div');
+        
+        // Determine game status
+        let gameStatus, isWin = false, margin = 0;
+        const today = new Date();
+        const gameDate = new Date(game.Date || '1900-01-01');
+        
+        if (game.Score === null || game.Score === '0') {
+          // Check if game is today
+          const isToday = gameDate.toDateString() === today.toDateString();
+          gameStatus = isToday ? 'in-progress' : 'scheduled';
+        } else {
+          gameStatus = game.Result.toLowerCase();
+          isWin = game.Result === 'Win';
+          margin = parseInt(game.Margin) || 0;
         }
-      
+        
+        card.className = `game-card ${gameStatus}`;
+        
+        // Only make completed games clickable
+        if (gameStatus !== 'in-progress' && gameStatus !== 'scheduled') {
+          card.addEventListener('click', () => showWeekDetail(game.Week));
+        }
+        
+        // Format week display
+        let weekDisplay;
+        if (game.Week.toString().startsWith('R')) {
+          const gameNum = game.Week.replace('R1-G', '');
+          weekDisplay = `R1 Game ${gameNum}`;
+        } else {
+          weekDisplay = `Week ${game.Week}`;
+        }
+        
+        // Format scores for display
+        let jammersScore, opponentScore, marginDisplay, resultText;
+        if (gameStatus === 'in-progress') {
+          jammersScore = 'TBD';
+          opponentScore = 'TBD';
+          marginDisplay = 'TBD';
+          resultText = 'In Progress';
+        } else if (gameStatus === 'scheduled') {
+          jammersScore = 'TBD';
+          opponentScore = 'TBD';
+          marginDisplay = 'TBD';
+          resultText = game.Date || 'TBD';
+        } else {
+          jammersScore = `${(parseInt(game.Score) / 1000).toFixed(1)}K`;
+          opponentScore = `${(parseInt(game['Opp. Score']) / 1000).toFixed(1)}K`;
+          marginDisplay = `${margin > 0 ? '+' : ''}${(margin / 1000).toFixed(1)}K`;
+          resultText = game.Result;
+        }
+        
+        card.innerHTML = `
+          <div class="game-header">
+            <div class="week-label">${weekDisplay}</div>
+            <div class="game-date">${game.Date || 'TBD'}</div>
+          </div>
+          
+          <div class="game-matchup">
+            <div class="team">
+              <div class="team-info">
+                <img src="../teamicons/Jammers.webp" alt="Jammers" class="team-logo" onerror="this.style.display='none'">
+                <div class="team-name jammers">Jammers</div>
+              </div>
+              <div class="score ${gameStatus === 'in-progress' || gameStatus === 'scheduled' ? gameStatus : (isWin ? 'win' : 'loss')}">${jammersScore}</div>
+            </div>
+            <div class="vs-divider">vs</div>
+            <div class="team">
+              <div class="team-info">
+                <img src="../teamicons/${game.Opponent}.webp" alt="${game.Opponent}" class="team-logo" onerror="this.style.display='none'">
+                <div class="team-name opponent">${game.Opponent}</div>
+              </div>
+              <div class="score ${gameStatus === 'in-progress' || gameStatus === 'scheduled' ? gameStatus : (!isWin ? 'win' : 'loss')}">${opponentScore}</div>
+            </div>
+          </div>
+          
+          <div class="game-details">
+            <div class="result-badge ${gameStatus}">${resultText}</div>
+            <div class="game-stats">
+              <div class="record-stat">📊 Record: ${game.CumulativeRecord || '0-0'}</div>
+              ${game.AvgRank ? `<div class="rank-stat">🎯 Avg Rank: ${game.AvgRank}</div>` : ''}
+            </div>
+            <div class="margin-container">
+              <div class="margin-label">Margin:</div>
+              <div class="margin ${gameStatus === 'in-progress' || gameStatus === 'scheduled' ? gameStatus : (margin > 0 ? 'positive' : 'negative')}">${marginDisplay}</div>
+            </div>
+          </div>
+        `;
+        
+        return card;
+      }
+
       // Show week detail
       function showWeekDetail(week) {
         const weekData = gameStatsData.filter(entry => entry.Week === week && entry.Score !== null);
