@@ -1120,85 +1120,85 @@
         });
       }
 
-      // Create a game card
-      function createGameCard(game) {
-        const card = document.createElement('div');
-        
-        // Determine game status
-        let gameStatus, isWin = false, margin = 0;
-        if (game.Score === null || game.Score === '0') {
-          gameStatus = 'in-progress';
-        } else {
-          gameStatus = game.Result.toLowerCase();
-          isWin = game.Result === 'Win';
-          margin = parseInt(game.Margin) || 0;
-        }
-        
-        card.className = `game-card ${gameStatus}`;
-        
-        // Only make completed games clickable
-        if (gameStatus !== 'in-progress') {
-          card.addEventListener('click', () => showWeekDetail(game.Week));
-        }
-        
-        // Format week display
-        let weekDisplay;
-        if (game.Week.toString().startsWith('R')) {
-          const gameNum = game.Week.replace('R1-G', '');
-          weekDisplay = `R1 Game ${gameNum}`;
-        } else {
-          weekDisplay = `Week ${game.Week}`;
-        }
-        
-        // Format scores for display
-        let jammersScore, opponentScore, marginDisplay;
-        if (gameStatus === 'in-progress') {
-          jammersScore = 'TBD';
-          opponentScore = 'TBD';
-          marginDisplay = 'TBD';
-        } else {
-          jammersScore = `${(parseInt(game.Score) / 1000).toFixed(1)}K`;
-          opponentScore = `${(parseInt(game['Opp. Score']) / 1000).toFixed(1)}K`;
-          marginDisplay = `${margin > 0 ? '+' : ''}${(margin / 1000).toFixed(1)}K`;
-        }
-        
-        card.innerHTML = `
-          <div class="game-header">
-            <div class="week-label">${weekDisplay}</div>
-            <div class="game-date">${game.Date || 'TBD'}</div>
-          </div>
+        // Create a game card
+        function createGameCard(game) {
+          const card = document.createElement('div');
           
-          <div class="game-matchup">
-            <div class="team">
-              <div class="team-info">
-                <img src="../RKL/teamicons/Jammers.webp" alt="Jammers" class="team-logo" onerror="this.style.display='none'">
-                <div class="team-name jammers">Jammers</div>
-              </div>
-              <div class="score ${gameStatus === 'in-progress' ? 'in-progress' : (isWin ? 'win' : 'loss')}">${jammersScore}</div>
-            </div>
-            <div class="vs-divider">vs</div>
-            <div class="team">
-              <div class="team-info">
-                <img src="../RKL/teamicons/${game.Opponent}.webp" alt="${game.Opponent}" class="team-logo" onerror="this.style.display='none'">
-                <div class="team-name opponent">${game.Opponent}</div>
-              </div>
-              <div class="score ${gameStatus === 'in-progress' ? 'in-progress' : (!isWin ? 'win' : 'loss')}">${opponentScore}</div>
-            </div>
-          </div>
+          // Determine game status
+          let gameStatus, isWin = false, margin = 0;
+          if (game.Score === null || game.Score === '0') {
+            gameStatus = 'in-progress';
+          } else {
+            gameStatus = game.Result.toLowerCase();
+            isWin = game.Result === 'Win';
+            margin = parseInt(game.Margin) || 0;
+          }
           
-          <div class="game-details">
-            <div class="result-badge ${gameStatus}">${gameStatus === 'in-progress' ? 'In Progress' : game.Result}</div>
-            <div class="game-stats">
-              <div class="record-stat">📊 ${game.CumulativeRecord || '0-0'}</div>
-              ${game.AvgRank ? `<div class="rank-stat">🎯 Avg Player Rank ${game.AvgRank}</div>` : ''}
+          card.className = `game-card ${gameStatus}`;
+          
+          // Only make completed games clickable
+          if (gameStatus !== 'in-progress') {
+            card.addEventListener('click', () => showWeekDetail(game.Week));
+          }
+          
+          // Format week display
+          let weekDisplay;
+          if (game.Week.toString().startsWith('R')) {
+            const gameNum = game.Week.replace('R1-G', '');
+            weekDisplay = `R1 Game ${gameNum}`;
+          } else {
+            weekDisplay = `Week ${game.Week}`;
+          }
+          
+          // Format scores for display
+          let jammersScore, opponentScore, marginDisplay;
+          if (gameStatus === 'in-progress') {
+            jammersScore = 'TBD';
+            opponentScore = 'TBD';
+            marginDisplay = 'TBD';
+          } else {
+            jammersScore = `${(parseInt(game.Score) / 1000).toFixed(1)}K`;
+            opponentScore = `${(parseInt(game['Opp. Score']) / 1000).toFixed(1)}K`;
+            marginDisplay = `${margin > 0 ? '+' : ''}${(margin / 1000).toFixed(1)}K`;
+          }
+          
+          card.innerHTML = `
+            <div class="game-header">
+              <div class="week-label">${weekDisplay}</div>
+              <div class="game-date">${game.Date || 'TBD'}</div>
             </div>
-            <div class="margin ${gameStatus === 'in-progress' ? 'in-progress' : (margin > 0 ? 'positive' : 'negative')}">${marginDisplay}</div>
-          </div>
-        `;
-        
-        return card;
-      }
-
+            
+            <div class="game-matchup">
+              <div class="team">
+                <div class="team-info">
+                  <img src="../teamicons/Jammers.webp" alt="Jammers" class="team-logo" onerror="this.style.display='none'">
+                  <div class="team-name jammers">Jammers</div>
+                </div>
+                <div class="score ${gameStatus === 'in-progress' ? 'in-progress' : (isWin ? 'win' : 'loss')}">${jammersScore}</div>
+              </div>
+              <div class="vs-divider">vs</div>
+              <div class="team">
+                <div class="team-info">
+                  <img src="../teamicons/${game.Opponent}.webp" alt="${game.Opponent}" class="team-logo" onerror="this.style.display='none'">
+                  <div class="team-name opponent">${game.Opponent}</div>
+                </div>
+                <div class="score ${gameStatus === 'in-progress' ? 'in-progress' : (!isWin ? 'win' : 'loss')}">${opponentScore}</div>
+              </div>
+            </div>
+            
+            <div class="game-details">
+              <div class="result-badge ${gameStatus}">${gameStatus === 'in-progress' ? 'In Progress' : game.Result}</div>
+              <div class="game-stats">
+                <div class="record-stat">📊 ${game.CumulativeRecord || '0-0'}</div>
+                ${game.AvgRank ? `<div class="rank-stat">🎯 Avg Player Rank ${game.AvgRank}</div>` : ''}
+              </div>
+              <div class="margin ${gameStatus === 'in-progress' ? 'in-progress' : (margin > 0 ? 'positive' : 'negative')}">${marginDisplay}</div>
+            </div>
+          `;
+          
+          return card;
+        }
+      
       // Show week detail
       function showWeekDetail(week) {
         const weekData = gameStatsData.filter(entry => entry.Week === week && entry.Score !== null);
