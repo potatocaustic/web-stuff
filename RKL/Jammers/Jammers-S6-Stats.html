@@ -304,17 +304,39 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 1rem;
+        padding: 0 0.5rem;
       }
 
       .team {
         display: flex;
+        flex-direction: column;
         align-items: center;
         gap: 0.5rem;
+        flex: 1;
+      }
+
+      .team-logo {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        border: 2px solid #fff;
+      }
+
+      .team-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        min-width: 80px;
       }
 
       .team-name {
         font-weight: bold;
-        font-size: 1.1rem;
+        font-size: 1rem;
+        text-align: center;
+        line-height: 1.2;
       }
 
       .team-name.jammers {
@@ -328,11 +350,12 @@
       .score {
         font-size: 1.3rem;
         font-weight: bold;
-        padding: 0.3rem 0.6rem;
+        padding: 0.4rem 0.8rem;
         border-radius: 6px;
         background: #f8f9fa;
         min-width: 80px;
         text-align: center;
+        margin-top: 0.25rem;
       }
 
       .score.win {
@@ -367,8 +390,9 @@
       }
 
       .game-details {
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 1rem;
         align-items: center;
         padding-top: 1rem;
         border-top: 1px solid #e9ecef;
@@ -391,6 +415,19 @@
       .result-badge.loss {
         background: #dc3545;
         color: white;
+      }
+
+      .margin-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+      }
+
+      .margin-label {
+        font-size: 0.8rem;
+        color: #666;
+        font-weight: 500;
       }
 
       .margin {
@@ -599,6 +636,7 @@
         .game-matchup {
           flex-direction: column;
           gap: 1rem;
+          padding: 0;
         }
 
         .team {
@@ -606,10 +644,35 @@
           justify-content: space-between;
         }
 
+        .team-logo {
+          width: 40px;
+          height: 40px;
+        }
+        
+        .team-info {
+          min-width: 70px;
+        }
+        
+        .team-name {
+          font-size: 0.9rem;
+        }
+        
+        .score {
+          font-size: 1.1rem;
+          padding: 0.3rem 0.6rem;
+          min-width: 70px;
+        }
+
         .game-details {
-          flex-direction: column;
+          grid-template-columns: 1fr;
           gap: 0.8rem;
-          align-items: flex-start;
+          text-align: center;
+        }
+
+        .margin-container {
+          flex-direction: row;
+          justify-content: center;
+          gap: 0.5rem;
         }
 
         .game-stats {
@@ -1017,7 +1080,7 @@
         });
       }
 
-      // Create a game card
+      // Create a game card with updated styling
       function createGameCard(game) {
         const card = document.createElement('div');
         card.className = `game-card ${game.Result.toLowerCase()}`;
@@ -1043,12 +1106,18 @@
           
           <div class="game-matchup">
             <div class="team">
-              <div class="team-name jammers">Jammers</div>
+              <div class="team-info">
+                <img src="../teamicons/Jammers.webp" alt="Jammers" class="team-logo" onerror="this.style.display='none'">
+                <div class="team-name jammers">Jammers</div>
+              </div>
               <div class="score ${isWin ? 'win' : 'loss'}">${(parseInt(game.Score.replace(/,/g, '')) / 1000).toFixed(1)}K</div>
             </div>
             <div class="vs-divider">vs</div>
             <div class="team">
-              <div class="team-name opponent">${game.Opponent}</div>
+              <div class="team-info">
+                <img src="../teamicons/${game.Opponent}.webp" alt="${game.Opponent}" class="team-logo" onerror="this.style.display='none'">
+                <div class="team-name opponent">${game.Opponent}</div>
+              </div>
               <div class="score ${!isWin ? 'win' : 'loss'}">${(parseInt(game['Opp. Score'].replace(/,/g, '')) / 1000).toFixed(1)}K</div>
             </div>
           </div>
@@ -1056,10 +1125,13 @@
           <div class="game-details">
             <div class="result-badge ${isWin ? 'win' : 'loss'}">${game.Result}</div>
             <div class="game-stats">
-              <div class="record-stat">📊 ${game.CumulativeRecord}</div>
-              <div class="rank-stat">🎯 Avg Player Rank ${game.AvgRank}</div>
+              <div class="record-stat">📊 Record: ${game.CumulativeRecord}</div>
+              <div class="rank-stat">🎯 Avg Rank: ${game.AvgRank}</div>
             </div>
-            <div class="margin ${margin > 0 ? 'positive' : 'negative'}">${margin > 0 ? '+' : ''}${(margin / 1000).toFixed(1)}K</div>
+            <div class="margin-container">
+              <div class="margin-label">Margin:</div>
+              <div class="margin ${margin > 0 ? 'positive' : 'negative'}">${margin > 0 ? '+' : ''}${(margin / 1000).toFixed(1)}K</div>
+            </div>
           </div>
         `;
         
@@ -1401,6 +1473,3 @@
           }
         }, 5000);
       }
-    </script>
-  </body>
-</html>
