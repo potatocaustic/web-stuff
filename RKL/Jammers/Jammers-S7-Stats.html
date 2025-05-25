@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jammers Season 7 Stats - caustic.info</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
+    <style>
+      /* Reset and General Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        line-height: 1.6;
+      }
+      
+      h1, h2, h3 {
+        color: #333;
+      }
+
+      /* Main site header style */
+      header {
+        background-color: #333;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+      
+      header h1 {
+        color: white !important;
+        font-size: 1.5rem;
+        margin: 0;
+      }
+      
+      /* Navigation styling */
+      nav ul {
+        display: flex;
+        justify-content: center;
+        list-style: none;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+      }
+      
+      nav ul li {
+        margin: 0.5rem 1rem;
+      }
+      
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 1.1rem;
+        transition: color 0.3s ease;
+        white-space: nowrap;
+      }
+      
+      nav ul li a:hover {
+        color: #ccc;
+      }
+      
+      /* Mobile navigation styles */
+      @media (max-width: 600px) {
+        nav {
+          width: 100%;
+          padding: 0;
+        }
+        
+        nav ul {
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0;
+          width: 100%;
+          margin-left: 0;
+          margin-right: 0;
+        }
+        
+        nav ul li {
+          margin: 0.2rem 0;
+          width: 100%;
+          text-align: center;
+        }
+        
+        nav ul li a {
+          display: block;
+          padding: 0.5rem 0;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          width: 100%;
+          margin: 0 auto;
+        }
+        
+        nav ul li:last-child a {
+          border-bottom: none;
+        }
+      }
+
+      /* Main content area */
+      main {
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+      
+      /* Info Section */
+      .info {
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      
+      .info p {
+        margin-bottom: 0.5rem;
+      }
+
+      /* Loading indicator */
+      .loading {
+        text-align: center;
+        padding: 2rem;
+        font-style: italic;
+        color: #666;
+      }
+
+      /* View Controls */
+      .view-controls {
+        background-color: #fff;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+
+      .view-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .view-button {
+        padding: 0.8rem 1.5rem;
+        background-color: #f4f4f4;
+        color: #333;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .view-button:hover {
+        background-color: #e0e0e0;
+      }
+
+      .view-button.active {
+        background-color: #333;
+        color: #fff;
+        border-color: #333;
+      }
+
+      /* Schedule Section */
+      .schedule-section {
+        background-color: #fff;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
+
+      .schedule-section h2 {
+        margin-bottom: 1rem;
+        text-align: center;
+        color: #333;
+      }
+
+      .schedule-section p {
+        text-align: center;
+        margin-bottom: 2rem;
+        color: #666;
+        font-style: italic;
+      }
+
+      /* Season Record Summary */
+      .season-summary {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .record-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        min-width: 150px;
+      }
+
+      .record-card h3 {
+        color: white;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.9;
+      }
+
+      .record-value {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 0.25rem;
+      }
+
+      .record-subtitle {
+        font-size: 0.9rem;
+        opacity: 0.8;
+      }
+
+      /* Game Cards Container */
+      .games-container {
+        margin-bottom: 3rem;
+      }
+
+      .games-container h3 {
+        margin-bottom: 1.5rem;
+        font-size: 1.4rem;
+        color: #333;
+        border-bottom: 2px solid #333;
+        padding-bottom: 0.5rem;
+      }
+
+      .games-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: 1fr;
+      }
+
+      /* Game Card */
+      .game-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .game-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+      }
+
+      .game-card.win {
+        border-left: 6px solid #28a745;
+      }
+
+      .game-card.loss {
+        border-left: 6px solid #dc3545;
+      }
+
+      .game-card.in-progress {
+        border-left: 6px solid #6c757d;
+      }
+
+      .game-card.win::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #28a745, #20c997);
+      }
+
+      .game-card.loss::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #dc3545, #fd7e14);
+      }
+
+      .game-card.in-progress::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #6c757d, #adb5bd);
+      }
+
+      .game-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .week-label {
+        background: #f8f9fa;
+        color: #495057;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 0.9rem;
+      }
+
+      .game-date {
+        color: #6c757d;
+        font-size: 0.9rem;
+      }
+
+      .game-matchup {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .team {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .team-name {
+        font-weight: bold;
+        font-size: 1.1rem;
+      }
+
+      .team-name.jammers {
+        color: #333;
+      }
+
+      .team-name.opponent {
+        color: #666;
+      }
+
+      .score {
+        font-size: 1.3rem;
+        font-weight: bold;
+        padding: 0.3rem 0.6rem;
+        border-radius: 6px;
+        background: #f8f9fa;
+        min-width: 80px;
+        text-align: center;
+      }
+
+      .score.win {
+        background: #d4edda;
+        color: #155724;
+      }
+
+      .score.loss {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .score.in-progress {
+        background: #e2e3e5;
+        color: #383d41;
+      }
+
+      .game-stats {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: #666;
+      }
+
+      .record-stat, .rank-stat {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-weight: 500;
+      }
+
+      .vs-divider {
+        font-size: 1.1rem;
+        color: #6c757d;
+        font-weight: bold;
+      }
+
+      .game-details {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1rem;
+        border-top: 1px solid #e9ecef;
+      }
+
+      .result-badge {
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .result-badge.win {
+        background: #28a745;
+        color: white;
+      }
+
+      .result-badge.loss {
+        background: #dc3545;
+        color: white;
+      }
+
+      .result-badge.in-progress {
+        background: #6c757d;
+        color: white;
+      }
+
+      .margin {
+        font-weight: bold;
+        font-size: 1.1rem;
+      }
+
+      .margin.positive {
+        color: #28a745;
+      }
+
+      .margin.negative {
+        color: #dc3545;
+      }
+
+      .margin.in-progress {
+        color: #6c757d;
+      }
+
+      .margin::before {
+        content: '';
+        margin-right: 0.3rem;
+      }
+
+      .margin.positive::before {
+        content: '↗';
+      }
+
+      .margin.negative::before {
+        content: '↘';
+      }
+
+      .margin.in-progress::before {
+        content: '○';
+      }
+
+      /* Player Stats Section */
+      .player-stats-section {
+        background-color: #fff;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
+
+      .filter-controls {
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .filter-controls label {
+        font-weight: bold;
+      }
+
+      .filter-controls input {
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        width: 100px;
+      }
+
+      /* Week Detail Section */
+      .week-detail-section {
+        background-color: #fff;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
+
+      .back-button {
+        padding: 0.5rem 1rem;
+        background-color: #6c757d;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-bottom: 1rem;
+      }
+
+      .back-button:hover {
+        background-color: #5a6268;
+      }
+
+      /* Tables */
+      .stats-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+
+      .stats-table th,
+      .stats-table td {
+        padding: 0.6rem;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+      }
+
+      .stats-table th {
+        background-color: #f4f4f4;
+        font-weight: bold;
+        position: sticky;
+        top: 0;
+      }
+
+      .stats-table .sortable {
+        cursor: pointer;
+        user-select: none;
+        position: relative;
+      }
+
+      .stats-table .sortable:hover {
+        background-color: #e9ecef;
+      }
+
+      .sort-indicator {
+        display: inline-block;
+        width: 0;
+        height: 0;
+        margin-left: 5px;
+        vertical-align: middle;
+        opacity: 0.3;
+      }
+
+      .sort-indicator.asc {
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-bottom: 6px solid #333;
+        opacity: 1;
+      }
+
+      .sort-indicator.desc {
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 6px solid #333;
+        opacity: 1;
+      }
+
+      /* Color coding for individual cells in player stats */
+      .stats-table .cell-excellent {
+        background-color: #e8f5e8;
+      }
+
+      .stats-table .cell-good {
+        background-color: #f0f8f0;
+      }
+
+      .stats-table .cell-average {
+        background-color: #fff;
+      }
+
+      .stats-table .cell-below-average {
+        background-color: #fff3cd;
+      }
+
+      .stats-table .cell-poor {
+        background-color: #f8d7da;
+      }
+
+      .stats-table tbody tr:hover {
+        filter: brightness(0.95);
+      }
+
+      .stats-table .numeric {
+        text-align: right;
+      }
+
+      /* Hidden sections */
+      .hidden {
+        display: none;
+      }
+
+      /* Error message styling */
+      .error-message {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 1rem;
+        border-radius: 4px;
+        margin: 1rem 0;
+        text-align: center;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        main {
+          padding: 1rem;
+        }
+
+        .view-buttons {
+          flex-direction: column;
+          align-items: center;
+        }
+        
+        .view-button {
+          width: 200px;
+        }
+
+        .season-summary {
+          gap: 1rem;
+        }
+
+        .record-card {
+          min-width: 120px;
+          padding: 1rem;
+        }
+
+        .record-value {
+          font-size: 1.6rem;
+        }
+
+        .game-card {
+          padding: 1rem;
+        }
+
+        .game-header {
+          flex-direction: column;
+          gap: 0.5rem;
+          align-items: flex-start;
+        }
+
+        .game-matchup {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .team {
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .game-details {
+          flex-direction: column;
+          gap: 0.8rem;
+          align-items: flex-start;
+        }
+
+        .game-stats {
+          flex-direction: column;
+          gap: 0.3rem;
+          align-items: flex-start;
+        }
+
+        .filter-controls {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        
+        .stats-table {
+          font-size: 0.8rem;
+        }
+        
+        .stats-table th,
+        .stats-table td {
+          padding: 0.4rem;
+        }
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        margin-top: 2rem;
+        padding: 1rem;
+        background-color: #333;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Jammers Season 7 Stats</h1>
+      <nav>
+        <ul>
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="../rkl-stats.html">RKL Stats Database</a></li>
+          <li><a href="../../PSPs/mlb-psp.html">MLB PSP Database</a></li>
+          <li><a href="../../PSPs-WNBA/wnba-psp.html">WNBA PSP Database</a></li>
+          <li><a href="../../karma-calculator.html">Karma EV Calculator</a></li>
+        </ul>
+      </nav>
+    </header>
+    
+    <main>
+      <section class="info">
+        <p>Complete statistics and game-by-game results for the Jammers in RKL Season 7</p>
+        <p style="font-size: 0.9rem; color: #666;">Data is automatically updated from Google Sheets</p>
+      </section>
+      
+      <!-- Loading indicator -->
+      <div id="loadingIndicator" class="loading">
+        Loading data from Google Sheets...
+      </div>
+      
+      <!-- View Controls -->
+      <section class="view-controls hidden" id="viewControls">
+        <h3>Select View</h3>
+        <div class="view-buttons">
+          <button id="scheduleViewBtn" class="view-button active">Schedule & Results</button>
+          <button id="playerStatsViewBtn" class="view-button">Player Statistics</button>
+        </div>
+      </section>
+      
+      <!-- Schedule View -->
+      <section id="scheduleView" class="schedule-section hidden">
+        <h2>Season 7 Schedule & Results</h2>
+        <p>Click on any completed game to see detailed player statistics from that matchup</p>
+        <p style="font-style: italic; color: #666; margin-bottom: 1rem;"><strong>Note:</strong> All scores shown in thousands (K)</p>
+        
+        <!-- Season Summary -->
+        <div class="season-summary" id="seasonSummary">
+          <div class="record-card">
+            <h3>Regular Season</h3>
+            <div class="record-value" id="regularSeasonRecord">0-0</div>
+            <div class="record-subtitle" id="regularSeasonPct">0% Win Rate</div>
+          </div>
+          <div class="record-card">
+            <h3>Postseason</h3>
+            <div class="record-value" id="postseasonRecord">-</div>
+            <div class="record-subtitle" id="postseasonPct">Not Started</div>
+          </div>
+          <div class="record-card">
+            <h3>Overall</h3>
+            <div class="record-value" id="overallRecord">0-0</div>
+            <div class="record-subtitle" id="overallPct">0% Win Rate</div>
+          </div>
+        </div>
+        
+        <!-- Regular Season -->
+        <div class="games-container">
+          <h3>Regular Season</h3>
+          <div class="games-grid" id="regularSeasonGames">
+            <!-- Regular season games will be populated here -->
+          </div>
+        </div>
+        
+        <!-- Postseason -->
+        <div class="games-container" id="postseasonContainer" style="display: none;">
+          <h3>Postseason</h3>
+          <div class="games-grid" id="postseasonGames">
+            <!-- Postseason games will be populated here -->
+          </div>
+        </div>
+      </section>
+      
+      <!-- Player Stats View -->
+      <section id="playerStatsView" class="player-stats-section hidden">
+        <h2>Player Statistics - Season 7</h2>
+        <div class="filter-controls">
+          <label for="seasonFilter">Season Type:</label>
+          <select id="seasonFilter">
+            <option value="total">Total (Regular + Postseason)</option>
+            <option value="regular">Regular Season Only</option>
+            <option value="postseason">Postseason Only</option>
+          </select>
+          <label for="minGamesFilter">Minimum Games Played:</label>
+          <input type="number" id="minGamesFilter" min="0" max="21" value="1">
+          <button id="applyFilter" class="view-button">Apply Filter</button>
+        </div>
+        <div style="overflow-x: auto;">
+          <table class="stats-table" id="playerStatsTable">
+            <thead>
+              <tr>
+                <th class="sortable" data-column="name">Player <span class="sort-indicator"></span></th>
+                <th class="numeric sortable" data-column="starts"># Starts <span class="sort-indicator"></span></th>
+                <th class="numeric sortable" data-column="avgRank">Avg Rank <span class="sort-indicator"></span></th>
+                <th class="numeric sortable" data-column="relMean">REL Mean <span class="sort-indicator"></span></th>
+                <th class="numeric sortable" data-column="relMedian">REL Median <span class="sort-indicator"></span></th>
+                <th class="numeric sortable" data-column="aagMean">AAG Mean <span class="sort-indicator"></span></th>
+                <th class="numeric sortable" data-column="aagMeanPct">AAG% Mean <span class="sort-indicator"></span></th>
+                <th class="numeric sortable" data-column="aagMedian">AAG Median <span class="sort-indicator"></span></th>
+                <th class="numeric sortable" data-column="aagMedianPct">AAG% Median <span class="sort-indicator"></span></th>
+              </tr>
+            </thead>
+            <tbody id="playerStatsTableBody">
+              <!-- Player stats will be populated here -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+      
+      <!-- Week Detail View -->
+      <section id="weekDetailView" class="week-detail-section hidden">
+        <button id="backToSchedule" class="back-button">← Back to Schedule</button>
+        <h2 id="weekDetailTitle">Week Details</h2>
+        <div id="weekDetailContent">
+          <!-- Week detail content will be populated here -->
+        </div>
+      </section>
+    </main>
+    
+    <footer>
+      <p>&copy; caustic.info</p>
+    </footer>
+
+    <script>
+      // Configuration constants
+      const CONFIG = {
+        GOOGLE_SHEETS_ID: '1jD9VjtaoeNN-Xccha7W3KPoBGXEsTdnGfzOP7f77ZLo',
+        SCHEDULE_SHEET_NAME: 'Schedule',
+        GAMESTATS_SHEET_NAME: 'GameStats',
+        DEFAULT_MIN_GAMES_REGULAR: 3,
+        DEFAULT_MIN_GAMES_POSTSEASON: 1,
+        DEFAULT_MIN_GAMES_TOTAL: 1,
+        DEFAULT_SORT_COLUMN: 'avgRank',
+        DEFAULT_SORT_DIRECTION: 'asc'
+      };
+
+      // Global variables
+      let scheduleData = [];
+      let gameStatsData = [];
+      let currentView = 'schedule';
+      let currentPlayerStats = [];
+      let currentSortColumn = CONFIG.DEFAULT_SORT_COLUMN;
+      let currentSortDirection = CONFIG.DEFAULT_SORT_DIRECTION;
+
+      // DOM elements
+      const elements = {
+        loadingIndicator: document.getElementById('loadingIndicator'),
+        viewControls: document.getElementById('viewControls'),
+        scheduleViewBtn: document.getElementById('scheduleViewBtn'),
+        playerStatsViewBtn: document.getElementById('playerStatsViewBtn'),
+        scheduleView: document.getElementById('scheduleView'),
+        playerStatsView: document.getElementById('playerStatsView'),
+        weekDetailView: document.getElementById('weekDetailView'),
+        regularSeasonGames: document.getElementById('regularSeasonGames'),
+        postseasonGames: document.getElementById('postseasonGames'),
+        postseasonContainer: document.getElementById('postseasonContainer'),
+        playerStatsTableBody: document.getElementById('playerStatsTableBody'),
+        seasonFilter: document.getElementById('seasonFilter'),
+        minGamesFilter: document.getElementById('minGamesFilter'),
+        applyFilter: document.getElementById('applyFilter'),
+        backToSchedule: document.getElementById('backToSchedule'),
+        weekDetailTitle: document.getElementById('weekDetailTitle'),
+        weekDetailContent: document.getElementById('weekDetailContent'),
+        seasonSummary: document.getElementById('seasonSummary'),
+        regularSeasonRecord: document.getElementById('regularSeasonRecord'),
+        regularSeasonPct: document.getElementById('regularSeasonPct'),
+        postseasonRecord: document.getElementById('postseasonRecord'),
+        postseasonPct: document.getElementById('postseasonPct'),
+        overallRecord: document.getElementById('overallRecord'),
+        overallPct: document.getElementById('overallPct')
+      };
+
+      // Initialize the application
+      document.addEventListener('DOMContentLoaded', init);
+
+      async function init() {
+        try {
+          await loadData();
+          calculateCumulativeRecords();
+          setupEventListeners();
+          elements.loadingIndicator.classList.add('hidden');
+          elements.viewControls.classList.remove('hidden');
+          switchView('schedule');
+        } catch (error) {
+          console.error('Failed to load data:', error);
+          showError('Failed to load data from Google Sheets. Please check your internet connection and try refreshing the page.');
+          elements.loadingIndicator.classList.add('hidden');
+        }
+      }
+
+      // Load data from Google Sheets
+      async function loadData() {
+        try {
+          // Load schedule data
+          const scheduleUrl = `https://docs.google.com/spreadsheets/d/${CONFIG.GOOGLE_SHEETS_ID}/gviz/tq?tqx=out:csv&sheet=${CONFIG.SCHEDULE_SHEET_NAME}`;
+          const scheduleResponse = await fetch(scheduleUrl);
+          const scheduleText = await scheduleResponse.text();
+          scheduleData = parseCSV(scheduleText);
+          
+          // Load game stats data
+          const gameStatsUrl = `https://docs.google.com/spreadsheets/d/${CONFIG.GOOGLE_SHEETS_ID}/gviz/tq?tqx=out:csv&sheet=${CONFIG.GAMESTATS_SHEET_NAME}`;
+          const gameStatsResponse = await fetch(gameStatsUrl);
+          const gameStatsText = await gameStatsResponse.text();
+          gameStatsData = parseCSV(gameStatsText).filter(row => 
+            row.User && 
+            row.User !== 'Total Score' && 
+            row.User !== 'Score' &&
+            row.User.trim() !== '' &&
+            !row.User.toLowerCase().includes('total') &&
+            !row.User.toLowerCase().includes('avg') &&
+            row.Score !== null &&
+            row.Score !== undefined &&
+            row.Score !== ''
+          );
+          
+          console.log('Loaded schedule data:', scheduleData.length, 'games');
+          console.log('Loaded game stats data:', gameStatsData.length, 'entries');
+          
+        } catch (error) {
+          console.error('Error loading data:', error);
+          throw error;
+        }
+      }
+
+      // Parse CSV to JSON
+      function parseCSV(csvText) {
+        const lines = csvText.split('\n');
+        const headers = lines[0].split(',').map(header => header.trim().replace(/"/g, ''));
+        const result = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+          if (!lines[i].trim()) continue;
+          
+          const values = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+          const entry = {};
+          
+          headers.forEach((header, index) => {
+            if (index < values.length) {
+              let value = values[index].trim().replace(/"/g, '');
+              
+              // Handle Week field specially
+              if (header === 'Week') {
+                entry[header] = value === '' ? null : value;
+              }
+              // Convert numeric values
+              else if (['Rank', 'Median Starter', 'Average Starter'].includes(header)) {
+                entry[header] = value === '' || value === 'null' ? null : parseFloat(value);
+              } 
+              // Handle Score fields (check for zero or null)
+              else if (header === 'Score' || header === 'Opp. Score' || header === 'Margin') {
+                if (value === '' || value === 'null' || value === '0') {
+                  entry[header] = null;
+                } else {
+                  entry[header] = value.replace(/,/g, '');
+                }
+              } else {
+                entry[header] = value === '' || value === 'null' ? null : value;
+              }
+            } else {
+              entry[header] = null;
+            }
+          });
+          
+          if (Object.values(entry).some(val => val !== null && val !== '')) {
+            result.push(entry);
+          }
+        }
+        
+        return result;
+      }
+
+      // Calculate cumulative records and update summary
+      function calculateCumulativeRecords() {
+        const regularSeasonGames = scheduleData.filter(game => !game.Week.toString().startsWith('R') && game.Score !== null);
+        const postseasonGames = scheduleData.filter(game => game.Week.toString().startsWith('R') && game.Score !== null);
+        
+        // Regular season cumulative record
+        let regWins = 0, regLosses = 0;
+        regularSeasonGames.forEach(game => {
+          if (game.Result === 'Win') regWins++;
+          else if (game.Result === 'Loss') regLosses++;
+          game.CumulativeRecord = `${regWins}-${regLosses}`;
+        });
+        
+        // Postseason cumulative record (starts fresh)
+        let postWins = 0, postLosses = 0;
+        postseasonGames.forEach(game => {
+          if (game.Result === 'Win') postWins++;
+          else if (game.Result === 'Loss') postLosses++;
+          game.CumulativeRecord = `${postWins}-${postLosses}`;
+        });
+        
+        // Update summary cards
+        updateSeasonSummary(regWins, regLosses, postWins, postLosses);
+      }
+
+      // Update season summary cards
+      function updateSeasonSummary(regWins, regLosses, postWins, postLosses) {
+        // Regular season
+        const regTotal = regWins + regLosses;
+        const regPct = regTotal > 0 ? Math.round((regWins / regTotal) * 100) : 0;
+        elements.regularSeasonRecord.textContent = `${regWins}-${regLosses}`;
+        elements.regularSeasonPct.textContent = `${regPct}% Win Rate`;
+        
+        // Postseason
+        const postTotal = postWins + postLosses;
+        if (postTotal > 0) {
+          const postPct = Math.round((postWins / postTotal) * 100);
+          elements.postseasonRecord.textContent = `${postWins}-${postLosses}`;
+          elements.postseasonPct.textContent = `${postPct}% Win Rate`;
+        } else {
+          elements.postseasonRecord.textContent = '-';
+          elements.postseasonPct.textContent = 'Not Started';
+        }
+        
+        // Overall
+        const totalWins = regWins + postWins;
+        const totalLosses = regLosses + postLosses;
+        const totalGames = totalWins + totalLosses;
+        const overallPct = totalGames > 0 ? Math.round((totalWins / totalGames) * 100) : 0;
+        elements.overallRecord.textContent = `${totalWins}-${totalLosses}`;
+        elements.overallPct.textContent = `${overallPct}% Win Rate`;
+      }
+
+      // Setup event listeners
+      function setupEventListeners() {
+        elements.scheduleViewBtn.addEventListener('click', () => switchView('schedule'));
+        elements.playerStatsViewBtn.addEventListener('click', () => switchView('playerStats'));
+        elements.seasonFilter.addEventListener('change', () => {
+          updateMinGamesDefault();
+          updatePlayerStats();
+        });
+        elements.applyFilter.addEventListener('click', updatePlayerStats);
+        elements.backToSchedule.addEventListener('click', () => switchView('schedule'));
+        
+        // Enter key on filter input
+        elements.minGamesFilter.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            updatePlayerStats();
+          }
+        });
+
+        // Add sorting functionality to player stats table
+        setupTableSorting();
+        
+        // Set initial minimum games default
+        updateMinGamesDefault();
+      }
+
+      // Switch between views
+      function switchView(view) {
+        currentView = view;
+        
+        // Update button states
+        document.querySelectorAll('.view-button').forEach(btn => btn.classList.remove('active'));
+        
+        // Hide all views
+        elements.scheduleView.classList.add('hidden');
+        elements.playerStatsView.classList.add('hidden');
+        elements.weekDetailView.classList.add('hidden');
+        
+        // Show selected view and populate content
+        switch (view) {
+          case 'schedule':
+            elements.scheduleViewBtn.classList.add('active');
+            elements.scheduleView.classList.remove('hidden');
+            populateSchedule();
+            break;
+          case 'playerStats':
+            elements.playerStatsViewBtn.classList.add('active');
+            elements.playerStatsView.classList.remove('hidden');
+            updatePlayerStats();
+            break;
+          case 'weekDetail':
+            elements.weekDetailView.classList.remove('hidden');
+            break;
+        }
+      }
+
+      // Populate schedule with new card design
+      function populateSchedule() {
+        elements.regularSeasonGames.innerHTML = '';
+        elements.postseasonGames.innerHTML = '';
+        
+        // Separate regular season and postseason games
+        const regularSeasonGames = scheduleData.filter(game => !game.Week.toString().startsWith('R'));
+        const postseasonGames = scheduleData.filter(game => game.Week.toString().startsWith('R'));
+        
+        // Check if there are any postseason games
+        if (postseasonGames.length > 0) {
+          elements.postseasonContainer.style.display = 'block';
+        } else {
+          elements.postseasonContainer.style.display = 'none';
+        }
+        
+        // Populate regular season
+        regularSeasonGames.forEach(game => {
+          const card = createGameCard(game);
+          elements.regularSeasonGames.appendChild(card);
+        });
+        
+        // Populate postseason
+        postseasonGames.forEach(game => {
+          const card = createGameCard(game);
+          elements.postseasonGames.appendChild(card);
+        });
+      }
+
+      // Create a game card
+      function createGameCard(game) {
+        const card = document.createElement('div');
+        
+        // Determine game status
+        let gameStatus, isWin = false, margin = 0;
+        if (game.Score === null || game.Score === '0') {
+          gameStatus = 'in-progress';
+        } else {
+          gameStatus = game.Result.toLowerCase();
+          isWin = game.Result === 'Win';
+          margin = parseInt(game.Margin) || 0;
+        }
+        
+        card.className = `game-card ${gameStatus}`;
+        
+        // Only make completed games clickable
+        if (gameStatus !== 'in-progress') {
+          card.addEventListener('click', () => showWeekDetail(game.Week));
+        }
+        
+        // Format week display
+        let weekDisplay;
+        if (game.Week.toString().startsWith('R')) {
+          const gameNum = game.Week.replace('R1-G', '');
+          weekDisplay = `R1 Game ${gameNum}`;
+        } else {
+          weekDisplay = `Week ${game.Week}`;
+        }
+        
+        // Format scores for display
+        let jammersScore, opponentScore, marginDisplay;
+        if (gameStatus === 'in-progress') {
+          jammersScore = 'TBD';
+          opponentScore = 'TBD';
+          marginDisplay = 'TBD';
+        } else {
+          jammersScore = `${(parseInt(game.Score) / 1000).toFixed(1)}K`;
+          opponentScore = `${(parseInt(game['Opp. Score']) / 1000).toFixed(1)}K`;
+          marginDisplay = `${margin > 0 ? '+' : ''}${(margin / 1000).toFixed(1)}K`;
+        }
+        
+        card.innerHTML = `
+          <div class="game-header">
+            <div class="week-label">${weekDisplay}</div>
+            <div class="game-date">${game.Date || 'TBD'}</div>
+          </div>
+          
+          <div class="game-matchup">
+            <div class="team">
+              <div class="team-name jammers">Jammers</div>
+              <div class="score ${gameStatus === 'in-progress' ? 'in-progress' : (isWin ? 'win' : 'loss')}">${jammersScore}</div>
+            </div>
+            <div class="vs-divider">vs</div>
+            <div class="team">
+              <div class="team-name opponent">${game.Opponent}</div>
+              <div class="score ${gameStatus === 'in-progress' ? 'in-progress' : (!isWin ? 'win' : 'loss')}">${opponentScore}</div>
+            </div>
+          </div>
+          
+          <div class="game-details">
+            <div class="result-badge ${gameStatus}">${gameStatus === 'in-progress' ? 'In Progress' : game.Result}</div>
+            <div class="game-stats">
+              <div class="record-stat">📊 ${game.CumulativeRecord || '0-0'}</div>
+              ${game.AvgRank ? `<div class="rank-stat">🎯 Avg Player Rank ${game.AvgRank}</div>` : ''}
+            </div>
+            <div class="margin ${gameStatus === 'in-progress' ? 'in-progress' : (margin > 0 ? 'positive' : 'negative')}">${marginDisplay}</div>
+          </div>
+        `;
+        
+        return card;
+      }
+
+      // Show week detail
+      function showWeekDetail(week) {
+        const weekData = gameStatsData.filter(entry => entry.Week === week && entry.Score !== null);
+        const scheduleInfo = scheduleData.find(game => game.Week === week);
+        
+        if (!weekData.length || !scheduleInfo || scheduleInfo.Score === null) {
+          showError('No game data available for this week yet.');
+          return;
+        }
+        
+        // Format week title for display
+        let weekTitle;
+        if (week.toString().startsWith('R')) {
+          const gameNum = week.replace('R1-G', '');
+          weekTitle = `Round 1 Game ${gameNum} vs ${scheduleInfo.Opponent} (${scheduleInfo.Result})`;
+        } else {
+          weekTitle = `Week ${week} vs ${scheduleInfo.Opponent} (${scheduleInfo.Result})`;
+        }
+        
+        elements.weekDetailTitle.textContent = weekTitle;
+        
+        // Create week detail table
+        let content = `
+          <div style="margin-bottom: 1rem;">
+            <strong>Game Result:</strong> ${scheduleInfo.Result} ${parseInt(scheduleInfo.Score).toLocaleString()} - ${parseInt(scheduleInfo['Opp. Score']).toLocaleString()} 
+            (${parseInt(scheduleInfo.Margin) > 0 ? '+' : ''}${parseInt(scheduleInfo.Margin).toLocaleString()})
+          </div>
+          <div style="overflow-x: auto;">
+            <table class="stats-table">
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th class="numeric">Score</th>
+                  <th class="numeric">Rank</th>
+                  <th class="numeric">Team %</th>
+                  <th class="numeric">Cap Bonus</th>
+                </tr>
+              </thead>
+              <tbody>
+        `;
+        
+        weekData.forEach(player => {
+          const score = parseInt(player.Score.replace(/,/g, ''));
+          const teamPct = player['Team %'] || '';
+          const capBonus = player['Cap. Bonus'] ? parseInt(player['Cap. Bonus'].replace(/,/g, '')).toLocaleString() : '';
+          
+          content += `
+            <tr>
+              <td>${player.User}</td>
+              <td class="numeric">${score.toLocaleString()}</td>
+              <td class="numeric">${player.Rank || 'N/A'}</td>
+              <td class="numeric">${teamPct}</td>
+              <td class="numeric">${capBonus}</td>
+            </tr>
+          `;
+        });
+        
+        content += '</tbody></table></div>';
+        elements.weekDetailContent.innerHTML = content;
+        
+        switchView('weekDetail');
+      }
+
+      // Update minimum games default based on season type
+      function updateMinGamesDefault() {
+        const seasonType = elements.seasonFilter.value;
+        let defaultMinGames;
+        
+        switch (seasonType) {
+          case 'regular':
+            defaultMinGames = CONFIG.DEFAULT_MIN_GAMES_REGULAR;
+            break;
+          case 'postseason':
+            defaultMinGames = CONFIG.DEFAULT_MIN_GAMES_POSTSEASON;
+            break;
+          case 'total':
+          default:
+            defaultMinGames = CONFIG.DEFAULT_MIN_GAMES_TOTAL;
+            break;
+        }
+        
+        elements.minGamesFilter.value = defaultMinGames;
+      }
+
+      // Update player stats with filter
+      function updatePlayerStats() {
+        const seasonType = elements.seasonFilter.value;
+        const minGames = parseInt(elements.minGamesFilter.value) || 1;
+        
+        // Calculate player statistics based on season filter
+        const playerStats = calculatePlayerStats(seasonType);
+        
+        // Store for sorting
+        currentPlayerStats = playerStats;
+        
+        // Filter by minimum games
+        const filteredStats = playerStats.filter(player => player.starts >= minGames);
+        
+        // Sort by current sort column and direction
+        sortPlayerStats(filteredStats);
+        
+        // Populate table
+        populatePlayerStatsTable(filteredStats);
+      }
+
+      // Sort player stats based on current sort column and direction
+      function sortPlayerStats(stats) {
+        stats.sort((a, b) => {
+          let aVal = a[currentSortColumn];
+          let bVal = b[currentSortColumn];
+          
+          // Handle string vs number comparison
+          if (typeof aVal === 'string') {
+            aVal = aVal.toLowerCase();
+            bVal = bVal.toLowerCase();
+          }
+          
+          let comparison = 0;
+          if (aVal < bVal) comparison = -1;
+          else if (aVal > bVal) comparison = 1;
+          
+          return currentSortDirection === 'asc' ? comparison : -comparison;
+        });
+      }
+
+      // Update sort indicators in table headers
+      function updateSortIndicators() {
+        const headers = document.querySelectorAll('th.sortable .sort-indicator');
+        headers.forEach(indicator => {
+          indicator.className = 'sort-indicator';
+        });
+        
+        const currentHeader = document.querySelector(`th[data-column="${currentSortColumn}"] .sort-indicator`);
+        if (currentHeader) {
+          currentHeader.className = `sort-indicator ${currentSortDirection}`;
+        }
+      }
+
+      // Determine performance tier for color coding individual cells
+      function getCellPerformanceTier(value, values, isInverse = false) {
+        // Sort values for percentile calculation
+        const sortedValues = [...values].sort((a, b) => isInverse ? a - b : b - a);
+        const rank = sortedValues.indexOf(value) + 1;
+        const percentile = rank / sortedValues.length;
+        
+        if (percentile <= 0.2) return 'cell-excellent';      // Top 20%
+        else if (percentile <= 0.4) return 'cell-good';      // 21-40%
+        else if (percentile <= 0.6) return 'cell-average';   // 41-60%
+        else if (percentile <= 0.8) return 'cell-below-average'; // 61-80%
+        else return 'cell-poor';                             // Bottom 20%
+      }
+
+      // Populate player stats table with column-based color coding
+      function populatePlayerStatsTable(filteredStats) {
+        elements.playerStatsTableBody.innerHTML = '';
+        
+        if (filteredStats.length === 0) {
+          const row = document.createElement('tr');
+          row.innerHTML = `<td colspan="9" style="text-align: center; padding: 2rem;">No players meet the current filter criteria</td>`;
+          elements.playerStatsTableBody.appendChild(row);
+          updateSortIndicators();
+          return;
+        }
+        
+        // Extract values for each column for percentile calculations
+        const columnValues = {
+          avgRank: filteredStats.map(p => p.avgRank),
+          relMean: filteredStats.map(p => p.relMean),
+          relMedian: filteredStats.map(p => p.relMedian),
+          aagMean: filteredStats.map(p => p.aagMean),
+          aagMeanPct: filteredStats.map(p => p.aagMeanPct),
+          aagMedian: filteredStats.map(p => p.aagMedian),
+          aagMedianPct: filteredStats.map(p => p.aagMedianPct)
+        };
+        
+        filteredStats.forEach(player => {
+          const row = document.createElement('tr');
+          
+          // Get color classes for each stat (avgRank is inverse - lower is better)
+          const avgRankClass = getCellPerformanceTier(player.avgRank, columnValues.avgRank, true);
+          const relMeanClass = getCellPerformanceTier(player.relMean, columnValues.relMean);
+          const relMedianClass = getCellPerformanceTier(player.relMedian, columnValues.relMedian);
+          const aagMeanClass = getCellPerformanceTier(player.aagMean, columnValues.aagMean);
+          const aagMeanPctClass = getCellPerformanceTier(player.aagMeanPct, columnValues.aagMeanPct);
+          const aagMedianClass = getCellPerformanceTier(player.aagMedian, columnValues.aagMedian);
+          const aagMedianPctClass = getCellPerformanceTier(player.aagMedianPct, columnValues.aagMedianPct);
+          
+          row.innerHTML = `
+            <td>${player.name}</td>
+            <td class="numeric">${player.starts}</td>
+            <td class="numeric ${avgRankClass}">${player.avgRank.toFixed(1)}</td>
+            <td class="numeric ${relMeanClass}">${player.relMean.toFixed(3)}</td>
+            <td class="numeric ${relMedianClass}">${player.relMedian.toFixed(3)}</td>
+            <td class="numeric ${aagMeanClass}">${player.aagMean}</td>
+            <td class="numeric ${aagMeanPctClass}">${(player.aagMeanPct * 100).toFixed(1)}%</td>
+            <td class="numeric ${aagMedianClass}">${player.aagMedian}</td>
+            <td class="numeric ${aagMedianPctClass}">${(player.aagMedianPct * 100).toFixed(1)}%</td>
+          `;
+          elements.playerStatsTableBody.appendChild(row);
+        });
+        
+        updateSortIndicators();
+      }
+
+      // Calculate comprehensive player statistics
+      function calculatePlayerStats(seasonType = 'total') {
+        const players = {};
+        
+        // Filter games based on season type
+        let filteredGameStats;
+        let filteredScheduleData;
+        
+        switch (seasonType) {
+          case 'regular':
+            filteredGameStats = gameStatsData.filter(entry => !entry.Week.toString().startsWith('R'));
+            filteredScheduleData = scheduleData.filter(game => !game.Week.toString().startsWith('R'));
+            break;
+          case 'postseason':
+            filteredGameStats = gameStatsData.filter(entry => entry.Week.toString().startsWith('R'));
+            filteredScheduleData = scheduleData.filter(game => game.Week.toString().startsWith('R'));
+            break;
+          default: // 'total'
+            filteredGameStats = gameStatsData;
+            filteredScheduleData = scheduleData;
+        }
+        
+        // Get unique players from filtered data
+        filteredGameStats.forEach(entry => {
+          if (!players[entry.User]) {
+            players[entry.User] = {
+              name: entry.User,
+              games: [],
+              starts: 0,
+              totalRank: 0,
+              totalScore: 0,
+              totalAvgScore: 0,
+              totalMedianScore: 0,
+              aagMean: 0,
+              aagMedian: 0
+            };
+          }
+          
+          const score = parseInt(entry.Score.replace(/,/g, ''));
+          players[entry.User].games.push({
+            week: entry.Week,
+            score: score,
+            rank: entry.Rank
+          });
+          players[entry.User].starts++;
+          if (entry.Rank !== null) {
+            players[entry.User].totalRank += entry.Rank;
+          }
+          players[entry.User].totalScore += score;
+        });
+        
+        // Calculate statistics for each player
+        return Object.values(players).map(player => {
+          // Calculate averages
+          const avgRank = player.starts > 0 ? player.totalRank / player.starts : 0;
+          
+          // Calculate REL scores and AAG
+          player.games.forEach(game => {
+            const scheduleInfo = filteredScheduleData.find(s => s.Week === game.week);
+            if (scheduleInfo && scheduleInfo['Average Starter'] !== null && scheduleInfo['Median Starter'] !== null) {
+              player.totalAvgScore += scheduleInfo['Average Starter'];
+              player.totalMedianScore += scheduleInfo['Median Starter'];
+              
+              // Count above average games
+              if (game.score > scheduleInfo['Average Starter']) {
+                player.aagMean++;
+              }
+              if (game.score > scheduleInfo['Median Starter']) {
+                player.aagMedian++;
+              }
+            }
+          });
+          
+          const relMean = player.totalAvgScore > 0 ? player.totalScore / player.totalAvgScore : 0;
+          const relMedian = player.totalMedianScore > 0 ? player.totalScore / player.totalMedianScore : 0;
+          const aagMeanPct = player.starts > 0 ? player.aagMean / player.starts : 0;
+          const aagMedianPct = player.starts > 0 ? player.aagMedian / player.starts : 0;
+          
+          return {
+            name: player.name,
+            starts: player.starts,
+            avgRank: avgRank,
+            relMean: relMean,
+            relMedian: relMedian,
+            aagMean: player.aagMean,
+            aagMeanPct: aagMeanPct,
+            aagMedian: player.aagMedian,
+            aagMedianPct: aagMedianPct
+          };
+        });
+      }
+
+      // Setup table sorting functionality
+      function setupTableSorting() {
+        const table = document.getElementById('playerStatsTable');
+        if (!table) return;
+
+        const headers = table.querySelectorAll('th.sortable');
+        headers.forEach(header => {
+          header.addEventListener('click', () => {
+            const column = header.dataset.column;
+            
+            // Toggle sort direction if same column, otherwise default to desc for most stats
+            if (currentSortColumn === column) {
+              currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+              currentSortColumn = column;
+              // Default direction based on column type
+              currentSortDirection = (column === 'name' || column === 'avgRank') ? 'asc' : 'desc';
+            }
+            
+            updatePlayerStats();
+          });
+        });
+      }
+
+      // Show error message
+      function showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = message;
+        
+        const main = document.querySelector('main');
+        main.insertBefore(errorDiv, main.firstChild.nextSibling);
+        
+        setTimeout(() => {
+          if (errorDiv.parentNode) {
+            errorDiv.parentNode.removeChild(errorDiv);
+          }
+        }, 5000);
+      }
+    </script>
+  </body>
+</html>
