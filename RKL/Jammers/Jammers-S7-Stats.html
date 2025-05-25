@@ -334,9 +334,25 @@
         gap: 0.5rem;
       }
 
+      .team-logo {
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+        object-fit: cover;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      }
+
+      .team-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.3rem;
+      }
+
       .team-name {
         font-weight: bold;
-        font-size: 1.1rem;
+        font-size: 1rem;
+        text-align: center;
       }
 
       .team-name.jammers {
@@ -1154,12 +1170,18 @@
           
           <div class="game-matchup">
             <div class="team">
-              <div class="team-name jammers">Jammers</div>
+              <div class="team-info">
+                <img src="../RKL/teamicons/Jammers.webp" alt="Jammers" class="team-logo" onerror="this.style.display='none'">
+                <div class="team-name jammers">Jammers</div>
+              </div>
               <div class="score ${gameStatus === 'in-progress' ? 'in-progress' : (isWin ? 'win' : 'loss')}">${jammersScore}</div>
             </div>
             <div class="vs-divider">vs</div>
             <div class="team">
-              <div class="team-name opponent">${game.Opponent}</div>
+              <div class="team-info">
+                <img src="../RKL/teamicons/${game.Opponent}.webp" alt="${game.Opponent}" class="team-logo" onerror="this.style.display='none'">
+                <div class="team-name opponent">${game.Opponent}</div>
+              </div>
               <div class="score ${gameStatus === 'in-progress' ? 'in-progress' : (!isWin ? 'win' : 'loss')}">${opponentScore}</div>
             </div>
           </div>
