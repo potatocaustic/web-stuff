@@ -311,6 +311,16 @@
         align-items: center;
         gap: 0.8rem;
         flex: 1;
+        justify-content: center;
+      }
+
+      .team.jammers {
+        justify-content: flex-start;
+      }
+
+      .team.opponent {
+        justify-content: flex-end;
+        flex-direction: row-reverse;
       }
 
       /* Team Icon Styles */
@@ -322,6 +332,7 @@
         border: 2px solid #e0e0e0;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         transition: transform 0.2s ease;
+        flex-shrink: 0;
       }
 
       .team-icon:hover {
@@ -331,9 +342,17 @@
       .team-info {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
         gap: 0.2rem;
         flex: 1;
+        min-width: 0;
+      }
+
+      .team.jammers .team-info {
+        align-items: flex-start;
+      }
+
+      .team.opponent .team-info {
+        align-items: flex-end;
       }
 
       .team-name {
@@ -629,6 +648,16 @@
         .team {
           width: 100%;
           justify-content: space-between;
+        }
+
+        .team.jammers,
+        .team.opponent {
+          justify-content: center;
+          flex-direction: row;
+        }
+
+        .team-info {
+          align-items: center !important;
         }
 
         .team-icon {
@@ -1077,7 +1106,7 @@
           </div>
           
           <div class="game-matchup">
-            <div class="team">
+            <div class="team jammers">
               <img src="${getTeamIconPath('Jammers')}" alt="Jammers" class="team-icon" onerror="this.style.display='none'">
               <div class="team-info">
                 <div class="team-name jammers">Jammers</div>
@@ -1085,7 +1114,7 @@
               </div>
             </div>
             <div class="vs-divider">vs</div>
-            <div class="team">
+            <div class="team opponent">
               <img src="${getTeamIconPath(game.Opponent)}" alt="${game.Opponent}" class="team-icon" onerror="this.style.display='none'">
               <div class="team-info">
                 <div class="team-name opponent">${game.Opponent}</div>
@@ -1097,10 +1126,13 @@
           <div class="game-details">
             <div class="result-badge ${isWin ? 'win' : 'loss'}">${game.Result}</div>
             <div class="game-stats">
-              <div class="record-stat">📊 ${game.CumulativeRecord}</div>
+              <div class="record-stat">📊 Jammers Record: ${game.CumulativeRecord}</div>
               <div class="rank-stat">🎯 Avg Player Rank ${game.AvgRank}</div>
             </div>
-            <div class="margin ${margin > 0 ? 'positive' : 'negative'}">${margin > 0 ? '+' : ''}${(margin / 1000).toFixed(1)}K</div>
+            <div class="margin-info">
+              <div style="font-size: 0.8rem; color: #666; margin-bottom: 0.2rem;">Margin:</div>
+              <div class="margin ${margin > 0 ? 'positive' : 'negative'}">${margin > 0 ? '+' : ''}${(margin / 1000).toFixed(1)}K</div>
+            </div>
           </div>
         `;
         
