@@ -1064,8 +1064,17 @@
 
       // Calculate cumulative records and update summary
       function calculateCumulativeRecords() {
-        const regularSeasonGames = scheduleData.filter(game => !game.Week.toString().startsWith('R') && game.Score !== null);
-        const postseasonGames = scheduleData.filter(game => game.Week.toString().startsWith('R') && game.Score !== null);
+        // Add null checks for Week field
+        const regularSeasonGames = scheduleData.filter(game => 
+          game.Week !== null && 
+          !game.Week.toString().startsWith('R') && 
+          game.Score !== null
+        );
+        const postseasonGames = scheduleData.filter(game => 
+          game.Week !== null && 
+          game.Week.toString().startsWith('R') && 
+          game.Score !== null
+        );
         
         // Regular season cumulative record
         let regWins = 0, regLosses = 0;
@@ -1086,7 +1095,7 @@
         // Update summary cards
         updateSeasonSummary(regWins, regLosses, postWins, postLosses);
       }
-
+      
       // Update season summary cards
       function updateSeasonSummary(regWins, regLosses, postWins, postLosses) {
         // Regular season
@@ -1175,9 +1184,15 @@
         elements.regularSeasonGames.innerHTML = '';
         elements.postseasonGames.innerHTML = '';
         
-        // Separate regular season and postseason games
-        const regularSeasonGames = scheduleData.filter(game => !game.Week.toString().startsWith('R'));
-        const postseasonGames = scheduleData.filter(game => game.Week.toString().startsWith('R'));
+        // Separate regular season and postseason games, filtering out null Week values
+        const regularSeasonGames = scheduleData.filter(game => 
+          game.Week !== null && 
+          !game.Week.toString().startsWith('R')
+        );
+        const postseasonGames = scheduleData.filter(game => 
+          game.Week !== null && 
+          game.Week.toString().startsWith('R')
+        );
         
         // Check if there are any postseason games
         if (postseasonGames.length > 0) {
