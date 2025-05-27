@@ -294,18 +294,35 @@
         align-items: center;
         gap: 0.5rem;
         min-width: 140px;
+        flex: 1;
+      }
+
+      .team-info {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        flex: 1;
       }
 
       .team-name {
         font-weight: 500;
         font-size: 0.9rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .team-record {
+        font-size: 0.8rem;
+        color: #666;
       }
 
       .team-score {
         font-weight: bold;
         color: #333;
-        margin-left: 0.5rem;
+        margin-left: auto;
         min-width: 35px;
+        text-align: right;
       }
 
       .vs {
@@ -640,18 +657,30 @@
           const team1Name = getTeamName(game.team1_id, teams);
           const team2Name = getTeamName(game.team2_id, teams);
           
+          // Get team records
+          const team1Data = teams.find(t => t.team_id === game.team1_id);
+          const team2Data = teams.find(t => t.team_id === game.team2_id);
+          const team1Record = team1Data ? `${team1Data.wins || 0}-${team1Data.losses || 0}` : '';
+          const team2Record = team2Data ? `${team2Data.wins || 0}-${team2Data.losses || 0}` : '';
+          
           return `
             <div class="game-item">
               <div class="game-matchup">
                 <div class="team ${winner === game.team1_id ? 'winner' : ''}">
                   <img src="icons/${game.team1_id}.webp" alt="${game.team1_id}" class="team-logo" onerror="this.style.display='none'">
-                  <span class="team-name">${team1Name}</span>
+                  <div class="team-info">
+                    <span class="team-name">${team1Name}</span>
+                    <span class="team-record">${team1Record}</span>
+                  </div>
                   <span class="team-score">${formatInThousands(team1Score)}</span>
                 </div>
                 <span class="vs">vs</span>
                 <div class="team ${winner === game.team2_id ? 'winner' : ''}">
                   <img src="icons/${game.team2_id}.webp" alt="${game.team2_id}" class="team-logo" onerror="this.style.display='none'">
-                  <span class="team-name">${team2Name}</span>
+                  <div class="team-info">
+                    <span class="team-name">${team2Name}</span>
+                    <span class="team-record">${team2Record}</span>
+                  </div>
                   <span class="team-score">${formatInThousands(team2Score)}</span>
                 </div>
               </div>
