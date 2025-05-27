@@ -506,8 +506,8 @@
                 <span class="team-name">${team.team_name}</span>
               </td>
               <td class="record-cell">${wins}-${losses}</td>
-              <td class="pam-cell ${getPAMClass(pam)}">${pam.toFixed(1)}</td>
-              <td class="rank-cell">${avgRank > 0 ? avgRank.toFixed(1) : '-'}</td>
+              <td class="pam-cell ${getPAMClass(pam)}">${Math.round(pam).toLocaleString()}</td>
+              <td class="rank-cell">${avgRank > 0 ? Math.round(avgRank) : '-'}</td>
             </tr>
           `;
         }).join('');
@@ -531,8 +531,8 @@
                 <span class="team-name">${team.team_name}</span>
               </td>
               <td class="record-cell">${wins}-${losses}</td>
-              <td class="pam-cell ${getPAMClass(pam)}">${pam.toFixed(1)}</td>
-              <td class="rank-cell">${avgRank > 0 ? avgRank.toFixed(1) : '-'}</td>
+              <td class="pam-cell ${getPAMClass(pam)}">${Math.round(pam).toLocaleString()}</td>
+              <td class="rank-cell">${avgRank > 0 ? Math.round(avgRank) : '-'}</td>
             </tr>
           `;
         }).join('');
