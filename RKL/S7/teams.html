@@ -144,19 +144,7 @@
         object-fit: cover;
       }
 
-      .team-logo-fallback {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        border: 2px solid #ddd;
-        background-color: #007bff;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 0.8rem;
-      }
+
 
       .team-info {
         flex: 1;
@@ -464,8 +452,7 @@
               <div class="team-header">
                 <img src="icons/${team.team_id}.webp" 
                      alt="${team.team_name}" 
-                     class="team-logo" 
-                     onerror="this.outerHTML='<div class=\\"team-logo-fallback\\">${team.team_id}</div>'">
+                     class="team-logo">
                 <div class="team-info">
                   <div class="team-name">${team.team_name}</div>
                   <div class="team-id">${team.team_id}</div>
