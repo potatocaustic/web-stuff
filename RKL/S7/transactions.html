@@ -605,16 +605,16 @@
             details = `<span class="player-name">${transaction.player_handle}</span> retired from the <span class="team-name">${getTeamName(transaction.from_team)}</span>.`;
             break;
           case 'UNRETIREMENT':
-            details = `<span class="player-name">${transaction.player_handle}</span> unretired and joined <span class="team-name">${getTeamName(transaction.to_team)}</span>`;
+            details = `<span class="player-name">${transaction.player_handle}</span> unretired and joined the <span class="team-name">${getTeamName(transaction.to_team)}</span>.`;
             break;
           case 'DROP':
-            details = `<span class="player-name">${transaction.player_handle}</span> dropped by <span class="team-name">${getTeamName(transaction.from_team)}</span>`;
+            details = `<span class="player-name">${transaction.player_handle}</span> dropped by the <span class="team-name">${getTeamName(transaction.from_team)}</span>.`;
             break;
           case 'GM_RESIGNATION':
-            details = `<span class="gm-name">${transaction.gm_involved}</span> resigned as GM of <span class="team-name">${getTeamName(transaction.from_team)}</span>`;
+            details = `<span class="gm-name">${transaction.gm_involved}</span> resigned as GM of the <span class="team-name">${getTeamName(transaction.from_team)}</span>.`;
             break;
           case 'GM_HIRED':
-            details = `<span class="gm-name">${transaction.gm_involved}</span> hired as GM of <span class="team-name">${getTeamName(transaction.to_team)}</span>`;
+            details = `<span class="gm-name">${transaction.gm_involved}</span> hired as GM of the <span class="team-name">${getTeamName(transaction.to_team)}</span>.`;
             break;
           default:
             if (transaction.player_handle) {
