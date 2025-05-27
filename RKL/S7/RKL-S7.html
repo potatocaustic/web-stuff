@@ -294,6 +294,7 @@
         align-items: center;
         gap: 0.5rem;
         min-width: 120px;
+        max-width: 180px;
         flex: 1;
       }
 
@@ -301,7 +302,8 @@
         display: flex;
         flex-direction: column;
         min-width: 0;
-        flex: 0 1 auto;
+        flex: 1;
+        max-width: calc(100% - 70px);
       }
 
       .team-name {
@@ -320,7 +322,7 @@
       .team-score {
         font-weight: bold;
         color: #333;
-        margin-left: 0.75rem;
+        margin-left: auto;
         min-width: 35px;
         text-align: right;
         flex-shrink: 0;
