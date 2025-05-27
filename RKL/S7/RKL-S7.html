@@ -1,1 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RKL Season 7 - caustic.info</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
+    <style>
+      /* Reset and General Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        line-height: 1.6;
+      }
+      
+      h1, h2, h3 {
+        color: #333;
+      }
 
+      /* Header styling - matching your design */
+      header {
+        background-color: #333;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+      
+      header h1 {
+        color: white !important;
+        font-size: 1.5rem;
+        margin: 0;
+      }
+      
+      /* Navigation styling */
+      nav ul {
+        display: flex;
+        justify-content: center;
+        list-style: none;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+      }
+      
+      nav ul li {
+        margin: 0.5rem 1rem;
+      }
+      
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 1.1rem;
+        transition: color 0.3s ease;
+        white-space: nowrap;
+      }
+      
+      nav ul li a:hover {
+        color: #ccc;
+      }
+
+      /* Mobile navigation */
+      @media (max-width: 600px) {
+        nav ul {
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+        }
+        
+        nav ul li {
+          margin: 0.2rem 0;
+          text-align: center;
+        }
+      }
+
+      /* Main content */
+      main {
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      /* Page header */
+      .page-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .page-header h2 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .season-info {
+        background-color: #fff;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+
+      /* Quick Navigation */
+      .quick-nav {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .nav-card {
+        background-color: #fff;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: all 0.3s ease;
+      }
+
+      .nav-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .nav-card a {
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+        font-size: 1.1rem;
+      }
+
+      .nav-card:hover a {
+        color: #007bff;
+      }
+
+      /* Main content grid */
+      .main-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      /* Standings preview */
+      .standings-preview {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .standings-header {
+        background-color: #333;
+        color: white;
+        padding: 1rem;
+        text-align: center;
+      }
+
+      .conference-standings {
+        padding: 1rem;
+      }
+
+      .conference-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        color: #333;
+        border-bottom: 2px solid #333;
+        padding-bottom: 0.5rem;
+      }
+
+      .standings-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1.5rem;
+      }
+
+      .standings-table th,
+      .standings-table td {
+        padding: 0.5rem;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .standings-table th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+        font-size: 0.9rem;
+      }
+
+      .standings-table td {
+        font-size: 0.85rem;
+      }
+
+      .team-logo {
+        width: 20px;
+        height: 20px;
+        margin-right: 0.5rem;
+        vertical-align: middle;
+      }
+
+      .view-full {
+        text-align: center;
+        padding: 1rem;
+        border-top: 1px solid #ddd;
+      }
+
+      .view-full a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      /* Recent games */
+      .recent-games {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .games-header {
+        background-color: #333;
+        color: white;
+        padding: 1rem;
+        text-align: center;
+      }
+
+      .games-list {
+        padding: 1rem;
+      }
+
+      .game-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #ddd;
+        transition: background-color 0.2s;
+      }
+
+      .game-item:hover {
+        background-color: #f8f9fa;
+      }
+
+      .game-teams {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .team {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .vs {
+        font-weight: bold;
+        color: #666;
+      }
+
+      .game-score {
+        font-weight: bold;
+        color: #333;
+      }
+
+      .winner {
+        color: #28a745;
+      }
+
+      /* Loading states */
+      .loading {
+        text-align: center;
+        padding: 2rem;
+        color: #666;
+      }
+
+      .error {
+        text-align: center;
+        padding: 2rem;
+        color: #dc3545;
+        background-color: #f8d7da;
+        border-radius: 4px;
+        margin: 1rem 0;
+      }
+
+      /* Mobile responsive */
+      @media (max-width: 768px) {
+        .main-grid {
+          grid-template-columns: 1fr;
+        }
+        
+        .quick-nav {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .standings-table th,
+        .standings-table td {
+          padding: 0.3rem;
+          font-size: 0.8rem;
+        }
+        
+        .team-logo {
+          width: 16px;
+          height: 16px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .quick-nav {
+          grid-template-columns: 1fr;
+        }
+        
+        .game-teams {
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        margin-top: 3rem;
+        padding: 1rem;
+        background-color: #333;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>RKL Season 7</h1>
+      <nav>
+        <ul>
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="../rkl-stats.html">RKL Stats Database</a></li>
+          <li><a href="RKL-S7.html">Season 7</a></li>
+          <li><a href="../../PSPs/mlb-psp.html">MLB PSP Database</a></li>
+          <li><a href="../../PSPs-WNBA/wnba-psp.html">WNBA PSP Database</a></li>
+          <li><a href="../../karma-calculator.html">Karma EV Calculator</a></li>
+        </ul>
+      </nav>
+    </header>
+    
+    <main>
+      <div class="page-header">
+        <h2>Real Karma League Season 7</h2>
+      </div>
+
+      <div class="season-info">
+        <p><strong>Current Week:</strong> <span id="current-week">Loading...</span></p>
+        <p><strong>Teams:</strong> 30 (15 Eastern, 15 Western)</p>
+        <p><strong>Format:</strong> 15 weeks regular season, 6 starters per team</p>
+      </div>
+
+      <!-- Quick Navigation -->
+      <div class="quick-nav">
+        <div class="nav-card">
+          <a href="standings.html">📊 Full Standings</a>
+        </div>
+        <div class="nav-card">
+          <a href="leaderboards.html">🏆 Player Leaderboards</a>
+        </div>
+        <div class="nav-card">
+          <a href="schedule.html">📅 Schedule & Results</a>
+        </div>
+        <div class="nav-card">
+          <a href="transactions.html">🔄 Transactions</a>
+        </div>
+        <div class="nav-card">
+          <a href="teams.html">👥 Team Pages</a>
+        </div>
+        <div class="nav-card">
+          <a href="draft-capital.html">📋 Draft Capital</a>
+        </div>
+      </div>
+
+      <!-- Main Content Grid -->
+      <div class="main-grid">
+        <!-- Standings Preview -->
+        <div class="standings-preview">
+          <div class="standings-header">
+            <h3>Conference Standings</h3>
+          </div>
+          <div class="conference-standings">
+            <div class="conference-title">Eastern Conference</div>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th>Team</th>
+                  <th>W-L</th>
+                  <th>PAM</th>
+                </tr>
+              </thead>
+              <tbody id="eastern-standings">
+                <tr><td colspan="3" class="loading">Loading standings...</td></tr>
+              </tbody>
+            </table>
+            
+            <div class="conference-title">Western Conference</div>
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th>Team</th>
+                  <th>W-L</th>
+                  <th>PAM</th>
+                </tr>
+              </thead>
+              <tbody id="western-standings">
+                <tr><td colspan="3" class="loading">Loading standings...</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="view-full">
+            <a href="standings.html">View Full Standings →</a>
+          </div>
+        </div>
+
+        <!-- Recent Games -->
+        <div class="recent-games">
+          <div class="games-header">
+            <h3>Recent Games</h3>
+          </div>
+          <div class="games-list" id="recent-games">
+            <div class="loading">Loading recent games...</div>
+          </div>
+          <div class="view-full">
+            <a href="schedule.html">View Full Schedule →</a>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <footer>
+      <p>&copy; caustic.info</p>
+    </footer>
+
+    <script>
+      // Configuration - REPLACE WITH YOUR ACTUAL GOOGLE SHEET ID
+      const SHEET_ID = 'YOUR_SHEET_ID_HERE'; // Replace this with your actual sheet ID
+      const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
+      
+      // Function to fetch data from Google Sheets
+      async function fetchSheetData(sheetName) {
+        try {
+          const response = await fetch(BASE_URL + encodeURIComponent(sheetName));
+          const csvText = await response.text();
+          return parseCSV(csvText);
+        } catch (error) {
+          console.error(`Error fetching ${sheetName}:`, error);
+          return null;
+        }
+      }
+      
+      // Simple CSV parser
+      function parseCSV(csvText) {
+        const lines = csvText.trim().split('\n');
+        const headers = lines[0].split(',').map(h => h.replace(/"/g, ''));
+        const data = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+          const values = lines[i].split(',').map(v => v.replace(/"/g, ''));
+          const row = {};
+          headers.forEach((header, index) => {
+            row[header] = values[index] || '';
+          });
+          data.push(row);
+        }
+        
+        return data;
+      }
+      
+      // Load and display standings preview
+      async function loadStandingsPreview() {
+        const teams = await fetchSheetData('Teams');
+        if (!teams) {
+          document.getElementById('eastern-standings').innerHTML = '<tr><td colspan="3" class="error">Error loading standings</td></tr>';
+          document.getElementById('western-standings').innerHTML = '<tr><td colspan="3" class="error">Error loading standings</td></tr>';
+          return;
+        }
+        
+        // Separate teams by conference and sort by wins
+        const easternTeams = teams.filter(team => team.conference === 'Eastern')
+          .sort((a, b) => parseInt(b.wins || 0) - parseInt(a.wins || 0))
+          .slice(0, 5); // Show top 5
+          
+        const westernTeams = teams.filter(team => team.conference === 'Western')
+          .sort((a, b) => parseInt(b.wins || 0) - parseInt(a.wins || 0))
+          .slice(0, 5); // Show top 5
+        
+        // Display Eastern Conference
+        const easternHTML = easternTeams.map(team => `
+          <tr>
+            <td>
+              <img src="${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
+              ${team.team_name}
+            </td>
+            <td>${team.wins || 0}-${team.losses || 0}</td>
+            <td>${parseFloat(team.pam || 0).toFixed(1)}</td>
+          </tr>
+        `).join('');
+        
+        // Display Western Conference
+        const westernHTML = westernTeams.map(team => `
+          <tr>
+            <td>
+              <img src="${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
+              ${team.team_name}
+            </td>
+            <td>${team.wins || 0}-${team.losses || 0}</td>
+            <td>${parseFloat(team.pam || 0).toFixed(1)}</td>
+          </tr>
+        `).join('');
+        
+        document.getElementById('eastern-standings').innerHTML = easternHTML;
+        document.getElementById('western-standings').innerHTML = westernHTML;
+      }
+      
+      // Load and display recent games
+      async function loadRecentGames() {
+        const schedule = await fetchSheetData('Schedule');
+        if (!schedule) {
+          document.getElementById('recent-games').innerHTML = '<div class="error">Error loading recent games</div>';
+          return;
+        }
+        
+        // Get completed games and sort by date (most recent first)
+        const completedGames = schedule
+          .filter(game => game.completed === 'TRUE')
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .slice(0, 5); // Show last 5 games
+        
+        if (completedGames.length === 0) {
+          document.getElementById('recent-games').innerHTML = '<div class="loading">No completed games yet</div>';
+          return;
+        }
+        
+        const gamesHTML = completedGames.map(game => {
+          const team1Score = parseFloat(game.team1_score || 0);
+          const team2Score = parseFloat(game.team2_score || 0);
+          const winner = game.winner;
+          
+          return `
+            <div class="game-item">
+              <div class="game-teams">
+                <div class="team ${winner === game.team1_id ? 'winner' : ''}">
+                  <img src="${game.team1_id}.webp" alt="${game.team1_id}" class="team-logo" onerror="this.style.display='none'">
+                  ${game.team1_id}
+                </div>
+                <span class="vs">vs</span>
+                <div class="team ${winner === game.team2_id ? 'winner' : ''}">
+                  <img src="${game.team2_id}.webp" alt="${game.team2_id}" class="team-logo" onerror="this.style.display='none'">
+                  ${game.team2_id}
+                </div>
+              </div>
+              <div class="game-score">
+                ${team1Score.toFixed(1)} - ${team2Score.toFixed(1)}
+              </div>
+            </div>
+          `;
+        }).join('');
+        
+        document.getElementById('recent-games').innerHTML = gamesHTML;
+      }
+      
+      // Load current week info
+      async function loadCurrentWeek() {
+        const schedule = await fetchSheetData('Schedule');
+        if (!schedule) {
+          document.getElementById('current-week').textContent = 'Unknown';
+          return;
+        }
+        
+        // Find the latest week with games
+        const weeks = [...new Set(schedule.map(game => parseInt(game.week)))].sort((a, b) => b - a);
+        const currentWeek = weeks[0] || 1;
+        
+        document.getElementById('current-week').textContent = `Week ${currentWeek}`;
+      }
+      
+      // Initialize page
+      async function initializePage() {
+        await Promise.all([
+          loadStandingsPreview(),
+          loadRecentGames(),
+          loadCurrentWeek()
+        ]);
+      }
+      
+      // Load data when page loads
+      document.addEventListener('DOMContentLoaded', initializePage);
+    </script>
+  </body>
+</html>
