@@ -160,6 +160,12 @@
         text-align: center;
       }
 
+      .standings-header h3 {
+        color: white;
+        margin: 0;
+        font-size: 1.4rem;
+      }
+
       .conference-standings {
         padding: 1rem;
       }
@@ -177,6 +183,7 @@
         width: 100%;
         border-collapse: collapse;
         margin-bottom: 1.5rem;
+        table-layout: fixed;
       }
 
       .standings-table th,
@@ -194,6 +201,24 @@
 
       .standings-table td {
         font-size: 0.85rem;
+      }
+
+      /* Set specific column widths for alignment */
+      .standings-table th:first-child,
+      .standings-table td:first-child {
+        width: 60%;
+      }
+
+      .standings-table th:nth-child(2),
+      .standings-table td:nth-child(2) {
+        width: 20%;
+        text-align: center;
+      }
+
+      .standings-table th:nth-child(3),
+      .standings-table td:nth-child(3) {
+        width: 20%;
+        text-align: center;
       }
 
       .team-logo {
@@ -230,6 +255,12 @@
         text-align: center;
       }
 
+      .games-header h3 {
+        color: white;
+        margin: 0;
+        font-size: 1.4rem;
+      }
+
       .games-list {
         padding: 1rem;
       }
@@ -247,26 +278,47 @@
         background-color: #f8f9fa;
       }
 
+      .game-item:last-child {
+        border-bottom: none;
+      }
+
       .game-teams {
         display: flex;
         align-items: center;
         gap: 1rem;
+        flex: 1;
       }
 
       .team {
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        min-width: 120px;
+      }
+
+      .team-name {
+        font-weight: 500;
+        font-size: 0.9rem;
       }
 
       .vs {
         font-weight: bold;
         color: #666;
+        margin: 0 0.5rem;
       }
 
       .game-score {
         font-weight: bold;
         color: #333;
+        text-align: center;
+        min-width: 80px;
+      }
+
+      .game-date {
+        color: #666;
+        font-size: 0.8rem;
+        text-align: center;
+        min-width: 60px;
       }
 
       .winner {
@@ -309,16 +361,32 @@
           width: 16px;
           height: 16px;
         }
+
+        .game-teams {
+          flex-direction: column;
+          gap: 0.5rem;
+          align-items: flex-start;
+        }
+
+        .vs {
+          display: none;
+        }
+
+        .game-item {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.5rem;
+        }
+
+        .game-score,
+        .game-date {
+          text-align: left;
+        }
       }
 
       @media (max-width: 480px) {
         .quick-nav {
           grid-template-columns: 1fr;
-        }
-        
-        .game-teams {
-          flex-direction: column;
-          gap: 0.5rem;
         }
       }
 
@@ -385,7 +453,7 @@
         <!-- Standings Preview -->
         <div class="standings-preview">
           <div class="standings-header">
-            <h3>Conference Standings</h3>
+            <h3>League Leaders</h3>
           </div>
           <div class="conference-standings">
             <div class="conference-title">Eastern Conference</div>
@@ -484,6 +552,18 @@
         return data;
       }
       
+      // Function to format date for display
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }
+      
+      // Function to get team name from team ID
+      function getTeamName(teamId, teams) {
+        const team = teams.find(t => t.team_id === teamId);
+        return team ? team.team_name : teamId;
+      }
+      
       // Load and display standings preview
       async function loadStandingsPreview() {
         const teams = await fetchSheetData('Teams');
@@ -532,8 +612,12 @@
       
       // Load and display recent games
       async function loadRecentGames() {
-        const schedule = await fetchSheetData('Schedule');
-        if (!schedule) {
+        const [schedule, teams] = await Promise.all([
+          fetchSheetData('Schedule'),
+          fetchSheetData('Teams')
+        ]);
+        
+        if (!schedule || !teams) {
           document.getElementById('recent-games').innerHTML = '<div class="error">Error loading recent games</div>';
           return;
         }
@@ -553,22 +637,27 @@
           const team1Score = parseFloat(game.team1_score || 0);
           const team2Score = parseFloat(game.team2_score || 0);
           const winner = game.winner;
+          const team1Name = getTeamName(game.team1_id, teams);
+          const team2Name = getTeamName(game.team2_id, teams);
           
           return `
             <div class="game-item">
               <div class="game-teams">
                 <div class="team ${winner === game.team1_id ? 'winner' : ''}">
                   <img src="${game.team1_id}.webp" alt="${game.team1_id}" class="team-logo" onerror="this.style.display='none'">
-                  ${game.team1_id}
+                  <span class="team-name">${team1Name}</span>
                 </div>
                 <span class="vs">vs</span>
                 <div class="team ${winner === game.team2_id ? 'winner' : ''}">
                   <img src="${game.team2_id}.webp" alt="${game.team2_id}" class="team-logo" onerror="this.style.display='none'">
-                  ${game.team2_id}
+                  <span class="team-name">${team2Name}</span>
                 </div>
               </div>
               <div class="game-score">
                 ${formatInThousands(team1Score)} - ${formatInThousands(team2Score)}
+              </div>
+              <div class="game-date">
+                ${formatDate(game.date)}
               </div>
             </div>
           `;
