@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RKL Season 7 Schedule & Results - caustic.info</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
+    <style>
+      /* Reset and General Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        line-height: 1.6;
+      }
+      
+      h1, h2, h3 {
+        color: #333;
+      }
+
+      /* Header styling */
+      header {
+        background-color: #333;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+      
+      header h1 {
+        color: white !important;
+        font-size: 1.5rem;
+        margin: 0;
+      }
+      
+      nav ul {
+        display: flex;
+        justify-content: center;
+        list-style: none;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+      }
+      
+      nav ul li {
+        margin: 0.5rem 1rem;
+      }
+      
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 1.1rem;
+        transition: color 0.3s ease;
+      }
+      
+      nav ul li a:hover {
+        color: #ccc;
+      }
+
+      /* Main content */
+      main {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .page-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .page-header h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      /* Week selector */
+      .week-selector {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+
+      .week-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+      }
+
+      .week-btn {
+        background-color: #f8f9fa;
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        padding: 0.8rem 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        min-width: 80px;
+      }
+
+      .week-btn:hover {
+        background-color: #e9ecef;
+        border-color: #007bff;
+      }
+
+      .week-btn.active {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+      }
+
+      .week-btn.completed {
+        background-color: #28a745;
+        color: white;
+        border-color: #28a745;
+      }
+
+      .week-btn.completed.active {
+        background-color: #155724;
+        border-color: #155724;
+      }
+
+      /* Games container */
+      .games-container {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .games-header {
+        background-color: #333;
+        color: white;
+        padding: 1.5rem;
+        text-align: center;
+      }
+
+      .games-header h3 {
+        color: white;
+        margin: 0;
+        font-size: 1.4rem;
+      }
+
+      /* Games by date */
+      .games-by-date {
+        padding: 1rem;
+      }
+
+      .date-section {
+        margin-bottom: 2rem;
+      }
+
+      .date-header {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-left: 4px solid #007bff;
+        margin-bottom: 1rem;
+        font-weight: bold;
+        font-size: 1.1rem;
+        color: #333;
+      }
+
+      .games-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 1rem;
+      }
+
+      /* Game card */
+      .game-card {
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .game-card:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+      }
+
+      .game-card.completed {
+        border-left: 4px solid #28a745;
+      }
+
+      .game-card.upcoming {
+        border-left: 4px solid #ffc107;
+      }
+
+      .game-teams {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .team {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex: 1;
+      }
+
+      .team.winner {
+        font-weight: bold;
+        color: #28a745;
+      }
+
+      .team-logo {
+        width: 24px;
+        height: 24px;
+        border-radius: 2px;
+      }
+
+      .team-name {
+        font-size: 1rem;
+        font-weight: 500;
+      }
+
+      .vs-divider {
+        font-weight: bold;
+        color: #666;
+        margin: 0 1rem;
+        font-size: 1.2rem;
+      }
+
+      .game-score {
+        text-align: center;
+        margin-top: 1rem;
+      }
+
+      .score-display {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .game-status {
+        font-size: 0.9rem;
+        color: #666;
+        margin-top: 0.5rem;
+      }
+
+      .game-status.completed {
+        color: #28a745;
+        font-weight: 500;
+      }
+
+      .game-status.upcoming {
+        color: #ffc107;
+        font-weight: 500;
+      }
+
+      /* Summary stats */
+      .week-summary {
+        background-color: #e9ecef;
+        padding: 1rem;
+        border-radius: 6px;
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+
+      .summary-stats {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .summary-stat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .stat-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      /* Loading and error states */
+      .loading {
+        text-align: center;
+        padding: 3rem;
+        color: #666;
+        font-size: 1.1rem;
+      }
+
+      .error {
+        text-align: center;
+        padding: 2rem;
+        color: #dc3545;
+        background-color: #f8d7da;
+        border-radius: 4px;
+        margin: 1rem;
+      }
+
+      .no-games {
+        text-align: center;
+        padding: 3rem;
+        color: #666;
+        font-style: italic;
+      }
+
+      /* Mobile responsive */
+      @media (max-width: 768px) {
+        .week-buttons {
+          gap: 0.3rem;
+        }
+        
+        .week-btn {
+          padding: 0.6rem 0.8rem;
+          min-width: 60px;
+          font-size: 0.9rem;
+        }
+        
+        .games-grid {
+          grid-template-columns: 1fr;
+        }
+        
+        .game-teams {
+          flex-direction: column;
+          gap: 1rem;
+        }
+        
+        .team {
+          justify-content: center;
+        }
+        
+        .vs-divider {
+          margin: 0;
+        }
+        
+        .summary-stats {
+          gap: 1rem;
+        }
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        margin-top: 3rem;
+        padding: 1rem;
+        background-color: #333;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>RKL Season 7 Schedule & Results</h1>
+      <nav>
+        <ul>
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="../rkl-stats.html">RKL Stats Database</a></li>
+          <li><a href="RKL-S7.html">Season 7</a></li>
+          <li><a href="standings.html">Standings</a></li>
+          <li><a href="leaderboards.html">Leaderboards</a></li>
+          <li><a href="schedule.html">Schedule</a></li>
+        </ul>
+      </nav>
+    </header>
+    
+    <main>
+      <div class="page-header">
+        <h2>Schedule & Results</h2>
+        <p>Complete game schedule and results for Season 7</p>
+      </div>
+
+      <!-- Week Selector -->
+      <div class="week-selector">
+        <h3>Select Week</h3>
+        <div class="week-buttons" id="week-buttons">
+          <div class="loading">Loading weeks...</div>
+        </div>
+      </div>
+
+      <!-- Games Container -->
+      <div class="games-container">
+        <div class="games-header">
+          <h3 id="games-title">Loading...</h3>
+        </div>
+        
+        <div id="week-summary" class="week-summary" style="display: none;">
+          <div class="summary-stats">
+            <div class="summary-stat">
+              <div class="stat-number" id="total-games">0</div>
+              <div class="stat-label">Total Games</div>
+            </div>
+            <div class="summary-stat">
+              <div class="stat-number" id="completed-games">0</div>
+              <div class="stat-label">Completed</div>
+            </div>
+            <div class="summary-stat">
+              <div class="stat-number" id="upcoming-games">0</div>
+              <div class="stat-label">Upcoming</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="games-by-date" id="games-content">
+          <div class="loading">Loading schedule...</div>
+        </div>
+      </div>
+    </main>
+    
+    <footer>
+      <p>&copy; caustic.info</p>
+    </footer>
+
+    <script>
+      // Configuration - REPLACE WITH YOUR ACTUAL GOOGLE SHEET ID
+      const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4'; // Replace this with your actual sheet ID
+      const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
+      
+      let currentWeek = 1;
+      let allGames = [];
+      let allTeams = [];
+      
+      // Function to fetch data from Google Sheets
+      async function fetchSheetData(sheetName) {
+        try {
+          const response = await fetch(BASE_URL + encodeURIComponent(sheetName));
+          const csvText = await response.text();
+          return parseCSV(csvText);
+        } catch (error) {
+          console.error(`Error fetching ${sheetName}:`, error);
+          return null;
+        }
+      }
+      
+      // Simple CSV parser
+      function parseCSV(csvText) {
+        const lines = csvText.trim().split('\n');
+        const headers = lines[0].split(',').map(h => h.replace(/"/g, ''));
+        const data = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+          const values = lines[i].split(',').map(v => v.replace(/"/g, ''));
+          const row = {};
+          headers.forEach((header, index) => {
+            row[header] = values[index] || '';
+          });
+          data.push(row);
+        }
+        
+        return data;
+      }
+      
+      // Format date for display
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+      }
+      
+      // Get team name from ID
+      function getTeamName(teamId) {
+        const team = allTeams.find(t => t.team_id === teamId);
+        return team ? team.team_name : teamId;
+      }
+      
+      // Load initial data
+      async function loadData() {
+        const [schedule, teams] = await Promise.all([
+          fetchSheetData('Schedule'),
+          fetchSheetData('Teams')
+        ]);
+        
+        if (!schedule || !teams) {
+          document.getElementById('games-content').innerHTML = 
+            '<div class="error">Error loading schedule data</div>';
+          return;
+        }
+        
+        allGames = schedule;
+        allTeams = teams;
+        
+        setupWeekSelector();
+        displayWeek(currentWeek);
+      }
+      
+      // Setup week selector buttons
+      function setupWeekSelector() {
+        const weeks = [...new Set(allGames.map(game => parseInt(game.week)))].sort((a, b) => a - b);
+        
+        const weekButtonsHTML = weeks.map(week => {
+          const weekGames = allGames.filter(game => parseInt(game.week) === week);
+          const completedCount = weekGames.filter(game => game.completed === 'TRUE').length;
+          const isCompleted = completedCount === weekGames.length;
+          
+          return `
+            <div class="week-btn ${week === currentWeek ? 'active' : ''} ${isCompleted ? 'completed' : ''}" 
+                 data-week="${week}">
+              Week ${week}
+            </div>
+          `;
+        }).join('');
+        
+        document.getElementById('week-buttons').innerHTML = weekButtonsHTML;
+        
+        // Add click listeners
+        document.querySelectorAll('.week-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const week = parseInt(btn.dataset.week);
+            currentWeek = week;
+            
+            document.querySelectorAll('.week-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            displayWeek(week);
+          });
+        });
+      }
+      
+      // Display games for a specific week
+      function displayWeek(week) {
+        const weekGames = allGames.filter(game => parseInt(game.week) === week);
+        
+        if (weekGames.length === 0) {
+          document.getElementById('games-title').textContent = `Week ${week} - No Games`;
+          document.getElementById('games-content').innerHTML = 
+            '<div class="no-games">No games scheduled for this week</div>';
+          document.getElementById('week-summary').style.display = 'none';
+          return;
+        }
+        
+        // Update title
+        document.getElementById('games-title').textContent = `Week ${week} Games`;
+        
+        // Update summary
+        const completedCount = weekGames.filter(game => game.completed === 'TRUE').length;
+        const upcomingCount = weekGames.length - completedCount;
+        
+        document.getElementById('total-games').textContent = weekGames.length;
+        document.getElementById('completed-games').textContent = completedCount;
+        document.getElementById('upcoming-games').textContent = upcomingCount;
+        document.getElementById('week-summary').style.display = 'block';
+        
+        // Group games by date
+        const gamesByDate = {};
+        weekGames.forEach(game => {
+          const date = game.date;
+          if (!gamesByDate[date]) {
+            gamesByDate[date] = [];
+          }
+          gamesByDate[date].push(game);
+        });
+        
+        // Generate HTML for each date
+        const datesHTML = Object.keys(gamesByDate)
+          .sort((a, b) => new Date(a) - new Date(b))
+          .map(date => {
+            const dateGames = gamesByDate[date];
+            
+            const gamesHTML = dateGames.map(game => {
+              const isCompleted = game.completed === 'TRUE';
+              const team1Score = parseFloat(game.team1_score || 0);
+              const team2Score = parseFloat(game.team2_score || 0);
+              const winner = game.winner;
+              
+              return `
+                <div class="game-card ${isCompleted ? 'completed' : 'upcoming'}">
+                  <div class="game-teams">
+                    <div class="team ${winner === game.team1_id ? 'winner' : ''}">
+                      <img src="${game.team1_id}.webp" alt="${game.team1_id}" class="team-logo" onerror="this.style.display='none'">
+                      <div>
+                        <div class="team-name">${getTeamName(game.team1_id)}</div>
+                        <div style="font-size: 0.8rem; color: #666;">${game.team1_id}</div>
+                      </div>
+                    </div>
+                    
+                    <div class="vs-divider">VS</div>
+                    
+                    <div class="team ${winner === game.team2_id ? 'winner' : ''}">
+                      <img src="${game.team2_id}.webp" alt="${game.team2_id}" class="team-logo" onerror="this.style.display='none'">
+                      <div>
+                        <div class="team-name">${getTeamName(game.team2_id)}</div>
+                        <div style="font-size: 0.8rem; color: #666;">${game.team2_id}</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="game-score">
+                    ${isCompleted ? `
+                      <div class="score-display">${team1Score.toFixed(1)} - ${team2Score.toFixed(1)}</div>
+                      <div class="game-status completed">Final</div>
+                    ` : `
+                      <div class="game-status upcoming">Upcoming</div>
+                    `}
+                  </div>
+                </div>
+              `;
+            }).join('');
+            
+            return `
+              <div class="date-section">
+                <div class="date-header">${formatDate(date)}</div>
+                <div class="games-grid">
+                  ${gamesHTML}
+                </div>
+              </div>
+            `;
+          }).join('');
+        
+        document.getElementById('games-content').innerHTML = datesHTML;
+      }
+      
+      // Initialize page
+      document.addEventListener('DOMContentLoaded', loadData);
+    </script>
+  </body>
+</html>
