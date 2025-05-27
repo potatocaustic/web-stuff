@@ -586,7 +586,7 @@
         const easternHTML = easternTeams.map(team => `
           <tr>
             <td>
-              <img src="${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
+              <img src="icons/${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
               ${team.team_name}
             </td>
             <td>${team.wins || 0}-${team.losses || 0}</td>
@@ -598,7 +598,7 @@
         const westernHTML = westernTeams.map(team => `
           <tr>
             <td>
-              <img src="${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
+              <img src="icons/${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
               ${team.team_name}
             </td>
             <td>${team.wins || 0}-${team.losses || 0}</td>
@@ -644,12 +644,12 @@
             <div class="game-item">
               <div class="game-teams">
                 <div class="team ${winner === game.team1_id ? 'winner' : ''}">
-                  <img src="${game.team1_id}.webp" alt="${game.team1_id}" class="team-logo" onerror="this.style.display='none'">
+                  <img src="icons/${game.team1_id}.webp" alt="${game.team1_id}" class="team-logo" onerror="this.style.display='none'">
                   <span class="team-name">${team1Name}</span>
                 </div>
                 <span class="vs">vs</span>
                 <div class="team ${winner === game.team2_id ? 'winner' : ''}">
-                  <img src="${game.team2_id}.webp" alt="${game.team2_id}" class="team-logo" onerror="this.style.display='none'">
+                  <img src="icons/${game.team2_id}.webp" alt="${game.team2_id}" class="team-logo" onerror="this.style.display='none'">
                   <span class="team-name">${team2Name}</span>
                 </div>
               </div>
