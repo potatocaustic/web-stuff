@@ -716,9 +716,10 @@
       
       // Load current week info and season stats
       async function loadSeasonInfo() {
-        const [schedule, transactions] = await Promise.all([
+        const [schedule, transactions, players] = await Promise.all([
           fetchSheetData('Schedule'),
-          fetchSheetData('Transaction_Log')
+          fetchSheetData('Transaction_Log'),
+          fetchSheetData('Players')
         ]);
         
         if (!schedule) {
@@ -765,10 +766,16 @@
           !t.notes?.toLowerCase().includes('preseason')
         ).length : 0;
         
+        // Calculate total karma earned this season
+        const totalKarma = players ? players
+          .filter(player => player.player_status === 'ACTIVE')
+          .reduce((sum, player) => sum + parseFloat(player.total_points || 0), 0) : 0;
+        
         // Update season info
         document.getElementById('season-stats').innerHTML = `
           <p><strong>${completedGames} of ${totalGames}</strong> regular season games complete</p>
-          <p><strong>${transactionCount}</strong> S7 transactions made to date (excludes pre-database moves)</p>
+          <p><strong>${transactionCount}</strong> transactions made this season (excludes pre-database moves)</p>
+          <p><strong>${Math.round(totalKarma).toLocaleString()}</strong> total karma earned this season</p>
         `;
       }
       
