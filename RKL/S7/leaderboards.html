@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RKL Season 7 Player Leaderboards - caustic.info</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
+    <style>
+      /* Reset and General Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        line-height: 1.6;
+      }
+      
+      h1, h2, h3 {
+        color: #333;
+      }
+
+      /* Header styling */
+      header {
+        background-color: #333;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+      
+      header h1 {
+        color: white !important;
+        font-size: 1.5rem;
+        margin: 0;
+      }
+      
+      nav ul {
+        display: flex;
+        justify-content: center;
+        list-style: none;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+      }
+      
+      nav ul li {
+        margin: 0.5rem 1rem;
+      }
+      
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 1.1rem;
+        transition: color 0.3s ease;
+      }
+      
+      nav ul li a:hover {
+        color: #ccc;
+      }
+
+      /* Main content */
+      main {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .page-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .page-header h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      /* Category selector */
+      .category-selector {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .selector-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+
+      .category-buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+      }
+
+      .category-btn {
+        background-color: #f8f9fa;
+        border: 2px solid #ddd;
+        border-radius: 6px;
+        padding: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        font-weight: 500;
+      }
+
+      .category-btn:hover {
+        background-color: #e9ecef;
+        border-color: #007bff;
+      }
+
+      .category-btn.active {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+      }
+
+      /* Leaderboard table */
+      .leaderboard-container {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .leaderboard-header {
+        background-color: #333;
+        color: white;
+        padding: 1.5rem;
+        text-align: center;
+      }
+
+      .leaderboard-header h3 {
+        color: white;
+        margin: 0;
+        font-size: 1.4rem;
+      }
+
+      .leaderboard-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .leaderboard-table th {
+        background-color: #f8f9fa;
+        padding: 1rem 0.5rem;
+        text-align: left;
+        font-weight: bold;
+        border-bottom: 2px solid #ddd;
+      }
+
+      .leaderboard-table td {
+        padding: 0.8rem 0.5rem;
+        border-bottom: 1px solid #eee;
+      }
+
+      .leaderboard-table tr:hover {
+        background-color: #f8f9fa;
+      }
+
+      .rank-cell {
+        text-align: center;
+        font-weight: bold;
+        width: 60px;
+      }
+
+      .player-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .team-logo {
+        width: 20px;
+        height: 20px;
+        border-radius: 2px;
+      }
+
+      .player-name {
+        font-weight: 500;
+      }
+
+      .team-name {
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      .stat-cell {
+        text-align: center;
+        font-weight: 500;
+      }
+
+      .top-rank {
+        background-color: #fff3cd;
+      }
+
+      .top-3 {
+        background-color: #d1ecf1;
+      }
+
+      /* Show/hide table controls */
+      .table-controls {
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #ddd;
+        text-align: center;
+      }
+
+      .show-count-selector {
+        margin: 0 1rem;
+      }
+
+      .show-count-selector select {
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+      }
+
+      /* Loading and error states */
+      .loading {
+        text-align: center;
+        padding: 3rem;
+        color: #666;
+        font-size: 1.1rem;
+      }
+
+      .error {
+        text-align: center;
+        padding: 2rem;
+        color: #dc3545;
+        background-color: #f8d7da;
+        border-radius: 4px;
+        margin: 1rem;
+      }
+
+      /* Mobile responsive */
+      @media (max-width: 768px) {
+        .category-buttons {
+          grid-template-columns: 1fr;
+        }
+        
+        .leaderboard-table th,
+        .leaderboard-table td {
+          padding: 0.5rem 0.3rem;
+          font-size: 0.9rem;
+        }
+        
+        .team-logo {
+          width: 16px;
+          height: 16px;
+        }
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        margin-top: 3rem;
+        padding: 1rem;
+        background-color: #333;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>RKL Season 7 Player Leaderboards</h1>
+      <nav>
+        <ul>
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="../rkl-stats.html">RKL Stats Database</a></li>
+          <li><a href="RKL-S7.html">Season 7</a></li>
+          <li><a href="standings.html">Standings</a></li>
+          <li><a href="leaderboards.html">Leaderboards</a></li>
+          <li><a href="schedule.html">Schedule</a></li>
+        </ul>
+      </nav>
+    </header>
+    
+    <main>
+      <div class="page-header">
+        <h2>Player Leaderboards</h2>
+        <p>Statistical leaders across all categories</p>
+      </div>
+
+      <!-- Category Selector -->
+      <div class="category-selector">
+        <div class="selector-title">Select Leaderboard Category</div>
+        <div class="category-buttons">
+          <div class="category-btn active" data-category="total_points">Total Points</div>
+          <div class="category-btn" data-category="rel_mean">REL Mean</div>
+          <div class="category-btn" data-category="rel_median">REL Median</div>
+          <div class="category-btn" data-category="aag_mean">Games Above Mean</div>
+          <div class="category-btn" data-category="aag_median">Games Above Median</div>
+          <div class="category-btn" data-category="games_played">Games Played</div>
+        </div>
+      </div>
+
+      <!-- Leaderboard Container -->
+      <div class="leaderboard-container">
+        <div class="leaderboard-header">
+          <h3 id="leaderboard-title">Total Points Leaders</h3>
+        </div>
+        
+        <div class="table-controls">
+          <span>Show: </span>
+          <select id="show-count" class="show-count-selector">
+            <option value="10">Top 10</option>
+            <option value="25" selected>Top 25</option>
+            <option value="50">Top 50</option>
+            <option value="all">All Players</option>
+          </select>
+        </div>
+        
+        <table class="leaderboard-table">
+          <thead id="table-header">
+            <tr>
+              <th>Rank</th>
+              <th>Player</th>
+              <th>Team</th>
+              <th>Points</th>
+              <th>Games</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-body">
+            <tr>
+              <td colspan="5" class="loading">Loading leaderboard data...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+    
+    <footer>
+      <p>&copy; caustic.info</p>
+    </footer>
+
+    <script>
+      // Configuration - REPLACE WITH YOUR ACTUAL GOOGLE SHEET ID
+      const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4'; // Replace this with your actual sheet ID
+      const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
+      
+      // Category definitions
+      const categories = {
+        total_points: {
+          title: 'Total Points Leaders',
+          columns: ['Rank', 'Player', 'Team', 'Points', 'Games'],
+          sortField: 'total_points',
+          descending: true,
+          formatValue: (value) => parseInt(value || 0).toLocaleString()
+        },
+        rel_mean: {
+          title: 'REL Mean Leaders',
+          columns: ['Rank', 'Player', 'Team', 'REL Mean', 'Games'],
+          sortField: 'rel_mean',
+          descending: true,
+          formatValue: (value) => parseFloat(value || 0).toFixed(1)
+        },
+        rel_median: {
+          title: 'REL Median Leaders', 
+          columns: ['Rank', 'Player', 'Team', 'REL Median', 'Games'],
+          sortField: 'rel_median',
+          descending: true,
+          formatValue: (value) => parseFloat(value || 0).toFixed(1)
+        },
+        aag_mean: {
+          title: 'Games Above Mean Leaders',
+          columns: ['Rank', 'Player', 'Team', 'Above Mean', 'Percentage'],
+          sortField: 'aag_mean_pct',
+          descending: true,
+          formatValue: (value, field) => {
+            if (field === 'aag_mean_pct') return `${(parseFloat(value || 0) * 100).toFixed(1)}%`;
+            return parseInt(value || 0).toString();
+          }
+        },
+        aag_median: {
+          title: 'Games Above Median Leaders',
+          columns: ['Rank', 'Player', 'Team', 'Above Median', 'Percentage'],
+          sortField: 'aag_median_pct',
+          descending: true,
+          formatValue: (value, field) => {
+            if (field === 'aag_median_pct') return `${(parseFloat(value || 0) * 100).toFixed(1)}%`;
+            return parseInt(value || 0).toString();
+          }
+        },
+        games_played: {
+          title: 'Games Played Leaders',
+          columns: ['Rank', 'Player', 'Team', 'Games', 'Total Points'],
+          sortField: 'games_played',
+          descending: true,
+          formatValue: (value) => parseInt(value || 0).toString()
+        }
+      };
+      
+      let currentCategory = 'total_points';
+      let allPlayers = [];
+      let allTeams = [];
+      
+      // Function to fetch data from Google Sheets
+      async function fetchSheetData(sheetName) {
+        try {
+          const response = await fetch(BASE_URL + encodeURIComponent(sheetName));
+          const csvText = await response.text();
+          return parseCSV(csvText);
+        } catch (error) {
+          console.error(`Error fetching ${sheetName}:`, error);
+          return null;
+        }
+      }
+      
+      // Simple CSV parser
+      function parseCSV(csvText) {
+        const lines = csvText.trim().split('\n');
+        const headers = lines[0].split(',').map(h => h.replace(/"/g, ''));
+        const data = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+          const values = lines[i].split(',').map(v => v.replace(/"/g, ''));
+          const row = {};
+          headers.forEach((header, index) => {
+            row[header] = values[index] || '';
+          });
+          data.push(row);
+        }
+        
+        return data;
+      }
+      
+      // Load initial data
+      async function loadData() {
+        const [players, teams] = await Promise.all([
+          fetchSheetData('Players'),
+          fetchSheetData('Teams')
+        ]);
+        
+        if (!players || !teams) {
+          document.getElementById('leaderboard-body').innerHTML = 
+            '<tr><td colspan="5" class="error">Error loading player data</td></tr>';
+          return;
+        }
+        
+        allPlayers = players.filter(player => 
+          player.player_status === 'ACTIVE' && parseInt(player.games_played || 0) > 0
+        );
+        allTeams = teams;
+        
+        displayLeaderboard();
+      }
+      
+      // Get team name from team ID
+      function getTeamName(teamId) {
+        const team = allTeams.find(t => t.team_id === teamId);
+        return team ? team.team_name : teamId;
+      }
+      
+      // Display leaderboard for current category
+      function displayLeaderboard() {
+        const category = categories[currentCategory];
+        const showCount = document.getElementById('show-count').value;
+        
+        // Update title and header
+        document.getElementById('leaderboard-title').textContent = category.title;
+        document.getElementById('table-header').innerHTML = `
+          <tr>
+            ${category.columns.map(col => `<th>${col}</th>`).join('')}
+          </tr>
+        `;
+        
+        // Sort players
+        const sortedPlayers = [...allPlayers].sort((a, b) => {
+          const aVal = parseFloat(a[category.sortField] || 0);
+          const bVal = parseFloat(b[category.sortField] || 0);
+          return category.descending ? bVal - aVal : aVal - bVal;
+        });
+        
+        // Limit results if needed
+        const playersToShow = showCount === 'all' ? sortedPlayers : 
+          sortedPlayers.slice(0, parseInt(showCount));
+        
+        // Generate table HTML
+        const tableHTML = playersToShow.map((player, index) => {
+          const rank = index + 1;
+          const rowClass = rank === 1 ? 'top-rank' : rank <= 3 ? 'top-3' : '';
+          
+          let statValue, secondaryValue;
+          
+          switch (currentCategory) {
+            case 'total_points':
+              statValue = category.formatValue(player.total_points);
+              secondaryValue = player.games_played || 0;
+              break;
+            case 'rel_mean':
+              statValue = category.formatValue(player.rel_mean);
+              secondaryValue = player.games_played || 0;
+              break;
+            case 'rel_median':
+              statValue = category.formatValue(player.rel_median);
+              secondaryValue = player.games_played || 0;
+              break;
+            case 'aag_mean':
+              statValue = player.aag_mean || 0;
+              secondaryValue = category.formatValue(player.aag_mean_pct, 'aag_mean_pct');
+              break;
+            case 'aag_median':
+              statValue = player.aag_median || 0;
+              secondaryValue = category.formatValue(player.aag_median_pct, 'aag_median_pct');
+              break;
+            case 'games_played':
+              statValue = player.games_played || 0;
+              secondaryValue = category.formatValue(player.total_points);
+              break;
+          }
+          
+          return `
+            <tr class="${rowClass}">
+              <td class="rank-cell">${rank}</td>
+              <td class="player-cell">
+                <img src="${player.current_team_id}.webp" alt="${player.current_team_id}" class="team-logo" onerror="this.style.display='none'">
+                <div>
+                  <div class="player-name">${player.player_handle}</div>
+                  <div class="team-name">${getTeamName(player.current_team_id)}</div>
+                </div>
+              </td>
+              <td class="stat-cell">${player.current_team_id}</td>
+              <td class="stat-cell">${statValue}</td>
+              <td class="stat-cell">${secondaryValue}</td>
+            </tr>
+          `;
+        }).join('');
+        
+        document.getElementById('leaderboard-body').innerHTML = tableHTML;
+      }
+      
+      // Event listeners
+      document.addEventListener('DOMContentLoaded', () => {
+        // Category button listeners
+        document.querySelectorAll('.category-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentCategory = btn.dataset.category;
+            displayLeaderboard();
+          });
+        });
+        
+        // Show count selector listener
+        document.getElementById('show-count').addEventListener('change', displayLeaderboard);
+        
+        // Load initial data
+        loadData();
+      });
+    </script>
+  </body>
+</html>
