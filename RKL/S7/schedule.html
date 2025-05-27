@@ -429,6 +429,15 @@
       const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4'; // Replace this with your actual sheet ID
       const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
       
+      // Helper function to format numbers in thousands (e.g., 36552 -> 36.6k)
+      function formatInThousands(value) {
+        const num = parseFloat(value);
+        if (num >= 1000) {
+          return (num / 1000).toFixed(1) + 'k';
+        }
+        return Math.round(num).toLocaleString();
+      }
+      
       let currentWeek = 1;
       let allGames = [];
       let allTeams = [];
@@ -603,7 +612,7 @@
                   
                   <div class="game-score">
                     ${isCompleted ? `
-                      <div class="score-display">${team1Score.toFixed(1)} - ${team2Score.toFixed(1)}</div>
+                      <div class="score-display">${formatInThousands(team1Score)} - ${formatInThousands(team2Score)}</div>
                       <div class="game-status completed">Final</div>
                     ` : `
                       <div class="game-status upcoming">Upcoming</div>
