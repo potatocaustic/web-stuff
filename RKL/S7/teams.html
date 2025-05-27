@@ -269,6 +269,12 @@
         .team-stats {
           grid-template-columns: 1fr 1fr;
         }
+        
+        /* Hide extra stats on mobile - only show record and PAM */
+        .team-stats .stat-item:nth-child(3),
+        .team-stats .stat-item:nth-child(4) {
+          display: none;
+        }
       }
 
       @media (max-width: 480px) {
