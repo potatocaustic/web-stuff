@@ -466,11 +466,11 @@
                   <div class="stat-label">Record</div>
                 </div>
                 <div class="stat-item">
-                  <div class="stat-value ${getPAMClass(pam)}">${Math.round(pam)}</div>
+                  <div class="stat-value ${getPAMClass(pam)}">${Math.round(pam).toLocaleString()}</div>
                   <div class="stat-label">PAM</div>
                 </div>
                 <div class="stat-item">
-                  <div class="stat-value">${avgRank > 0 ? avgRank.toFixed(1) : '-'}</div>
+                  <div class="stat-value">${avgRank > 0 ? Math.round(avgRank) : '-'}</div>
                   <div class="stat-label">Avg Rank</div>
                 </div>
                 <div class="stat-item">
