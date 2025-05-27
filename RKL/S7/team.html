@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title id="page-title">RKL Season 7 Team - caustic.info</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
+    <style>
+      /* Reset and General Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        line-height: 1.6;
+      }
+      
+      h1, h2, h3 {
+        color: #333;
+      }
+
+      /* Header styling */
+      header {
+        background-color: #333;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+      
+      header h1 {
+        color: white !important;
+        font-size: 1.5rem;
+        margin: 0;
+      }
+      
+      nav ul {
+        display: flex;
+        justify-content: center;
+        list-style: none;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+      }
+      
+      nav ul li {
+        margin: 0.5rem 1rem;
+      }
+      
+      nav ul li a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 1.1rem;
+        transition: color 0.3s ease;
+      }
+      
+      nav ul li a:hover {
+        color: #ccc;
+      }
+
+      /* Main content */
+      main {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      /* Team header */
+      .team-header {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+
+      .team-main-info {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .team-logo-large {
+        width: 80px;
+        height: 80px;
+        border-radius: 8px;
+        border: 2px solid #ddd;
+      }
+
+      .team-details h2 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .team-subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        margin-bottom: 0.5rem;
+      }
+
+      .gm-info {
+        font-size: 1.1rem;
+        color: #007bff;
+        font-weight: 500;
+      }
+
+      /* Team stats grid */
+      .team-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+
+      .stat-card {
+        background-color: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 6px;
+        text-align: center;
+        border: 1px solid #ddd;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        color: #666;
+        margin-top: 0.5rem;
+      }
+
+      .positive {
+        color: #28a745;
+      }
+
+      .negative {
+        color: #dc3545;
+      }
+
+      /* Content grid */
+      .content-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      /* Roster section */
+      .roster-section {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .section-header {
+        background-color: #333;
+        color: white;
+        padding: 1.5rem;
+        text-align: center;
+      }
+
+      .section-header h3 {
+        color: white;
+        margin: 0;
+        font-size: 1.4rem;
+      }
+
+      .roster-list {
+        padding: 1.5rem;
+      }
+
+      .player-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+        transition: background-color 0.2s;
+      }
+
+      .player-item:hover {
+        background-color: #f8f9fa;
+      }
+
+      .player-item:last-child {
+        border-bottom: none;
+      }
+
+      .player-info {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .player-name {
+        font-weight: 500;
+        font-size: 1.1rem;
+      }
+
+      .player-stats {
+        font-size: 0.9rem;
+        color: #666;
+        margin-top: 0.2rem;
+      }
+
+      .player-points {
+        font-weight: bold;
+        font-size: 1.1rem;
+        color: #333;
+      }
+
+      /* Recent games */
+      .recent-games {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .games-list {
+        padding: 1.5rem;
+      }
+
+      .game-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+        transition: background-color 0.2s;
+      }
+
+      .game-item:hover {
+        background-color: #f8f9fa;
+      }
+
+      .game-item:last-child {
+        border-bottom: none;
+      }
+
+      .game-opponent {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .opponent-logo {
+        width: 24px;
+        height: 24px;
+        border-radius: 2px;
+      }
+
+      .game-result {
+        text-align: right;
+      }
+
+      .game-score {
+        font-weight: bold;
+        font-size: 1.1rem;
+      }
+
+      .game-date {
+        font-size: 0.8rem;
+        color: #666;
+      }
+
+      .win {
+        color: #28a745;
+      }
+
+      .loss {
+        color: #dc3545;
+      }
+
+      /* Draft capital section */
+      .draft-capital {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-top: 2rem;
+      }
+
+      .picks-list {
+        padding: 1.5rem;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .pick-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8rem;
+        border-bottom: 1px solid #eee;
+        font-family: monospace;
+        font-size: 0.9rem;
+      }
+
+      .pick-item:last-child {
+        border-bottom: none;
+      }
+
+      .pick-description {
+        font-weight: 500;
+      }
+
+      .pick-origin {
+        color: #666;
+        font-size: 0.8rem;
+      }
+
+      /* Loading states */
+      .loading {
+        text-align: center;
+        padding: 3rem;
+        color: #666;
+        font-size: 1.1rem;
+      }
+
+      .error {
+        text-align: center;
+        padding: 2rem;
+        color: #dc3545;
+        background-color: #f8d7da;
+        border-radius: 4px;
+        margin: 1rem;
+      }
+
+      /* Mobile responsive */
+      @media (max-width: 768px) {
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+        
+        .team-main-info {
+          flex-direction: column;
+          gap: 1rem;
+        }
+        
+        .team-stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .player-item,
+        .game-item {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.5rem;
+        }
+      }
+
+      /* Back button */
+      .back-button {
+        background-color: #007bff;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 1rem;
+        display: inline-block;
+        margin-bottom: 2rem;
+        transition: background-color 0.3s;
+      }
+
+      .back-button:hover {
+        background-color: #0056b3;
+        text-decoration: none;
+        color: white;
+      }
+
+      /* Footer */
+      footer {
+        text-align: center;
+        margin-top: 3rem;
+        padding: 1rem;
+        background-color: #333;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1 id="header-title">RKL Season 7 Team</h1>
+      <nav>
+        <ul>
+          <li><a href="../../index.html">Home</a></li>
+          <li><a href="../rkl-stats.html">RKL Stats Database</a></li>
+          <li><a href="RKL-S7.html">Season 7</a></li>
+          <li><a href="standings.html">Standings</a></li>
+          <li><a href="teams.html">Teams</a></li>
+        </ul>
+      </nav>
+    </header>
+    
+    <main>
+      <a href="teams.html" class="back-button">← Back to All Teams</a>
+      
+      <!-- Team Header -->
+      <div class="team-header">
+        <div class="team-main-info" id="team-main-info">
+          <div class="loading">Loading team information...</div>
+        </div>
+        
+        <div class="team-stats-grid" id="team-stats" style="display: none;">
+          <!-- Stats will be populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Content Grid -->
+      <div class="content-grid">
+        <!-- Roster -->
+        <div class="roster-section">
+          <div class="section-header">
+            <h3>Current Roster</h3>
+          </div>
+          <div class="roster-list" id="roster-list">
+            <div class="loading">Loading roster...</div>
+          </div>
+        </div>
+
+        <!-- Recent Games -->
+        <div class="recent-games">
+          <div class="section-header">
+            <h3>Recent Games</h3>
+          </div>
+          <div class="games-list" id="recent-games">
+            <div class="loading">Loading recent games...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Draft Capital -->
+      <div class="draft-capital">
+        <div class="section-header">
+          <h3>Draft Capital</h3>
+        </div>
+        <div class="picks-list" id="draft-picks">
+          <div class="loading">Loading draft picks...</div>
+        </div>
+      </div>
+    </main>
+    
+    <footer>
+      <p>&copy; caustic.info</p>
+    </footer>
+
+    <script>
+      // Configuration - REPLACE WITH YOUR ACTUAL GOOGLE SHEET ID
+      const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4'; // Replace this with your actual sheet ID
+      const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
+      
+      let teamId = null;
+      let teamData = null;
+      
+      // Function to fetch data from Google Sheets
+      async function fetchSheetData(sheetName) {
+        try {
+          const response = await fetch(BASE_URL + encodeURIComponent(sheetName));
+          const csvText = await response.text();
+          return parseCSV(csvText);
+        } catch (error) {
+          console.error(`Error fetching ${sheetName}:`, error);
+          return null;
+        }
+      }
+      
+      // Simple CSV parser
+      function parseCSV(csvText) {
+        const lines = csvText.trim().split('\n');
+        const headers = lines[0].split(',').map(h => h.replace(/"/g, ''));
+        const data = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+          const values = lines[i].split(',').map(v => v.replace(/"/g, ''));
+          const row = {};
+          headers.forEach((header, index) => {
+            row[header] = values[index] || '';
+          });
+          data.push(row);
+        }
+        
+        return data;
+      }
+      
+      // Get URL parameter
+      function getUrlParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+      }
+      
+      // Format date
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }
+      
+      // Load team data
+      async function loadTeamData() {
+        teamId = getUrlParameter('id');
+        if (!teamId) {
+          document.getElementById('team-main-info').innerHTML = 
+            '<div class="error">No team specified</div>';
+          return;
+        }
+        
+        const teams = await fetchSheetData('Teams');
+        if (!teams) {
+          document.getElementById('team-main-info').innerHTML = 
+            '<div class="error">Error loading team data</div>';
+          return;
+        }
+        
+        teamData = teams.find(team => team.team_id === teamId);
+        if (!teamData) {
+          document.getElementById('team-main-info').innerHTML = 
+            '<div class="error">Team not found</div>';
+          return;
+        }
+        
+        displayTeamHeader();
+        
+        // Load other data in parallel
+        await Promise.all([
+          loadRoster(),
+          loadRecentGames(),
+          loadDraftCapital()
+        ]);
+      }
+      
+      // Display team header
+      function displayTeamHeader() {
+        // Update page title
+        document.getElementById('page-title').textContent = `${teamData.team_name} - RKL Season 7`;
+        document.getElementById('header-title').textContent = teamData.team_name;
+        
+        // Team main info
+        const wins = parseInt(teamData.wins || 0);
+        const losses = parseInt(teamData.losses || 0);
+        const pam = parseFloat(teamData.pam || 0);
+        
+        document.getElementById('team-main-info').innerHTML = `
+          <img src="${teamData.team_id}.webp" alt="${teamData.team_name}" class="team-logo-large" onerror="this.style.display='none'">
+          <div class="team-details">
+            <h2>${teamData.team_name}</h2>
+            <div class="team-subtitle">${teamData.team_id} • ${teamData.conference} Conference</div>
+            <div class="gm-info">General Manager: ${teamData.gm_handle}</div>
+          </div>
+        `;
+        
+        // Team stats
+        document.getElementById('team-stats').innerHTML = `
+          <div class="stat-card">
+            <div class="stat-value ${wins > losses ? 'positive' : losses > wins ? 'negative' : ''}">${wins}-${losses}</div>
+            <div class="stat-label">Record</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value ${pam > 0 ? 'positive' : pam < 0 ? 'negative' : ''}">${pam.toFixed(1)}</div>
+            <div class="stat-label">PAM</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${parseFloat(teamData.med_starter_rank || 0).toFixed(1)}</div>
+            <div class="stat-label">Avg Starter Rank</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${teamData.total_transactions || 0}</div>
+            <div class="stat-label">Transactions</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${teamData.roster_moves || 0}</div>
+            <div class="stat-label">Roster Moves</div>
+          </div>
+        `;
+        
+        document.getElementById('team-stats').style.display = 'grid';
+      }
+      
+      // Load roster
+      async function loadRoster() {
+        const players = await fetchSheetData('Players');
+        if (!players) {
+          document.getElementById('roster-list').innerHTML = 
+            '<div class="error">Error loading roster data</div>';
+          return;
+        }
+        
+        const teamPlayers = players
+          .filter(player => player.current_team_id === teamId && player.player_status === 'ACTIVE')
+          .sort((a, b) => parseInt(b.total_points || 0) - parseInt(a.total_points || 0));
+        
+        if (teamPlayers.length === 0) {
+          document.getElementById('roster-list').innerHTML = 
+            '<div style="text-align: center; padding: 2rem; color: #666;">No active players found</div>';
+          return;
+        }
+        
+        const rosterHTML = teamPlayers.map(player => `
+          <div class="player-item">
+            <div class="player-info">
+              <div class="player-name">${player.player_handle}</div>
+              <div class="player-stats">
+                ${parseInt(player.games_played || 0)} games • 
+                ${(parseFloat(player.total_points || 0) / Math.max(1, parseInt(player.games_played || 0))).toFixed(1)} avg
+              </div>
+            </div>
+            <div class="player-points">${parseInt(player.total_points || 0).toLocaleString()}</div>
+          </div>
+        `).join('');
+        
+        document.getElementById('roster-list').innerHTML = rosterHTML;
+      }
+      
+      // Load recent games
+      async function loadRecentGames() {
+        const schedule = await fetchSheetData('Schedule');
+        if (!schedule) {
+          document.getElementById('recent-games').innerHTML = 
+            '<div class="error">Error loading games data</div>';
+          return;
+        }
+        
+        const teamGames = schedule
+          .filter(game => 
+            (game.team1_id === teamId || game.team2_id === teamId) && 
+            game.completed === 'TRUE'
+          )
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .slice(0, 5);
+        
+        if (teamGames.length === 0) {
+          document.getElementById('recent-games').innerHTML = 
+            '<div style="text-align: center; padding: 2rem; color: #666;">No completed games yet</div>';
+          return;
+        }
+        
+        const gamesHTML = teamGames.map(game => {
+          const isTeam1 = game.team1_id === teamId;
+          const opponent = isTeam1 ? game.team2_id : game.team1_id;
+          const teamScore = parseFloat(isTeam1 ? game.team1_score : game.team2_score);
+          const oppScore = parseFloat(isTeam1 ? game.team2_score : game.team1_score);
+          const won = teamScore > oppScore;
+          
+          return `
+            <div class="game-item">
+              <div class="game-opponent">
+                <img src="${opponent}.webp" alt="${opponent}" class="opponent-logo" onerror="this.style.display='none'">
+                <span>vs ${opponent}</span>
+              </div>
+              <div class="game-result">
+                <div class="game-score ${won ? 'win' : 'loss'}">
+                  ${won ? 'W' : 'L'} ${teamScore.toFixed(1)}-${oppScore.toFixed(1)}
+                </div>
+                <div class="game-date">${formatDate(game.date)}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+        
+        document.getElementById('recent-games').innerHTML = gamesHTML;
+      }
+      
+      // Load draft capital
+      async function loadDraftCapital() {
+        const draftPicks = await fetchSheetData('Draft_Capital');
+        if (!draftPicks) {
+          document.getElementById('draft-picks').innerHTML = 
+            '<div class="error">Error loading draft capital data</div>';
+          return;
+        }
+        
+        const teamPicks = draftPicks
+          .filter(pick => pick.current_owner === teamId)
+          .sort((a, b) => {
+            const seasonA = parseInt(a.season || 0);
+            const seasonB = parseInt(b.season || 0);
+            if (seasonA !== seasonB) return seasonA - seasonB;
+            return parseInt(a.round || 0) - parseInt(b.round || 0);
+          });
+        
+        if (teamPicks.length === 0) {
+          document.getElementById('draft-picks').innerHTML = 
+            '<div style="text-align: center; padding: 2rem; color: #666;">No draft picks owned</div>';
+          return;
+        }
+        
+        const picksHTML = teamPicks.map(pick => `
+          <div class="pick-item">
+            <div class="pick-description">${pick.pick_description}</div>
+            <div class="pick-origin">
+              ${pick.original_team !== teamId ? `(from ${pick.original_team})` : '(own pick)'}
+            </div>
+          </div>
+        `).join('');
+        
+        document.getElementById('draft-picks').innerHTML = picksHTML;
+      }
+      
+      // Initialize page
+      document.addEventListener('DOMContentLoaded', loadTeamData);
+    </script>
+  </body>
+</html>
