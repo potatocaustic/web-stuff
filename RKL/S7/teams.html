@@ -141,6 +141,13 @@
         height: 48px;
         border-radius: 4px;
         border: 1px solid #ddd;
+        background-color: #007bff;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.8rem;
       }
 
       .team-info {
@@ -409,8 +416,16 @@
           return;
         }
         
+        // Filter out retired and free agent entries
+        const activeTeams = teams.filter(team => 
+          team.team_id && 
+          team.team_id !== 'RETIRED' && 
+          team.team_id !== 'FREE_AGENT' &&
+          team.conference
+        );
+        
         // Separate and sort teams by conference
-        const easternTeams = teams
+        const easternTeams = activeTeams
           .filter(team => team.conference === 'Eastern')
           .sort((a, b) => {
             const winsA = parseInt(a.wins || 0);
@@ -419,7 +434,7 @@
             return parseFloat(b.pam || 0) - parseFloat(a.pam || 0);
           });
           
-        const westernTeams = teams
+        const westernTeams = activeTeams
           .filter(team => team.conference === 'Western')
           .sort((a, b) => {
             const winsA = parseInt(a.wins || 0);
@@ -428,9 +443,8 @@
             return parseFloat(b.pam || 0) - parseFloat(a.pam || 0);
           });
         
-        // Generate Eastern Conference HTML
-        const easternHTML = easternTeams.map((team, index) => {
-          const rank = index + 1;
+        // Generate team card HTML function
+        function generateTeamCard(team, rank) {
           const wins = parseInt(team.wins || 0);
           const losses = parseInt(team.losses || 0);
           const pam = parseFloat(team.pam || 0);
@@ -438,9 +452,9 @@
           
           return `
             <a href="team.html?id=${team.team_id}" class="team-card">
-              ${getPlayoffIndicator('Eastern', rank)}
+              ${getPlayoffIndicator(team.conference, rank)}
               <div class="team-header">
-                <img src="${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
+                <div class="team-logo">${team.team_id}</div>
                 <div class="team-info">
                   <div class="team-name">${team.team_name}</div>
                   <div class="team-id">${team.team_id}</div>
@@ -468,48 +482,16 @@
               </div>
             </a>
           `;
+        }
+        
+        // Generate Eastern Conference HTML
+        const easternHTML = easternTeams.map((team, index) => {
+          return generateTeamCard(team, index + 1);
         }).join('');
         
         // Generate Western Conference HTML
         const westernHTML = westernTeams.map((team, index) => {
-          const rank = index + 1;
-          const wins = parseInt(team.wins || 0);
-          const losses = parseInt(team.losses || 0);
-          const pam = parseFloat(team.pam || 0);
-          const avgRank = parseFloat(team.med_starter_rank || 0);
-          
-          return `
-            <a href="team.html?id=${team.team_id}" class="team-card">
-              ${getPlayoffIndicator('Western', rank)}
-              <div class="team-header">
-                <img src="${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
-                <div class="team-info">
-                  <div class="team-name">${team.team_name}</div>
-                  <div class="team-id">${team.team_id}</div>
-                  <div class="gm-name">GM: ${team.gm_handle}</div>
-                </div>
-              </div>
-              
-              <div class="team-stats">
-                <div class="stat-item">
-                  <div class="stat-value ${getRecordClass(wins, losses)}">${wins}-${losses}</div>
-                  <div class="stat-label">Record</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value ${getPAMClass(pam)}">${pam.toFixed(1)}</div>
-                  <div class="stat-label">PAM</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value">${avgRank > 0 ? avgRank.toFixed(1) : '-'}</div>
-                  <div class="stat-label">Avg Rank</div>
-                </div>
-                <div class="stat-item">
-                  <div class="stat-value">${team.total_transactions || 0}</div>
-                  <div class="stat-label">Transactions</div>
-                </div>
-              </div>
-            </a>
-          `;
+          return generateTeamCard(team, index + 1);
         }).join('');
         
         // Update the grids
@@ -521,8 +503,8 @@
         // Debug logging
         console.log('Eastern teams:', easternTeams.length);
         console.log('Western teams:', westernTeams.length);
-        console.log('All teams:', teams.length);
-        console.log('Sample team data:', teams[0]);
+        console.log('Total active teams:', activeTeams.length);
+        console.log('Sample team data:', activeTeams[0]);
       }
       
       // Initialize page
