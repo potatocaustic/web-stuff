@@ -294,7 +294,7 @@
       <div class="category-selector">
         <div class="selector-title">Select Leaderboard Category</div>
         <div class="category-buttons">
-          <div class="category-btn active" data-category="total_points">Total Points</div>
+          <div class="category-btn active" data-category="total_points">Total Karma</div>
           <div class="category-btn" data-category="rel_mean">REL Mean</div>
           <div class="category-btn" data-category="rel_median">REL Median</div>
           <div class="category-btn" data-category="aag_mean">Games Above Mean</div>
@@ -306,7 +306,7 @@
       <!-- Leaderboard Container -->
       <div class="leaderboard-container">
         <div class="leaderboard-header">
-          <h3 id="leaderboard-title">Total Points Leaders</h3>
+          <h3 id="leaderboard-title">Total Karma Leaders</h3>
         </div>
         
         <div class="table-controls">
@@ -325,7 +325,7 @@
               <th>Rank</th>
               <th>Player</th>
               <th>Team</th>
-              <th>Points</th>
+              <th>Karma</th>
               <th>Games</th>
             </tr>
           </thead>
@@ -347,28 +347,37 @@
       const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4'; // Replace this with your actual sheet ID
       const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
       
+      // Helper function to format numbers in thousands (e.g., 36552 -> 36.6k)
+      function formatInThousands(value) {
+        const num = parseFloat(value);
+        if (num >= 1000) {
+          return (num / 1000).toFixed(1) + 'k';
+        }
+        return Math.round(num).toLocaleString();
+      }
+      
       // Category definitions
       const categories = {
         total_points: {
-          title: 'Total Points Leaders',
-          columns: ['Rank', 'Player', 'Team', 'Points', 'Games'],
+          title: 'Total Karma Leaders',
+          columns: ['Rank', 'Player', 'Team', 'Karma', 'Games'],
           sortField: 'total_points',
           descending: true,
-          formatValue: (value) => parseInt(value || 0).toLocaleString()
+          formatValue: (value) => formatInThousands(value)
         },
         rel_mean: {
           title: 'REL Mean Leaders',
           columns: ['Rank', 'Player', 'Team', 'REL Mean', 'Games'],
           sortField: 'rel_mean',
           descending: true,
-          formatValue: (value) => parseFloat(value || 0).toFixed(1)
+          formatValue: (value) => Math.round(parseFloat(value || 0))
         },
         rel_median: {
           title: 'REL Median Leaders', 
           columns: ['Rank', 'Player', 'Team', 'REL Median', 'Games'],
           sortField: 'rel_median',
           descending: true,
-          formatValue: (value) => parseFloat(value || 0).toFixed(1)
+          formatValue: (value) => Math.round(parseFloat(value || 0))
         },
         aag_mean: {
           title: 'Games Above Mean Leaders',
@@ -392,7 +401,7 @@
         },
         games_played: {
           title: 'Games Played Leaders',
-          columns: ['Rank', 'Player', 'Team', 'Games', 'Total Points'],
+          columns: ['Rank', 'Player', 'Team', 'Games', 'Total Karma'],
           sortField: 'games_played',
           descending: true,
           formatValue: (value) => parseInt(value || 0).toString()
@@ -514,7 +523,7 @@
               break;
             case 'games_played':
               statValue = player.games_played || 0;
-              secondaryValue = category.formatValue(player.total_points);
+              secondaryValue = formatInThousands(player.total_points);
               break;
           }
           
