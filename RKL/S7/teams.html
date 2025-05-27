@@ -166,13 +166,7 @@
         font-size: 1.3rem;
         font-weight: bold;
         color: #333;
-        margin-bottom: 0.2rem;
-      }
-
-      .team-id {
-        font-size: 0.9rem;
-        color: #666;
-        font-family: monospace;
+        margin-bottom: 0.5rem;
       }
 
       .gm-name {
@@ -465,10 +459,9 @@
                 <img src="icons/${team.team_id}.webp" 
                      alt="${team.team_name}" 
                      class="team-logo" 
-                     onerror="this.outerHTML='<div class=\\"team-logo-fallback\\">${team.team_id}</div>
+                     onerror="this.outerHTML='<div class=\\"team-logo-fallback\\">${team.team_id}</div>'">
                 <div class="team-info">
                   <div class="team-name">${team.team_name}</div>
-                  <div class="team-id">${team.team_id}</div>
                   <div class="gm-name">GM: ${team.gm_handle}</div>
                 </div>
               </div>
