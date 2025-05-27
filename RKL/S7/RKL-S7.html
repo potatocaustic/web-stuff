@@ -282,7 +282,7 @@
         border-bottom: none;
       }
 
-      .game-teams {
+      .game-matchup {
         display: flex;
         align-items: center;
         gap: 1rem;
@@ -293,7 +293,7 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        min-width: 120px;
+        min-width: 140px;
       }
 
       .team-name {
@@ -301,17 +301,17 @@
         font-size: 0.9rem;
       }
 
+      .team-score {
+        font-weight: bold;
+        color: #333;
+        margin-left: 0.5rem;
+        min-width: 35px;
+      }
+
       .vs {
         font-weight: bold;
         color: #666;
         margin: 0 0.5rem;
-      }
-
-      .game-score {
-        font-weight: bold;
-        color: #333;
-        text-align: center;
-        min-width: 80px;
       }
 
       .game-date {
@@ -378,7 +378,6 @@
           gap: 0.5rem;
         }
 
-        .game-score,
         .game-date {
           text-align: left;
         }
@@ -422,8 +421,9 @@
 
       <div class="season-info">
         <p><strong>Current Week:</strong> <span id="current-week">Loading...</span></p>
-        <p><strong>Teams:</strong> 30 (15 Eastern, 15 Western)</p>
-        <p><strong>Format:</strong> 15 weeks regular season, 6 starters per team</p>
+        <div id="season-stats">
+          <p>Loading season statistics...</p>
+        </div>
       </div>
 
       <!-- Quick Navigation -->
@@ -642,19 +642,18 @@
           
           return `
             <div class="game-item">
-              <div class="game-teams">
+              <div class="game-matchup">
                 <div class="team ${winner === game.team1_id ? 'winner' : ''}">
                   <img src="icons/${game.team1_id}.webp" alt="${game.team1_id}" class="team-logo" onerror="this.style.display='none'">
                   <span class="team-name">${team1Name}</span>
+                  <span class="team-score">${formatInThousands(team1Score)}</span>
                 </div>
                 <span class="vs">vs</span>
                 <div class="team ${winner === game.team2_id ? 'winner' : ''}">
                   <img src="icons/${game.team2_id}.webp" alt="${game.team2_id}" class="team-logo" onerror="this.style.display='none'">
                   <span class="team-name">${team2Name}</span>
+                  <span class="team-score">${formatInThousands(team2Score)}</span>
                 </div>
-              </div>
-              <div class="game-score">
-                ${formatInThousands(team1Score)} - ${formatInThousands(team2Score)}
               </div>
               <div class="game-date">
                 ${formatDate(game.date)}
@@ -666,19 +665,62 @@
         document.getElementById('recent-games').innerHTML = gamesHTML;
       }
       
-      // Load current week info
-      async function loadCurrentWeek() {
-        const schedule = await fetchSheetData('Schedule');
+      // Load current week info and season stats
+      async function loadSeasonInfo() {
+        const [schedule, transactions] = await Promise.all([
+          fetchSheetData('Schedule'),
+          fetchSheetData('Transaction_Log')
+        ]);
+        
         if (!schedule) {
           document.getElementById('current-week').textContent = 'Unknown';
+          document.getElementById('season-stats').innerHTML = '<p>Error loading season information</p>';
           return;
         }
         
-        // Find the latest week with games
-        const weeks = [...new Set(schedule.map(game => parseInt(game.week)))].sort((a, b) => b - a);
-        const currentWeek = weeks[0] || 1;
+        // Find the current week (latest week with incomplete games, or if all complete, the latest week)
+        const gamesByWeek = {};
+        schedule.forEach(game => {
+          const week = parseInt(game.week);
+          if (!gamesByWeek[week]) {
+            gamesByWeek[week] = { total: 0, completed: 0 };
+          }
+          gamesByWeek[week].total++;
+          if (game.completed === 'TRUE') {
+            gamesByWeek[week].completed++;
+          }
+        });
+        
+        let currentWeek = 1;
+        const weeks = Object.keys(gamesByWeek).map(w => parseInt(w)).sort((a, b) => a - b);
+        
+        // Find first week with incomplete games, or last week if all complete
+        for (const week of weeks) {
+          if (gamesByWeek[week].completed < gamesByWeek[week].total) {
+            currentWeek = week;
+            break;
+          }
+          currentWeek = week; // Keep updating to get the last week if all are complete
+        }
         
         document.getElementById('current-week').textContent = `Week ${currentWeek}`;
+        
+        // Calculate total games and completed games
+        const totalGames = schedule.length;
+        const completedGames = schedule.filter(game => game.completed === 'TRUE').length;
+        
+        // Count transactions (excluding any pre-database moves if they have a specific marker)
+        const transactionCount = transactions ? transactions.filter(t => 
+          t.transaction_type && 
+          !t.notes?.toLowerCase().includes('pre-database') &&
+          !t.notes?.toLowerCase().includes('preseason')
+        ).length : 0;
+        
+        // Update season info
+        document.getElementById('season-stats').innerHTML = `
+          <p><strong>${completedGames} of ${totalGames}</strong> regular season games complete</p>
+          <p><strong>${transactionCount}</strong> S7 transactions made to date (excludes pre-database moves)</p>
+        `;
       }
       
       // Initialize page
@@ -686,7 +728,7 @@
         await Promise.all([
           loadStandingsPreview(),
           loadRecentGames(),
-          loadCurrentWeek()
+          loadSeasonInfo()
         ]);
       }
       
