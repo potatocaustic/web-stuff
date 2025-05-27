@@ -185,6 +185,21 @@
         color: white;
       }
 
+      .transaction-type.drop {
+        background-color: #ffc107;
+        color: #333;
+      }
+
+      .transaction-type.gm_resignation {
+        background-color: #6c757d;
+        color: white;
+      }
+
+      .transaction-type.gm_hired {
+        background-color: #17a2b8;
+        color: white;
+      }
+
       .transaction-date {
         font-size: 0.9rem;
         color: #666;
@@ -197,6 +212,11 @@
       .player-name {
         font-weight: bold;
         color: #007bff;
+      }
+
+      .gm-name {
+        font-weight: bold;
+        color: #17a2b8;
       }
 
       .team-name {
@@ -364,6 +384,9 @@
               <option value="TRADE">Trades</option>
               <option value="RETIREMENT">Retirements</option>
               <option value="UNRETIREMENT">Unretirements</option>
+              <option value="DROP">Drops</option>
+              <option value="GM_RESIGNATION">GM Resignations</option>
+              <option value="GM_HIRED">GM Hirings</option>
             </select>
           </div>
           
@@ -517,7 +540,7 @@
           
           // Team filter
           if (teamFilter !== 'all') {
-            const involvedTeams = [transaction.from_team, transaction.to_team].filter(Boolean);
+            const involvedTeams = [transaction.from_team, transaction.to_team, transaction.gm_involved].filter(Boolean);
             if (!involvedTeams.includes(teamFilter)) {
               return false;
             }
@@ -572,7 +595,7 @@
         document.getElementById('transactions-list').innerHTML = transactionsHTML;
       }
       
-      // Render a single transaction (retirement, etc.)
+      // Render a single transaction (retirement, drop, GM changes, etc.)
       function renderSingleTransaction(transaction) {
         const typeClass = transaction.transaction_type.toLowerCase();
         
@@ -584,14 +607,27 @@
           case 'UNRETIREMENT':
             details = `<span class="player-name">${transaction.player_handle}</span> unretired and joined <span class="team-name">${getTeamName(transaction.to_team)}</span>`;
             break;
+          case 'DROP':
+            details = `<span class="player-name">${transaction.player_handle}</span> dropped by <span class="team-name">${getTeamName(transaction.from_team)}</span>`;
+            break;
+          case 'GM_RESIGNATION':
+            details = `<span class="gm-name">${transaction.gm_involved}</span> resigned as GM of <span class="team-name">${getTeamName(transaction.from_team)}</span>`;
+            break;
+          case 'GM_HIRED':
+            details = `<span class="gm-name">${transaction.gm_involved}</span> hired as GM of <span class="team-name">${getTeamName(transaction.to_team)}</span>`;
+            break;
           default:
-            details = `<span class="player-name">${transaction.player_handle}</span> moved from <span class="team-name">${getTeamName(transaction.from_team)}</span> to <span class="team-name">${getTeamName(transaction.to_team)}</span>`;
+            if (transaction.player_handle) {
+              details = `<span class="player-name">${transaction.player_handle}</span> moved from <span class="team-name">${getTeamName(transaction.from_team)}</span> to <span class="team-name">${getTeamName(transaction.to_team)}</span>`;
+            } else {
+              details = `Unknown transaction type: ${transaction.transaction_type}`;
+            }
         }
         
         return `
           <div class="transaction-item">
             <div class="transaction-header">
-              <span class="transaction-type ${typeClass}">${transaction.transaction_type}</span>
+              <span class="transaction-type ${typeClass}">${transaction.transaction_type.replace('_', ' ')}</span>
               <span class="transaction-date">Week ${transaction.week} - ${formatDate(transaction.date)}</span>
             </div>
             <div class="transaction-details">
