@@ -602,7 +602,7 @@
         let details = '';
         switch (transaction.transaction_type) {
           case 'RETIREMENT':
-            details = `<span class="player-name">${transaction.player_handle}</span> retired from <span class="team-name">${getTeamName(transaction.from_team)}</span>`;
+            details = `<span class="player-name">${transaction.player_handle}</span> retired from the <span class="team-name">${getTeamName(transaction.from_team)}</span>.`;
             break;
           case 'UNRETIREMENT':
             details = `<span class="player-name">${transaction.player_handle}</span> unretired and joined <span class="team-name">${getTeamName(transaction.to_team)}</span>`;
