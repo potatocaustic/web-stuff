@@ -185,7 +185,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 1rem 1.5rem;
+        padding: 1rem;
         background-color: #f8f9fa;
         border-bottom: 2px solid #ddd;
         font-weight: bold;
@@ -193,8 +193,17 @@
         color: #666;
       }
 
+      .roster-header .header-player {
+        flex: 1;
+      }
+
+      .roster-header .header-rel {
+        min-width: 60px;
+        text-align: center;
+      }
+
       .roster-content {
-        padding: 1.5rem;
+        padding: 0 1rem 1.5rem 1rem;
       }
 
       .player-item {
@@ -279,9 +288,11 @@
       .opponent-logo {
         width: 24px;
         height: 24px;
-        border-radius: 50%;
+        border-radius: 50% !important;
         object-fit: cover;
         background-color: #fff;
+        clip-path: circle(50%);
+        flex-shrink: 0;
       }
 
       .opponent-info {
@@ -751,8 +762,8 @@
         
         const finalHTML = `
           <div class="roster-header">
-            <span>Player</span>
-            <span>REL</span>
+            <span class="header-player">Player</span>
+            <span class="header-rel">REL</span>
           </div>
           <div class="roster-content">
             ${rosterHTML}
