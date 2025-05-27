@@ -119,6 +119,7 @@
         cursor: pointer;
         text-decoration: none;
         color: inherit;
+        position: relative;
       }
 
       .team-card:hover {
@@ -223,10 +224,6 @@
         font-size: 0.8rem;
         font-weight: bold;
         color: white;
-      }
-
-      .team-card {
-        position: relative;
       }
 
       .playoff-seed {
@@ -473,9 +470,59 @@
           `;
         }).join('');
         
+        // Generate Western Conference HTML
+        const westernHTML = westernTeams.map((team, index) => {
+          const rank = index + 1;
+          const wins = parseInt(team.wins || 0);
+          const losses = parseInt(team.losses || 0);
+          const pam = parseFloat(team.pam || 0);
+          const avgRank = parseFloat(team.med_starter_rank || 0);
+          
+          return `
+            <a href="team.html?id=${team.team_id}" class="team-card">
+              ${getPlayoffIndicator('Western', rank)}
+              <div class="team-header">
+                <img src="${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
+                <div class="team-info">
+                  <div class="team-name">${team.team_name}</div>
+                  <div class="team-id">${team.team_id}</div>
+                  <div class="gm-name">GM: ${team.gm_handle}</div>
+                </div>
+              </div>
+              
+              <div class="team-stats">
+                <div class="stat-item">
+                  <div class="stat-value ${getRecordClass(wins, losses)}">${wins}-${losses}</div>
+                  <div class="stat-label">Record</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value ${getPAMClass(pam)}">${pam.toFixed(1)}</div>
+                  <div class="stat-label">PAM</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">${avgRank > 0 ? avgRank.toFixed(1) : '-'}</div>
+                  <div class="stat-label">Avg Rank</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-value">${team.total_transactions || 0}</div>
+                  <div class="stat-label">Transactions</div>
+                </div>
+              </div>
+            </a>
+          `;
+        }).join('');
+        
         // Update the grids
-        document.getElementById('eastern-teams').innerHTML = easternHTML;
-        document.getElementById('western-teams').innerHTML = westernHTML;
+        document.getElementById('eastern-teams').innerHTML = easternHTML || 
+          '<div class="error">No Eastern Conference teams found</div>';
+        document.getElementById('western-teams').innerHTML = westernHTML || 
+          '<div class="error">No Western Conference teams found</div>';
+        
+        // Debug logging
+        console.log('Eastern teams:', easternTeams.length);
+        console.log('Western teams:', westernTeams.length);
+        console.log('All teams:', teams.length);
+        console.log('Sample team data:', teams[0]);
       }
       
       // Initialize page
