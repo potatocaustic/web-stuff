@@ -218,6 +218,21 @@
         font-weight: bold;
         font-size: 1.1rem;
         color: #333;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.2rem;
+      }
+
+      .rel-value {
+        font-size: 1.2rem;
+      }
+
+      .rel-label {
+        font-size: 0.8rem;
+        color: #666;
+        font-weight: normal;
       }
 
       /* Schedule section */
@@ -230,7 +245,7 @@
 
       .games-list {
         padding: 1.5rem;
-        max-height: 400px;
+        max-height: 600px;
         overflow-y: auto;
       }
 
@@ -261,7 +276,7 @@
       .opponent-logo {
         width: 24px;
         height: 24px;
-        border-radius: 2px;
+        border-radius: 50%;
         object-fit: cover;
       }
 
@@ -675,7 +690,11 @@
       
       // Load roster
       async function loadRoster() {
-        const players = await fetchSheetData('Players');
+        const [players, lineups] = await Promise.all([
+          fetchSheetData('Players'),
+          fetchSheetData('Lineups')
+        ]);
+        
         if (!players) {
           document.getElementById('roster-list').innerHTML = 
             '<div class="error">Error loading roster data</div>';
@@ -695,8 +714,22 @@
         const rosterHTML = teamPlayers.map(player => {
           const relMedian = Math.round(parseFloat(player.rel_median || 0));
           const gamesPlayed = parseInt(player.games_played || 0);
-          const totalPoints = parseFloat(player.total_points || 0);
-          const avgRank = totalPoints > 0 && gamesPlayed > 0 ? (totalPoints / gamesPlayed).toFixed(1) : '0';
+          
+          // Calculate average global rank from lineups data
+          let avgGlobalRank = 0;
+          if (lineups) {
+            const playerLineups = lineups.filter(lineup => 
+              lineup.player_handle === player.player_handle && 
+              lineup.global_rank && 
+              parseInt(lineup.global_rank) > 0
+            );
+            
+            if (playerLineups.length > 0) {
+              const totalRank = playerLineups.reduce((sum, lineup) => 
+                sum + parseInt(lineup.global_rank), 0);
+              avgGlobalRank = Math.round(totalRank / playerLineups.length);
+            }
+          }
           
           return `
             <div class="player-item">
@@ -704,10 +737,13 @@
                 <div class="player-name">${player.player_handle}</div>
                 <div class="player-stats">
                   ${gamesPlayed} games • 
-                  ${avgRank} avg rank
+                  ${avgGlobalRank > 0 ? avgGlobalRank : '-'} avg rank
                 </div>
               </div>
-              <div class="player-rel">${relMedian}</div>
+              <div class="player-rel">
+                <div class="rel-value">${relMedian}</div>
+                <div class="rel-label">REL</div>
+              </div>
             </div>
           `;
         }).join('');
