@@ -999,7 +999,17 @@
             isStartedResult: isStarted
           });
           return isStarted;
-        }).sort((a, b) => parseNumber(b.points_final) - parseNumber(a.points_final));
+        }).sort((a, b) => {
+          // Captain always goes first, then sort by points
+          const aCaptain = a.captain === 'TRUE' || a.captain === true || a.captain === 'true';
+          const bCaptain = b.captain === 'TRUE' || b.captain === true || b.captain === 'true';
+          
+          if (aCaptain && !bCaptain) return -1;
+          if (!aCaptain && bCaptain) return 1;
+          
+          // If both are captains or both are not captains, sort by points
+          return parseNumber(b.points_final) - parseNumber(a.points_final);
+        });
         
         const team2Lineups = team2AllLineups.filter(lineup => {
           // Try multiple formats for the started field
@@ -1015,7 +1025,17 @@
             isStartedResult: isStarted
           });
           return isStarted;
-        }).sort((a, b) => parseNumber(b.points_final) - parseNumber(a.points_final));
+        }).sort((a, b) => {
+          // Captain always goes first, then sort by points
+          const aCaptain = a.captain === 'TRUE' || a.captain === true || a.captain === 'true';
+          const bCaptain = b.captain === 'TRUE' || b.captain === true || b.captain === 'true';
+          
+          if (aCaptain && !bCaptain) return -1;
+          if (!aCaptain && bCaptain) return 1;
+          
+          // If both are captains or both are not captains, sort by points
+          return parseNumber(b.points_final) - parseNumber(a.points_final);
+        });
         
         console.log('Team1 filtered lineups:', team1Lineups);
         console.log('Team2 filtered lineups:', team2Lineups);
