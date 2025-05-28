@@ -874,20 +874,40 @@
         console.log('All lineups sample:', allLineups.slice(0, 5));
         console.log('Looking for lineups with team_id:', team1Id, team2Id, 'and date:', date);
         
+        // Get ALL lineups for both teams on this date first (no filtering)
+        const team1AllLineups = allLineups.filter(lineup => 
+          lineup.team_id === team1Id && lineup.date === date
+        );
+        const team2AllLineups = allLineups.filter(lineup => 
+          lineup.team_id === team2Id && lineup.date === date
+        );
+        
+        console.log('All Team1 lineups (before started filter):', team1AllLineups);
+        console.log('All Team2 lineups (before started filter):', team2AllLineups);
+        
+        // Show the started field details for debugging
+        team1AllLineups.forEach(lineup => {
+          console.log(`Team1 ${lineup.player_handle}:`, {
+            started: lineup.started,
+            startedType: typeof lineup.started,
+            startedValue: JSON.stringify(lineup.started),
+            captain: lineup.captain,
+            captainType: typeof lineup.captain
+          });
+        });
+        
+        team2AllLineups.forEach(lineup => {
+          console.log(`Team2 ${lineup.player_handle}:`, {
+            started: lineup.started,
+            startedType: typeof lineup.started,
+            startedValue: JSON.stringify(lineup.started),
+            captain: lineup.captain,
+            captainType: typeof lineup.captain
+          });
+        });
+        
         // Get lineups for both teams on this date - check both started column formats
-        const team1Lineups = allLineups.filter(lineup => {
-          const matchesTeam = lineup.team_id === team1Id;
-          const matchesDate = lineup.date === date;
-          
-          if (matchesTeam && matchesDate) {
-            console.log('Team1 lineup found:', {
-              player: lineup.player_handle,
-              started: lineup.started,
-              startedType: typeof lineup.started,
-              startedValue: JSON.stringify(lineup.started)
-            });
-          }
-          
+        const team1Lineups = team1AllLineups.filter(lineup => {
           // Try multiple formats for the started field
           const isStarted = lineup.started === 'TRUE' || 
                            lineup.started === true || 
@@ -895,22 +915,11 @@
                            lineup.started === 1 || 
                            lineup.started === '1';
           
-          return matchesTeam && matchesDate && isStarted;
+          console.log(`Team1 ${lineup.player_handle} started check:`, isStarted);
+          return isStarted;
         }).sort((a, b) => parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0));
         
-        const team2Lineups = allLineups.filter(lineup => {
-          const matchesTeam = lineup.team_id === team2Id;
-          const matchesDate = lineup.date === date;
-          
-          if (matchesTeam && matchesDate) {
-            console.log('Team2 lineup found:', {
-              player: lineup.player_handle,
-              started: lineup.started,
-              startedType: typeof lineup.started,
-              startedValue: JSON.stringify(lineup.started)
-            });
-          }
-          
+        const team2Lineups = team2AllLineups.filter(lineup => {
           // Try multiple formats for the started field
           const isStarted = lineup.started === 'TRUE' || 
                            lineup.started === true || 
@@ -918,7 +927,8 @@
                            lineup.started === 1 || 
                            lineup.started === '1';
           
-          return matchesTeam && matchesDate && isStarted;
+          console.log(`Team2 ${lineup.player_handle} started check:`, isStarted);
+          return isStarted;
         }).sort((a, b) => parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0));
         
         console.log('Team1 filtered lineups:', team1Lineups);
