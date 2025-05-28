@@ -803,7 +803,7 @@
                      ${isCompleted ? `onclick="showGameDetails('${game.team1_id}', '${game.team2_id}', '${date}')"` : ''}>
                   <div class="game-teams">
                     <div class="team ${winner === game.team1_id ? 'winner' : ''}">
-                      <img src="${game.team1_id}.webp" alt="${game.team1_id}" class="team-logo" onerror="this.style.display='none'">
+                      <img src="icons/${game.team1_id}.webp" alt="${game.team1_id}" class="team-logo" onerror="this.style.display='none'">
                       <div>
                         <div class="team-name">${getTeamName(game.team1_id)}</div>
                         <div style="font-size: 0.8rem; color: #666;">${game.team1_id}</div>
@@ -813,7 +813,7 @@
                     <div class="vs-divider">VS</div>
                     
                     <div class="team ${winner === game.team2_id ? 'winner' : ''}">
-                      <img src="${game.team2_id}.webp" alt="${game.team2_id}" class="team-logo" onerror="this.style.display='none'">
+                      <img src="icons/${game.team2_id}.webp" alt="${game.team2_id}" class="team-logo" onerror="this.style.display='none'">
                       <div>
                         <div class="team-name">${getTeamName(game.team2_id)}</div>
                         <div style="font-size: 0.8rem; color: #666;">${game.team2_id}</div>
@@ -878,11 +878,22 @@
         const team1Lineups = allLineups.filter(lineup => {
           const matchesTeam = lineup.team_id === team1Id;
           const matchesDate = lineup.date === date;
-          const isStarted = lineup.started === 'TRUE' || lineup.started === true || lineup.started === 'true';
           
           if (matchesTeam && matchesDate) {
-            console.log('Team1 lineup found:', lineup);
+            console.log('Team1 lineup found:', {
+              player: lineup.player_handle,
+              started: lineup.started,
+              startedType: typeof lineup.started,
+              startedValue: JSON.stringify(lineup.started)
+            });
           }
+          
+          // Try multiple formats for the started field
+          const isStarted = lineup.started === 'TRUE' || 
+                           lineup.started === true || 
+                           lineup.started === 'true' || 
+                           lineup.started === 1 || 
+                           lineup.started === '1';
           
           return matchesTeam && matchesDate && isStarted;
         }).sort((a, b) => parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0));
@@ -890,11 +901,22 @@
         const team2Lineups = allLineups.filter(lineup => {
           const matchesTeam = lineup.team_id === team2Id;
           const matchesDate = lineup.date === date;
-          const isStarted = lineup.started === 'TRUE' || lineup.started === true || lineup.started === 'true';
           
           if (matchesTeam && matchesDate) {
-            console.log('Team2 lineup found:', lineup);
+            console.log('Team2 lineup found:', {
+              player: lineup.player_handle,
+              started: lineup.started,
+              startedType: typeof lineup.started,
+              startedValue: JSON.stringify(lineup.started)
+            });
           }
+          
+          // Try multiple formats for the started field
+          const isStarted = lineup.started === 'TRUE' || 
+                           lineup.started === true || 
+                           lineup.started === 'true' || 
+                           lineup.started === 1 || 
+                           lineup.started === '1';
           
           return matchesTeam && matchesDate && isStarted;
         }).sort((a, b) => parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0));
