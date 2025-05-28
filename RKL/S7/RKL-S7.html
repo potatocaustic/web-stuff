@@ -285,6 +285,7 @@
         padding: 1rem;
         border-bottom: 1px solid #ddd;
         transition: background-color 0.2s;
+        cursor: pointer;
       }
 
       .game-item:hover {
@@ -356,6 +357,203 @@
 
       .winner {
         color: #28a745;
+      }
+
+      .click-hint {
+        font-size: 0.8rem;
+        color: #007bff;
+        font-style: italic;
+        margin-top: 0.3rem;
+        text-align: center;
+      }
+
+      /* Modal styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        overflow-y: auto;
+      }
+
+      .modal-content {
+        background-color: #fff;
+        margin: 2rem auto;
+        border-radius: 8px;
+        width: 95%;
+        max-width: 900px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      }
+
+      .modal-header {
+        background-color: #333;
+        color: white;
+        padding: 1.5rem;
+        border-radius: 8px 8px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .modal-header h3 {
+        color: white;
+        margin: 0;
+        font-size: 1.4rem;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+      }
+
+      .close-btn:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .modal-body {
+        padding: 2rem;
+      }
+
+      .game-details-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+
+      .team-breakdown {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #ddd;
+      }
+
+      .team-breakdown.winner {
+        border-color: #28a745;
+        border-width: 2px;
+      }
+
+      .team-header {
+        background-color: #333;
+        color: white;
+        padding: 1.5rem;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        flex-direction: column;
+      }
+
+      .team-header.winner {
+        background-color: #28a745;
+      }
+
+      .team-header h4 {
+        color: white;
+        margin: 0;
+        font-size: 1.2rem;
+      }
+
+      .team-header .team-logo {
+        width: 48px;
+        height: 48px;
+        border-radius: 4px;
+      }
+
+      .team-total {
+        background-color: #e9ecef;
+        padding: 1rem;
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.1rem;
+        border-bottom: 2px solid #ddd;
+      }
+
+      .lineup-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .lineup-table th {
+        background-color: #f8f9fa;
+        padding: 0.8rem 0.5rem;
+        text-align: center;
+        font-weight: bold;
+        border-bottom: 2px solid #ddd;
+        font-size: 0.9rem;
+      }
+
+      .lineup-table th:first-child {
+        text-align: left;
+        width: 50%;
+      }
+
+      .lineup-table th:nth-child(2),
+      .lineup-table th:nth-child(3) {
+        width: 25%;
+      }
+
+      .lineup-table td {
+        padding: 0.8rem 0.5rem;
+        border-bottom: 1px solid #eee;
+        font-size: 0.9rem;
+        text-align: center;
+      }
+
+      .lineup-table td:first-child {
+        text-align: left;
+      }
+
+      .lineup-table tr:hover {
+        background-color: white;
+      }
+
+      .captain-row {
+        background-color: #fff3cd !important;
+        font-weight: bold;
+      }
+
+      .captain-badge {
+        background-color: #ffc107;
+        color: #333;
+        padding: 0.2rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        margin-left: 0.5rem;
+      }
+
+      .captain-bonus {
+        font-size: 0.75rem;
+        color: #ffc107;
+        font-weight: 500;
+        margin-top: 0.2rem;
+      }
+
+      .player-name-cell {
+        font-weight: 500;
+      }
+
+      .points-cell {
+        text-align: center;
+        font-weight: bold;
+      }
+
+      .rank-cell {
+        text-align: center;
+        color: #666;
       }
 
       /* Loading states */
@@ -430,6 +628,31 @@
           text-align: left;
           margin-top: 0.5rem;
           font-size: 0.75rem;
+        }
+
+        .modal-content {
+          margin: 1rem;
+          width: calc(100% - 2rem);
+        }
+
+        .game-details-grid {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+
+        .modal-body {
+          padding: 1rem;
+        }
+
+        .lineup-table th,
+        .lineup-table td {
+          padding: 0.5rem 0.3rem;
+          font-size: 0.8rem;
+        }
+
+        .team-header .team-logo {
+          width: 36px;
+          height: 36px;
         }
       }
 
@@ -553,6 +776,21 @@
         </div>
       </div>
     </main>
+
+    <!-- Game Details Modal -->
+    <div id="game-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modal-title">Game Details</h3>
+          <button class="close-btn" onclick="closeGameModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div id="modal-content">
+            <div class="loading">Loading game details...</div>
+          </div>
+        </div>
+      </div>
+    </div>
     
     <footer>
       <p>&copy; caustic.info</p>
@@ -571,6 +809,9 @@
         }
         return num.toString();
       }
+      
+      // Global variable to store teams data for modal use
+      let allTeams = [];
       
       // Function to fetch data from Google Sheets
       async function fetchSheetData(sheetName) {
@@ -608,12 +849,6 @@
         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       }
       
-      // Function to get team name from team ID
-      function getTeamName(teamId, teams) {
-        const team = teams.find(t => t.team_id === teamId);
-        return team ? team.team_name : teamId;
-      }
-      
       // Load and display standings preview
       async function loadStandingsPreview() {
         const teams = await fetchSheetData('Teams');
@@ -622,6 +857,9 @@
           document.getElementById('western-standings').innerHTML = '<tr><td colspan="3" class="error">Error loading standings</td></tr>';
           return;
         }
+        
+        // Store teams data globally for modal use
+        allTeams = teams;
         
         // Separate teams by conference and sort by wins
         const easternTeams = teams.filter(team => team.conference === 'Eastern')
@@ -701,7 +939,7 @@
           const team2Record = team2Data ? `${team2Data.wins || 0}-${team2Data.losses || 0}` : '';
           
           return `
-            <div class="game-item">
+            <div class="game-item" onclick="showGameDetails('${game.team1_id}', '${game.team2_id}', '${game.date}')">
               <div class="game-matchup">
                 <div class="team ${winner === game.team1_id ? 'winner' : ''}">
                   <img src="icons/${game.team1_id}.webp" alt="${game.team1_id}" class="team-logo" onerror="this.style.display='none'">
@@ -724,6 +962,7 @@
               <div class="game-date">
                 ${formatDate(game.date)}
               </div>
+              <div class="click-hint">Click for details</div>
             </div>
           `;
         }).join('');
@@ -815,6 +1054,197 @@
       
       // Load data when page loads
       document.addEventListener('DOMContentLoaded', initializePage);
+
+      // Helper function to parse numbers that might have comma formatting
+      function parseNumber(value) {
+        if (!value) return 0;
+        // Remove commas and parse as float
+        const cleaned = value.toString().replace(/,/g, '');
+        const parsed = parseFloat(cleaned);
+        return isNaN(parsed) ? 0 : parsed;
+      }
+
+      // Show game details modal
+      async function showGameDetails(team1Id, team2Id, date) {
+        const modal = document.getElementById('game-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalContent = document.getElementById('modal-content');
+        
+        // Show modal and loading state
+        modal.style.display = 'block';
+        modalTitle.textContent = `${getTeamName(team1Id, allTeams)} vs ${getTeamName(team2Id, allTeams)}`;
+        modalContent.innerHTML = '<div class="loading">Loading game details...</div>';
+        
+        // Get game details
+        const [schedule, lineups] = await Promise.all([
+          fetchSheetData('Schedule'),
+          fetchSheetData('Lineups')
+        ]);
+        
+        if (!schedule || !lineups) {
+          modalContent.innerHTML = '<div class="error">Error loading game details</div>';
+          return;
+        }
+        
+        const game = schedule.find(g => 
+          g.team1_id === team1Id && 
+          g.team2_id === team2Id && 
+          g.date === date
+        );
+        
+        if (!game) {
+          modalContent.innerHTML = '<div class="error">Game not found</div>';
+          return;
+        }
+        
+        // Get lineups for both teams on this date
+        const team1AllLineups = lineups.filter(lineup => 
+          lineup.team_id === team1Id && lineup.date === date
+        );
+        const team2AllLineups = lineups.filter(lineup => 
+          lineup.team_id === team2Id && lineup.date === date
+        );
+        
+        // Filter for started players
+        const team1Lineups = team1AllLineups.filter(lineup => {
+          const isStarted = lineup.started === 'TRUE' || 
+                           lineup.started === true || 
+                           lineup.started === 'true' || 
+                           lineup.started === 1 || 
+                           lineup.started === '1';
+          return isStarted;
+        }).sort((a, b) => {
+          const aCaptain = a.captain === 'TRUE' || a.captain === true || a.captain === 'true';
+          const bCaptain = b.captain === 'TRUE' || b.captain === true || b.captain === 'true';
+          
+          if (aCaptain && !bCaptain) return -1;
+          if (!aCaptain && bCaptain) return 1;
+          
+          return parseNumber(b.points_final) - parseNumber(a.points_final);
+        });
+        
+        const team2Lineups = team2AllLineups.filter(lineup => {
+          const isStarted = lineup.started === 'TRUE' || 
+                           lineup.started === true || 
+                           lineup.started === 'true' || 
+                           lineup.started === 1 || 
+                           lineup.started === '1';
+          return isStarted;
+        }).sort((a, b) => {
+          const aCaptain = a.captain === 'TRUE' || a.captain === true || a.captain === 'true';
+          const bCaptain = b.captain === 'TRUE' || b.captain === true || b.captain === 'true';
+          
+          if (aCaptain && !bCaptain) return -1;
+          if (!aCaptain && bCaptain) return 1;
+          
+          return parseNumber(b.points_final) - parseNumber(a.points_final);
+        });
+        
+        // Calculate team totals
+        const team1Total = team1Lineups.reduce((sum, player) => {
+          const points = parseNumber(player.points_final);
+          return sum + points;
+        }, 0);
+        
+        const team2Total = team2Lineups.reduce((sum, player) => {
+          const points = parseNumber(player.points_final);
+          return sum + points;
+        }, 0);
+        
+        const winner = game.winner;
+        
+        // Generate lineup tables
+        const generateLineupTable = (lineups, teamId, total, isWinner) => {
+          // Get team record
+          const teamData = allTeams.find(t => t.team_id === teamId);
+          const teamRecord = teamData ? `${teamData.wins || 0}-${teamData.losses || 0}` : '';
+          
+          if (lineups.length === 0) {
+            return `
+              <div class="team-breakdown ${isWinner ? 'winner' : ''}">
+                <div class="team-header ${isWinner ? 'winner' : ''}">
+                  <img src="icons/${teamId}.webp" alt="${getTeamName(teamId, allTeams)}" class="team-logo" onerror="this.style.display='none'">
+                  <div>
+                    <h4>${getTeamName(teamId, allTeams)}</h4>
+                    <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
+                  </div>
+                </div>
+                <div class="team-total">Total: ${Math.round(total).toLocaleString()}</div>
+                <div style="padding: 2rem; text-align: center; color: #666;">No lineup data available</div>
+              </div>
+            `;
+          }
+          
+          const lineupRows = lineups.map(player => {
+            const isCaptain = player.captain === 'TRUE' || player.captain === true || player.captain === 'true';
+            const pointsRaw = parseNumber(player.points_raw);
+            const pointsFinal = parseNumber(player.points_final);
+            const globalRank = parseNumber(player.global_rank);
+            
+            const captainBonus = isCaptain ? Math.round(pointsRaw * 0.5) : 0;
+            
+            return `
+              <tr class="${isCaptain ? 'captain-row' : ''}">
+                <td class="player-name-cell">
+                  ${player.player_handle || 'Unknown'}
+                  ${isCaptain ? '<span class="captain-badge">C</span>' : ''}
+                </td>
+                <td class="points-cell">
+                  ${Math.round(pointsRaw).toLocaleString()}
+                  ${isCaptain ? `<div class="captain-bonus">+${captainBonus.toLocaleString()}</div>` : ''}
+                </td>
+                <td class="rank-cell">${globalRank > 0 ? Math.round(globalRank) : '-'}</td>
+              </tr>
+            `;
+          }).join('');
+          
+          return `
+            <div class="team-breakdown ${isWinner ? 'winner' : ''}">
+              <div class="team-header ${isWinner ? 'winner' : ''}">
+                <img src="icons/${teamId}.webp" alt="${getTeamName(teamId, allTeams)}" class="team-logo" onerror="this.style.display='none'">
+                <div>
+                  <h4>${getTeamName(teamId, allTeams)}</h4>
+                  <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
+                </div>
+              </div>
+              <div class="team-total">Total: ${isNaN(total) ? '-' : Math.round(total).toLocaleString()}</div>
+              <table class="lineup-table">
+                <thead>
+                  <tr>
+                    <th>Player</th>
+                    <th>Points</th>
+                    <th>Rank</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${lineupRows}
+                </tbody>
+              </table>
+            </div>
+          `;
+        };
+        
+        // Generate the modal content
+        modalContent.innerHTML = `
+          <div class="game-details-grid">
+            ${generateLineupTable(team1Lineups, team1Id, team1Total, winner === team1Id)}
+            ${generateLineupTable(team2Lineups, team2Id, team2Total, winner === team2Id)}
+          </div>
+        `;
+      }
+      
+      // Close modal
+      function closeGameModal() {
+        document.getElementById('game-modal').style.display = 'none';
+      }
+      
+      // Close modal when clicking outside
+      window.onclick = function(event) {
+        const modal = document.getElementById('game-modal');
+        if (event.target === modal) {
+          closeGameModal();
+        }
+      }
     </script>
   </body>
 </html>
