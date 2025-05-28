@@ -243,6 +243,13 @@
         flex: 1;
       }
 
+      .team-record {
+        font-size: 0.8rem;
+        color: #666;
+        line-height: 1;
+        margin-top: 0.2rem;
+      }
+
       .vs-divider {
         font-weight: bold;
         color: #666;
@@ -887,15 +894,26 @@
               const team2Score = parseFloat(game.team2_score || 0);
               const winner = game.winner;
               
+              // Get team records for completed games
+              let team1Record = '';
+              let team2Record = '';
+              if (isCompleted) {
+                const team1Data = allTeams.find(t => t.team_id === game.team1_id);
+                const team2Data = allTeams.find(t => t.team_id === game.team2_id);
+                team1Record = team1Data ? `${team1Data.wins || 0}-${team1Data.losses || 0}` : '';
+                team2Record = team2Data ? `${team2Data.wins || 0}-${team2Data.losses || 0}` : '';
+              }
+              
               return `
                 <div class="game-card ${isCompleted ? 'completed' : 'upcoming'}" 
                      ${isCompleted ? `onclick="showGameDetails('${game.team1_id}', '${game.team2_id}', '${date}')"` : ''}>
                   <div class="game-teams">
                     <div class="team ${winner === game.team1_id ? 'winner' : ''}">
                       <img src="icons/${game.team1_id}.webp" alt="${game.team1_id}" class="team-logo" onerror="this.style.display='none'">
-                      <div>
+                      <div class="team-info">
                         <div class="team-name">${getTeamName(game.team1_id)}</div>
                         <div style="font-size: 0.8rem; color: #666; line-height: 1;">${game.team1_id}</div>
+                        ${team1Record ? `<div class="team-record">${team1Record}</div>` : ''}
                       </div>
                     </div>
                     
@@ -903,9 +921,10 @@
                     
                     <div class="team ${winner === game.team2_id ? 'winner' : ''}">
                       <img src="icons/${game.team2_id}.webp" alt="${game.team2_id}" class="team-logo" onerror="this.style.display='none'">
-                      <div>
+                      <div class="team-info">
                         <div class="team-name">${getTeamName(game.team2_id)}</div>
                         <div style="font-size: 0.8rem; color: #666; line-height: 1;">${game.team2_id}</div>
+                        ${team2Record ? `<div class="team-record">${team2Record}</div>` : ''}
                       </div>
                     </div>
                   </div>
