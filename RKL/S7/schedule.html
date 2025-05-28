@@ -191,6 +191,11 @@
 
       .game-card.completed {
         border-left: 4px solid #28a745;
+        cursor: pointer;
+      }
+
+      .game-card.completed:hover {
+        background-color: #e8f5e8;
       }
 
       .game-card.upcoming {
@@ -261,6 +266,13 @@
         font-weight: 500;
       }
 
+      .click-hint {
+        font-size: 0.8rem;
+        color: #007bff;
+        font-style: italic;
+        margin-top: 0.3rem;
+      }
+
       /* Summary stats */
       .week-summary {
         background-color: #e9ecef;
@@ -291,6 +303,166 @@
 
       .stat-label {
         font-size: 0.9rem;
+        color: #666;
+      }
+
+      /* Modal styles */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        overflow-y: auto;
+      }
+
+      .modal-content {
+        background-color: #fff;
+        margin: 2rem auto;
+        border-radius: 8px;
+        width: 95%;
+        max-width: 900px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      }
+
+      .modal-header {
+        background-color: #333;
+        color: white;
+        padding: 1.5rem;
+        border-radius: 8px 8px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .modal-header h3 {
+        color: white;
+        margin: 0;
+        font-size: 1.4rem;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+      }
+
+      .close-btn:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .modal-body {
+        padding: 2rem;
+      }
+
+      .game-details-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+
+      .team-breakdown {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #ddd;
+      }
+
+      .team-breakdown.winner {
+        border-color: #28a745;
+        border-width: 2px;
+      }
+
+      .team-header {
+        background-color: #333;
+        color: white;
+        padding: 1rem;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .team-header.winner {
+        background-color: #28a745;
+      }
+
+      .team-header h4 {
+        color: white;
+        margin: 0;
+        font-size: 1.2rem;
+      }
+
+      .team-total {
+        background-color: #e9ecef;
+        padding: 1rem;
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.1rem;
+        border-bottom: 2px solid #ddd;
+      }
+
+      .lineup-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .lineup-table th {
+        background-color: #f8f9fa;
+        padding: 0.8rem 0.5rem;
+        text-align: left;
+        font-weight: bold;
+        border-bottom: 2px solid #ddd;
+        font-size: 0.9rem;
+      }
+
+      .lineup-table td {
+        padding: 0.8rem 0.5rem;
+        border-bottom: 1px solid #eee;
+        font-size: 0.9rem;
+      }
+
+      .lineup-table tr:hover {
+        background-color: white;
+      }
+
+      .captain-row {
+        background-color: #fff3cd !important;
+        font-weight: bold;
+      }
+
+      .captain-badge {
+        background-color: #ffc107;
+        color: #333;
+        padding: 0.2rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        margin-left: 0.5rem;
+      }
+
+      .player-name-cell {
+        font-weight: 500;
+      }
+
+      .points-cell {
+        text-align: center;
+        font-weight: bold;
+      }
+
+      .rank-cell {
+        text-align: center;
         color: #666;
       }
 
@@ -349,6 +521,26 @@
         
         .summary-stats {
           gap: 1rem;
+        }
+
+        .modal-content {
+          margin: 1rem;
+          width: calc(100% - 2rem);
+        }
+
+        .game-details-grid {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+
+        .modal-body {
+          padding: 1rem;
+        }
+
+        .lineup-table th,
+        .lineup-table td {
+          padding: 0.5rem 0.3rem;
+          font-size: 0.8rem;
         }
       }
 
@@ -419,6 +611,21 @@
         </div>
       </div>
     </main>
+
+    <!-- Game Details Modal -->
+    <div id="game-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modal-title">Game Details</h3>
+          <button class="close-btn" onclick="closeGameModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div id="modal-content">
+            <div class="loading">Loading game details...</div>
+          </div>
+        </div>
+      </div>
+    </div>
     
     <footer>
       <p>&copy; caustic.info</p>
@@ -441,6 +648,7 @@
       let currentWeek = 1;
       let allGames = [];
       let allTeams = [];
+      let allLineups = [];
       
       // Function to fetch data from Google Sheets
       async function fetchSheetData(sheetName) {
@@ -491,9 +699,10 @@
       
       // Load initial data
       async function loadData() {
-        const [schedule, teams] = await Promise.all([
+        const [schedule, teams, lineups] = await Promise.all([
           fetchSheetData('Schedule'),
-          fetchSheetData('Teams')
+          fetchSheetData('Teams'),
+          fetchSheetData('Lineups')
         ]);
         
         if (!schedule || !teams) {
@@ -504,6 +713,7 @@
         
         allGames = schedule;
         allTeams = teams;
+        allLineups = lineups || [];
         
         setupWeekSelector();
         displayWeek(currentWeek);
@@ -589,7 +799,8 @@
               const winner = game.winner;
               
               return `
-                <div class="game-card ${isCompleted ? 'completed' : 'upcoming'}">
+                <div class="game-card ${isCompleted ? 'completed' : 'upcoming'}" 
+                     ${isCompleted ? `onclick="showGameDetails('${game.team1_id}', '${game.team2_id}', '${date}')"` : ''}>
                   <div class="game-teams">
                     <div class="team ${winner === game.team1_id ? 'winner' : ''}">
                       <img src="${game.team1_id}.webp" alt="${game.team1_id}" class="team-logo" onerror="this.style.display='none'">
@@ -614,6 +825,7 @@
                     ${isCompleted ? `
                       <div class="score-display">${formatInThousands(team1Score)} - ${formatInThousands(team2Score)}</div>
                       <div class="game-status completed">Final</div>
+                      <div class="click-hint">Click for details</div>
                     ` : `
                       <div class="game-status upcoming">Upcoming</div>
                     `}
@@ -633,6 +845,128 @@
           }).join('');
         
         document.getElementById('games-content').innerHTML = datesHTML;
+      }
+      
+      // Show game details modal
+      async function showGameDetails(team1Id, team2Id, date) {
+        const modal = document.getElementById('game-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalContent = document.getElementById('modal-content');
+        
+        // Show modal and loading state
+        modal.style.display = 'block';
+        modalTitle.textContent = `${getTeamName(team1Id)} vs ${getTeamName(team2Id)}`;
+        modalContent.innerHTML = '<div class="loading">Loading game details...</div>';
+        
+        // Get game details
+        const game = allGames.find(g => 
+          g.team1_id === team1Id && 
+          g.team2_id === team2Id && 
+          g.date === date
+        );
+        
+        if (!game) {
+          modalContent.innerHTML = '<div class="error">Game not found</div>';
+          return;
+        }
+        
+        // Get lineups for both teams on this date
+        const team1Lineups = allLineups.filter(lineup => 
+          lineup.team_id === team1Id && 
+          lineup.date === date &&
+          lineup.started === 'TRUE'
+        ).sort((a, b) => parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0));
+        
+        const team2Lineups = allLineups.filter(lineup => 
+          lineup.team_id === team2Id && 
+          lineup.date === date &&
+          lineup.started === 'TRUE'
+        ).sort((a, b) => parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0));
+        
+        // Calculate team totals
+        const team1Total = team1Lineups.reduce((sum, player) => sum + parseFloat(player.points_final || 0), 0);
+        const team2Total = team2Lineups.reduce((sum, player) => sum + parseFloat(player.points_final || 0), 0);
+        
+        const winner = game.winner;
+        
+        // Generate lineup tables
+        const generateLineupTable = (lineups, teamId, total, isWinner) => {
+          if (lineups.length === 0) {
+            return `
+              <div class="team-breakdown ${isWinner ? 'winner' : ''}">
+                <div class="team-header ${isWinner ? 'winner' : ''}">
+                  <img src="${teamId}.webp" alt="${getTeamName(teamId)}" class="team-logo" onerror="this.style.display='none'">
+                  <h4>${getTeamName(teamId)}</h4>
+                </div>
+                <div class="team-total">Total: ${Math.round(total).toLocaleString()}</div>
+                <div style="padding: 2rem; text-align: center; color: #666;">No lineup data available</div>
+              </div>
+            `;
+          }
+          
+          const lineupRows = lineups.map(player => {
+            const isCaptain = player.captain === 'TRUE';
+            const pointsRaw = parseFloat(player.points_raw || 0);
+            const pointsFinal = parseFloat(player.points_final || 0);
+            const globalRank = parseFloat(player.global_rank || 0);
+            
+            return `
+              <tr class="${isCaptain ? 'captain-row' : ''}">
+                <td class="player-name-cell">
+                  ${player.player_handle}
+                  ${isCaptain ? '<span class="captain-badge">C</span>' : ''}
+                </td>
+                <td class="points-cell">${Math.round(pointsRaw).toLocaleString()}</td>
+                <td class="points-cell">${Math.round(pointsFinal).toLocaleString()}</td>
+                <td class="rank-cell">${globalRank > 0 ? Math.round(globalRank) : '-'}</td>
+              </tr>
+            `;
+          }).join('');
+          
+          return `
+            <div class="team-breakdown ${isWinner ? 'winner' : ''}">
+              <div class="team-header ${isWinner ? 'winner' : ''}">
+                <img src="${teamId}.webp" alt="${getTeamName(teamId)}" class="team-logo" onerror="this.style.display='none'">
+                <h4>${getTeamName(teamId)}</h4>
+              </div>
+              <div class="team-total">Total: ${Math.round(total).toLocaleString()}</div>
+              <table class="lineup-table">
+                <thead>
+                  <tr>
+                    <th>Player</th>
+                    <th>Raw</th>
+                    <th>Final</th>
+                    <th>Rank</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${lineupRows}
+                </tbody>
+              </table>
+            </div>
+          `;
+        };
+        
+        // Generate the modal content
+        modalContent.innerHTML = `
+          <div class="game-details-grid">
+            ${generateLineupTable(team1Lineups, team1Id, team1Total, winner === team1Id)}
+            ${generateLineupTable(team2Lineups, team2Id, team2Total, winner === team2Id)}
+          </div>
+        `;
+      }
+      
+      // Close modal
+      function closeGameModal() {
+        document.getElementById('game-modal').style.display = 'none';
+      }
+      
+      // Close modal when clicking outside
+      window.onclick = function(event) {
+        const modal = document.getElementById('game-modal');
+        if (event.target === modal) {
+          closeGameModal();
+        }
       }
       
       // Initialize page
