@@ -1,4 +1,4 @@
-\<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -357,14 +357,6 @@
 
       .winner {
         color: #28a745;
-      }
-
-      .click-hint {
-        font-size: 0.8rem;
-        color: #007bff;
-        font-style: italic;
-        margin-top: 0.3rem;
-        text-align: center;
       }
 
       /* Modal styles */
@@ -803,6 +795,7 @@
       
       // Global variable to store teams data for modal use
       let allTeams = [];
+      let allLineups = [];
       
       // Function to get team name from team ID
       function getTeamName(teamId, teams = allTeams) {
@@ -819,6 +812,15 @@
         return num.toString();
       }
       
+      // Helper function to parse numbers that might have comma formatting
+      function parseNumber(value) {
+        if (!value) return 0;
+        // Remove commas and parse as float
+        const cleaned = value.toString().replace(/,/g, '');
+        const parsed = parseFloat(cleaned);
+        return isNaN(parsed) ? 0 : parsed;
+      }
+      
       // Function to fetch data from Google Sheets
       async function fetchSheetData(sheetName) {
         try {
@@ -831,14 +833,14 @@
         }
       }
       
-      // Simple CSV parser
+      // Simple CSV parser that properly handles quoted fields and commas within values
       function parseCSV(csvText) {
         const lines = csvText.trim().split('\n');
-        const headers = lines[0].split(',').map(h => h.replace(/"/g, ''));
+        const headers = parseCSVLine(lines[0]);
         const data = [];
         
         for (let i = 1; i < lines.length; i++) {
-          const values = lines[i].split(',').map(v => v.replace(/"/g, ''));
+          const values = parseCSVLine(lines[i]);
           const row = {};
           headers.forEach((header, index) => {
             row[header] = values[index] || '';
@@ -847,6 +849,32 @@
         }
         
         return data;
+      }
+      
+      // Parse a single CSV line, handling quoted fields properly
+      function parseCSVLine(line) {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            result.push(current.trim());
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        
+        // Add the last field
+        result.push(current.trim());
+        
+        // Clean up quotes from fields
+        return result.map(field => field.replace(/^"(.*)"$/, '$1'));
       }
       
       // Function to format date for display
@@ -910,15 +938,19 @@
       
       // Load and display recent games
       async function loadRecentGames() {
-        const [schedule, teams] = await Promise.all([
+        const [schedule, teams, lineups] = await Promise.all([
           fetchSheetData('Schedule'),
-          fetchSheetData('Teams')
+          fetchSheetData('Teams'),
+          fetchSheetData('Lineups')
         ]);
         
         if (!schedule || !teams) {
           document.getElementById('recent-games').innerHTML = '<div class="error">Error loading recent games</div>';
           return;
         }
+        
+        // Store lineups globally for modal use
+        allLineups = lineups || [];
         
         // Get completed games and sort by date (most recent first)
         const completedGames = schedule
@@ -968,7 +1000,6 @@
               <div class="game-date">
                 ${formatDate(game.date)}
               </div>
-              <div class="click-hint">Click for details</div>
             </div>
           `;
         }).join('');
@@ -1049,27 +1080,6 @@
         `;
       }
       
-      // Initialize page
-      async function initializePage() {
-        await Promise.all([
-          loadStandingsPreview(),
-          loadRecentGames(),
-          loadSeasonInfo()
-        ]);
-      }
-      
-      // Load data when page loads
-      document.addEventListener('DOMContentLoaded', initializePage);
-
-      // Helper function to parse numbers that might have comma formatting
-      function parseNumber(value) {
-        if (!value) return 0;
-        // Remove commas and parse as float
-        const cleaned = value.toString().replace(/,/g, '');
-        const parsed = parseFloat(cleaned);
-        return isNaN(parsed) ? 0 : parsed;
-      }
-
       // Show game details modal
       async function showGameDetails(team1Id, team2Id, date) {
         const modal = document.getElementById('game-modal');
@@ -1081,13 +1091,9 @@
         modalTitle.textContent = `${getTeamName(team1Id, allTeams)} vs ${getTeamName(team2Id, allTeams)}`;
         modalContent.innerHTML = '<div class="loading">Loading game details...</div>';
         
-        // Get game details
-        const [schedule, lineups] = await Promise.all([
-          fetchSheetData('Schedule'),
-          fetchSheetData('Lineups')
-        ]);
-        
-        if (!schedule || !lineups) {
+        // Get game details from the schedule data
+        const schedule = await fetchSheetData('Schedule');
+        if (!schedule) {
           modalContent.innerHTML = '<div class="error">Error loading game details</div>';
           return;
         }
@@ -1103,15 +1109,15 @@
           return;
         }
         
-        // Get lineups for both teams on this date
-        const team1AllLineups = lineups.filter(lineup => 
+        // Get ALL lineups for both teams on this date first (no filtering)
+        const team1AllLineups = allLineups.filter(lineup => 
           lineup.team_id === team1Id && lineup.date === date
         );
-        const team2AllLineups = lineups.filter(lineup => 
+        const team2AllLineups = allLineups.filter(lineup => 
           lineup.team_id === team2Id && lineup.date === date
         );
         
-        // Filter for started players
+        // Filter for started players and sort properly
         const team1Lineups = team1AllLineups.filter(lineup => {
           const isStarted = lineup.started === 'TRUE' || 
                            lineup.started === true || 
@@ -1120,6 +1126,7 @@
                            lineup.started === '1';
           return isStarted;
         }).sort((a, b) => {
+          // Captain always goes first, then sort by points
           const aCaptain = a.captain === 'TRUE' || a.captain === true || a.captain === 'true';
           const bCaptain = b.captain === 'TRUE' || b.captain === true || b.captain === 'true';
           
@@ -1137,6 +1144,7 @@
                            lineup.started === '1';
           return isStarted;
         }).sort((a, b) => {
+          // Captain always goes first, then sort by points
           const aCaptain = a.captain === 'TRUE' || a.captain === true || a.captain === 'true';
           const bCaptain = b.captain === 'TRUE' || b.captain === true || b.captain === 'true';
           
@@ -1251,6 +1259,18 @@
           closeGameModal();
         }
       }
+      
+      // Initialize page
+      async function initializePage() {
+        await Promise.all([
+          loadStandingsPreview(),
+          loadRecentGames(),
+          loadSeasonInfo()
+        ]);
+      }
+      
+      // Load data when page loads
+      document.addEventListener('DOMContentLoaded', initializePage);
     </script>
   </body>
 </html>
