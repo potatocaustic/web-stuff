@@ -776,12 +776,20 @@
         const totalGames = schedule.length;
         const completedGames = schedule.filter(game => game.completed === 'TRUE').length;
         
-        // Count transactions (excluding any pre-database moves if they have a specific marker)
-        const transactionCount = transactions ? transactions.filter(t => 
-          t.transaction_type && 
-          !t.notes?.toLowerCase().includes('pre-database') &&
-          !t.notes?.toLowerCase().includes('preseason')
-        ).length : 0;
+        // Count UNIQUE transactions by counting unique transaction_ids
+        let uniqueTransactionCount = 0;
+        if (transactions) {
+          const uniqueTransactionIds = new Set();
+          transactions.forEach(transaction => {
+            if (transaction.transaction_id && 
+                transaction.transaction_type && 
+                !transaction.notes?.toLowerCase().includes('pre-database') &&
+                !transaction.notes?.toLowerCase().includes('preseason')) {
+              uniqueTransactionIds.add(transaction.transaction_id);
+            }
+          });
+          uniqueTransactionCount = uniqueTransactionIds.size;
+        }
         
         // Calculate total karma earned this season
         const totalKarma = players ? players
@@ -791,7 +799,7 @@
         // Update season info
         document.getElementById('season-stats').innerHTML = `
           <p><strong>${completedGames} of ${totalGames}</strong> regular season games complete</p>
-          <p><strong>${transactionCount}</strong> transactions made (excludes pre-database moves)</p>
+          <p><strong>${uniqueTransactionCount}</strong> transactions made (excludes pre-database moves)</p>
           <p><strong>${Math.round(totalKarma).toLocaleString()}</strong> total karma earned</p>
         `;
       }
