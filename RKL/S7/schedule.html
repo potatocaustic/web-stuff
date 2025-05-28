@@ -870,27 +870,55 @@
           return;
         }
         
-        // Get lineups for both teams on this date
-        const team1Lineups = allLineups.filter(lineup => 
-          lineup.team_id === team1Id && 
-          lineup.date === date &&
-          lineup.started === 'TRUE'
-        ).sort((a, b) => parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0));
+        console.log('Game found:', game);
+        console.log('All lineups sample:', allLineups.slice(0, 5));
+        console.log('Looking for lineups with team_id:', team1Id, team2Id, 'and date:', date);
         
-        const team2Lineups = allLineups.filter(lineup => 
-          lineup.team_id === team2Id && 
-          lineup.date === date &&
-          lineup.started === 'TRUE'
-        ).sort((a, b) => parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0));
+        // Get lineups for both teams on this date - check both started column formats
+        const team1Lineups = allLineups.filter(lineup => {
+          const matchesTeam = lineup.team_id === team1Id;
+          const matchesDate = lineup.date === date;
+          const isStarted = lineup.started === 'TRUE' || lineup.started === true || lineup.started === 'true';
+          
+          if (matchesTeam && matchesDate) {
+            console.log('Team1 lineup found:', lineup);
+          }
+          
+          return matchesTeam && matchesDate && isStarted;
+        }).sort((a, b) => parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0));
+        
+        const team2Lineups = allLineups.filter(lineup => {
+          const matchesTeam = lineup.team_id === team2Id;
+          const matchesDate = lineup.date === date;
+          const isStarted = lineup.started === 'TRUE' || lineup.started === true || lineup.started === 'true';
+          
+          if (matchesTeam && matchesDate) {
+            console.log('Team2 lineup found:', lineup);
+          }
+          
+          return matchesTeam && matchesDate && isStarted;
+        }).sort((a, b) => parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0));
+        
+        console.log('Team1 filtered lineups:', team1Lineups);
+        console.log('Team2 filtered lineups:', team2Lineups);
         
         // Calculate team totals
-        const team1Total = team1Lineups.reduce((sum, player) => sum + parseFloat(player.points_final || 0), 0);
-        const team2Total = team2Lineups.reduce((sum, player) => sum + parseFloat(player.points_final || 0), 0);
+        const team1Total = team1Lineups.reduce((sum, player) => {
+          const points = parseFloat(player.points_final || 0);
+          return sum + (isNaN(points) ? 0 : points);
+        }, 0);
+        
+        const team2Total = team2Lineups.reduce((sum, player) => {
+          const points = parseFloat(player.points_final || 0);
+          return sum + (isNaN(points) ? 0 : points);
+        }, 0);
         
         const winner = game.winner;
         
         // Generate lineup tables
         const generateLineupTable = (lineups, teamId, total, isWinner) => {
+          console.log(`Generating table for ${teamId}:`, lineups);
+          
           if (lineups.length === 0) {
             return `
               <div class="team-breakdown ${isWinner ? 'winner' : ''}">
@@ -905,19 +933,26 @@
           }
           
           const lineupRows = lineups.map(player => {
-            const isCaptain = player.captain === 'TRUE';
+            const isCaptain = player.captain === 'TRUE' || player.captain === true || player.captain === 'true';
             const pointsRaw = parseFloat(player.points_raw || 0);
             const pointsFinal = parseFloat(player.points_final || 0);
             const globalRank = parseFloat(player.global_rank || 0);
             
+            console.log(`Player ${player.player_handle}:`, {
+              raw: pointsRaw,
+              final: pointsFinal,
+              captain: isCaptain,
+              rank: globalRank
+            });
+            
             return `
               <tr class="${isCaptain ? 'captain-row' : ''}">
                 <td class="player-name-cell">
-                  ${player.player_handle}
+                  ${player.player_handle || 'Unknown'}
                   ${isCaptain ? '<span class="captain-badge">C</span>' : ''}
                 </td>
-                <td class="points-cell">${Math.round(pointsRaw).toLocaleString()}</td>
-                <td class="points-cell">${Math.round(pointsFinal).toLocaleString()}</td>
+                <td class="points-cell">${isNaN(pointsRaw) ? '-' : Math.round(pointsRaw).toLocaleString()}</td>
+                <td class="points-cell">${isNaN(pointsFinal) ? '-' : Math.round(pointsFinal).toLocaleString()}</td>
                 <td class="rank-cell">${globalRank > 0 ? Math.round(globalRank) : '-'}</td>
               </tr>
             `;
@@ -929,7 +964,7 @@
                 <img src="${teamId}.webp" alt="${getTeamName(teamId)}" class="team-logo" onerror="this.style.display='none'">
                 <h4>${getTeamName(teamId)}</h4>
               </div>
-              <div class="team-total">Total: ${Math.round(total).toLocaleString()}</div>
+              <div class="team-total">Total: ${isNaN(total) ? '-' : Math.round(total).toLocaleString()}</div>
               <table class="lineup-table">
                 <thead>
                   <tr>
