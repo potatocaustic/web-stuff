@@ -105,6 +105,10 @@
         transition: all 0.3s ease;
         font-weight: 500;
         min-width: 80px;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .week-btn:hover {
@@ -417,6 +421,7 @@
         align-items: center;
         justify-content: center;
         gap: 1rem;
+        flex-direction: column;
       }
 
       .team-header.winner {
@@ -551,7 +556,7 @@
         
         .week-btn {
           padding: 0.6rem 0.8rem;
-          min-width: 60px;
+          min-width: 70px;
           font-size: 0.9rem;
         }
         
@@ -1063,12 +1068,19 @@
         const generateLineupTable = (lineups, teamId, total, isWinner) => {
           console.log(`Generating table for ${teamId}:`, lineups);
           
+          // Get team record
+          const teamData = allTeams.find(t => t.team_id === teamId);
+          const teamRecord = teamData ? `${teamData.wins || 0}-${teamData.losses || 0}` : '';
+          
           if (lineups.length === 0) {
             return `
               <div class="team-breakdown ${isWinner ? 'winner' : ''}">
                 <div class="team-header ${isWinner ? 'winner' : ''}">
                   <img src="icons/${teamId}.webp" alt="${getTeamName(teamId)}" class="team-logo" onerror="this.style.display='none'">
-                  <h4>${getTeamName(teamId)}</h4>
+                  <div>
+                    <h4>${getTeamName(teamId)}</h4>
+                    <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
+                  </div>
                 </div>
                 <div class="team-total">Total: ${Math.round(total).toLocaleString()}</div>
                 <div style="padding: 2rem; text-align: center; color: #666;">No lineup data available</div>
@@ -1112,7 +1124,10 @@
             <div class="team-breakdown ${isWinner ? 'winner' : ''}">
               <div class="team-header ${isWinner ? 'winner' : ''}">
                 <img src="icons/${teamId}.webp" alt="${getTeamName(teamId)}" class="team-logo" onerror="this.style.display='none'">
-                <h4>${getTeamName(teamId)}</h4>
+                <div>
+                  <h4>${getTeamName(teamId)}</h4>
+                  <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
+                </div>
               </div>
               <div class="team-total">Total: ${isNaN(total) ? '-' : Math.round(total).toLocaleString()}</div>
               <table class="lineup-table">
