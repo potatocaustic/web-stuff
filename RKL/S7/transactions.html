@@ -578,10 +578,13 @@
         
         // Group transactions by ID
         const transactionGroups = groupTransactions(filteredTransactions);
+
+        // Count unique transactions
+        const uniqueTransactions = transactionGroups.length;
         
         // Update title
         document.getElementById('transactions-title').textContent = 
-          `${filteredTransactions.length} Transaction${filteredTransactions.length !== 1 ? 's' : ''}`;
+          `${uniqueTransactions} Transaction${uniqueTransactions !== 1 ? 's' : ''}`;
         
         // Generate HTML
         const transactionsHTML = transactionGroups.map(group => {
