@@ -915,6 +915,7 @@
                         <div style="font-size: 0.8rem; color: #666; line-height: 1;">${game.team1_id}</div>
                         ${team1Record ? `<div class="team-record">${team1Record}</div>` : ''}
                       </div>
+                      ${isCompleted ? `<div class="team-score-mobile ${winner === game.team1_id ? 'winner' : ''}">${formatInThousands(team1Score)}</div>` : ''}
                     </div>
                     
                     <div class="vs-divider">VS</div>
@@ -926,12 +927,13 @@
                         <div style="font-size: 0.8rem; color: #666; line-height: 1;">${game.team2_id}</div>
                         ${team2Record ? `<div class="team-record">${team2Record}</div>` : ''}
                       </div>
+                      ${isCompleted ? `<div class="team-score-mobile ${winner === game.team2_id ? 'winner' : ''}">${formatInThousands(team2Score)}</div>` : ''}
                     </div>
                   </div>
                   
                   <div class="game-score">
                     ${isCompleted ? `
-                      <div class="score-display">${formatInThousands(team1Score)} - ${formatInThousands(team2Score)}</div>
+                      <div class="score-display desktop-only">${formatInThousands(team1Score)} - ${formatInThousands(team2Score)}</div>
                       <div class="game-status completed">Final</div>
                       <div class="click-hint">Click for details</div>
                     ` : `
