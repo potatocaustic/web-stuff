@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>caustic.info</title>
+    <title>RKL Season 7 Transactions - caustic.info</title>
     <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
     <style>
       /* Reset and General Styles */
@@ -24,7 +24,7 @@
         color: #333;
       }
 
-      /* Header styling - matching your design */
+      /* Header styling */
       header {
         background-color: #333;
         color: #fff;
@@ -38,7 +38,6 @@
         margin: 0;
       }
       
-      /* Navigation styling */
       nav ul {
         display: flex;
         justify-content: center;
@@ -56,35 +55,19 @@
         text-decoration: none;
         font-size: 1.1rem;
         transition: color 0.3s ease;
-        white-space: nowrap;
       }
       
       nav ul li a:hover {
         color: #ccc;
       }
 
-      /* Mobile navigation */
-      @media (max-width: 600px) {
-        nav ul {
-          flex-direction: column;
-          align-items: center;
-          gap: 0.5rem;
-        }
-        
-        nav ul li {
-          margin: 0.2rem 0;
-          text-align: center;
-        }
-      }
-
       /* Main content */
       main {
         padding: 2rem;
-        max-width: 1400px;
+        max-width: 1200px;
         margin: 0 auto;
       }
 
-      /* Page header */
       .page-header {
         text-align: center;
         margin-bottom: 2rem;
@@ -92,277 +75,216 @@
 
       .page-header h2 {
         font-size: 2.5rem;
-        margin-bottom: 0.5rem;
-      }
-
-      .season-info {
-        background-color: #fff;
-        padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        margin-bottom: 2rem;
-        text-align: center;
-      }
-
-      /* Quick Navigation */
-      .quick-nav {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 2rem;
-      }
-
-      .nav-card {
-        background-color: #fff;
-        padding: 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        text-align: center;
-        transition: all 0.3s ease;
-      }
-
-      .nav-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      }
-
-      .nav-card a {
-        text-decoration: none;
-        color: #333;
-        font-weight: bold;
-        font-size: 1.1rem;
-      }
-
-      .nav-card:hover a {
-        color: #007bff;
-      }
-
-      /* Main content grid */
-      .main-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-        margin-bottom: 2rem;
-      }
-
-      /* Standings preview */
-      .standings-preview {
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-      }
-
-      .standings-header {
-        background-color: #333;
-        color: white;
-        padding: 1rem;
-        text-align: center;
-      }
-
-      .standings-header h3 {
-        color: white;
-        margin: 0;
-        font-size: 1.4rem;
-      }
-
-      .conference-standings {
-        padding: 1rem;
-      }
-
-      .conference-title {
-        font-size: 1.2rem;
-        font-weight: bold;
         margin-bottom: 1rem;
-        color: #333;
-        border-bottom: 2px solid #333;
-        padding-bottom: 0.5rem;
       }
 
-      .standings-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 1.5rem;
-        table-layout: fixed;
+      /* Filter controls */
+      .filter-controls {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
       }
 
-      .standings-table th,
-      .standings-table td {
-        padding: 0.5rem;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
+      .filter-row {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
       }
 
-      .standings-table th {
-        background-color: #f8f9fa;
-        font-weight: bold;
+      .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .filter-group label {
+        font-weight: 500;
         font-size: 0.9rem;
       }
 
-      .standings-table td {
-        font-size: 0.85rem;
+      .filter-group select {
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+        min-width: 150px;
       }
 
-      /* Set specific column widths for alignment */
-      .standings-table th:first-child,
-      .standings-table td:first-child {
-        width: 60%;
-      }
-
-      .standings-table th:nth-child(2),
-      .standings-table td:nth-child(2) {
-        width: 20%;
-        text-align: center;
-      }
-
-      .standings-table th:nth-child(3),
-      .standings-table td:nth-child(3) {
-        width: 20%;
-        text-align: center;
-      }
-
-      .team-link {
-        color: inherit;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        transition: color 0.2s ease;
-      }
-
-      .team-link:hover {
-        color: #007bff;
-        text-decoration: none;
-      }
-
-      .team-logo {
-        width: 20px;
-        height: 20px;
-        vertical-align: middle;
-      }
-
-      .view-full {
-        text-align: center;
-        padding: 1rem;
-        border-top: 1px solid #ddd;
-      }
-
-      .view-full a {
-        color: #007bff;
-        text-decoration: none;
-        font-weight: bold;
-      }
-
-      /* Recent games */
-      .recent-games {
+      /* Transaction feed */
+      .transactions-container {
         background-color: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         overflow: hidden;
       }
 
-      .games-header {
+      .transactions-header {
         background-color: #333;
         color: white;
-        padding: 1rem;
+        padding: 1.5rem;
         text-align: center;
       }
 
-      .games-header h3 {
+      .transactions-header h3 {
         color: white;
         margin: 0;
         font-size: 1.4rem;
       }
 
-      .games-list {
-        padding: 1rem;
+      .transactions-list {
+        max-height: 800px;
+        overflow-y: auto;
       }
 
-      .game-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem;
-        border-bottom: 1px solid #ddd;
+      /* Transaction item */
+      .transaction-item {
+        padding: 1.5rem;
+        border-bottom: 1px solid #eee;
         transition: background-color 0.2s;
       }
 
-      .game-item:hover {
+      .transaction-item:hover {
         background-color: #f8f9fa;
       }
 
-      .game-item:last-child {
+      .transaction-item:last-child {
         border-bottom: none;
       }
 
-      .game-matchup {
+      .transaction-header {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        gap: 1rem;
-        flex: 1;
+        margin-bottom: 1rem;
       }
 
-      .team {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        min-width: 120px;
-        max-width: 180px;
-        flex: 1;
+      .transaction-type {
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-transform: uppercase;
       }
 
-      .team-info {
-        display: flex;
-        flex-direction: column;
-        min-width: 0;
-        flex: 1;
-        max-width: calc(100% - 70px);
+      .transaction-type.trade {
+        background-color: #007bff;
+        color: white;
+      }
+
+      .transaction-type.retirement {
+        background-color: #dc3545;
+        color: white;
+      }
+
+      .transaction-type.unretirement {
+        background-color: #28a745;
+        color: white;
+      }
+
+      .transaction-type.drop {
+        background-color: #ffc107;
+        color: #333;
+      }
+
+      .transaction-type.gm_resignation {
+        background-color: #6c757d;
+        color: white;
+      }
+
+      .transaction-type.gm_hired {
+        background-color: #17a2b8;
+        color: white;
+      }
+
+      .transaction-date {
+        font-size: 0.9rem;
+        color: #666;
+      }
+
+      .transaction-details {
+        line-height: 1.8;
+      }
+
+      .player-name {
+        font-weight: bold;
+        color: #007bff;
+      }
+
+      .gm-name {
+        font-weight: bold;
+        color: #17a2b8;
       }
 
       .team-name {
         font-weight: 500;
-        font-size: 0.9rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .team-record {
-        font-size: 0.8rem;
-        color: #666;
-      }
-
-      .team-score {
-        font-weight: bold;
         color: #333;
-        margin-left: auto;
-        min-width: 35px;
-        text-align: right;
-        flex-shrink: 0;
       }
 
-      .vs {
+      .draft-pick {
+        background-color: #f8f9fa;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        font-family: monospace;
+        font-size: 0.9rem;
+      }
+
+      /* Multi-transaction group */
+      .multi-transaction {
+        border-left: 4px solid #007bff;
+        background-color: #f8f9fa;
+      }
+
+      .trade-parts {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 1rem;
+        align-items: center;
+        margin-top: 1rem;
+      }
+
+      .trade-side {
+        background-color: white;
+        padding: 1rem;
+        border-radius: 6px;
+        border: 1px solid #ddd;
+      }
+
+      .trade-arrow {
+        font-size: 1.5rem;
+        color: #007bff;
         font-weight: bold;
-        color: #666;
-        margin: 0 0.5rem;
       }
 
-      .game-date {
-        color: #666;
-        font-size: 0.8rem;
-        text-align: center;
-        min-width: 60px;
+      .trade-team {
+        font-weight: bold;
+        color: #007bff;
+        margin-bottom: 0.5rem;
       }
 
-      .winner {
-        color: #28a745;
+      .trade-assets {
+        list-style: none;
+        padding: 0;
       }
 
-      /* Loading states */
+      .trade-assets li {
+        padding: 0.2rem 0;
+        border-bottom: 1px solid #eee;
+      }
+
+      .trade-assets li:last-child {
+        border-bottom: none;
+      }
+
+      /* Loading and error states */
       .loading {
         text-align: center;
-        padding: 2rem;
+        padding: 3rem;
         color: #666;
+        font-size: 1.1rem;
       }
 
       .error {
@@ -371,71 +293,46 @@
         color: #dc3545;
         background-color: #f8d7da;
         border-radius: 4px;
-        margin: 1rem 0;
+        margin: 1rem;
+      }
+
+      .no-transactions {
+        text-align: center;
+        padding: 3rem;
+        color: #666;
+        font-style: italic;
       }
 
       /* Mobile responsive */
       @media (max-width: 768px) {
-        .main-grid {
-          grid-template-columns: 1fr;
-        }
-        
-        .quick-nav {
-          grid-template-columns: repeat(2, 1fr);
-        }
-        
-        .standings-table th,
-        .standings-table td {
-          padding: 0.3rem;
-          font-size: 0.8rem;
-        }
-        
-        .team-logo {
-          width: 16px;
-          height: 16px;
-        }
-
-        .game-matchup {
+        .filter-row {
           flex-direction: column;
-          gap: 0.75rem;
           align-items: stretch;
         }
-
-        .team {
+        
+        .filter-group {
+          width: 100%;
+        }
+        
+        .filter-group select {
           min-width: auto;
           width: 100%;
         }
-
-        .team-info {
-          flex: 1;
+        
+        .transaction-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.5rem;
         }
-
-        .team-name {
-          font-size: 0.85rem;
-        }
-
-        .team-record {
-          font-size: 0.75rem;
-        }
-
-        .vs {
-          display: none;
-        }
-
-        .game-item {
-          padding: 0.75rem;
-        }
-
-        .game-date {
-          text-align: left;
-          margin-top: 0.5rem;
-          font-size: 0.75rem;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .quick-nav {
+        
+        .trade-parts {
           grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+        
+        .trade-arrow {
+          text-align: center;
+          transform: rotate(90deg);
         }
       }
 
@@ -451,105 +348,65 @@
   </head>
   <body>
     <header>
-      <h1>RKL Season 7</h1>
+      <h1>RKL Season 7 Transactions</h1>
       <nav>
         <ul>
           <li><a href="../../index.html">Home</a></li>
           <li><a href="../rkl-stats.html">RKL Stats Database</a></li>
           <li><a href="RKL-S7.html">Season 7</a></li>
-          <li><a href="../../PSPs/mlb-psp.html">MLB PSP Database</a></li>
-          <li><a href="../../PSPs-WNBA/wnba-psp.html">WNBA PSP Database</a></li>
-          <li><a href="../../karma-calculator.html">Karma EV Calculator</a></li>
+          <li><a href="standings.html">Standings</a></li>
+          <li><a href="leaderboards.html">Leaderboards</a></li>
+          <li><a href="transactions.html">Transactions</a></li>
         </ul>
       </nav>
     </header>
     
     <main>
       <div class="page-header">
-        <h2>RKL Season 7</h2>
+        <h2>Transaction Log</h2>
+        <p>Complete history of all trades, retirements, and roster moves</p>
       </div>
 
-      <div class="season-info">
-        <p><strong>Current Week:</strong> <span id="current-week">Loading...</span></p>
-        <div id="season-stats">
-          <p>Loading season statistics...</p>
+      <!-- Filter Controls -->
+      <div class="filter-controls">
+        <div class="filter-row">
+          <div class="filter-group">
+            <label for="week-filter">Week:</label>
+            <select id="week-filter">
+              <option value="all">All Weeks</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label for="type-filter">Transaction Type:</label>
+            <select id="type-filter">
+              <option value="all">All Types</option>
+              <option value="TRADE">Trades</option>
+              <option value="RETIREMENT">Retirements</option>
+              <option value="UNRETIREMENT">Unretirements</option>
+              <option value="DROP">Drops</option>
+              <option value="GM_RESIGNATION">GM Resignations</option>
+              <option value="GM_HIRED">GM Hirings</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label for="team-filter">Team:</label>
+            <select id="team-filter">
+              <option value="all">All Teams</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      <!-- Quick Navigation -->
-      <div class="quick-nav">
-        <div class="nav-card">
-          <a href="standings.html">📊 Full Standings</a>
+      <!-- Transactions Container -->
+      <div class="transactions-container">
+        <div class="transactions-header">
+          <h3 id="transactions-title">Recent Transactions</h3>
         </div>
-        <div class="nav-card">
-          <a href="leaderboards.html">🏆 Player Leaderboards</a>
-        </div>
-        <div class="nav-card">
-          <a href="schedule.html">📅 Schedule & Results</a>
-        </div>
-        <div class="nav-card">
-          <a href="transactions.html">🔄 Transactions</a>
-        </div>
-        <div class="nav-card">
-          <a href="teams.html">👥 Team Pages</a>
-        </div>
-        <div class="nav-card">
-          <a href="draft-capital.html">📋 Draft Capital</a>
-        </div>
-      </div>
-
-      <!-- Main Content Grid -->
-      <div class="main-grid">
-        <!-- Standings Preview -->
-        <div class="standings-preview">
-          <div class="standings-header">
-            <h3>League Leaders</h3>
-          </div>
-          <div class="conference-standings">
-            <div class="conference-title">Eastern Conference</div>
-            <table class="standings-table">
-              <thead>
-                <tr>
-                  <th>Team</th>
-                  <th>W-L</th>
-                  <th>PAM</th>
-                </tr>
-              </thead>
-              <tbody id="eastern-standings">
-                <tr><td colspan="3" class="loading">Loading standings...</td></tr>
-              </tbody>
-            </table>
-            
-            <div class="conference-title">Western Conference</div>
-            <table class="standings-table">
-              <thead>
-                <tr>
-                  <th>Team</th>
-                  <th>W-L</th>
-                  <th>PAM</th>
-                </tr>
-              </thead>
-              <tbody id="western-standings">
-                <tr><td colspan="3" class="loading">Loading standings...</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="view-full">
-            <a href="standings.html">View Full Standings →</a>
-          </div>
-        </div>
-
-        <!-- Recent Games -->
-        <div class="recent-games">
-          <div class="games-header">
-            <h3>Recent Games</h3>
-          </div>
-          <div class="games-list" id="recent-games">
-            <div class="loading">Loading recent games...</div>
-          </div>
-          <div class="view-full">
-            <a href="schedule.html">View Full Schedule →</a>
-          </div>
+        
+        <div class="transactions-list" id="transactions-list">
+          <div class="loading">Loading transactions...</div>
         </div>
       </div>
     </main>
@@ -563,14 +420,9 @@
       const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4'; // Replace this with your actual sheet ID
       const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
       
-      // Helper function to format numbers in thousands (e.g., 36552 -> 36.6k)
-      function formatInThousands(value) {
-        const num = parseFloat(value);
-        if (num >= 1000) {
-          return (num / 1000).toFixed(1) + 'k';
-        }
-        return num.toString();
-      }
+      let allTransactions = [];
+      let allTeams = [];
+      let allDraftPicks = [];
       
       // Function to fetch data from Google Sheets
       async function fetchSheetData(sheetName) {
@@ -602,219 +454,261 @@
         return data;
       }
       
-      // Function to format date for display
+      // Format date for display
       function formatDate(dateString) {
         const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        return date.toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric' 
+        });
       }
       
-      // Function to get team name from team ID
-      function getTeamName(teamId, teams) {
-        const team = teams.find(t => t.team_id === teamId);
+      // Get team name from ID
+      function getTeamName(teamId) {
+        const team = allTeams.find(t => t.team_id === teamId);
         return team ? team.team_name : teamId;
       }
       
-      // Load and display standings preview
-      async function loadStandingsPreview() {
-        const teams = await fetchSheetData('Teams');
-        if (!teams) {
-          document.getElementById('eastern-standings').innerHTML = '<tr><td colspan="3" class="error">Error loading standings</td></tr>';
-          document.getElementById('western-standings').innerHTML = '<tr><td colspan="3" class="error">Error loading standings</td></tr>';
-          return;
-        }
-        
-        // Separate teams by conference and sort by wins
-        const easternTeams = teams.filter(team => team.conference === 'Eastern')
-          .sort((a, b) => parseInt(b.wins || 0) - parseInt(a.wins || 0))
-          .slice(0, 5); // Show top 5
-          
-        const westernTeams = teams.filter(team => team.conference === 'Western')
-          .sort((a, b) => parseInt(b.wins || 0) - parseInt(a.wins || 0))
-          .slice(0, 5); // Show top 5
-        
-        // Display Eastern Conference
-        const easternHTML = easternTeams.map(team => `
-          <tr>
-            <td>
-              <a href="team.html?id=${team.team_id}" class="team-link">
-                <img src="icons/${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
-                ${team.team_name}
-              </a>
-            </td>
-            <td>${team.wins || 0}-${team.losses || 0}</td>
-            <td>${Math.round(parseFloat(team.pam || 0)).toLocaleString()}</td>
-          </tr>
-        `).join('');
-        
-        // Display Western Conference
-        const westernHTML = westernTeams.map(team => `
-          <tr>
-            <td>
-              <a href="team.html?id=${team.team_id}" class="team-link">
-                <img src="icons/${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
-                ${team.team_name}
-              </a>
-            </td>
-            <td>${team.wins || 0}-${team.losses || 0}</td>
-            <td>${Math.round(parseFloat(team.pam || 0)).toLocaleString()}</td>
-          </tr>
-        `).join('');
-        
-        document.getElementById('eastern-standings').innerHTML = easternHTML;
-        document.getElementById('western-standings').innerHTML = westernHTML;
-      }
-      
-      // Load and display recent games
-      async function loadRecentGames() {
-        const [schedule, teams] = await Promise.all([
-          fetchSheetData('Schedule'),
-          fetchSheetData('Teams')
+      // Load initial data
+      async function loadData() {
+        const [transactions, teams, draftPicks] = await Promise.all([
+          fetchSheetData('Transaction_Log'),
+          fetchSheetData('Teams'),
+          fetchSheetData('Draft_Capital')
         ]);
         
-        if (!schedule || !teams) {
-          document.getElementById('recent-games').innerHTML = '<div class="error">Error loading recent games</div>';
+        if (!transactions || !teams) {
+          document.getElementById('transactions-list').innerHTML = 
+            '<div class="error">Error loading transaction data</div>';
           return;
         }
         
-        // Get completed games and sort by date (most recent first)
-        const completedGames = schedule
-          .filter(game => game.completed === 'TRUE')
-          .sort((a, b) => new Date(b.date) - new Date(a.date))
-          .slice(0, 5); // Show last 5 games
+        allTransactions = transactions.sort((a, b) => {
+          // Sort by week (descending), then by transaction_id (descending)
+          const weekA = parseInt(a.week || 0);
+          const weekB = parseInt(b.week || 0);
+          if (weekB !== weekA) return weekB - weekA;
+          return b.transaction_id.localeCompare(a.transaction_id);
+        });
         
-        if (completedGames.length === 0) {
-          document.getElementById('recent-games').innerHTML = '<div class="loading">No completed games yet</div>';
+        allTeams = teams;
+        allDraftPicks = draftPicks || [];
+        
+        setupFilters();
+        displayTransactions();
+      }
+      
+      // Setup filter dropdowns
+      function setupFilters() {
+        // Week filter
+        const weeks = [...new Set(allTransactions.map(t => parseInt(t.week)))].sort((a, b) => b - a);
+        const weekOptions = weeks.map(week => `<option value="${week}">Week ${week}</option>`).join('');
+        document.getElementById('week-filter').innerHTML = 
+          '<option value="all">All Weeks</option>' + weekOptions;
+        
+        // Team filter
+        const teamOptions = allTeams
+          .sort((a, b) => a.team_name.localeCompare(b.team_name))
+          .map(team => `<option value="${team.team_id}">${team.team_name}</option>`)
+          .join('');
+        document.getElementById('team-filter').innerHTML = 
+          '<option value="all">All Teams</option>' + teamOptions;
+        
+        // Add event listeners
+        ['week-filter', 'type-filter', 'team-filter'].forEach(filterId => {
+          document.getElementById(filterId).addEventListener('change', displayTransactions);
+        });
+      }
+      
+      // Get filtered transactions
+      function getFilteredTransactions() {
+        const weekFilter = document.getElementById('week-filter').value;
+        const typeFilter = document.getElementById('type-filter').value;
+        const teamFilter = document.getElementById('team-filter').value;
+        
+        return allTransactions.filter(transaction => {
+          // Week filter
+          if (weekFilter !== 'all' && parseInt(transaction.week) !== parseInt(weekFilter)) {
+            return false;
+          }
+          
+          // Type filter
+          if (typeFilter !== 'all' && transaction.transaction_type !== typeFilter) {
+            return false;
+          }
+          
+          // Team filter
+          if (teamFilter !== 'all') {
+            const involvedTeams = [transaction.from_team, transaction.to_team, transaction.gm_involved].filter(Boolean);
+            if (!involvedTeams.includes(teamFilter)) {
+              return false;
+            }
+          }
+          
+          return true;
+        });
+      }
+      
+      // Group transactions by transaction_id for trades
+      function groupTransactions(transactions) {
+        const groups = {};
+        
+        transactions.forEach(transaction => {
+          const id = transaction.transaction_id;
+          if (!groups[id]) {
+            groups[id] = [];
+          }
+          groups[id].push(transaction);
+        });
+        
+        return Object.values(groups);
+      }
+      
+      // Display transactions
+      function displayTransactions() {
+        const filteredTransactions = getFilteredTransactions();
+        
+        if (filteredTransactions.length === 0) {
+          document.getElementById('transactions-list').innerHTML = 
+            '<div class="no-transactions">No transactions match your filters</div>';
+          document.getElementById('transactions-title').textContent = 'No Transactions Found';
           return;
         }
         
-        const gamesHTML = completedGames.map(game => {
-          const team1Score = parseFloat(game.team1_score || 0);
-          const team2Score = parseFloat(game.team2_score || 0);
-          const winner = game.winner;
-          const team1Name = getTeamName(game.team1_id, teams);
-          const team2Name = getTeamName(game.team2_id, teams);
-          
-          // Get team records
-          const team1Data = teams.find(t => t.team_id === game.team1_id);
-          const team2Data = teams.find(t => t.team_id === game.team2_id);
-          const team1Record = team1Data ? `${team1Data.wins || 0}-${team1Data.losses || 0}` : '';
-          const team2Record = team2Data ? `${team2Data.wins || 0}-${team2Data.losses || 0}` : '';
-          
-          return `
-            <div class="game-item">
-              <div class="game-matchup">
-                <div class="team ${winner === game.team1_id ? 'winner' : ''}">
-                  <img src="icons/${game.team1_id}.webp" alt="${game.team1_id}" class="team-logo" onerror="this.style.display='none'">
-                  <div class="team-info">
-                    <span class="team-name">${team1Name}</span>
-                    <span class="team-record">${team1Record}</span>
-                  </div>
-                  <span class="team-score">${formatInThousands(team1Score)}</span>
-                </div>
-                <span class="vs">vs</span>
-                <div class="team ${winner === game.team2_id ? 'winner' : ''}">
-                  <img src="icons/${game.team2_id}.webp" alt="${game.team2_id}" class="team-logo" onerror="this.style.display='none'">
-                  <div class="team-info">
-                    <span class="team-name">${team2Name}</span>
-                    <span class="team-record">${team2Record}</span>
-                  </div>
-                  <span class="team-score">${formatInThousands(team2Score)}</span>
-                </div>
-              </div>
-              <div class="game-date">
-                ${formatDate(game.date)}
-              </div>
-            </div>
-          `;
+        // Group transactions by ID
+        const transactionGroups = groupTransactions(filteredTransactions);
+        
+        // Update title
+        document.getElementById('transactions-title').textContent = 
+          `${filteredTransactions.length} Transaction${filteredTransactions.length !== 1 ? 's' : ''}`;
+        
+        // Generate HTML
+        const transactionsHTML = transactionGroups.map(group => {
+          if (group.length === 1) {
+            return renderSingleTransaction(group[0]);
+          } else {
+            return renderMultiTransaction(group);
+          }
         }).join('');
         
-        document.getElementById('recent-games').innerHTML = gamesHTML;
+        document.getElementById('transactions-list').innerHTML = transactionsHTML;
       }
       
-      // Load current week info and season stats
-      async function loadSeasonInfo() {
-        const [schedule, transactions, players] = await Promise.all([
-          fetchSheetData('Schedule'),
-          fetchSheetData('Transaction_Log'),
-          fetchSheetData('Players')
-        ]);
+      // Render a single transaction (retirement, drop, GM changes, etc.)
+      function renderSingleTransaction(transaction) {
+        const typeClass = transaction.transaction_type.toLowerCase();
         
-        if (!schedule) {
-          document.getElementById('current-week').textContent = 'Unknown';
-          document.getElementById('season-stats').innerHTML = '<p>Error loading season information</p>';
-          return;
+        let details = '';
+        switch (transaction.transaction_type) {
+          case 'RETIREMENT':
+            details = `<span class="player-name">${transaction.player_handle}</span> retired from <span class="team-name">${getTeamName(transaction.from_team)}</span>`;
+            break;
+          case 'UNRETIREMENT':
+            details = `<span class="player-name">${transaction.player_handle}</span> unretired and joined <span class="team-name">${getTeamName(transaction.to_team)}</span>`;
+            break;
+          case 'DROP':
+            details = `<span class="player-name">${transaction.player_handle}</span> dropped by <span class="team-name">${getTeamName(transaction.from_team)}</span>`;
+            break;
+          case 'GM_RESIGNATION':
+            details = `<span class="gm-name">${transaction.gm_involved}</span> resigned as GM of <span class="team-name">${getTeamName(transaction.from_team)}</span>`;
+            break;
+          case 'GM_HIRED':
+            details = `<span class="gm-name">${transaction.gm_involved}</span> hired as GM of <span class="team-name">${getTeamName(transaction.to_team)}</span>`;
+            break;
+          default:
+            if (transaction.player_handle) {
+              details = `<span class="player-name">${transaction.player_handle}</span> moved from <span class="team-name">${getTeamName(transaction.from_team)}</span> to <span class="team-name">${getTeamName(transaction.to_team)}</span>`;
+            } else {
+              details = `Unknown transaction type: ${transaction.transaction_type}`;
+            }
         }
         
-        // Find the current week (latest week with incomplete games, or if all complete, the latest week)
-        const gamesByWeek = {};
-        schedule.forEach(game => {
-          const week = parseInt(game.week);
-          if (!gamesByWeek[week]) {
-            gamesByWeek[week] = { total: 0, completed: 0 };
-          }
-          gamesByWeek[week].total++;
-          if (game.completed === 'TRUE') {
-            gamesByWeek[week].completed++;
+        return `
+          <div class="transaction-item">
+            <div class="transaction-header">
+              <span class="transaction-type ${typeClass}">${transaction.transaction_type.replace('_', ' ')}</span>
+              <span class="transaction-date">Week ${transaction.week} - ${formatDate(transaction.date)}</span>
+            </div>
+            <div class="transaction-details">
+              ${details}
+              ${transaction.notes ? `<br><em>Note: ${transaction.notes}</em>` : ''}
+            </div>
+          </div>
+        `;
+      }
+      
+      // Render a multi-part transaction (trade)
+      function renderMultiTransaction(transactions) {
+        const firstTransaction = transactions[0];
+        const typeClass = firstTransaction.transaction_type.toLowerCase();
+        
+        // Group by team involvement
+        const teamAssets = {};
+        
+        transactions.forEach(transaction => {
+          if (transaction.player_handle) {
+            // Player transaction
+            if (!teamAssets[transaction.from_team]) {
+              teamAssets[transaction.from_team] = { players: [], picks: [], receiving: [] };
+            }
+            if (!teamAssets[transaction.to_team]) {
+              teamAssets[transaction.to_team] = { players: [], picks: [], receiving: [] };
+            }
+            
+            teamAssets[transaction.from_team].players.push(transaction.player_handle);
+            teamAssets[transaction.to_team].receiving.push(transaction.player_handle);
+          } else if (transaction.draft_pick_id) {
+            // Draft pick transaction
+            const pickInfo = allDraftPicks.find(p => p.pick_id === transaction.draft_pick_id);
+            const pickDescription = pickInfo ? pickInfo.pick_description : transaction.draft_pick_id;
+            
+            if (!teamAssets[transaction.from_team]) {
+              teamAssets[transaction.from_team] = { players: [], picks: [], receiving: [] };
+            }
+            if (!teamAssets[transaction.to_team]) {
+              teamAssets[transaction.to_team] = { players: [], picks: [], receiving: [] };
+            }
+            
+            teamAssets[transaction.from_team].picks.push(pickDescription);
+            teamAssets[transaction.to_team].receiving.push(pickDescription);
           }
         });
         
-        let currentWeek = 1;
-        const weeks = Object.keys(gamesByWeek).map(w => parseInt(w)).sort((a, b) => a - b);
+        const teams = Object.keys(teamAssets);
         
-        // Find first week with incomplete games, or last week if all complete
-        for (const week of weeks) {
-          if (gamesByWeek[week].completed < gamesByWeek[week].total) {
-            currentWeek = week;
-            break;
-          }
-          currentWeek = week; // Keep updating to get the last week if all are complete
-        }
-        
-        document.getElementById('current-week').textContent = `Week ${currentWeek}`;
-        
-        // Calculate total games and completed games
-        const totalGames = schedule.length;
-        const completedGames = schedule.filter(game => game.completed === 'TRUE').length;
-        
-        // Count UNIQUE transactions by counting unique transaction_ids
-        let uniqueTransactionCount = 0;
-        if (transactions) {
-          const uniqueTransactionIds = new Set();
-          transactions.forEach(transaction => {
-            if (transaction.transaction_id && 
-                transaction.transaction_type && 
-                !transaction.notes?.toLowerCase().includes('pre-database') &&
-                !transaction.notes?.toLowerCase().includes('preseason')) {
-              uniqueTransactionIds.add(transaction.transaction_id);
-            }
-          });
-          uniqueTransactionCount = uniqueTransactionIds.size;
-        }
-        
-        // Calculate total karma earned this season
-        const totalKarma = players ? players
-          .filter(player => player.player_status === 'ACTIVE')
-          .reduce((sum, player) => sum + parseFloat(player.total_points || 0), 0) : 0;
-        
-        // Update season info
-        document.getElementById('season-stats').innerHTML = `
-          <p><strong>${completedGames} of ${totalGames}</strong> regular season games complete</p>
-          <p><strong>${uniqueTransactionCount}</strong> transactions made (excludes pre-database moves)</p>
-          <p><strong>${Math.round(totalKarma).toLocaleString()}</strong> total karma earned</p>
+        return `
+          <div class="transaction-item multi-transaction">
+            <div class="transaction-header">
+              <span class="transaction-type ${typeClass}">${firstTransaction.transaction_type}</span>
+              <span class="transaction-date">Week ${firstTransaction.week} - ${formatDate(firstTransaction.date)}</span>
+            </div>
+            
+            <div class="trade-parts">
+              ${teams.map((teamId, index) => `
+                <div class="trade-side">
+                  <div class="trade-team">${getTeamName(teamId)} Trades:</div>
+                  <ul class="trade-assets">
+                    ${teamAssets[teamId].players.map(player => `<li>📝 ${player}</li>`).join('')}
+                    ${teamAssets[teamId].picks.map(pick => `<li>🎯 <span class="draft-pick">${pick}</span></li>`).join('')}
+                    ${teamAssets[teamId].players.length === 0 && teamAssets[teamId].picks.length === 0 ? '<li><em>No assets traded</em></li>' : ''}
+                  </ul>
+                </div>
+                ${index < teams.length - 1 ? '<div class="trade-arrow">⟷</div>' : ''}
+              `).join('')}
+            </div>
+            
+            ${firstTransaction.notes ? `
+              <div class="transaction-details" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ddd;">
+                <em>Note: ${firstTransaction.notes}</em>
+              </div>
+            ` : ''}
+          </div>
         `;
       }
       
       // Initialize page
-      async function initializePage() {
-        await Promise.all([
-          loadStandingsPreview(),
-          loadRecentGames(),
-          loadSeasonInfo()
-        ]);
-      }
-      
-      // Load data when page loads
-      document.addEventListener('DOMContentLoaded', initializePage);
+      document.addEventListener('DOMContentLoaded', loadData);
     </script>
   </body>
 </html>
