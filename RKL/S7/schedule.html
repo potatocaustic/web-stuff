@@ -872,6 +872,7 @@
         
         console.log('Game found:', game);
         console.log('All lineups sample:', allLineups.slice(0, 5));
+        console.log('Sample lineup object keys:', allLineups.length > 0 ? Object.keys(allLineups[0]) : 'No lineups found');
         console.log('Looking for lineups with team_id:', team1Id, team2Id, 'and date:', date);
         
         // Get ALL lineups for both teams on this date first (no filtering)
@@ -885,28 +886,16 @@
         console.log('All Team1 lineups (before started filter):', team1AllLineups);
         console.log('All Team2 lineups (before started filter):', team2AllLineups);
         
-        // Show the started field details for debugging
+        // Show ALL field details for debugging
         team1AllLineups.forEach(lineup => {
-          console.log(`Team1 ${lineup.player_handle}:`, {
-            started: lineup.started,
-            startedType: typeof lineup.started,
-            startedValue: JSON.stringify(lineup.started),
-            captain: lineup.captain,
-            captainType: typeof lineup.captain
-          });
+          console.log(`Team1 ${lineup.player_handle} - ALL FIELDS:`, lineup);
         });
         
         team2AllLineups.forEach(lineup => {
-          console.log(`Team2 ${lineup.player_handle}:`, {
-            started: lineup.started,
-            startedType: typeof lineup.started,
-            startedValue: JSON.stringify(lineup.started),
-            captain: lineup.captain,
-            captainType: typeof lineup.captain
-          });
+          console.log(`Team2 ${lineup.player_handle} - ALL FIELDS:`, lineup);
         });
         
-        // Get lineups for both teams on this date - check both started column formats
+        // Now try the started filter with better debugging
         const team1Lineups = team1AllLineups.filter(lineup => {
           // Try multiple formats for the started field
           const isStarted = lineup.started === 'TRUE' || 
@@ -915,7 +904,11 @@
                            lineup.started === 1 || 
                            lineup.started === '1';
           
-          console.log(`Team1 ${lineup.player_handle} started check:`, isStarted);
+          console.log(`Team1 ${lineup.player_handle}:`, {
+            started: lineup.started,
+            captain: lineup.captain,
+            isStartedResult: isStarted
+          });
           return isStarted;
         }).sort((a, b) => parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0));
         
@@ -927,7 +920,11 @@
                            lineup.started === 1 || 
                            lineup.started === '1';
           
-          console.log(`Team2 ${lineup.player_handle} started check:`, isStarted);
+          console.log(`Team2 ${lineup.player_handle}:`, {
+            started: lineup.started,
+            captain: lineup.captain,
+            isStartedResult: isStarted
+          });
           return isStarted;
         }).sort((a, b) => parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0));
         
