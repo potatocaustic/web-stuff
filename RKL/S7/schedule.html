@@ -269,6 +269,10 @@
         flex-shrink: 0;
       }
 
+      .team-score.winner {
+        color: #28a745;
+      }
+
       .game-status {
         text-align: center;
         margin-top: 0.5rem;
@@ -882,12 +886,12 @@
               // Get team records for completed games
               let team1Record = '';
               let team2Record = '';
-              if (isCompleted) {
-                const team1Data = allTeams.find(t => t.team_id === game.team1_id);
-                const team2Data = allTeams.find(t => t.team_id === game.team2_id);
-                team1Record = team1Data ? `${team1Data.wins || 0}-${team1Data.losses || 0}` : '';
-                team2Record = team2Data ? `${team2Data.wins || 0}-${team2Data.losses || 0}` : '';
-              }
+              
+              // Get team records for ALL games (completed and upcoming)
+              const team1Data = allTeams.find(t => t.team_id === game.team1_id);
+              const team2Data = allTeams.find(t => t.team_id === game.team2_id);
+              team1Record = team1Data ? `${team1Data.wins || 0}-${team1Data.losses || 0}` : '';
+              team2Record = team2Data ? `${team2Data.wins || 0}-${team2Data.losses || 0}` : '';
               
               return `
                 <div class="game-card ${isCompleted ? 'completed' : 'upcoming'}" 
@@ -898,10 +902,10 @@
                         <img src="icons/${game.team1_id}.webp" alt="${game.team1_id}" class="team-logo" onerror="this.style.display='none'">
                         <div class="team-info">
                           <div class="team-name">${getTeamName(game.team1_id)}</div>
-                          ${team1Record ? `<div class="team-record">${team1Record}</div>` : ''}
+                          <div class="team-record">${team1Record}</div>
                         </div>
                       </div>
-                      ${isCompleted ? `<div class="team-score">${formatInThousands(team1Score)}</div>` : ''}
+                      ${isCompleted ? `<div class="team-score ${winner === game.team1_id ? 'winner' : ''}">${formatInThousands(team1Score)}</div>` : ''}
                     </div>
                     
                     <div class="team ${winner === game.team2_id ? 'winner' : ''}">
@@ -909,10 +913,10 @@
                         <img src="icons/${game.team2_id}.webp" alt="${game.team2_id}" class="team-logo" onerror="this.style.display='none'">
                         <div class="team-info">
                           <div class="team-name">${getTeamName(game.team2_id)}</div>
-                          ${team2Record ? `<div class="team-record">${team2Record}</div>` : ''}
+                          <div class="team-record">${team2Record}</div>
                         </div>
                       </div>
-                      ${isCompleted ? `<div class="team-score">${formatInThousands(team2Score)}</div>` : ''}
+                      ${isCompleted ? `<div class="team-score ${winner === game.team2_id ? 'winner' : ''}">${formatInThousands(team2Score)}</div>` : ''}
                     </div>
                   </div>
                   
@@ -1097,7 +1101,7 @@
                 </td>
                 <td class="points-cell">
                   ${Math.round(pointsRaw).toLocaleString()}
-                  ${isCaptain ? `<div class="captain-bonus">+${captainBonus.toLocaleString()} bonus</div>` : ''}
+                  ${isCaptain ? `<div class="captain-bonus">+${captainBonus.toLocaleString()}</div>` : ''}
                 </td>
                 <td class="rank-cell">${globalRank > 0 ? Math.round(globalRank) : '-'}</td>
               </tr>
