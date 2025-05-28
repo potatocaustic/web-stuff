@@ -636,9 +636,18 @@
       const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4'; // Replace this with your actual sheet ID
       const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
       
+      // Helper function to parse numbers that might have comma formatting
+      function parseNumber(value) {
+        if (!value) return 0;
+        // Remove commas and parse as float
+        const cleaned = value.toString().replace(/,/g, '');
+        const parsed = parseFloat(cleaned);
+        return isNaN(parsed) ? 0 : parsed;
+      }
+
       // Helper function to format numbers in thousands (e.g., 36552 -> 36.6k)
       function formatInThousands(value) {
-        const num = parseFloat(value);
+        const num = parseNumber(value);
         if (num >= 1000) {
           return (num / 1000).toFixed(1) + 'k';
         }
@@ -936,7 +945,7 @@
             isStartedResult: isStarted
           });
           return isStarted;
-        }).sort((a, b) => parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0));
+        }).sort((a, b) => parseNumber(b.points_final) - parseNumber(a.points_final));
         
         const team2Lineups = team2AllLineups.filter(lineup => {
           // Try multiple formats for the started field
@@ -952,20 +961,20 @@
             isStartedResult: isStarted
           });
           return isStarted;
-        }).sort((a, b) => parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0));
+        }).sort((a, b) => parseNumber(b.points_final) - parseNumber(a.points_final));
         
         console.log('Team1 filtered lineups:', team1Lineups);
         console.log('Team2 filtered lineups:', team2Lineups);
         
         // Calculate team totals
         const team1Total = team1Lineups.reduce((sum, player) => {
-          const points = parseFloat(player.points_final || 0);
-          return sum + (isNaN(points) ? 0 : points);
+          const points = parseNumber(player.points_final);
+          return sum + points;
         }, 0);
         
         const team2Total = team2Lineups.reduce((sum, player) => {
-          const points = parseFloat(player.points_final || 0);
-          return sum + (isNaN(points) ? 0 : points);
+          const points = parseNumber(player.points_final);
+          return sum + points;
         }, 0);
         
         const winner = game.winner;
@@ -989,9 +998,9 @@
           
           const lineupRows = lineups.map(player => {
             const isCaptain = player.captain === 'TRUE' || player.captain === true || player.captain === 'true';
-            const pointsRaw = parseFloat(player.points_raw || 0);
-            const pointsFinal = parseFloat(player.points_final || 0);
-            const globalRank = parseFloat(player.global_rank || 0);
+            const pointsRaw = parseNumber(player.points_raw);
+            const pointsFinal = parseNumber(player.points_final);
+            const globalRank = parseNumber(player.global_rank);
             
             console.log(`Player ${player.player_handle}:`, {
               raw: pointsRaw,
@@ -1006,8 +1015,8 @@
                   ${player.player_handle || 'Unknown'}
                   ${isCaptain ? '<span class="captain-badge">C</span>' : ''}
                 </td>
-                <td class="points-cell">${isNaN(pointsRaw) ? '-' : Math.round(pointsRaw).toLocaleString()}</td>
-                <td class="points-cell">${isNaN(pointsFinal) ? '-' : Math.round(pointsFinal).toLocaleString()}</td>
+                <td class="points-cell">${Math.round(pointsRaw).toLocaleString()}</td>
+                <td class="points-cell">${Math.round(pointsFinal).toLocaleString()}</td>
                 <td class="rank-cell">${globalRank > 0 ? Math.round(globalRank) : '-'}</td>
               </tr>
             `;
