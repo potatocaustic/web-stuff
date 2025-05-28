@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RKL Season 7 Transactions - caustic.info</title>
+    <title id="page-title">RKL Season 7 Team - caustic.info</title>
     <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
     <style>
       /* Reset and General Styles */
@@ -68,218 +68,322 @@
         margin: 0 auto;
       }
 
-      .page-header {
-        text-align: center;
-        margin-bottom: 2rem;
-      }
-
-      .page-header h2 {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-      }
-
-      /* Filter controls */
-      .filter-controls {
+      /* Team header */
+      .team-header {
         background-color: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        padding: 1.5rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+
+      .team-main-info {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
         margin-bottom: 2rem;
       }
 
-      .filter-row {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
+      .team-logo-large {
+        width: 120px;
+        height: 120px;
+        border-radius: 50% !important;
+        border: 3px solid #ddd;
+        object-fit: cover;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        flex-shrink: 0;
       }
 
-      .filter-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
+      .team-details h2 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
       }
 
-      .filter-group label {
+      .team-subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        margin-bottom: 0.5rem;
+      }
+
+      .gm-info {
+        font-size: 1.1rem;
+        color: #007bff;
         font-weight: 500;
-        font-size: 0.9rem;
       }
 
-      .filter-group select {
-        padding: 0.5rem;
+      /* Team stats grid */
+      .team-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+
+      .stat-card {
+        background-color: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 6px;
+        text-align: center;
         border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 1rem;
-        min-width: 150px;
       }
 
-      /* Transaction feed */
-      .transactions-container {
+      .stat-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        color: #666;
+        margin-top: 0.5rem;
+      }
+
+      .positive {
+        color: #28a745;
+      }
+
+      .negative {
+        color: #dc3545;
+      }
+
+      /* Content grid */
+      .content-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      /* Roster section */
+      .roster-section {
         background-color: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         overflow: hidden;
       }
 
-      .transactions-header {
+      .section-header {
         background-color: #333;
         color: white;
         padding: 1.5rem;
         text-align: center;
       }
 
-      .transactions-header h3 {
+      .section-header h3 {
         color: white;
         margin: 0;
         font-size: 1.4rem;
       }
 
-      .transactions-list {
-        max-height: 800px;
-        overflow-y: auto;
+      .roster-list {
+        padding: 0;
       }
 
-      /* Transaction item */
-      .transaction-item {
-        padding: 1.5rem;
-        border-bottom: 1px solid #eee;
-        transition: background-color 0.2s;
-      }
-
-      .transaction-item:hover {
-        background-color: #f8f9fa;
-      }
-
-      .transaction-item:last-child {
-        border-bottom: none;
-      }
-
-      .transaction-header {
+      .roster-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 1rem;
-      }
-
-      .transaction-type {
-        padding: 0.3rem 0.8rem;
-        border-radius: 20px;
-        font-size: 0.8rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #ddd;
         font-weight: bold;
-        text-transform: uppercase;
-      }
-
-      .transaction-type.trade {
-        background-color: #007bff;
-        color: white;
-      }
-
-      .transaction-type.retirement {
-        background-color: #dc3545;
-        color: white;
-      }
-
-      .transaction-type.unretirement {
-        background-color: #28a745;
-        color: white;
-      }
-
-      .transaction-type.drop {
-        background-color: #ffc107;
-        color: #333;
-      }
-
-      .transaction-type.gm_resignation {
-        background-color: #6c757d;
-        color: white;
-      }
-
-      .transaction-type.gm_hired {
-        background-color: #17a2b8;
-        color: white;
-      }
-
-      .transaction-date {
         font-size: 0.9rem;
         color: #666;
       }
 
-      .transaction-details {
-        line-height: 1.8;
+      .roster-header .header-player {
+        flex: 1;
+      }
+
+      .roster-header .header-rel {
+        min-width: 60px;
+        text-align: center;
+      }
+
+      .roster-content {
+        padding: 0 1rem 1.5rem 1rem;
+      }
+
+      .player-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+        transition: background-color 0.2s;
+      }
+
+      .player-item:hover {
+        background-color: #f8f9fa;
+      }
+
+      .player-item:last-child {
+        border-bottom: none;
+      }
+
+      .player-info {
+        display: flex;
+        flex-direction: column;
       }
 
       .player-name {
-        font-weight: bold;
-        color: #007bff;
-      }
-
-      .gm-name {
-        font-weight: bold;
-        color: #17a2b8;
-      }
-
-      .team-name {
         font-weight: 500;
-        color: #333;
+        font-size: 1.1rem;
       }
 
-      .draft-pick {
+      .player-stats {
+        font-size: 0.9rem;
+        color: #666;
+        margin-top: 0.2rem;
+      }
+
+      .player-rel {
+        font-weight: bold;
+        font-size: 1.1rem;
+        color: #333;
+        text-align: center;
+        min-width: 60px;
+      }
+
+      /* Schedule section */
+      .schedule-section {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .games-list {
+        padding: 1.5rem;
+        max-height: 600px;
+        overflow-y: auto;
+      }
+
+      .game-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+        transition: background-color 0.2s;
+      }
+
+      .game-item:hover {
         background-color: #f8f9fa;
-        padding: 0.2rem 0.5rem;
-        border-radius: 3px;
+      }
+
+      .game-item:last-child {
+        border-bottom: none;
+      }
+
+      .game-opponent {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex: 1;
+      }
+
+      .opponent-logo {
+        width: 24px;
+        height: 24px;
+        border-radius: 50% !important;
+        object-fit: cover;
+        background-color: #fff;
+        flex-shrink: 0;
+        border: 1px solid #ddd;
+      }
+
+      .opponent-info {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        flex: 1;
+      }
+
+      .opponent-name {
+        font-weight: 500;
+        font-size: 1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .opponent-record {
+        font-size: 0.8rem;
+        color: #666;
+      }
+
+      .game-result {
+        text-align: right;
+        min-width: 80px;
+      }
+
+      .game-score {
+        font-weight: bold;
+        font-size: 1.1rem;
+      }
+
+      .game-date {
+        font-size: 0.8rem;
+        color: #666;
+        margin-top: 0.2rem;
+      }
+
+      .win {
+        color: #28a745;
+      }
+
+      .loss {
+        color: #dc3545;
+      }
+
+      .upcoming {
+        color: #ffc107;
+        font-weight: 500;
+      }
+
+      /* Draft capital section */
+      .draft-capital {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-top: 2rem;
+      }
+
+      .picks-list {
+        padding: 1.5rem;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .pick-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8rem;
+        border-bottom: 1px solid #eee;
         font-family: monospace;
         font-size: 0.9rem;
       }
 
-      /* Multi-transaction group */
-      .multi-transaction {
-        border-left: 4px solid #007bff;
-        background-color: #f8f9fa;
-      }
-
-      .trade-parts {
-        display: grid;
-        grid-template-columns: 1fr auto 1fr;
-        gap: 1rem;
-        align-items: center;
-        margin-top: 1rem;
-      }
-
-      .trade-side {
-        background-color: white;
-        padding: 1rem;
-        border-radius: 6px;
-        border: 1px solid #ddd;
-      }
-
-      .trade-arrow {
-        font-size: 1.5rem;
-        color: #007bff;
-        font-weight: bold;
-      }
-
-      .trade-team {
-        font-weight: bold;
-        color: #007bff;
-        margin-bottom: 0.5rem;
-      }
-
-      .trade-assets {
-        list-style: none;
-        padding: 0;
-      }
-
-      .trade-assets li {
-        padding: 0.2rem 0;
-        border-bottom: 1px solid #eee;
-      }
-
-      .trade-assets li:last-child {
+      .pick-item:last-child {
         border-bottom: none;
       }
 
-      /* Loading and error states */
+      .pick-description {
+        font-weight: 500;
+      }
+
+      .pick-origin {
+        color: #666;
+        font-size: 0.8rem;
+      }
+
+      /* Loading states */
       .loading {
         text-align: center;
         padding: 3rem;
@@ -296,44 +400,80 @@
         margin: 1rem;
       }
 
-      .no-transactions {
-        text-align: center;
-        padding: 3rem;
-        color: #666;
-        font-style: italic;
-      }
-
       /* Mobile responsive */
       @media (max-width: 768px) {
-        .filter-row {
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+        
+        .team-main-info {
           flex-direction: column;
-          align-items: stretch;
+          gap: 1rem;
+        }
+
+        .team-logo-large {
+          width: 80px;
+          height: 80px;
         }
         
-        .filter-group {
-          width: 100%;
+        .team-stats-grid {
+          grid-template-columns: repeat(2, 1fr);
         }
         
-        .filter-group select {
-          min-width: auto;
-          width: 100%;
+        .player-item,
+        .game-item {
+          padding: 0.75rem;
+        }
+
+        .game-opponent {
+          gap: 0.5rem;
+        }
+
+        .opponent-logo {
+          width: 20px;
+          height: 20px;
         }
         
-        .transaction-header {
+        .game-result {
+          min-width: 60px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .team-stats-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .player-item,
+        .game-item {
           flex-direction: column;
           align-items: flex-start;
           gap: 0.5rem;
         }
-        
-        .trade-parts {
-          grid-template-columns: 1fr;
-          gap: 1rem;
+
+        .game-result {
+          align-self: flex-end;
         }
-        
-        .trade-arrow {
-          text-align: center;
-          transform: rotate(90deg);
-        }
+      }
+
+      /* Back button */
+      .back-button {
+        background-color: #007bff;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 1rem;
+        display: inline-block;
+        margin-bottom: 2rem;
+        transition: background-color 0.3s;
+      }
+
+      .back-button:hover {
+        background-color: #0056b3;
+        text-decoration: none;
+        color: white;
       }
 
       /* Footer */
@@ -348,65 +488,62 @@
   </head>
   <body>
     <header>
-      <h1>RKL Season 7 Transactions</h1>
+      <h1 id="header-title">RKL Season 7 Team</h1>
       <nav>
         <ul>
           <li><a href="../../index.html">Home</a></li>
           <li><a href="../rkl-stats.html">RKL Stats Database</a></li>
           <li><a href="RKL-S7.html">Season 7</a></li>
           <li><a href="standings.html">Standings</a></li>
-          <li><a href="leaderboards.html">Leaderboards</a></li>
-          <li><a href="transactions.html">Transactions</a></li>
+          <li><a href="teams.html">Teams</a></li>
         </ul>
       </nav>
     </header>
     
     <main>
-      <div class="page-header">
-        <h2>Transaction Log</h2>
-        <p>Complete history of all trades, retirements, and roster moves</p>
-      </div>
-
-      <!-- Filter Controls -->
-      <div class="filter-controls">
-        <div class="filter-row">
-          <div class="filter-group">
-            <label for="week-filter">Week:</label>
-            <select id="week-filter">
-              <option value="all">All Weeks</option>
-            </select>
-          </div>
-          
-          <div class="filter-group">
-            <label for="type-filter">Transaction Type:</label>
-            <select id="type-filter">
-              <option value="all">All Types</option>
-              <option value="TRADE">Trades</option>
-              <option value="RETIREMENT">Retirements</option>
-              <option value="UNRETIREMENT">Unretirements</option>
-              <option value="DROP">Drops</option>
-              <option value="GM_RESIGNATION">GM Resignations</option>
-              <option value="GM_HIRED">GM Hirings</option>
-            </select>
-          </div>
-          
-          <div class="filter-group">
-            <label for="team-filter">Team:</label>
-            <select id="team-filter">
-              <option value="all">All Teams</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- Transactions Container -->
-      <div class="transactions-container">
-        <div class="transactions-header">
-          <h3 id="transactions-title">Recent Transactions</h3>
+      <a href="teams.html" class="back-button">← Back to All Teams</a>
+      
+      <!-- Team Header -->
+      <div class="team-header">
+        <div class="team-main-info" id="team-main-info">
+          <div class="loading">Loading team information...</div>
         </div>
         
-        <div class="transactions-list" id="transactions-list">
-          <div class="loading">Loading transactions...</div>
+        <div class="team-stats-grid" id="team-stats" style="display: none;">
+          <!-- Stats will be populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Content Grid -->
+      <div class="content-grid">
+        <!-- Roster -->
+        <div class="roster-section">
+          <div class="section-header">
+            <h3>Current Roster</h3>
+          </div>
+          <div class="roster-list" id="roster-list">
+            <div class="loading">Loading roster...</div>
+          </div>
+        </div>
+
+        <!-- Schedule -->
+        <div class="schedule-section">
+          <div class="section-header">
+            <h3>Schedule</h3>
+          </div>
+          <div class="games-list" id="team-schedule">
+            <div class="loading">Loading schedule...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Draft Capital -->
+      <div class="draft-capital">
+        <div class="section-header">
+          <h3>Draft Capital</h3>
+        </div>
+        <div class="picks-list" id="draft-picks">
+          <div class="loading">Loading draft picks...</div>
         </div>
       </div>
     </main>
@@ -420,9 +557,18 @@
       const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4'; // Replace this with your actual sheet ID
       const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
       
-      let allTransactions = [];
+      let teamId = null;
+      let teamData = null;
       let allTeams = [];
-      let allDraftPicks = [];
+      
+      // Helper function to format numbers in thousands (e.g., 36552 -> 36.6k)
+      function formatInThousands(value) {
+        const num = parseFloat(value);
+        if (num >= 1000) {
+          return (num / 1000).toFixed(1) + 'k';
+        }
+        return Math.round(num).toLocaleString();
+      }
       
       // Function to fetch data from Google Sheets
       async function fetchSheetData(sheetName) {
@@ -454,14 +600,16 @@
         return data;
       }
       
-      // Format date for display
+      // Get URL parameter
+      function getUrlParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+      }
+      
+      // Format date
       function formatDate(dateString) {
         const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', { 
-          year: 'numeric', 
-          month: 'short', 
-          day: 'numeric' 
-        });
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       }
       
       // Get team name from ID
@@ -470,248 +618,265 @@
         return team ? team.team_name : teamId;
       }
       
-      // Load initial data
-      async function loadData() {
-        const [transactions, teams, draftPicks] = await Promise.all([
-          fetchSheetData('Transaction_Log'),
-          fetchSheetData('Teams'),
-          fetchSheetData('Draft_Capital')
-        ]);
-        
-        if (!transactions || !teams) {
-          document.getElementById('transactions-list').innerHTML = 
-            '<div class="error">Error loading transaction data</div>';
+      // Get team record from ID
+      function getTeamRecord(teamId) {
+        const team = allTeams.find(t => t.team_id === teamId);
+        if (!team) return '';
+        const wins = parseInt(team.wins || 0);
+        const losses = parseInt(team.losses || 0);
+        return `${wins}-${losses}`;
+      }
+      
+      // Load team data
+      async function loadTeamData() {
+        teamId = getUrlParameter('id');
+        if (!teamId) {
+          document.getElementById('team-main-info').innerHTML = 
+            '<div class="error">No team specified</div>';
           return;
         }
         
-        allTransactions = transactions.sort((a, b) => {
-          // Sort by week (descending), then by transaction_id (descending)
-          const weekA = parseInt(a.week || 0);
-          const weekB = parseInt(b.week || 0);
-          if (weekB !== weekA) return weekB - weekA;
-          return b.transaction_id.localeCompare(a.transaction_id);
-        });
+        const teams = await fetchSheetData('Teams');
+        if (!teams) {
+          document.getElementById('team-main-info').innerHTML = 
+            '<div class="error">Error loading team data</div>';
+          return;
+        }
         
         allTeams = teams;
-        allDraftPicks = draftPicks || [];
-        
-        setupFilters();
-        displayTransactions();
-      }
-      
-      // Setup filter dropdowns
-      function setupFilters() {
-        // Week filter
-        const weeks = [...new Set(allTransactions.map(t => parseInt(t.week)))].sort((a, b) => b - a);
-        const weekOptions = weeks.map(week => `<option value="${week}">Week ${week}</option>`).join('');
-        document.getElementById('week-filter').innerHTML = 
-          '<option value="all">All Weeks</option>' + weekOptions;
-        
-        // Team filter
-        const teamOptions = allTeams
-          .sort((a, b) => a.team_name.localeCompare(b.team_name))
-          .map(team => `<option value="${team.team_id}">${team.team_name}</option>`)
-          .join('');
-        document.getElementById('team-filter').innerHTML = 
-          '<option value="all">All Teams</option>' + teamOptions;
-        
-        // Add event listeners
-        ['week-filter', 'type-filter', 'team-filter'].forEach(filterId => {
-          document.getElementById(filterId).addEventListener('change', displayTransactions);
-        });
-      }
-      
-      // Get filtered transactions
-      function getFilteredTransactions() {
-        const weekFilter = document.getElementById('week-filter').value;
-        const typeFilter = document.getElementById('type-filter').value;
-        const teamFilter = document.getElementById('team-filter').value;
-        
-        return allTransactions.filter(transaction => {
-          // Week filter
-          if (weekFilter !== 'all' && parseInt(transaction.week) !== parseInt(weekFilter)) {
-            return false;
-          }
-          
-          // Type filter
-          if (typeFilter !== 'all' && transaction.transaction_type !== typeFilter) {
-            return false;
-          }
-          
-          // Team filter
-          if (teamFilter !== 'all') {
-            const involvedTeams = [transaction.from_team, transaction.to_team, transaction.gm_involved].filter(Boolean);
-            if (!involvedTeams.includes(teamFilter)) {
-              return false;
-            }
-          }
-          
-          return true;
-        });
-      }
-      
-      // Group transactions by transaction_id for trades
-      function groupTransactions(transactions) {
-        const groups = {};
-        
-        transactions.forEach(transaction => {
-          const id = transaction.transaction_id;
-          if (!groups[id]) {
-            groups[id] = [];
-          }
-          groups[id].push(transaction);
-        });
-        
-        return Object.values(groups);
-      }
-      
-      // Display transactions
-      function displayTransactions() {
-        const filteredTransactions = getFilteredTransactions();
-        
-        if (filteredTransactions.length === 0) {
-          document.getElementById('transactions-list').innerHTML = 
-            '<div class="no-transactions">No transactions match your filters</div>';
-          document.getElementById('transactions-title').textContent = 'No Transactions Found';
+        teamData = teams.find(team => team.team_id === teamId);
+        if (!teamData) {
+          document.getElementById('team-main-info').innerHTML = 
+            '<div class="error">Team not found</div>';
           return;
         }
         
-        // Group transactions by ID
-        const transactionGroups = groupTransactions(filteredTransactions);
+        displayTeamHeader();
         
-        // Count unique transactions
-        const uniqueTransactions = transactionGroups.length;
-        
-        // Update title
-        document.getElementById('transactions-title').textContent = 
-          `${uniqueTransactions} Transaction${uniqueTransactions !== 1 ? 's' : ''}`;
-        
-        // Generate HTML
-        const transactionsHTML = transactionGroups.map(group => {
-          if (group.length === 1) {
-            return renderSingleTransaction(group[0]);
-          } else {
-            return renderMultiTransaction(group);
-          }
-        }).join('');
-        
-        document.getElementById('transactions-list').innerHTML = transactionsHTML;
+        // Load other data in parallel
+        await Promise.all([
+          loadRoster(),
+          loadSchedule(),
+          loadDraftCapital()
+        ]);
       }
       
-      // Render a single transaction (retirement, drop, GM changes, etc.)
-      function renderSingleTransaction(transaction) {
-        const typeClass = transaction.transaction_type.toLowerCase();
+      // Display team header
+      function displayTeamHeader() {
+        // Update page title
+        document.getElementById('page-title').textContent = `${teamData.team_name} - RKL Season 7`;
+        document.getElementById('header-title').textContent = teamData.team_name;
         
-        let details = '';
-        switch (transaction.transaction_type) {
-          case 'RETIREMENT':
-            details = `<span class="player-name">${transaction.player_handle}</span> retired from the <span class="team-name">${getTeamName(transaction.from_team)}</span>.`;
-            break;
-          case 'UNRETIREMENT':
-            details = `<span class="player-name">${transaction.player_handle}</span> unretired and joined the <span class="team-name">${getTeamName(transaction.to_team)}</span>.`;
-            break;
-          case 'DROP':
-            details = `<span class="player-name">${transaction.player_handle}</span> dropped by the <span class="team-name">${getTeamName(transaction.from_team)}</span>.`;
-            break;
-          case 'GM_RESIGNATION':
-            details = `<span class="gm-name">${transaction.gm_involved}</span> resigned as GM of the <span class="team-name">${getTeamName(transaction.from_team)}</span>.`;
-            break;
-          case 'GM_HIRED':
-            details = `<span class="gm-name">${transaction.gm_involved}</span> hired as GM of the <span class="team-name">${getTeamName(transaction.to_team)}</span>.`;
-            break;
-          default:
-            if (transaction.player_handle) {
-              details = `<span class="player-name">${transaction.player_handle}</span> moved from <span class="team-name">${getTeamName(transaction.from_team)}</span> to <span class="team-name">${getTeamName(transaction.to_team)}</span>`;
-            } else {
-              details = `Unknown transaction type: ${transaction.transaction_type}`;
-            }
+        // Team main info
+        const wins = parseInt(teamData.wins || 0);
+        const losses = parseInt(teamData.losses || 0);
+        const pam = parseFloat(teamData.pam || 0);
+        
+        document.getElementById('team-main-info').innerHTML = `
+          <img src="icons/${teamData.team_id}.webp" alt="${teamData.team_name}" class="team-logo-large" onerror="this.style.display='none'">
+          <div class="team-details">
+            <h2>${teamData.team_name}</h2>
+            <div class="team-subtitle">${teamData.team_id} • ${teamData.conference} Conference</div>
+            <div class="gm-info">General Manager: ${teamData.gm_handle}</div>
+          </div>
+        `;
+        
+        // Team stats (removed roster_moves)
+        document.getElementById('team-stats').innerHTML = `
+          <div class="stat-card">
+            <div class="stat-value ${wins > losses ? 'positive' : losses > wins ? 'negative' : ''}">${wins}-${losses}</div>
+            <div class="stat-label">Record</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value ${pam > 0 ? 'positive' : pam < 0 ? 'negative' : ''}">${Math.round(pam).toLocaleString()}</div>
+            <div class="stat-label">PAM</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${Math.round(parseFloat(teamData.med_starter_rank || 0))}</div>
+            <div class="stat-label">Avg Starter Rank</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${teamData.total_transactions || 0}</div>
+            <div class="stat-label">Transactions</div>
+          </div>
+        `;
+        
+        document.getElementById('team-stats').style.display = 'grid';
+      }
+      
+      // Load roster
+      async function loadRoster() {
+        const [players, lineups] = await Promise.all([
+          fetchSheetData('Players'),
+          fetchSheetData('Lineups')
+        ]);
+        
+        if (!players) {
+          document.getElementById('roster-list').innerHTML = 
+            '<div class="error">Error loading roster data</div>';
+          return;
         }
         
-        return `
-          <div class="transaction-item">
-            <div class="transaction-header">
-              <span class="transaction-type ${typeClass}">${transaction.transaction_type.replace('_', ' ')}</span>
-              <span class="transaction-date">Week ${transaction.week} - ${formatDate(transaction.date)}</span>
+        const teamPlayers = players
+          .filter(player => player.current_team_id === teamId && player.player_status === 'ACTIVE')
+          .sort((a, b) => parseFloat(b.rel_median || 0) - parseFloat(a.rel_median || 0));
+        
+        if (teamPlayers.length === 0) {
+          document.getElementById('roster-list').innerHTML = 
+            '<div style="text-align: center; padding: 2rem; color: #666;">No active players found</div>';
+          return;
+        }
+        
+        const rosterHTML = teamPlayers.map(player => {
+          const relMedian = Math.round(parseFloat(player.rel_median || 0));
+          const gamesPlayed = parseInt(player.games_played || 0);
+          
+          // Calculate average global rank from lineups data
+          let avgGlobalRank = 0;
+          if (lineups) {
+            const playerLineups = lineups.filter(lineup => 
+              lineup.player_handle === player.player_handle && 
+              lineup.global_rank && 
+              parseFloat(lineup.global_rank) > 0
+            );
+            
+            if (playerLineups.length > 0) {
+              const totalRank = playerLineups.reduce((sum, lineup) => 
+                sum + parseFloat(lineup.global_rank), 0);
+              avgGlobalRank = Math.round(totalRank / playerLineups.length);
+            }
+          }
+          
+          return `
+            <div class="player-item">
+              <div class="player-info">
+                <div class="player-name">${player.player_handle}</div>
+                <div class="player-stats">
+                  ${gamesPlayed} games • 
+                  ${avgGlobalRank > 0 ? avgGlobalRank : '-'} avg rank
+                </div>
+              </div>
+              <div class="player-rel">${relMedian}</div>
             </div>
-            <div class="transaction-details">
-              ${details}
-              ${transaction.notes ? `<br><em>Note: ${transaction.notes}</em>` : ''}
-            </div>
+          `;
+        }).join('');
+        
+        const finalHTML = `
+          <div class="roster-header">
+            <span class="header-player">Player</span>
+            <span class="header-rel">REL</span>
+          </div>
+          <div class="roster-content">
+            ${rosterHTML}
           </div>
         `;
+        
+        document.getElementById('roster-list').innerHTML = finalHTML;
       }
       
-      // Render a multi-part transaction (trade)
-      function renderMultiTransaction(transactions) {
-        const firstTransaction = transactions[0];
-        const typeClass = firstTransaction.transaction_type.toLowerCase();
+      // Load complete schedule (all games)
+      async function loadSchedule() {
+        const schedule = await fetchSheetData('Schedule');
+        if (!schedule) {
+          document.getElementById('team-schedule').innerHTML = 
+            '<div class="error">Error loading schedule data</div>';
+          return;
+        }
         
-        // Group by team involvement
-        const teamAssets = {};
+        const teamGames = schedule
+          .filter(game => game.team1_id === teamId || game.team2_id === teamId)
+          .sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort by date ascending
         
-        transactions.forEach(transaction => {
-          if (transaction.player_handle) {
-            // Player transaction
-            if (!teamAssets[transaction.from_team]) {
-              teamAssets[transaction.from_team] = { players: [], picks: [], receiving: [] };
-            }
-            if (!teamAssets[transaction.to_team]) {
-              teamAssets[transaction.to_team] = { players: [], picks: [], receiving: [] };
-            }
-            
-            teamAssets[transaction.from_team].players.push(transaction.player_handle);
-            teamAssets[transaction.to_team].receiving.push(transaction.player_handle);
-          } else if (transaction.draft_pick_id) {
-            // Draft pick transaction
-            const pickInfo = allDraftPicks.find(p => p.pick_id === transaction.draft_pick_id);
-            const pickDescription = pickInfo ? pickInfo.pick_description : transaction.draft_pick_id;
-            
-            if (!teamAssets[transaction.from_team]) {
-              teamAssets[transaction.from_team] = { players: [], picks: [], receiving: [] };
-            }
-            if (!teamAssets[transaction.to_team]) {
-              teamAssets[transaction.to_team] = { players: [], picks: [], receiving: [] };
-            }
-            
-            teamAssets[transaction.from_team].picks.push(pickDescription);
-            teamAssets[transaction.to_team].receiving.push(pickDescription);
-          }
-        });
+        if (teamGames.length === 0) {
+          document.getElementById('team-schedule').innerHTML = 
+            '<div style="text-align: center; padding: 2rem; color: #666;">No games scheduled</div>';
+          return;
+        }
         
-        const teams = Object.keys(teamAssets);
-        
-        return `
-          <div class="transaction-item multi-transaction">
-            <div class="transaction-header">
-              <span class="transaction-type ${typeClass}">${firstTransaction.transaction_type}</span>
-              <span class="transaction-date">Week ${firstTransaction.week} - ${formatDate(firstTransaction.date)}</span>
-            </div>
+        const gamesHTML = teamGames.map(game => {
+          const isTeam1 = game.team1_id === teamId;
+          const opponentId = isTeam1 ? game.team2_id : game.team1_id;
+          const opponentName = getTeamName(opponentId);
+          const opponentRecord = getTeamRecord(opponentId);
+          const isCompleted = game.completed === 'TRUE';
+          
+          let resultContent = '';
+          
+          if (isCompleted) {
+            const teamScore = parseFloat(isTeam1 ? game.team1_score : game.team2_score);
+            const oppScore = parseFloat(isTeam1 ? game.team2_score : game.team1_score);
+            const won = teamScore > oppScore;
             
-            <div class="trade-parts">
-              ${teams.map((teamId, index) => `
-                <div class="trade-side">
-                  <div class="trade-team">${getTeamName(teamId)} Trades:</div>
-                  <ul class="trade-assets">
-                    ${teamAssets[teamId].players.map(player => `<li>📝 ${player}</li>`).join('')}
-                    ${teamAssets[teamId].picks.map(pick => `<li>🎯 <span class="draft-pick">${pick}</span></li>`).join('')}
-                    ${teamAssets[teamId].players.length === 0 && teamAssets[teamId].picks.length === 0 ? '<li><em>No assets traded</em></li>' : ''}
-                  </ul>
-                </div>
-                ${index < teams.length - 1 ? '<div class="trade-arrow">⟷</div>' : ''}
-              `).join('')}
-            </div>
-            
-            ${firstTransaction.notes ? `
-              <div class="transaction-details" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ddd;">
-                <em>Note: ${firstTransaction.notes}</em>
+            resultContent = `
+              <div class="game-score ${won ? 'win' : 'loss'}">
+                ${won ? 'W' : 'L'} ${formatInThousands(teamScore)}-${formatInThousands(oppScore)}
               </div>
-            ` : ''}
+              <div class="game-date">${formatDate(game.date)}</div>
+            `;
+          } else {
+            resultContent = `
+              <div class="game-score upcoming">Upcoming</div>
+              <div class="game-date">${formatDate(game.date)}</div>
+            `;
+          }
+          
+          return `
+            <div class="game-item">
+              <div class="game-opponent">
+                <img src="icons/${opponentId}.webp" alt="${opponentName}" class="opponent-logo" onerror="this.style.display='none'">
+                <div class="opponent-info">
+                  <div class="opponent-name">vs ${opponentName}</div>
+                  <div class="opponent-record">${opponentRecord}</div>
+                </div>
+              </div>
+              <div class="game-result">
+                ${resultContent}
+              </div>
+            </div>
+          `;
+        }).join('');
+        
+        document.getElementById('team-schedule').innerHTML = gamesHTML;
+      }
+      
+      // Load draft capital
+      async function loadDraftCapital() {
+        const draftPicks = await fetchSheetData('Draft_Capital');
+        if (!draftPicks) {
+          document.getElementById('draft-picks').innerHTML = 
+            '<div class="error">Error loading draft capital data</div>';
+          return;
+        }
+        
+        const teamPicks = draftPicks
+          .filter(pick => pick.current_owner === teamId)
+          .sort((a, b) => {
+            const seasonA = parseInt(a.season || 0);
+            const seasonB = parseInt(b.season || 0);
+            if (seasonA !== seasonB) return seasonA - seasonB;
+            return parseInt(a.round || 0) - parseInt(b.round || 0);
+          });
+        
+        if (teamPicks.length === 0) {
+          document.getElementById('draft-picks').innerHTML = 
+            '<div style="text-align: center; padding: 2rem; color: #666;">No draft picks owned</div>';
+          return;
+        }
+        
+        const picksHTML = teamPicks.map(pick => `
+          <div class="pick-item">
+            <div class="pick-description">${pick.pick_description}</div>
+            <div class="pick-origin">
+              ${pick.original_team !== teamId ? `(from ${pick.original_team})` : '(own pick)'}
+            </div>
           </div>
-        `;
+        `).join('');
+        
+        document.getElementById('draft-picks').innerHTML = picksHTML;
       }
       
       // Initialize page
-      document.addEventListener('DOMContentLoaded', loadData);
+      document.addEventListener('DOMContentLoaded', loadTeamData);
     </script>
   </body>
 </html>
