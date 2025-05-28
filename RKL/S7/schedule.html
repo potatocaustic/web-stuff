@@ -435,13 +435,12 @@
 
       .lineup-table th:first-child {
         text-align: left;
-        width: 40%;
+        width: 50%;
       }
 
       .lineup-table th:nth-child(2),
-      .lineup-table th:nth-child(3),
-      .lineup-table th:nth-child(4) {
-        width: 20%;
+      .lineup-table th:nth-child(3) {
+        width: 25%;
       }
 
       .lineup-table td {
@@ -472,6 +471,13 @@
         font-size: 0.7rem;
         font-weight: bold;
         margin-left: 0.5rem;
+      }
+
+      .captain-bonus {
+        font-size: 0.75rem;
+        color: #ffc107;
+        font-weight: 500;
+        margin-top: 0.2rem;
       }
 
       .player-name-cell {
@@ -1036,10 +1042,14 @@
             const pointsFinal = parseNumber(player.points_final);
             const globalRank = parseNumber(player.global_rank);
             
+            // Calculate captain bonus
+            const captainBonus = isCaptain ? Math.round(pointsRaw * 0.5) : 0;
+            
             console.log(`Player ${player.player_handle}:`, {
               raw: pointsRaw,
               final: pointsFinal,
               captain: isCaptain,
+              bonus: captainBonus,
               rank: globalRank
             });
             
@@ -1049,8 +1059,10 @@
                   ${player.player_handle || 'Unknown'}
                   ${isCaptain ? '<span class="captain-badge">C</span>' : ''}
                 </td>
-                <td class="points-cell">${Math.round(pointsRaw).toLocaleString()}</td>
-                <td class="points-cell">${Math.round(pointsFinal).toLocaleString()}</td>
+                <td class="points-cell">
+                  ${Math.round(pointsRaw).toLocaleString()}
+                  ${isCaptain ? `<div class="captain-bonus">+${captainBonus.toLocaleString()} bonus</div>` : ''}
+                </td>
                 <td class="rank-cell">${globalRank > 0 ? Math.round(globalRank) : '-'}</td>
               </tr>
             `;
@@ -1067,8 +1079,7 @@
                 <thead>
                   <tr>
                     <th>Player</th>
-                    <th>Raw</th>
-                    <th>Final</th>
+                    <th>Points</th>
                     <th>Rank</th>
                   </tr>
                 </thead>
