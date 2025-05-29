@@ -690,7 +690,7 @@
             <div class="trade-parts">
               ${teams.map((teamId, index) => `
                 <div class="trade-side">
-                  <div class="trade-team">${getTeamName(teamId)} Trades:</div>
+                  <div class="trade-team">${getTeamName(teamId)} Trade:</div>
                   <ul class="trade-assets">
                     ${teamAssets[teamId].players.map(player => `<li>📝 ${player}</li>`).join('')}
                     ${teamAssets[teamId].picks.map(pick => `<li>🎯 <span class="draft-pick">${pick}</span></li>`).join('')}
