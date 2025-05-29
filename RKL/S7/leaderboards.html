@@ -146,7 +146,8 @@
       .leaderboard-table {
         width: 100%;
         border-collapse: collapse;
-        border-spacing: 0; /* Ensure no spacing between cells */
+        border-spacing: 0;
+        table-layout: fixed; /* Fixed layout for consistent borders */
       }
 
       .leaderboard-table th {
@@ -169,35 +170,73 @@
         border-top: none;
         position: relative;
         vertical-align: middle;
+        word-wrap: break-word; /* Handle long text */
+        overflow: hidden;
       }
 
-      /* Remove table-layout fixed and let it flow naturally */
+      /* Use table-layout fixed with careful percentages */
       .leaderboard-table th:nth-child(1), /* Rank */
       .leaderboard-table td:nth-child(1) {
-        width: 12%; /* Back to percentages for responsive design */
+        width: 12%;
         text-align: center;
-        min-width: 60px;
       }
 
       .leaderboard-table th:nth-child(2), /* Player */
       .leaderboard-table td:nth-child(2) {
-        width: 50%; /* More space for players */
+        width: 50%;
         text-align: left;
-        min-width: 180px;
       }
 
       .leaderboard-table th:nth-child(3), /* Stat */
       .leaderboard-table td:nth-child(3) {
-        width: 19%; /* Balanced stat column */
+        width: 19%;
         text-align: center;
-        min-width: 80px;
       }
 
       .leaderboard-table th:nth-child(4), /* Secondary */
       .leaderboard-table td:nth-child(4) {
-        width: 19%; /* Balanced games column */
+        width: 19%;
         text-align: center;
-        min-width: 60px;
+      }
+
+      /* Ensure player cell flex doesn't break table layout */
+      .player-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+      }
+
+      .team-logo {
+        width: 32px;
+        height: 32px;
+        border-radius: 2px;
+        flex-shrink: 0;
+      }
+
+      .player-text {
+        min-width: 0;
+        flex: 1;
+        overflow: hidden;
+      }
+
+      .player-name {
+        font-weight: bold;
+        font-size: 1.05rem;
+        color: #2c5aa0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .team-name {
+        color: #666;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .leaderboard-table tr:hover {
@@ -337,23 +376,25 @@
           display: none;
         }
 
-        /* Responsive percentages for mobile (3 columns) */
+        /* Recalculate percentages for 3 remaining columns */
         .leaderboard-table th:nth-child(1),
         .leaderboard-table td:nth-child(1) {
-          width: 15%;
-          min-width: 50px;
+          width: 15%; /* 12% scaled up */
         }
 
         .leaderboard-table th:nth-child(2),
         .leaderboard-table td:nth-child(2) {
-          width: 60%;
-          min-width: 120px;
+          width: 60%; /* 50% scaled up */
         }
 
         .leaderboard-table th:nth-child(3),
         .leaderboard-table td:nth-child(3) {
-          width: 25%;
-          min-width: 70px;
+          width: 25%; /* 19% scaled up */
+        }
+
+        .team-logo {
+          width: 28px;
+          height: 28px;
         }
       }
 
@@ -642,7 +683,7 @@
               </td>
               <td class="player-cell">
                 <img src="icons/${player.current_team_id}.webp" alt="${player.current_team_id}" class="team-logo" onerror="this.style.display='none'">
-                <div>
+                <div class="player-text">
                   <div class="player-name">${player.player_handle}</div>
                   <div class="team-name">${getTeamName(player.current_team_id)}</div>
                 </div>
