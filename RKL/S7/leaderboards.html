@@ -146,7 +146,7 @@
       .leaderboard-table {
         width: 100%;
         border-collapse: collapse;
-        table-layout: fixed; /* Ensures consistent column widths */
+        border-spacing: 0; /* Ensure no spacing between cells */
       }
 
       .leaderboard-table th {
@@ -155,42 +155,48 @@
         text-align: left;
         font-weight: bold;
         border-bottom: 2px solid #ddd;
-        box-sizing: border-box; /* Include padding in width calculation */
-      }
-
-      /* Specific column widths for proper alignment */
-      .leaderboard-table th:nth-child(1), /* Rank */
-      .leaderboard-table td:nth-child(1) {
-        width: 15%;
-        text-align: center;
-        box-sizing: border-box;
-      }
-
-      .leaderboard-table th:nth-child(2), /* Player */
-      .leaderboard-table td:nth-child(2) {
-        width: 45%;
-        text-align: left;
-        box-sizing: border-box;
-      }
-
-      .leaderboard-table th:nth-child(3), /* Stat */
-      .leaderboard-table td:nth-child(3) {
-        width: 20%;
-        text-align: center;
-        box-sizing: border-box;
-      }
-
-      .leaderboard-table th:nth-child(4), /* Secondary */
-      .leaderboard-table td:nth-child(4) {
-        width: 20%;
-        text-align: center;
-        box-sizing: border-box;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+        position: relative;
       }
 
       .leaderboard-table td {
         padding: 0.8rem 0.5rem;
         border-bottom: 1px solid #eee;
-        box-sizing: border-box; /* Include padding in width calculation */
+        border-left: none;
+        border-right: none;
+        border-top: none;
+        position: relative;
+        vertical-align: middle;
+      }
+
+      /* Remove table-layout fixed and let it flow naturally */
+      .leaderboard-table th:nth-child(1), /* Rank */
+      .leaderboard-table td:nth-child(1) {
+        width: 80px; /* Fixed width instead of percentage */
+        text-align: center;
+        min-width: 80px;
+      }
+
+      .leaderboard-table th:nth-child(2), /* Player */
+      .leaderboard-table td:nth-child(2) {
+        text-align: left;
+        min-width: 200px; /* Flexible width */
+      }
+
+      .leaderboard-table th:nth-child(3), /* Stat */
+      .leaderboard-table td:nth-child(3) {
+        width: 120px; /* Fixed width */
+        text-align: center;
+        min-width: 120px;
+      }
+
+      .leaderboard-table th:nth-child(4), /* Secondary */
+      .leaderboard-table td:nth-child(4) {
+        width: 100px; /* Fixed width */
+        text-align: center;
+        min-width: 100px;
       }
 
       .leaderboard-table tr:hover {
