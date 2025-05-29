@@ -107,25 +107,44 @@
         margin: 0;
       }
 
-      /* Standings table */
+      /* Standings table - FIXED LAYOUT */
       .standings-table {
         width: 100%;
         border-collapse: collapse;
+        table-layout: fixed; /* Ensures consistent column widths */
       }
 
       .standings-table th {
         background-color: #f8f9fa;
         padding: 1rem 0.5rem;
-        text-align: left;
+        text-align: center; /* Center all headers */
         font-weight: bold;
         border-bottom: 2px solid #ddd;
         font-size: 0.9rem;
+        width: 20%; /* Each column gets equal width */
+      }
+
+      /* Team header aligned left, others centered */
+      .standings-table th:nth-child(2) {
+        text-align: left;
       }
 
       .standings-table td {
         padding: 0.8rem 0.5rem;
         border-bottom: 1px solid #eee;
         font-size: 0.9rem;
+        text-align: center; /* Center all data by default */
+        width: 20%; /* Consistent column widths */
+      }
+
+      /* Fix the team cell alignment - left align team names */
+      .standings-table td:nth-child(2) {
+        text-align: left;
+      }
+
+      /* Remove hover effects that break gridlines */
+      .standings-table tr {
+        transition: none; /* Remove transition to prevent layout shifts */
       }
 
       .standings-table tr:hover {
@@ -133,9 +152,7 @@
       }
 
       .rank-cell {
-        text-align: center;
         font-weight: bold;
-        width: 40px;
       }
 
       .team-cell {
@@ -144,6 +161,9 @@
         gap: 0.5rem;
         cursor: pointer;
         transition: color 0.2s ease;
+        /* Remove any properties that might affect layout */
+        min-height: auto;
+        padding: 0; /* Let parent td handle padding */
       }
 
       .team-cell:hover {
@@ -154,19 +174,19 @@
         width: 24px;
         height: 24px;
         border-radius: 2px;
+        flex-shrink: 0; /* Prevent logo from shrinking */
       }
 
       .team-name {
         font-weight: 500;
+        flex-grow: 1; /* Allow name to take remaining space */
       }
 
       .record-cell {
-        text-align: center;
         font-weight: 500;
       }
 
       .pam-cell {
-        text-align: center;
         font-weight: 500;
       }
 
@@ -190,6 +210,7 @@
         justify-content: center;
         font-size: 0.8rem;
         font-weight: bold;
+        margin: 0 auto; /* Center the indicator */
       }
 
       .playin-seed {
@@ -203,6 +224,7 @@
         justify-content: center;
         font-size: 0.8rem;
         font-weight: bold;
+        margin: 0 auto; /* Center the indicator */
       }
 
       .eliminated {
@@ -282,7 +304,7 @@
         
         .standings-table th,
         .standings-table td {
-          padding: 0.5rem 0.3rem;
+          padding: 0.6rem 0.3rem;
           font-size: 0.8rem;
         }
         
@@ -294,12 +316,35 @@
         .legend-items {
           gap: 1rem;
         }
+
+        /* Ensure proper column distribution on mobile */
+        .standings-table th,
+        .standings-table td {
+          width: 20%;
+        }
       }
 
       @media (max-width: 480px) {
         .standings-table th:nth-child(5),
         .standings-table td:nth-child(5) {
           display: none; /* Hide Med Rank column on very small screens */
+        }
+
+        /* Adjust remaining column widths when Med Rank is hidden */
+        .standings-table th:not(:nth-child(5)),
+        .standings-table td:not(:nth-child(5)) {
+          width: 25%;
+        }
+
+        .standings-table th,
+        .standings-table td {
+          padding: 0.5rem 0.2rem;
+          font-size: 0.75rem;
+        }
+
+        .team-logo {
+          width: 18px;
+          height: 18px;
         }
       }
 
@@ -512,9 +557,11 @@
               <td class="rank-cell">
                 ${getPlayoffIndicator(rank)}
               </td>
-              <td class="team-cell" onclick="handleTeamClick('${team.team_id}')">
-                <img src="icons/${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
-                <span class="team-name">${team.team_name}</span>
+              <td>
+                <div class="team-cell" onclick="handleTeamClick('${team.team_id}')">
+                  <img src="icons/${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
+                  <span class="team-name">${team.team_name}</span>
+                </div>
               </td>
               <td class="record-cell">${wins}-${losses}</td>
               <td class="pam-cell ${getPAMClass(pam)}">${Math.round(pam).toLocaleString()}</td>
@@ -537,9 +584,11 @@
               <td class="rank-cell">
                 ${getPlayoffIndicator(rank)}
               </td>
-              <td class="team-cell" onclick="handleTeamClick('${team.team_id}')">
-                <img src="icons/${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
-                <span class="team-name">${team.team_name}</span>
+              <td>
+                <div class="team-cell" onclick="handleTeamClick('${team.team_id}')">
+                  <img src="icons/${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
+                  <span class="team-name">${team.team_name}</span>
+                </div>
               </td>
               <td class="record-cell">${wins}-${losses}</td>
               <td class="pam-cell ${getPAMClass(pam)}">${Math.round(pam).toLocaleString()}</td>
