@@ -184,7 +184,9 @@
       }
 
       .player-name {
-        font-weight: 500;
+        font-weight: bold;
+        font-size: 1.05rem;
+        color: #2c5aa0;
       }
 
       .team-name {
@@ -197,12 +199,20 @@
         font-weight: 500;
       }
 
+      /* Updated ranking colors - Gold, Silver, Bronze */
       .top-rank {
-        background-color: #fff3cd;
+        background-color: #ffd700; /* Gold */
+        color: #333;
       }
 
-      .top-3 {
-        background-color: #d1ecf1;
+      .second-place {
+        background-color: #c0c0c0; /* Silver */
+        color: #333;
+      }
+
+      .third-place {
+        background-color: #cd7f32; /* Bronze */
+        color: white;
       }
 
       /* Show/hide table controls */
@@ -347,7 +357,12 @@
       const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4'; // Replace this with your actual sheet ID
       const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
       
-      // Helper function to format numbers in thousands (e.g., 36552 -> 36.6k)
+      // Helper function to format numbers for total karma (no thousands abbreviation)
+      function formatKarma(value) {
+        return Math.round(parseFloat(value || 0)).toLocaleString();
+      }
+
+      // Helper function to format numbers in thousands for other stats
       function formatInThousands(value) {
         const num = parseFloat(value);
         if (num >= 1000) {
@@ -363,7 +378,7 @@
           columns: ['Rank', 'Player', 'Team', 'Karma', 'Games'],
           sortField: 'total_points',
           descending: true,
-          formatValue: (value) => formatInThousands(value)
+          formatValue: (value) => formatKarma(value)
         },
         rel_mean: {
           title: 'REL Mean Leaders',
@@ -468,6 +483,14 @@
         const team = allTeams.find(t => t.team_id === teamId);
         return team ? team.team_name : teamId;
       }
+
+      // Get row class based on rank
+      function getRankClass(rank) {
+        if (rank === 1) return 'top-rank';
+        if (rank === 2) return 'second-place';
+        if (rank === 3) return 'third-place';
+        return '';
+      }
       
       // Display leaderboard for current category
       function displayLeaderboard() {
@@ -496,7 +519,7 @@
         // Generate table HTML
         const tableHTML = playersToShow.map((player, index) => {
           const rank = index + 1;
-          const rowClass = rank === 1 ? 'top-rank' : rank <= 3 ? 'top-3' : '';
+          const rowClass = getRankClass(rank);
           
           let statValue, secondaryValue;
           
@@ -523,7 +546,7 @@
               break;
             case 'games_played':
               statValue = player.games_played || 0;
-              secondaryValue = formatInThousands(player.total_points);
+              secondaryValue = formatKarma(player.total_points);
               break;
           }
           
@@ -531,13 +554,15 @@
             <tr class="${rowClass}">
               <td class="rank-cell">${rank}</td>
               <td class="player-cell">
-                <img src="${player.current_team_id}.webp" alt="${player.current_team_id}" class="team-logo" onerror="this.style.display='none'">
+                <img src="icons/${player.current_team_id}.webp" alt="${player.current_team_id}" class="team-logo" onerror="this.style.display='none'">
                 <div>
                   <div class="player-name">${player.player_handle}</div>
                   <div class="team-name">${getTeamName(player.current_team_id)}</div>
                 </div>
               </td>
-              <td class="stat-cell">${player.current_team_id}</td>
+              <td class="stat-cell">
+                <img src="icons/${player.current_team_id}.webp" alt="${player.current_team_id}" class="team-logo" onerror="this.style.display='none'">
+              </td>
               <td class="stat-cell">${statValue}</td>
               <td class="stat-cell">${secondaryValue}</td>
             </tr>
