@@ -116,25 +116,16 @@
       .standings-table th {
         background-color: #f8f9fa;
         padding: 1rem 0.5rem;
-        text-align: center;
+        text-align: left;
         font-weight: bold;
         border-bottom: 2px solid #ddd;
         font-size: 0.9rem;
-      }
-
-      .standings-table th:first-child {
-        text-align: center; /* Rank column */
-      }
-
-      .standings-table th:nth-child(2) {
-        text-align: left; /* Team column */
       }
 
       .standings-table td {
         padding: 0.8rem 0.5rem;
         border-bottom: 1px solid #eee;
         font-size: 0.9rem;
-        text-align: center;
       }
 
       .standings-table tr:hover {
@@ -153,8 +144,6 @@
         gap: 0.5rem;
         cursor: pointer;
         transition: color 0.2s ease;
-        text-align: left;
-        justify-content: flex-start;
       }
 
       .team-cell:hover {
@@ -177,11 +166,6 @@
       }
 
       .pam-cell {
-        text-align: center;
-        font-weight: 500;
-      }
-
-      .med-rank-cell {
         text-align: center;
         font-weight: 500;
       }
@@ -296,29 +280,15 @@
           gap: 1.5rem;
         }
         
-        .standings-table {
-          width: 100%;
-          table-layout: fixed;
-        }
-        
         .standings-table th,
         .standings-table td {
-          padding: 0.6rem 0.4rem;
-          font-size: 0.85rem;
-          border-bottom: 1px solid #ddd;
-        }
-        
-        .standings-table td {
-          border-bottom: 1px solid #eee;
+          padding: 0.5rem 0.3rem;
+          font-size: 0.8rem;
         }
         
         .team-logo {
           width: 20px;
           height: 20px;
-        }
-        
-        .team-cell {
-          gap: 0.4rem;
         }
         
         .legend-items {
@@ -548,7 +518,7 @@
               </td>
               <td class="record-cell">${wins}-${losses}</td>
               <td class="pam-cell ${getPAMClass(pam)}">${Math.round(pam).toLocaleString()}</td>
-              <td class="med-rank-cell">${medRank > 0 ? Math.round(medRank) : '-'}</td>
+              <td class="rank-cell">${medRank > 0 ? Math.round(medRank) : '-'}</td>
             </tr>
           `;
         }).join('');
@@ -573,7 +543,7 @@
               </td>
               <td class="record-cell">${wins}-${losses}</td>
               <td class="pam-cell ${getPAMClass(pam)}">${Math.round(pam).toLocaleString()}</td>
-              <td class="med-rank-cell">${medRank > 0 ? Math.round(medRank) : '-'}</td>
+              <td class="rank-cell">${medRank > 0 ? Math.round(medRank) : '-'}</td>
             </tr>
           `;
         }).join('');
