@@ -160,25 +160,25 @@
       /* Specific column widths for proper alignment */
       .leaderboard-table th:nth-child(1), /* Rank */
       .leaderboard-table td:nth-child(1) {
-        width: 12%;
+        width: 15%;
         text-align: center;
       }
 
       .leaderboard-table th:nth-child(2), /* Player */
       .leaderboard-table td:nth-child(2) {
-        width: 58%;
+        width: 45%;
         text-align: left;
       }
 
       .leaderboard-table th:nth-child(3), /* Stat */
       .leaderboard-table td:nth-child(3) {
-        width: 15%;
+        width: 20%;
         text-align: center;
       }
 
       .leaderboard-table th:nth-child(4), /* Secondary */
       .leaderboard-table td:nth-child(4) {
-        width: 15%;
+        width: 20%;
         text-align: center;
       }
 
@@ -199,38 +199,23 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        min-width: 0; /* Allow flex item to shrink */
       }
 
       .team-logo {
         width: 32px;
         height: 32px;
         border-radius: 2px;
-        flex-shrink: 0; /* Prevent logo from shrinking */
-      }
-
-      .player-info {
-        min-width: 0; /* Allow text container to shrink */
-        flex: 1;
       }
 
       .player-name {
         font-weight: bold;
         font-size: 1.05rem;
         color: #2c5aa0;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
       }
 
       .team-name {
         color: #666;
         font-size: 0.9rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
       }
 
       .stat-cell {
@@ -336,22 +321,22 @@
         /* Maintain specific column widths on mobile */
         .leaderboard-table th:nth-child(1),
         .leaderboard-table td:nth-child(1) {
-          width: 12%;
+          width: 15%;
         }
 
         .leaderboard-table th:nth-child(2),
         .leaderboard-table td:nth-child(2) {
-          width: 58%;
+          width: 45%;
         }
 
         .leaderboard-table th:nth-child(3),
         .leaderboard-table td:nth-child(3) {
-          width: 15%;
+          width: 20%;
         }
 
         .leaderboard-table th:nth-child(4),
         .leaderboard-table td:nth-child(4) {
-          width: 15%;
+          width: 20%;
         }
       }
 
@@ -640,7 +625,7 @@
               </td>
               <td class="player-cell">
                 <img src="icons/${player.current_team_id}.webp" alt="${player.current_team_id}" class="team-logo" onerror="this.style.display='none'">
-                <div class="player-info">
+                <div>
                   <div class="player-name">${player.player_handle}</div>
                   <div class="team-name">${getTeamName(player.current_team_id)}</div>
                 </div>
