@@ -64,7 +64,7 @@
       /* Main content */
       main {
         padding: 2rem;
-        max-width: 900px; /* Limit table width to prevent huge white space */
+        max-width: 800px; /* Further reduce to eliminate white space */
         margin: 0 auto;
       }
 
@@ -174,29 +174,30 @@
       /* Remove table-layout fixed and let it flow naturally */
       .leaderboard-table th:nth-child(1), /* Rank */
       .leaderboard-table td:nth-child(1) {
-        width: 80px; /* Fixed width instead of percentage */
+        width: 12%; /* Back to percentages for responsive design */
         text-align: center;
-        min-width: 80px;
+        min-width: 60px;
       }
 
       .leaderboard-table th:nth-child(2), /* Player */
       .leaderboard-table td:nth-child(2) {
+        width: 50%; /* More space for players */
         text-align: left;
-        min-width: 200px; /* Flexible width */
+        min-width: 180px;
       }
 
       .leaderboard-table th:nth-child(3), /* Stat */
       .leaderboard-table td:nth-child(3) {
-        width: 120px; /* Fixed width */
+        width: 19%; /* Balanced stat column */
         text-align: center;
-        min-width: 120px;
+        min-width: 80px;
       }
 
       .leaderboard-table th:nth-child(4), /* Secondary */
       .leaderboard-table td:nth-child(4) {
-        width: 100px; /* Fixed width */
+        width: 19%; /* Balanced games column */
         text-align: center;
-        min-width: 100px;
+        min-width: 60px;
       }
 
       .leaderboard-table tr:hover {
@@ -330,29 +331,29 @@
           height: 28px;
         }
 
-        /* Hide Games column on mobile */
+        /* Hide Games column on mobile and adjust remaining columns */
         .leaderboard-table th:nth-child(4),
         .leaderboard-table td:nth-child(4) {
           display: none;
         }
 
-        /* Redistribute remaining columns on mobile */
+        /* Responsive percentages for mobile (3 columns) */
         .leaderboard-table th:nth-child(1),
         .leaderboard-table td:nth-child(1) {
-          width: 18%;
-          box-sizing: border-box;
+          width: 15%;
+          min-width: 50px;
         }
 
         .leaderboard-table th:nth-child(2),
         .leaderboard-table td:nth-child(2) {
           width: 60%;
-          box-sizing: border-box;
+          min-width: 120px;
         }
 
         .leaderboard-table th:nth-child(3),
         .leaderboard-table td:nth-child(3) {
-          width: 22%;
-          box-sizing: border-box;
+          width: 25%;
+          min-width: 70px;
         }
       }
 
