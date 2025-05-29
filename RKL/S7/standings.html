@@ -121,25 +121,43 @@
         font-weight: bold;
         border-bottom: 2px solid #ddd;
         font-size: 0.9rem;
-        width: 20%; /* Each column gets equal width */
       }
 
-      /* Team header aligned left, others centered */
-      .standings-table th:nth-child(2) {
+      /* Specific column widths for proper alignment */
+      .standings-table th:nth-child(1), /* Rank */
+      .standings-table td:nth-child(1) {
+        width: 15%;
+        text-align: center;
+      }
+
+      .standings-table th:nth-child(2), /* Team */
+      .standings-table td:nth-child(2) {
+        width: 35%;
         text-align: left;
+      }
+
+      .standings-table th:nth-child(3), /* Record */
+      .standings-table td:nth-child(3) {
+        width: 20%;
+        text-align: center;
+      }
+
+      .standings-table th:nth-child(4), /* PAM */
+      .standings-table td:nth-child(4) {
+        width: 15%;
+        text-align: center;
+      }
+
+      .standings-table th:nth-child(5), /* Med Rank */
+      .standings-table td:nth-child(5) {
+        width: 15%;
+        text-align: center;
       }
 
       .standings-table td {
         padding: 0.8rem 0.5rem;
         border-bottom: 1px solid #eee;
         font-size: 0.9rem;
-        text-align: center; /* Center all data by default */
-        width: 20%; /* Consistent column widths */
-      }
-
-      /* Fix the team cell alignment - left align team names */
-      .standings-table td:nth-child(2) {
-        text-align: left;
       }
 
       /* Remove hover effects that break gridlines */
@@ -317,10 +335,30 @@
           gap: 1rem;
         }
 
-        /* Ensure proper column distribution on mobile */
-        .standings-table th,
-        .standings-table td {
+        /* Maintain specific column widths on tablet */
+        .standings-table th:nth-child(1),
+        .standings-table td:nth-child(1) {
+          width: 15%;
+        }
+
+        .standings-table th:nth-child(2),
+        .standings-table td:nth-child(2) {
+          width: 35%;
+        }
+
+        .standings-table th:nth-child(3),
+        .standings-table td:nth-child(3) {
           width: 20%;
+        }
+
+        .standings-table th:nth-child(4),
+        .standings-table td:nth-child(4) {
+          width: 15%;
+        }
+
+        .standings-table th:nth-child(5),
+        .standings-table td:nth-child(5) {
+          width: 15%;
         }
       }
 
@@ -331,9 +369,24 @@
         }
 
         /* Adjust remaining column widths when Med Rank is hidden */
-        .standings-table th:not(:nth-child(5)),
-        .standings-table td:not(:nth-child(5)) {
-          width: 25%;
+        .standings-table th:nth-child(1),
+        .standings-table td:nth-child(1) {
+          width: 18%;
+        }
+
+        .standings-table th:nth-child(2),
+        .standings-table td:nth-child(2) {
+          width: 42%;
+        }
+
+        .standings-table th:nth-child(3),
+        .standings-table td:nth-child(3) {
+          width: 20%;
+        }
+
+        .standings-table th:nth-child(4),
+        .standings-table td:nth-child(4) {
+          width: 20%;
         }
 
         .standings-table th,
