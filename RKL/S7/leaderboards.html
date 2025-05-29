@@ -64,7 +64,7 @@
       /* Main content */
       main {
         padding: 2rem;
-        max-width: 1200px;
+        max-width: 900px; /* Limit table width to prevent huge white space */
         margin: 0 auto;
       }
 
@@ -318,25 +318,26 @@
           height: 28px;
         }
 
-        /* Maintain specific column widths on mobile */
+        /* Hide Games column on mobile */
+        .leaderboard-table th:nth-child(4),
+        .leaderboard-table td:nth-child(4) {
+          display: none;
+        }
+
+        /* Redistribute remaining columns on mobile */
         .leaderboard-table th:nth-child(1),
         .leaderboard-table td:nth-child(1) {
-          width: 15%;
+          width: 18%;
         }
 
         .leaderboard-table th:nth-child(2),
         .leaderboard-table td:nth-child(2) {
-          width: 45%;
+          width: 60%;
         }
 
         .leaderboard-table th:nth-child(3),
         .leaderboard-table td:nth-child(3) {
-          width: 20%;
-        }
-
-        .leaderboard-table th:nth-child(4),
-        .leaderboard-table td:nth-child(4) {
-          width: 20%;
+          width: 22%;
         }
       }
 
