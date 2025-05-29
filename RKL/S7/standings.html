@@ -556,11 +556,13 @@
       
       // Function to get playoff position indicator
       function getPlayoffIndicator(rank) {
+        console.log(`Getting indicator for rank ${rank}`); // Debug line
         if (rank <= 6) {
           return `<div class="playoff-seed">${rank}</div>`;
         } else if (rank <= 10) {
           return `<div class="playin-seed">${rank}</div>`;
         } else {
+          console.log(`Should show red dot for rank ${rank}`); // Debug line
           return `<div class="eliminated-seed">${rank}</div>`;
         }
       }
