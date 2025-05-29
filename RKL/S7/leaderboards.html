@@ -178,8 +178,8 @@
       }
 
       .team-logo {
-        width: 20px;
-        height: 20px;
+        width: 32px;
+        height: 32px;
         border-radius: 2px;
       }
 
@@ -199,20 +199,20 @@
         font-weight: 500;
       }
 
-      /* Updated ranking colors - Gold, Silver, Bronze */
+      /* Updated ranking colors - Muted Gold, Silver, Bronze */
       .top-rank {
-        background-color: #ffd700; /* Gold */
+        background-color: #fff8dc; /* Light gold/cream */
         color: #333;
       }
 
       .second-place {
-        background-color: #c0c0c0; /* Silver */
+        background-color: #f5f5f5; /* Light silver/gray */
         color: #333;
       }
 
       .third-place {
-        background-color: #cd7f32; /* Bronze */
-        color: white;
+        background-color: #f4e4bc; /* Light bronze/tan */
+        color: #333;
       }
 
       /* Show/hide table controls */
@@ -264,8 +264,8 @@
         }
         
         .team-logo {
-          width: 16px;
-          height: 16px;
+          width: 28px;
+          height: 28px;
         }
       }
 
@@ -309,7 +309,6 @@
           <div class="category-btn" data-category="rel_median">REL Median</div>
           <div class="category-btn" data-category="aag_mean">Games Above Mean</div>
           <div class="category-btn" data-category="aag_median">Games Above Median</div>
-          <div class="category-btn" data-category="games_played">Games Played</div>
         </div>
       </div>
 
@@ -334,14 +333,13 @@
             <tr>
               <th>Rank</th>
               <th>Player</th>
-              <th>Team</th>
               <th>Karma</th>
               <th>Games</th>
             </tr>
           </thead>
           <tbody id="leaderboard-body">
             <tr>
-              <td colspan="5" class="loading">Loading leaderboard data...</td>
+              <td colspan="4" class="loading">Loading leaderboard data...</td>
             </tr>
           </tbody>
         </table>
@@ -375,28 +373,28 @@
       const categories = {
         total_points: {
           title: 'Total Karma Leaders',
-          columns: ['Rank', 'Player', 'Team', 'Karma', 'Games'],
+          columns: ['Rank', 'Player', 'Karma', 'Games'],
           sortField: 'total_points',
           descending: true,
           formatValue: (value) => formatKarma(value)
         },
         rel_mean: {
           title: 'REL Mean Leaders',
-          columns: ['Rank', 'Player', 'Team', 'REL Mean', 'Games'],
+          columns: ['Rank', 'Player', 'REL Mean', 'Games'],
           sortField: 'rel_mean',
           descending: true,
           formatValue: (value) => Math.round(parseFloat(value || 0))
         },
         rel_median: {
           title: 'REL Median Leaders', 
-          columns: ['Rank', 'Player', 'Team', 'REL Median', 'Games'],
+          columns: ['Rank', 'Player', 'REL Median', 'Games'],
           sortField: 'rel_median',
           descending: true,
           formatValue: (value) => Math.round(parseFloat(value || 0))
         },
         aag_mean: {
           title: 'Games Above Mean Leaders',
-          columns: ['Rank', 'Player', 'Team', 'Above Mean', 'Percentage'],
+          columns: ['Rank', 'Player', 'Above Mean', 'Percentage'],
           sortField: 'aag_mean_pct',
           descending: true,
           formatValue: (value, field) => {
@@ -406,20 +404,13 @@
         },
         aag_median: {
           title: 'Games Above Median Leaders',
-          columns: ['Rank', 'Player', 'Team', 'Above Median', 'Percentage'],
+          columns: ['Rank', 'Player', 'Above Median', 'Percentage'],
           sortField: 'aag_median_pct',
           descending: true,
           formatValue: (value, field) => {
             if (field === 'aag_median_pct') return `${(parseFloat(value || 0) * 100).toFixed(1)}%`;
             return parseInt(value || 0).toString();
           }
-        },
-        games_played: {
-          title: 'Games Played Leaders',
-          columns: ['Rank', 'Player', 'Team', 'Games', 'Total Karma'],
-          sortField: 'games_played',
-          descending: true,
-          formatValue: (value) => parseInt(value || 0).toString()
         }
       };
       
@@ -466,7 +457,7 @@
         
         if (!players || !teams) {
           document.getElementById('leaderboard-body').innerHTML = 
-            '<tr><td colspan="5" class="error">Error loading player data</td></tr>';
+            '<tr><td colspan="4" class="error">Error loading player data</td></tr>';
           return;
         }
         
@@ -544,10 +535,6 @@
               statValue = player.aag_median || 0;
               secondaryValue = category.formatValue(player.aag_median_pct, 'aag_median_pct');
               break;
-            case 'games_played':
-              statValue = player.games_played || 0;
-              secondaryValue = formatKarma(player.total_points);
-              break;
           }
           
           return `
@@ -559,9 +546,6 @@
                   <div class="player-name">${player.player_handle}</div>
                   <div class="team-name">${getTeamName(player.current_team_id)}</div>
                 </div>
-              </td>
-              <td class="stat-cell">
-                <img src="icons/${player.current_team_id}.webp" alt="${player.current_team_id}" class="team-logo" onerror="this.style.display='none'">
               </td>
               <td class="stat-cell">${statValue}</td>
               <td class="stat-cell">${secondaryValue}</td>
