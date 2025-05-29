@@ -359,6 +359,13 @@
         color: #28a745;
       }
 
+      /* Updated team logo styles for larger icons */
+      .game-item .team-logo {
+        width: 28px;
+        height: 28px;
+        vertical-align: middle;
+      }
+
       /* Modal styles */
       .modal {
         display: none;
@@ -583,6 +590,12 @@
         .team-logo {
           width: 16px;
           height: 16px;
+        }
+
+        /* Larger mobile icons for recent games */
+        .game-item .team-logo {
+          width: 32px;
+          height: 32px;
         }
 
         .game-matchup {
@@ -895,13 +908,25 @@
         // Store teams data globally for modal use
         allTeams = teams;
         
-        // Separate teams by conference and sort by wins
+        // Separate teams by conference and sort by wins, then by PAM as tiebreaker
         const easternTeams = teams.filter(team => team.conference === 'Eastern')
-          .sort((a, b) => parseInt(b.wins || 0) - parseInt(a.wins || 0))
+          .sort((a, b) => {
+            const winsA = parseInt(a.wins || 0);
+            const winsB = parseInt(b.wins || 0);
+            if (winsB !== winsA) return winsB - winsA;
+            // Use PAM as tiebreaker (higher PAM is better)
+            return parseFloat(b.pam || 0) - parseFloat(a.pam || 0);
+          })
           .slice(0, 5); // Show top 5
           
         const westernTeams = teams.filter(team => team.conference === 'Western')
-          .sort((a, b) => parseInt(b.wins || 0) - parseInt(a.wins || 0))
+          .sort((a, b) => {
+            const winsA = parseInt(a.wins || 0);
+            const winsB = parseInt(b.wins || 0);
+            if (winsB !== winsA) return winsB - winsA;
+            // Use PAM as tiebreaker (higher PAM is better)
+            return parseFloat(b.pam || 0) - parseFloat(a.pam || 0);
+          })
           .slice(0, 5); // Show top 5
         
         // Display Eastern Conference
@@ -985,7 +1010,7 @@
                     <span class="team-name">${team1Name}</span>
                     <span class="team-record">${team1Record}</span>
                   </div>
-                  <span class="team-score">${formatInThousands(team1Score)}</span>
+                  <span class="team-score ${winner === game.team1_id ? 'winner' : ''}">${formatInThousands(team1Score)}</span>
                 </div>
                 <span class="vs">vs</span>
                 <div class="team ${winner === game.team2_id ? 'winner' : ''}">
@@ -994,7 +1019,7 @@
                     <span class="team-name">${team2Name}</span>
                     <span class="team-record">${team2Record}</span>
                   </div>
-                  <span class="team-score">${formatInThousands(team2Score)}</span>
+                  <span class="team-score ${winner === game.team2_id ? 'winner' : ''}">${formatInThousands(team2Score)}</span>
                 </div>
               </div>
               <div class="game-date">
