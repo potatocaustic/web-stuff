@@ -142,6 +142,12 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        cursor: pointer;
+        transition: color 0.2s ease;
+      }
+
+      .team-cell:hover {
+        color: #007bff;
       }
 
       .team-logo {
@@ -291,9 +297,9 @@
       }
 
       @media (max-width: 480px) {
-        .standings-table th:nth-child(4),
-        .standings-table td:nth-child(4) {
-          display: none; /* Hide less important columns on very small screens */
+        .standings-table th:nth-child(5),
+        .standings-table td:nth-child(5) {
+          display: none; /* Hide Med Rank column on very small screens */
         }
       }
 
@@ -361,7 +367,7 @@
                 <th>Team</th>
                 <th>Record</th>
                 <th>PAM</th>
-                <th>Avg Rank</th>
+                <th>Med Rank</th>
               </tr>
             </thead>
             <tbody id="eastern-standings">
@@ -384,7 +390,7 @@
                 <th>Team</th>
                 <th>Record</th>
                 <th>PAM</th>
-                <th>Avg Rank</th>
+                <th>Med Rank</th>
               </tr>
             </thead>
             <tbody id="western-standings">
@@ -455,6 +461,11 @@
         return '';
       }
       
+      // Function to handle team row click
+      function handleTeamClick(teamId) {
+        window.location.href = `team.html?id=${teamId}`;
+      }
+      
       // Load and display standings
       async function loadStandings() {
         const teams = await fetchSheetData('Teams');
@@ -466,11 +477,11 @@
           return;
         }
         
-        // Separate and sort teams by conference
+        // Separate and sort teams by conference, using PAM as tiebreaker
         const easternTeams = teams
           .filter(team => team.conference === 'Eastern')
           .sort((a, b) => {
-            // Sort by wins first, then by PAM
+            // Sort by wins first, then by PAM as tiebreaker (higher PAM is better)
             const winsA = parseInt(a.wins || 0);
             const winsB = parseInt(b.wins || 0);
             if (winsB !== winsA) return winsB - winsA;
@@ -480,7 +491,7 @@
         const westernTeams = teams
           .filter(team => team.conference === 'Western')
           .sort((a, b) => {
-            // Sort by wins first, then by PAM
+            // Sort by wins first, then by PAM as tiebreaker (higher PAM is better)
             const winsA = parseInt(a.wins || 0);
             const winsB = parseInt(b.wins || 0);
             if (winsB !== winsA) return winsB - winsA;
@@ -493,7 +504,7 @@
           const wins = parseInt(team.wins || 0);
           const losses = parseInt(team.losses || 0);
           const pam = parseFloat(team.pam || 0);
-          const avgRank = parseFloat(team.med_starter_rank || 0);
+          const medRank = parseFloat(team.med_starter_rank || 0);
           const isEliminated = rank > 10;
           
           return `
@@ -501,13 +512,13 @@
               <td class="rank-cell">
                 ${getPlayoffIndicator(rank)}
               </td>
-              <td class="team-cell">
-                <img src="${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
+              <td class="team-cell" onclick="handleTeamClick('${team.team_id}')">
+                <img src="../RKL/S7/icons/${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
                 <span class="team-name">${team.team_name}</span>
               </td>
               <td class="record-cell">${wins}-${losses}</td>
               <td class="pam-cell ${getPAMClass(pam)}">${Math.round(pam).toLocaleString()}</td>
-              <td class="rank-cell">${avgRank > 0 ? Math.round(avgRank) : '-'}</td>
+              <td class="rank-cell">${medRank > 0 ? Math.round(medRank) : '-'}</td>
             </tr>
           `;
         }).join('');
@@ -518,7 +529,7 @@
           const wins = parseInt(team.wins || 0);
           const losses = parseInt(team.losses || 0);
           const pam = parseFloat(team.pam || 0);
-          const avgRank = parseFloat(team.med_starter_rank || 0);
+          const medRank = parseFloat(team.med_starter_rank || 0);
           const isEliminated = rank > 10;
           
           return `
@@ -526,13 +537,13 @@
               <td class="rank-cell">
                 ${getPlayoffIndicator(rank)}
               </td>
-              <td class="team-cell">
-                <img src="${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
+              <td class="team-cell" onclick="handleTeamClick('${team.team_id}')">
+                <img src="../RKL/S7/icons/${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
                 <span class="team-name">${team.team_name}</span>
               </td>
               <td class="record-cell">${wins}-${losses}</td>
               <td class="pam-cell ${getPAMClass(pam)}">${Math.round(pam).toLocaleString()}</td>
-              <td class="rank-cell">${avgRank > 0 ? Math.round(avgRank) : '-'}</td>
+              <td class="rank-cell">${medRank > 0 ? Math.round(medRank) : '-'}</td>
             </tr>
           `;
         }).join('');
