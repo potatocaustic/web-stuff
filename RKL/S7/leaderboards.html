@@ -410,7 +410,7 @@
           <div class="category-btn active" data-category="total_points">Total Karma</div>
           <div class="category-btn" data-category="rel_mean">REL Mean</div>
           <div class="category-btn" data-category="rel_median">REL Median</div>
-          <div class="category-btn" data-category="median_rank">Median Rank</div> 
+          <div class="category-btn" data-category="median_rank">Median Rank</div>
           <div class="category-btn" data-category="aag_mean">Games Above Mean</div>
           <div class="category-btn" data-category="aag_median">Games Above Median</div>
         </div>
@@ -487,16 +487,16 @@
           columns: ['Rank', 'Player', 'REL Mean', 'Games'],
           sortField: 'calculated_rel_mean',
           descending: true,
-          formatValue: (value) => parseFloat(value || 0).toFixed(3) // Show 3 decimal places
+          formatValue: (value) => parseFloat(value || 0).toFixed(3)
         },
         rel_median: {
           title: 'REL Median Leaders', 
           columns: ['Rank', 'Player', 'REL Median', 'Games'],
           sortField: 'calculated_rel_median',
           descending: true,
-          formatValue: (value) => parseFloat(value || 0).toFixed(3) // Show 3 decimal places
+          formatValue: (value) => parseFloat(value || 0).toFixed(3)
         },
-        median_rank: {  // ADD THIS ENTIRE SECTION
+        median_rank: {
           title: 'Median Rank Leaders',
           columns: ['Rank', 'Player', 'Median Rank', 'Games'],
           sortField: 'calculated_median_rank',
@@ -703,10 +703,14 @@
           let totalMedianKarma = 0;
           let validGames = 0;
           
+          // For median rank calculation
+          const ranks = [];
+          
           playerGames.forEach(game => {
             const gameDate = game.date;
             const playerKarmaRaw = parseNumber(game.points_raw);
             const playerKarmaFinal = parseNumber(game.points_final);
+            const globalRank = parseNumber(game.global_rank);
             
             if (weeklyAveragesMap[gameDate]) {
               totalPlayerKarmaRaw += playerKarmaRaw;
@@ -716,6 +720,11 @@
               validGames++;
             } else {
               console.warn(`No weekly average data found for date: ${gameDate}`);
+            }
+            
+            // Collect ranks for median calculation
+            if (globalRank > 0) {
+              ranks.push(globalRank);
             }
           });
           
@@ -735,6 +744,9 @@
           const relMeanAvgRaw = avgMeanKarma > 0 ? (avgPlayerKarmaRaw / avgMeanKarma) : 0;
           const relMedianAvgRaw = avgMedianKarma > 0 ? (avgPlayerKarmaRaw / avgMedianKarma) : 0;
           
+          const relMeanAvgFinal = avgMeanKarma > 0 ? (avgPlayerKarmaFinal / avgMeanKarma) : 0;
+          const relMedianAvgFinal = avgMedianKarma > 0 ? (avgPlayerKarmaFinal / avgMedianKarma) : 0;
+          
           // Calculate median rank
           let medianRank = 0;
           if (ranks.length > 0) {
@@ -747,9 +759,6 @@
             }
           }
           
-          const relMeanAvgFinal = avgMeanKarma > 0 ? (avgPlayerKarmaFinal / avgMeanKarma) : 0;
-          const relMedianAvgFinal = avgMedianKarma > 0 ? (avgPlayerKarmaFinal / avgMedianKarma) : 0;
-    
           if (validGames > 0) {
             console.log(`${player.player_handle}: ${validGames} games`);
             console.log(`  Total Raw: ${totalPlayerKarmaRaw.toLocaleString()}, Total Final: ${totalPlayerKarmaFinal.toLocaleString()}`);
@@ -758,6 +767,7 @@
             console.log(`  REL Mean (Total Final): ${relMeanFinal.toFixed(3)}, REL Median (Total Final): ${relMedianFinal.toFixed(3)}`);
             console.log(`  REL Mean (Avg Raw): ${relMeanAvgRaw.toFixed(3)}, REL Median (Avg Raw): ${relMedianAvgRaw.toFixed(3)}`);
             console.log(`  REL Mean (Avg Final): ${relMeanAvgFinal.toFixed(3)}, REL Median (Avg Final): ${relMedianAvgFinal.toFixed(3)}`);
+            console.log(`  Median Rank: ${medianRank.toFixed(1)}`);
           }
           
           // Use the average-based calculation with raw points (seems most logical)
@@ -836,6 +846,10 @@
               break;
             case 'rel_median':
               statValue = category.formatValue(player.calculated_rel_median);
+              secondaryValue = player.games_played || 0;
+              break;
+            case 'median_rank':
+              statValue = category.formatValue(player.calculated_median_rank);
               secondaryValue = player.games_played || 0;
               break;
             case 'aag_mean':
