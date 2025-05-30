@@ -660,8 +660,8 @@
         weeklyAverages.forEach(week => {
           if (week.date) {
             weeklyAveragesMap[week.date] = {
-              mean_score: parseNumber(week.mean_score),  // Handle comma-formatted numbers
-              median_score: parseNumber(week.median_score)  // Handle comma-formatted numbers
+              mean_score: parseNumber(week.mean_score),
+              median_score: parseNumber(week.median_score)
             };
           }
         });
@@ -684,18 +684,21 @@
             };
           }
           
-          // Calculate sums
-          let totalPlayerKarma = 0;
+          // Calculate sums - try both raw and final points to see which makes sense
+          let totalPlayerKarmaRaw = 0;
+          let totalPlayerKarmaFinal = 0;
           let totalMeanKarma = 0;
           let totalMedianKarma = 0;
           let validGames = 0;
           
           playerGames.forEach(game => {
             const gameDate = game.date;
-            const playerKarma = parseNumber(game.points_raw); // Also handle commas in player data
+            const playerKarmaRaw = parseNumber(game.points_raw);
+            const playerKarmaFinal = parseNumber(game.points_final);
             
             if (weeklyAveragesMap[gameDate]) {
-              totalPlayerKarma += playerKarma;
+              totalPlayerKarmaRaw += playerKarmaRaw;
+              totalPlayerKarmaFinal += playerKarmaFinal;
               totalMeanKarma += weeklyAveragesMap[gameDate].mean_score;
               totalMedianKarma += weeklyAveragesMap[gameDate].median_score;
               validGames++;
@@ -704,18 +707,40 @@
             }
           });
           
-          // Calculate REL
-          const relMean = totalMeanKarma > 0 ? (totalPlayerKarma / totalMeanKarma) * 100 : 0;
-          const relMedian = totalMedianKarma > 0 ? (totalPlayerKarma / totalMedianKarma) * 100 : 0;
+          // Try both calculations to see which gives reasonable results
+          const relMeanRaw = totalMeanKarma > 0 ? (totalPlayerKarmaRaw / totalMeanKarma) : 0;
+          const relMedianRaw = totalMedianKarma > 0 ? (totalPlayerKarmaRaw / totalMedianKarma) : 0;
+          
+          const relMeanFinal = totalMeanKarma > 0 ? (totalPlayerKarmaFinal / totalMeanKarma) : 0;
+          const relMedianFinal = totalMedianKarma > 0 ? (totalPlayerKarmaFinal / totalMedianKarma) : 0;
+          
+          // Also try average-based calculation
+          const avgPlayerKarmaRaw = validGames > 0 ? totalPlayerKarmaRaw / validGames : 0;
+          const avgPlayerKarmaFinal = validGames > 0 ? totalPlayerKarmaFinal / validGames : 0;
+          const avgMeanKarma = validGames > 0 ? totalMeanKarma / validGames : 0;
+          const avgMedianKarma = validGames > 0 ? totalMedianKarma / validGames : 0;
+          
+          const relMeanAvgRaw = avgMeanKarma > 0 ? (avgPlayerKarmaRaw / avgMeanKarma) : 0;
+          const relMedianAvgRaw = avgMedianKarma > 0 ? (avgPlayerKarmaRaw / avgMedianKarma) : 0;
+          
+          const relMeanAvgFinal = avgMeanKarma > 0 ? (avgPlayerKarmaFinal / avgMeanKarma) : 0;
+          const relMedianAvgFinal = avgMedianKarma > 0 ? (avgPlayerKarmaFinal / avgMedianKarma) : 0;
           
           if (validGames > 0) {
-            console.log(`${player.player_handle}: ${validGames} games, Total: ${totalPlayerKarma.toLocaleString()}, REL Mean: ${relMean.toFixed(1)}, REL Median: ${relMedian.toFixed(1)}`);
+            console.log(`${player.player_handle}: ${validGames} games`);
+            console.log(`  Total Raw: ${totalPlayerKarmaRaw.toLocaleString()}, Total Final: ${totalPlayerKarmaFinal.toLocaleString()}`);
+            console.log(`  Total Mean: ${totalMeanKarma.toLocaleString()}, Total Median: ${totalMedianKarma.toLocaleString()}`);
+            console.log(`  REL Mean (Total Raw): ${relMeanRaw.toFixed(3)}, REL Median (Total Raw): ${relMedianRaw.toFixed(3)}`);
+            console.log(`  REL Mean (Total Final): ${relMeanFinal.toFixed(3)}, REL Median (Total Final): ${relMedianFinal.toFixed(3)}`);
+            console.log(`  REL Mean (Avg Raw): ${relMeanAvgRaw.toFixed(3)}, REL Median (Avg Raw): ${relMedianAvgRaw.toFixed(3)}`);
+            console.log(`  REL Mean (Avg Final): ${relMeanAvgFinal.toFixed(3)}, REL Median (Avg Final): ${relMedianAvgFinal.toFixed(3)}`);
           }
           
+          // Use the average-based calculation with raw points (seems most logical)
           return {
             ...player,
-            calculated_rel_mean: relMean,
-            calculated_rel_median: relMedian
+            calculated_rel_mean: relMeanAvgRaw,
+            calculated_rel_median: relMedianAvgRaw
           };
         });
       }
