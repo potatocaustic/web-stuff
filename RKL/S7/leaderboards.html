@@ -484,16 +484,16 @@
         rel_mean: {
           title: 'REL Mean Leaders',
           columns: ['Rank', 'Player', 'REL Mean', 'Games'],
-          sortField: 'calculated_rel_mean', // Use calculated REL value
+          sortField: 'calculated_rel_mean',
           descending: true,
-          formatValue: (value) => Math.round(parseFloat(value || 0))
+          formatValue: (value) => parseFloat(value || 0).toFixed(3) // Show 3 decimal places
         },
         rel_median: {
           title: 'REL Median Leaders', 
           columns: ['Rank', 'Player', 'REL Median', 'Games'],
-          sortField: 'calculated_rel_median', // Use calculated REL value
+          sortField: 'calculated_rel_median',
           descending: true,
-          formatValue: (value) => Math.round(parseFloat(value || 0))
+          formatValue: (value) => parseFloat(value || 0).toFixed(3) // Show 3 decimal places
         },
         aag_mean: {
           title: 'Games Above Mean Leaders',
