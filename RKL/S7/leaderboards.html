@@ -821,7 +821,18 @@
         const sortedPlayers = [...allPlayers].sort((a, b) => {
           const aVal = parseFloat(a[category.sortField] || 0);
           const bVal = parseFloat(b[category.sortField] || 0);
-          return category.descending ? bVal - aVal : aVal - bVal;
+          
+          // Primary sort
+          const primarySort = category.descending ? bVal - aVal : aVal - bVal;
+          
+          // If tied, use REL Median as tiebreaker for Games Above Mean/Median
+          if (primarySort === 0 && (currentCategory === 'aag_mean' || currentCategory === 'aag_median')) {
+            const aREL = parseFloat(a.calculated_rel_median || 0);
+            const bREL = parseFloat(b.calculated_rel_median || 0);
+            return bREL - aREL; // Higher REL Median wins the tie
+          }
+          
+          return primarySort;
         });
         
         // Limit results if needed
