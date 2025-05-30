@@ -869,6 +869,16 @@
         return team ? team.team_name : teamId;
       }
 
+      // Helper function to convert number to ordinal (1st, 2nd, 3rd, 4th, etc.)
+      function getOrdinal(num) {
+        const n = parseInt(num);
+        if (n <= 0) return 'Unranked';
+        
+        const suffix = ['th', 'st', 'nd', 'rd'];
+        const v = n % 100;
+        return n + (suffix[(v - 20) % 10] || suffix[v] || suffix[0]);
+      }
+
       // Calculate player rankings for each stat
       function calculatePlayerRankings(playerData, allPlayersData) {
         const rankings = {};
@@ -1158,27 +1168,27 @@
           <a href="leaderboards.html?category=total_points" class="stat-card">
             <div class="stat-value">${Math.round(totalPoints).toLocaleString()}</div>
             <div class="stat-label">Total Karma</div>
-            <div class="stat-rank">#${rankings.totalKarma} League-wide</div>
+            <div class="stat-rank">${getOrdinal(rankings.totalKarma)} Overall</div>
           </a>
           <a href="leaderboards.html?category=rel_median" class="stat-card">
             <div class="stat-value">${relMedian.toFixed(3)}</div>
             <div class="stat-label">REL Median</div>
-            <div class="stat-rank">#${rankings.relMedian} League-wide</div>
+            <div class="stat-rank">${getOrdinal(rankings.relMedian)} Overall</div>
           </a>
           <a href="leaderboards.html?category=aag_median" class="stat-card">
             <div class="stat-value">${gamesAboveMedian}</div>
             <div class="stat-label">Games Above Median</div>
-            <div class="stat-rank">#${rankings.gamesAboveMedian} League-wide</div>
+            <div class="stat-rank">${getOrdinal(rankings.gamesAboveMedian)} Overall</div>
           </a>
-          <div class="stat-card" style="cursor: default;">
+          <a href="leaderboards.html?category=aag_median" class="stat-card">
             <div class="stat-value">${Math.round(aboveMedianPct)}%</div>
             <div class="stat-label">Above Median %</div>
-            <div class="stat-rank">#${rankings.aboveMedianPct} League-wide</div>
-          </div>
+            <div class="stat-rank">${getOrdinal(rankings.aboveMedianPct)} Overall</div>
+          </a>
           <a href="leaderboards.html?category=median_rank" class="stat-card">
             <div class="stat-value">${medianRank > 0 ? Math.round(medianRank) : '-'}</div>
             <div class="stat-label">Median Rank</div>
-            <div class="stat-rank">${rankings.medianRank > 0 ? `#${rankings.medianRank} League-wide` : 'Not ranked'}</div>
+            <div class="stat-rank">${rankings.medianRank > 0 ? `${getOrdinal(rankings.medianRank)} Overall` : 'Not ranked'}</div>
           </a>
         `;
         
