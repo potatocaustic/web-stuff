@@ -508,6 +508,7 @@
         },
         aag_mean: {
           title: 'Games Above Mean Leaders',
+          subtitle: 'Ties broken by REL Median',
           columns: ['Rank', 'Player', 'Above Mean', 'Percentage'],
           sortField: 'aag_mean',
           descending: true,
@@ -518,6 +519,7 @@
         },
         aag_median: {
           title: 'Games Above Median Leaders',
+          subtitle: 'Ties broken by REL Median',
           columns: ['Rank', 'Player', 'Above Median', 'Percentage'],
           sortField: 'aag_median',
           descending: true,
@@ -811,6 +813,23 @@
         
         // Update title and header
         document.getElementById('leaderboard-title').textContent = category.title;
+        
+        // Add subtitle if it exists
+        const headerElement = document.querySelector('.leaderboard-header h3');
+        const existingSubtitle = document.querySelector('.leaderboard-subtitle');
+        if (existingSubtitle) {
+          existingSubtitle.remove();
+        }
+        
+        if (category.subtitle) {
+          const subtitleElement = document.createElement('div');
+          subtitleElement.className = 'leaderboard-subtitle';
+          subtitleElement.textContent = category.subtitle;
+          subtitleElement.style.fontSize = '0.9rem';
+          subtitleElement.style.opacity = '0.8';
+          subtitleElement.style.marginTop = '0.5rem';
+          headerElement.parentNode.appendChild(subtitleElement);
+        }
         document.getElementById('table-header').innerHTML = `
           <tr>
             ${category.columns.map(col => `<th>${col}</th>`).join('')}
