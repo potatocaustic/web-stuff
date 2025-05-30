@@ -135,6 +135,18 @@
         border-radius: 6px;
         text-align: center;
         border: 1px solid #ddd;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        border-color: #007bff;
+        text-decoration: none;
+        color: inherit;
       }
 
       .stat-value {
@@ -147,6 +159,13 @@
         font-size: 0.9rem;
         color: #666;
         margin-top: 0.5rem;
+      }
+
+      .stat-rank {
+        font-size: 0.8rem;
+        color: #007bff;
+        margin-top: 0.3rem;
+        font-weight: 500;
       }
 
       .positive {
@@ -850,6 +869,57 @@
         return team ? team.team_name : teamId;
       }
 
+      // Calculate player rankings for each stat
+      function calculatePlayerRankings(playerData, allPlayersData) {
+        const rankings = {};
+        
+        // Total Karma ranking
+        const totalKarmaPlayers = allPlayersData
+          .filter(p => p.player_status === 'ACTIVE' && parseInt(p.games_played || 0) > 0)
+          .sort((a, b) => parseFloat(b.total_points || 0) - parseFloat(a.total_points || 0));
+        rankings.totalKarma = totalKarmaPlayers.findIndex(p => p.player_handle === playerData.player_handle) + 1;
+        
+        // REL Median ranking
+        const relMedianPlayers = allPlayersData
+          .filter(p => p.player_status === 'ACTIVE' && parseInt(p.games_played || 0) > 0)
+          .sort((a, b) => parseFloat(b.calculated_rel_median || 0) - parseFloat(a.calculated_rel_median || 0));
+        rankings.relMedian = relMedianPlayers.findIndex(p => p.player_handle === playerData.player_handle) + 1;
+        
+        // Games Above Median ranking (with REL Median tiebreaker)
+        const gamesAboveMedianPlayers = allPlayersData
+          .filter(p => p.player_status === 'ACTIVE' && parseInt(p.games_played || 0) > 0)
+          .sort((a, b) => {
+            const aGames = parseInt(a.aag_median || 0);
+            const bGames = parseInt(b.aag_median || 0);
+            if (bGames !== aGames) return bGames - aGames;
+            // Tiebreaker: REL Median
+            const aREL = parseFloat(a.calculated_rel_median || 0);
+            const bREL = parseFloat(b.calculated_rel_median || 0);
+            return bREL - aREL;
+          });
+        rankings.gamesAboveMedian = gamesAboveMedianPlayers.findIndex(p => p.player_handle === playerData.player_handle) + 1;
+        
+        // Above Median % ranking
+        const aboveMedianPctPlayers = allPlayersData
+          .filter(p => p.player_status === 'ACTIVE' && parseInt(p.games_played || 0) > 0)
+          .sort((a, b) => parseFloat(b.aag_median_pct || 0) - parseFloat(a.aag_median_pct || 0));
+        rankings.aboveMedianPct = aboveMedianPctPlayers.findIndex(p => p.player_handle === playerData.player_handle) + 1;
+        
+        // Median Rank ranking (lower is better)
+        const medianRankPlayers = allPlayersData
+          .filter(p => p.player_status === 'ACTIVE' && parseInt(p.games_played || 0) > 0 && parseFloat(p.calculated_median_rank || 0) > 0)
+          .sort((a, b) => parseFloat(a.calculated_median_rank || 999) - parseFloat(b.calculated_median_rank || 999));
+        rankings.medianRank = medianRankPlayers.findIndex(p => p.player_handle === playerData.player_handle) + 1;
+        
+        return rankings;
+      }
+
+      // Function to set leaderboard category and redirect
+      function setLeaderboardCategory(category) {
+        // Store the category in sessionStorage so the leaderboards page can pick it up
+        sessionStorage.setItem('selectedLeaderboardCategory', category);
+      }
+
       // Calculate REL Median for a specific player
       function calculatePlayerRELMedian(playerHandle, weeklyAverages, lineups) {
         // Get all games where this player started
@@ -940,14 +1010,18 @@
         
         allTeams = teams;
         allLineups = lineups || [];
-        playerData = players.find(player => player.player_handle === playerHandle);
+        
+        // Calculate REL values for all players (needed for rankings)
+        const playersWithREL = weeklyAverages ? calculateRELForAllPlayers(players, weeklyAverages, allLineups) : players;
+        
+        playerData = playersWithREL.find(player => player.player_handle === playerHandle);
         if (!playerData) {
           document.getElementById('player-main-info').innerHTML = 
             '<div class="error">Player not found</div>';
           return;
         }
         
-        // Calculate REL Median and Median Rank
+        // Calculate REL Median and Median Rank for this player
         const calculatedRELMedian = weeklyAverages ? calculatePlayerRELMedian(playerHandle, weeklyAverages, allLineups) : 0;
         const medianRank = calculatePlayerMedianRank(playerHandle, allLineups);
         
@@ -955,7 +1029,13 @@
         playerData.calculated_rel_median = calculatedRELMedian;
         playerData.calculated_median_rank = medianRank;
         
-        displayPlayerHeader();
+        // Calculate rankings for all stats
+        const activePlayersWithREL = playersWithREL.filter(p => 
+          p.player_status === 'ACTIVE' && parseInt(p.games_played || 0) > 0
+        );
+        const rankings = calculatePlayerRankings(playerData, activePlayersWithREL);
+        
+        displayPlayerHeader(rankings);
         
         // Load other data in parallel
         await Promise.all([
@@ -965,7 +1045,7 @@
       }
       
       // Display player header
-      function displayPlayerHeader() {
+      function displayPlayerHeader(rankings) {
         // Update page title
         document.getElementById('page-title').textContent = `${playerData.player_handle} - RKL Season 7`;
         document.getElementById('header-title').textContent = playerData.player_handle;
@@ -987,33 +1067,38 @@
           </div>
         `;
         
-        // Player stats - Updated with new stats
+        // Player stats - Updated with new stats and rankings
         const relMedian = playerData.calculated_rel_median || 0;
         const gamesAboveMedian = parseInt(playerData.aag_median || 0);
         const aboveMedianPct = parseFloat(playerData.aag_median_pct || 0) * 100;
         const medianRank = playerData.calculated_median_rank || 0;
         
         document.getElementById('player-stats').innerHTML = `
-          <div class="stat-card">
+          <a href="leaderboards.html" class="stat-card" onclick="setLeaderboardCategory('total_points')">
             <div class="stat-value">${Math.round(totalPoints).toLocaleString()}</div>
             <div class="stat-label">Total Karma</div>
-          </div>
-          <div class="stat-card">
+            <div class="stat-rank">#${rankings.totalKarma} League-wide</div>
+          </a>
+          <a href="leaderboards.html" class="stat-card" onclick="setLeaderboardCategory('rel_median')">
             <div class="stat-value">${relMedian.toFixed(3)}</div>
             <div class="stat-label">REL Median</div>
-          </div>
-          <div class="stat-card">
+            <div class="stat-rank">#${rankings.relMedian} League-wide</div>
+          </a>
+          <a href="leaderboards.html" class="stat-card" onclick="setLeaderboardCategory('aag_median')">
             <div class="stat-value">${gamesAboveMedian}</div>
             <div class="stat-label">Games Above Median</div>
-          </div>
-          <div class="stat-card">
+            <div class="stat-rank">#${rankings.gamesAboveMedian} League-wide</div>
+          </a>
+          <div class="stat-card" style="cursor: default;">
             <div class="stat-value">${Math.round(aboveMedianPct)}%</div>
             <div class="stat-label">Above Median %</div>
+            <div class="stat-rank">#${rankings.aboveMedianPct} League-wide</div>
           </div>
-          <div class="stat-card">
+          <a href="leaderboards.html" class="stat-card" onclick="setLeaderboardCategory('median_rank')">
             <div class="stat-value">${medianRank > 0 ? Math.round(medianRank) : '-'}</div>
             <div class="stat-label">Median Rank</div>
-          </div>
+            <div class="stat-rank">${rankings.medianRank > 0 ? `#${rankings.medianRank} League-wide` : 'Not ranked'}</div>
+          </a>
         `;
         
         document.getElementById('player-stats').style.display = 'grid';
