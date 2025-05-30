@@ -212,6 +212,11 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        cursor: pointer;
+      }
+
+      .player-cell:hover .player-name {
+        color: #007bff;
       }
 
       .team-logo {
@@ -224,6 +229,16 @@
         font-weight: bold;
         font-size: 1.05rem;
         color: #2c5aa0;
+      }
+
+      .player-name a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .player-name a:hover {
+        color: #007bff !important;
+        text-decoration: underline !important;
       }
 
       .team-name {
@@ -457,7 +472,7 @@
         return Math.round(num).toLocaleString();
       }
       
-      // Category definitions
+      // Category definitions with proper field mappings
       const categories = {
         total_points: {
           title: 'Total Karma Leaders',
@@ -469,14 +484,14 @@
         rel_mean: {
           title: 'REL Mean Leaders',
           columns: ['Rank', 'Player', 'REL Mean', 'Games'],
-          sortField: 'rel_mean',
+          sortField: 'rel_mean', // Verify this matches spreadsheet column
           descending: true,
           formatValue: (value) => Math.round(parseFloat(value || 0))
         },
         rel_median: {
           title: 'REL Median Leaders', 
           columns: ['Rank', 'Player', 'REL Median', 'Games'],
-          sortField: 'rel_median',
+          sortField: 'rel_median', // Verify this matches spreadsheet column
           descending: true,
           formatValue: (value) => Math.round(parseFloat(value || 0))
         },
@@ -518,14 +533,14 @@
         }
       }
       
-      // Simple CSV parser
+      // Simple CSV parser that properly handles quoted fields and commas within values
       function parseCSV(csvText) {
         const lines = csvText.trim().split('\n');
-        const headers = lines[0].split(',').map(h => h.replace(/"/g, ''));
+        const headers = parseCSVLine(lines[0]);
         const data = [];
         
         for (let i = 1; i < lines.length; i++) {
-          const values = lines[i].split(',').map(v => v.replace(/"/g, ''));
+          const values = parseCSVLine(lines[i]);
           const row = {};
           headers.forEach((header, index) => {
             row[header] = values[index] || '';
@@ -536,7 +551,46 @@
         return data;
       }
       
-      // Load initial data
+      // Parse a single CSV line, handling quoted fields properly
+      function parseCSVLine(line) {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            result.push(current.trim());
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        
+        // Add the last field
+        result.push(current.trim());
+        
+        // Clean up quotes from fields
+        return result.map(field => field.replace(/^"(.*)"$/, '$1'));
+      }
+
+      // Function to verify and log spreadsheet column mappings
+      function verifyDataFields(players) {
+        if (players.length > 0) {
+          console.log('Available player data fields:', Object.keys(players[0]));
+          console.log('Sample player data:', players[0]);
+          
+          // Check for various possible field names for REL calculations
+          const relFields = ['rel_mean', 'REL_mean', 'rel_median', 'REL_median', 'total_points'];
+          const foundFields = relFields.filter(field => players[0].hasOwnProperty(field));
+          console.log('Found REL-related fields:', foundFields);
+        }
+      }
+      
+      // Load initial data with field verification
       async function loadData() {
         const [players, teams] = await Promise.all([
           fetchSheetData('Players'),
@@ -548,6 +602,9 @@
             '<tr><td colspan="4" class="error">Error loading player data</td></tr>';
           return;
         }
+        
+        // Verify data fields
+        verifyDataFields(players);
         
         allPlayers = players.filter(player => 
           player.player_status === 'ACTIVE' && parseInt(player.games_played || 0) > 0
@@ -581,7 +638,7 @@
         return '';
       }
       
-      // Display leaderboard for current category
+      // Display leaderboard for current category with player links
       function displayLeaderboard() {
         const category = categories[currentCategory];
         const showCount = document.getElementById('show-count').value;
@@ -605,7 +662,7 @@
         const playersToShow = showCount === 'all' ? sortedPlayers : 
           sortedPlayers.slice(0, parseInt(showCount));
         
-        // Generate table HTML
+        // Generate table HTML with player links
         const tableHTML = playersToShow.map((player, index) => {
           const rank = index + 1;
           const rowClass = getRankClass(rank);
@@ -643,7 +700,11 @@
               <td class="player-cell">
                 <img src="icons/${player.current_team_id}.webp" alt="${player.current_team_id}" class="team-logo" onerror="this.style.display='none'">
                 <div>
-                  <div class="player-name">${player.player_handle}</div>
+                  <div class="player-name">
+                    <a href="player.html?player=${encodeURIComponent(player.player_handle)}" style="color: inherit; text-decoration: none;">
+                      ${player.player_handle}
+                    </a>
+                  </div>
                   <div class="team-name">${getTeamName(player.current_team_id)}</div>
                 </div>
               </td>
