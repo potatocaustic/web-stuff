@@ -472,7 +472,7 @@
         return Math.round(num).toLocaleString();
       }
       
-      // Category definitions with proper field mappings
+      // Category definitions with corrected REL calculations
       const categories = {
         total_points: {
           title: 'Total Karma Leaders',
@@ -484,14 +484,14 @@
         rel_mean: {
           title: 'REL Mean Leaders',
           columns: ['Rank', 'Player', 'REL Mean', 'Games'],
-          sortField: 'rel_mean', // Verify this matches spreadsheet column
+          sortField: 'calculated_rel_mean', // Use calculated REL value
           descending: true,
           formatValue: (value) => Math.round(parseFloat(value || 0))
         },
         rel_median: {
           title: 'REL Median Leaders', 
           columns: ['Rank', 'Player', 'REL Median', 'Games'],
-          sortField: 'rel_median', // Verify this matches spreadsheet column
+          sortField: 'calculated_rel_median', // Use calculated REL value
           descending: true,
           formatValue: (value) => Math.round(parseFloat(value || 0))
         },
@@ -590,14 +590,16 @@
         }
       }
       
-      // Load initial data with field verification
+      // Load initial data with field verification and REL calculation
       async function loadData() {
-        const [players, teams] = await Promise.all([
+        const [players, teams, weeklyAverages, lineups] = await Promise.all([
           fetchSheetData('Players'),
-          fetchSheetData('Teams')
+          fetchSheetData('Teams'),
+          fetchSheetData('Weekly_Averages'),
+          fetchSheetData('Lineups')
         ]);
         
-        if (!players || !teams) {
+        if (!players || !teams || !weeklyAverages || !lineups) {
           document.getElementById('leaderboard-body').innerHTML = 
             '<tr><td colspan="4" class="error">Error loading player data</td></tr>';
           return;
@@ -605,13 +607,117 @@
         
         // Verify data fields
         verifyDataFields(players);
+        verifyWeeklyAveragesFields(weeklyAverages);
         
-        allPlayers = players.filter(player => 
+        // Calculate REL values for all players
+        const playersWithREL = calculateRELForAllPlayers(players, weeklyAverages, lineups);
+        
+        allPlayers = playersWithREL.filter(player => 
           player.player_status === 'ACTIVE' && parseInt(player.games_played || 0) > 0
         );
         allTeams = teams;
         
         displayLeaderboard();
+      }
+
+      // Function to verify Weekly_Averages data structure
+      function verifyWeeklyAveragesFields(weeklyAverages) {
+        if (weeklyAverages.length > 0) {
+          console.log('Weekly_Averages data fields:', Object.keys(weeklyAverages[0]));
+          console.log('Sample Weekly_Averages data:', weeklyAverages[0]);
+          console.log('Sample mean_score value:', weeklyAverages[0].mean_score);
+          console.log('Sample median_score value:', weeklyAverages[0].median_score);
+          
+          // Check for required fields
+          const requiredFields = ['week', 'date', 'mean_score', 'median_score'];
+          requiredFields.forEach(field => {
+            const hasField = weeklyAverages[0].hasOwnProperty(field);
+            console.log(`Weekly_Averages field "${field}": ${hasField ? '✓ Found' : '✗ Missing'}`);
+            if (hasField && (field === 'mean_score' || field === 'median_score')) {
+              const rawValue = weeklyAverages[0][field];
+              const parsedValue = parseNumber(rawValue);
+              console.log(`  Raw value: "${rawValue}" → Parsed: ${parsedValue}`);
+            }
+          });
+        }
+      }
+
+      // Helper function to parse numbers that might have comma formatting
+      function parseNumber(value) {
+        if (!value) return 0;
+        // Remove commas and parse as float
+        const cleaned = value.toString().replace(/,/g, '');
+        const parsed = parseFloat(cleaned);
+        return isNaN(parsed) ? 0 : parsed;
+      }
+
+      // Function to calculate REL for all players
+      function calculateRELForAllPlayers(players, weeklyAverages, lineups) {
+        console.log('Calculating REL values for all players...');
+        
+        // Create lookup map for weekly averages by date - using parseNumber for comma handling
+        const weeklyAveragesMap = {};
+        weeklyAverages.forEach(week => {
+          if (week.date) {
+            weeklyAveragesMap[week.date] = {
+              mean_score: parseNumber(week.mean_score),  // Handle comma-formatted numbers
+              median_score: parseNumber(week.median_score)  // Handle comma-formatted numbers
+            };
+          }
+        });
+        
+        console.log('Sample weekly averages map entries:');
+        console.log(Object.entries(weeklyAveragesMap).slice(0, 3));
+        
+        return players.map(player => {
+          // Get all games where this player started
+          const playerGames = lineups.filter(lineup => 
+            lineup.player_handle === player.player_handle && 
+            (lineup.started === 'TRUE' || lineup.started === true || lineup.started === 'true')
+          );
+          
+          if (playerGames.length === 0) {
+            return {
+              ...player,
+              calculated_rel_mean: 0,
+              calculated_rel_median: 0
+            };
+          }
+          
+          // Calculate sums
+          let totalPlayerKarma = 0;
+          let totalMeanKarma = 0;
+          let totalMedianKarma = 0;
+          let validGames = 0;
+          
+          playerGames.forEach(game => {
+            const gameDate = game.date;
+            const playerKarma = parseNumber(game.points_raw); // Also handle commas in player data
+            
+            if (weeklyAveragesMap[gameDate]) {
+              totalPlayerKarma += playerKarma;
+              totalMeanKarma += weeklyAveragesMap[gameDate].mean_score;
+              totalMedianKarma += weeklyAveragesMap[gameDate].median_score;
+              validGames++;
+            } else {
+              console.warn(`No weekly average data found for date: ${gameDate}`);
+            }
+          });
+          
+          // Calculate REL
+          const relMean = totalMeanKarma > 0 ? (totalPlayerKarma / totalMeanKarma) * 100 : 0;
+          const relMedian = totalMedianKarma > 0 ? (totalPlayerKarma / totalMedianKarma) * 100 : 0;
+          
+          if (validGames > 0) {
+            console.log(`${player.player_handle}: ${validGames} games, Total: ${totalPlayerKarma.toLocaleString()}, REL Mean: ${relMean.toFixed(1)}, REL Median: ${relMedian.toFixed(1)}`);
+          }
+          
+          return {
+            ...player,
+            calculated_rel_mean: relMean,
+            calculated_rel_median: relMedian
+          };
+        });
       }
       
       // Get team name from team ID
@@ -675,11 +781,11 @@
               secondaryValue = player.games_played || 0;
               break;
             case 'rel_mean':
-              statValue = category.formatValue(player.rel_mean);
+              statValue = category.formatValue(player.calculated_rel_mean);
               secondaryValue = player.games_played || 0;
               break;
             case 'rel_median':
-              statValue = category.formatValue(player.rel_median);
+              statValue = category.formatValue(player.calculated_rel_median);
               secondaryValue = player.games_played || 0;
               break;
             case 'aag_mean':
