@@ -517,22 +517,54 @@
           grid-template-columns: repeat(2, 1fr);
         }
         
-        .player-item,
-        .game-item {
+        .player-item {
           padding: 0.75rem;
         }
 
+        /* Fixed mobile game item layout */
+        .game-item {
+          padding: 0.75rem;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 0.75rem;
+        }
+
         .game-opponent {
-          gap: 0.5rem;
+          gap: 0.75rem;
+          align-items: center;
+          justify-content: flex-start;
         }
 
         .opponent-logo {
-          width: 20px;
-          height: 20px;
+          width: 28px;
+          height: 28px;
+        }
+
+        .opponent-info {
+          flex: 1;
+        }
+
+        .opponent-name {
+          font-size: 0.95rem;
+        }
+
+        .opponent-record {
+          font-size: 0.8rem;
         }
         
         .game-result {
-          min-width: 60px;
+          align-self: center;
+          text-align: center;
+          min-width: auto;
+        }
+
+        .game-score {
+          font-size: 1rem;
+        }
+
+        .game-date {
+          font-size: 0.8rem;
+          margin-top: 0.3rem;
         }
 
         .modal-content {
@@ -560,14 +592,39 @@
           grid-template-columns: 1fr;
         }
 
-        .player-item,
+        /* Even more compact on very small screens */
         .game-item {
+          padding: 0.5rem;
+        }
+
+        .opponent-logo {
+          width: 24px;
+          height: 24px;
+        }
+
+        .opponent-name {
+          font-size: 0.9rem;
+        }
+
+        .opponent-record {
+          font-size: 0.75rem;
+        }
+
+        .game-score {
+          font-size: 0.95rem;
+        }
+
+        .game-date {
+          font-size: 0.75rem;
+        }
+
+        .player-item {
           flex-direction: column;
           align-items: flex-start;
           gap: 0.5rem;
         }
 
-        .game-result {
+        .player-rel {
           align-self: flex-end;
         }
       }
@@ -908,10 +965,7 @@
       
       // Load complete schedule (all games) with game popup modal capability
       async function loadSchedule() {
-        const [schedule, lineups] = await Promise.all([
-          fetchSheetData('Schedule'),
-          fetchSheetData('Lineups')
-        ]);
+        const schedule = await fetchSheetData('Schedule');
         
         if (!schedule) {
           document.getElementById('team-schedule').innerHTML = 
@@ -971,7 +1025,6 @@
               </div>
               <div class="game-result">
                 ${resultContent}
-                ${isCompleted ? '<div style="font-size: 0.8rem; color: #007bff; margin-top: 0.2rem;">Click for details</div>' : ''}
               </div>
             </div>
           `;
@@ -1098,7 +1151,7 @@
         return colors[season] || '#6c757d';
       }
 
-      // Add game details modal functionality
+      // Add game details modal functionality - matches implementation from other pages
       async function showGameDetails(team1Id, team2Id, date) {
         // Create modal if it doesn't exist
         if (!document.getElementById('game-modal')) {
@@ -1129,66 +1182,117 @@
         modalTitle.textContent = `${getTeamName(team1Id)} vs ${getTeamName(team2Id)}`;
         modalContent.innerHTML = '<div class="loading">Loading game details...</div>';
         
-        // Load lineup data for the game
-        const lineups = await fetchSheetData('Lineups');
-        if (!lineups) {
+        // Get game details from the schedule data
+        const schedule = await fetchSheetData('Schedule');
+        if (!schedule) {
           modalContent.innerHTML = '<div class="error">Error loading game details</div>';
           return;
         }
         
-        // Get lineups for both teams on this date
-        const team1Lineups = lineups.filter(lineup => 
-          lineup.team_id === team1Id && 
-          lineup.date === date && 
-          lineup.started === 'TRUE'
-        ).sort((a, b) => {
-          const aCaptain = a.captain === 'TRUE';
-          const bCaptain = b.captain === 'TRUE';
-          if (aCaptain && !bCaptain) return -1;
-          if (!aCaptain && bCaptain) return 1;
-          return parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0);
-        });
-        
-        const team2Lineups = lineups.filter(lineup => 
-          lineup.team_id === team2Id && 
-          lineup.date === date && 
-          lineup.started === 'TRUE'
-        ).sort((a, b) => {
-          const aCaptain = a.captain === 'TRUE';
-          const bCaptain = b.captain === 'TRUE';
-          if (aCaptain && !bCaptain) return -1;
-          if (!aCaptain && bCaptain) return 1;
-          return parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0);
-        });
-        
-        // Find the game to determine winner
-        const schedule = await fetchSheetData('Schedule');
         const game = schedule.find(g => 
           g.team1_id === team1Id && 
           g.team2_id === team2Id && 
           g.date === date
         );
         
-        const winner = game ? game.winner : null;
+        if (!game) {
+          modalContent.innerHTML = '<div class="error">Game not found</div>';
+          return;
+        }
         
-        // Generate lineup display
-        const generateLineupTable = (lineups, teamId, isWinner) => {
+        // Get ALL lineups for both teams on this date first (no filtering)
+        const lineups = await fetchSheetData('Lineups');
+        if (!lineups) {
+          modalContent.innerHTML = '<div class="error">Error loading lineup data</div>';
+          return;
+        }
+        
+        const team1AllLineups = lineups.filter(lineup => 
+          lineup.team_id === team1Id && lineup.date === date
+        );
+        const team2AllLineups = lineups.filter(lineup => 
+          lineup.team_id === team2Id && lineup.date === date
+        );
+        
+        // Filter for started players and sort properly
+        const team1Lineups = team1AllLineups.filter(lineup => {
+          const isStarted = lineup.started === 'TRUE' || 
+                           lineup.started === true || 
+                           lineup.started === 'true' || 
+                           lineup.started === 1 || 
+                           lineup.started === '1';
+          return isStarted;
+        }).sort((a, b) => {
+          // Captain always goes first, then sort by points
+          const aCaptain = a.captain === 'TRUE' || a.captain === true || a.captain === 'true';
+          const bCaptain = b.captain === 'TRUE' || b.captain === true || b.captain === 'true';
+          
+          if (aCaptain && !bCaptain) return -1;
+          if (!aCaptain && bCaptain) return 1;
+          
+          return parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0);
+        });
+        
+        const team2Lineups = team2AllLineups.filter(lineup => {
+          const isStarted = lineup.started === 'TRUE' || 
+                           lineup.started === true || 
+                           lineup.started === 'true' || 
+                           lineup.started === 1 || 
+                           lineup.started === '1';
+          return isStarted;
+        }).sort((a, b) => {
+          // Captain always goes first, then sort by points
+          const aCaptain = a.captain === 'TRUE' || a.captain === true || a.captain === 'true';
+          const bCaptain = b.captain === 'TRUE' || b.captain === true || b.captain === 'true';
+          
+          if (aCaptain && !bCaptain) return -1;
+          if (!aCaptain && bCaptain) return 1;
+          
+          return parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0);
+        });
+        
+        // Calculate team totals
+        const team1Total = team1Lineups.reduce((sum, player) => {
+          const points = parseFloat(player.points_final || 0);
+          return sum + points;
+        }, 0);
+        
+        const team2Total = team2Lineups.reduce((sum, player) => {
+          const points = parseFloat(player.points_final || 0);
+          return sum + points;
+        }, 0);
+        
+        const winner = game.winner;
+        
+        // Generate lineup tables
+        const generateLineupTable = (lineups, teamId, total, isWinner) => {
+          // Get team record
+          const teamData = allTeams.find(t => t.team_id === teamId);
+          const teamRecord = teamData ? `${teamData.wins || 0}-${teamData.losses || 0}` : '';
+          
           if (lineups.length === 0) {
             return `
-              <div style="background-color: #f8f9fa; border-radius: 8px; padding: 2rem; text-align: center; color: #666;">
-                <h4>${getTeamName(teamId)}</h4>
-                <p>No lineup data available</p>
+              <div style="background-color: #f8f9fa; border-radius: 8px; overflow: hidden; border: ${isWinner ? '2px solid #28a745' : '1px solid #ddd'};">
+                <div style="background-color: ${isWinner ? '#28a745' : '#333'}; color: white; padding: 1.5rem; text-align: center; cursor: pointer;" onclick="window.location.href='team.html?id=${teamId}'">
+                  <img src="icons/${teamId}.webp" alt="${getTeamName(teamId)}" style="width: 48px; height: 48px; border-radius: 4px;" onerror="this.style.display='none'">
+                  <div>
+                    <h4 style="color: white; margin: 0;">${getTeamName(teamId)}</h4>
+                    <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
+                  </div>
+                </div>
+                <div style="background-color: #e9ecef; padding: 1rem; text-align: center; font-weight: bold;">Total: ${Math.round(total).toLocaleString()}</div>
+                <div style="padding: 2rem; text-align: center; color: #666;">No lineup data available</div>
               </div>
             `;
           }
           
-          const total = lineups.reduce((sum, player) => sum + parseFloat(player.points_final || 0), 0);
-          
           const lineupRows = lineups.map(player => {
-            const isCaptain = player.captain === 'TRUE';
+            const isCaptain = player.captain === 'TRUE' || player.captain === true || player.captain === 'true';
             const pointsRaw = parseFloat(player.points_raw || 0);
             const pointsFinal = parseFloat(player.points_final || 0);
             const globalRank = parseFloat(player.global_rank || 0);
+            
+            const captainBonus = isCaptain ? Math.round(pointsRaw * 0.5) : 0;
             
             return `
               <tr style="${isCaptain ? 'background-color: #fff3cd; font-weight: bold;' : ''}">
@@ -1198,7 +1302,7 @@
                 </td>
                 <td style="padding: 0.8rem; text-align: center; font-weight: bold;">
                   ${Math.round(pointsRaw).toLocaleString()}
-                  ${isCaptain ? `<div style="font-size: 0.75rem; color: #ffc107;">+${Math.round(pointsRaw * 0.5).toLocaleString()}</div>` : ''}
+                  ${isCaptain ? `<div style="font-size: 0.75rem; color: #ffc107;">+${captainBonus.toLocaleString()}</div>` : ''}
                 </td>
                 <td style="padding: 0.8rem; text-align: center; color: #666;">${globalRank > 0 ? Math.round(globalRank) : '-'}</td>
               </tr>
@@ -1208,11 +1312,13 @@
           return `
             <div style="background-color: #f8f9fa; border-radius: 8px; overflow: hidden; border: ${isWinner ? '2px solid #28a745' : '1px solid #ddd'};">
               <div style="background-color: ${isWinner ? '#28a745' : '#333'}; color: white; padding: 1.5rem; text-align: center; cursor: pointer;" onclick="window.location.href='team.html?id=${teamId}'">
-                <h4 style="color: white; margin: 0;">${getTeamName(teamId)}</h4>
+                <img src="icons/${teamId}.webp" alt="${getTeamName(teamId)}" style="width: 48px; height: 48px; border-radius: 4px;" onerror="this.style.display='none'">
+                <div>
+                  <h4 style="color: white; margin: 0;">${getTeamName(teamId)}</h4>
+                  <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
+                </div>
               </div>
-              <div style="background-color: #e9ecef; padding: 1rem; text-align: center; font-weight: bold;">
-                Total: ${Math.round(total).toLocaleString()}
-              </div>
+              <div style="background-color: #e9ecef; padding: 1rem; text-align: center; font-weight: bold;">Total: ${isNaN(total) ? '-' : Math.round(total).toLocaleString()}</div>
               <table style="width: 100%; border-collapse: collapse;">
                 <thead>
                   <tr style="background-color: #f8f9fa;">
@@ -1229,10 +1335,11 @@
           `;
         };
         
+        // Generate the modal content
         modalContent.innerHTML = `
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-            ${generateLineupTable(team1Lineups, team1Id, winner === team1Id)}
-            ${generateLineupTable(team2Lineups, team2Id, winner === team2Id)}
+            ${generateLineupTable(team1Lineups, team1Id, team1Total, winner === team1Id)}
+            ${generateLineupTable(team2Lineups, team2Id, team2Total, winner === team2Id)}
           </div>
         `;
       }
