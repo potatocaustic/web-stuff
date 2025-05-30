@@ -920,6 +920,93 @@
         sessionStorage.setItem('selectedLeaderboardCategory', category);
       }
 
+      // Function to calculate REL for all players (needed for rankings)
+      function calculateRELForAllPlayers(players, weeklyAverages, lineups) {
+        console.log('Calculating REL values and median ranks for all players...');
+        
+        // Create lookup map for weekly averages by date - using parseNumber for comma handling
+        const weeklyAveragesMap = {};
+        weeklyAverages.forEach(week => {
+          if (week.date) {
+            weeklyAveragesMap[week.date] = {
+              mean_score: parseNumber(week.mean_score),
+              median_score: parseNumber(week.median_score)
+            };
+          }
+        });
+        
+        return players.map(player => {
+          // Get all games where this player started
+          const playerGames = lineups.filter(lineup => 
+            lineup.player_handle === player.player_handle && 
+            (lineup.started === 'TRUE' || lineup.started === true || lineup.started === 'true')
+          );
+          
+          if (playerGames.length === 0) {
+            return {
+              ...player,
+              calculated_rel_mean: 0,
+              calculated_rel_median: 0,
+              calculated_median_rank: 0
+            };
+          }
+          
+          // Calculate sums
+          let totalPlayerKarmaRaw = 0;
+          let totalMeanKarma = 0;
+          let totalMedianKarma = 0;
+          let validGames = 0;
+          
+          // For median rank calculation
+          const ranks = [];
+          
+          playerGames.forEach(game => {
+            const gameDate = game.date;
+            const playerKarmaRaw = parseNumber(game.points_raw);
+            const globalRank = parseNumber(game.global_rank);
+            
+            if (weeklyAveragesMap[gameDate]) {
+              totalPlayerKarmaRaw += playerKarmaRaw;
+              totalMeanKarma += weeklyAveragesMap[gameDate].mean_score;
+              totalMedianKarma += weeklyAveragesMap[gameDate].median_score;
+              validGames++;
+            }
+            
+            // Collect ranks for median calculation
+            if (globalRank > 0) {
+              ranks.push(globalRank);
+            }
+          });
+          
+          // Calculate average-based REL
+          const avgPlayerKarmaRaw = validGames > 0 ? totalPlayerKarmaRaw / validGames : 0;
+          const avgMeanKarma = validGames > 0 ? totalMeanKarma / validGames : 0;
+          const avgMedianKarma = validGames > 0 ? totalMedianKarma / validGames : 0;
+          
+          const relMeanAvgRaw = avgMeanKarma > 0 ? (avgPlayerKarmaRaw / avgMeanKarma) : 0;
+          const relMedianAvgRaw = avgMedianKarma > 0 ? (avgPlayerKarmaRaw / avgMedianKarma) : 0;
+          
+          // Calculate median rank
+          let medianRank = 0;
+          if (ranks.length > 0) {
+            ranks.sort((a, b) => a - b);
+            const mid = Math.floor(ranks.length / 2);
+            if (ranks.length % 2 === 0) {
+              medianRank = (ranks[mid - 1] + ranks[mid]) / 2;
+            } else {
+              medianRank = ranks[mid];
+            }
+          }
+          
+          return {
+            ...player,
+            calculated_rel_mean: relMeanAvgRaw,
+            calculated_rel_median: relMedianAvgRaw,
+            calculated_median_rank: medianRank
+          };
+        });
+      }
+
       // Calculate REL Median for a specific player
       function calculatePlayerRELMedian(playerHandle, weeklyAverages, lineups) {
         // Get all games where this player started
