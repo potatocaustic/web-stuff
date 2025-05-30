@@ -454,6 +454,12 @@
         padding: 2rem;
       }
 
+      .game-details-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+
       /* Enhanced pick items */
       .pick-item-enhanced {
         transition: background-color 0.2s ease;
@@ -521,31 +527,40 @@
           padding: 0.75rem;
         }
 
-        /* Fixed mobile game item layout */
+        /* Keep game items horizontal on mobile */
         .game-item {
-          padding: 0.75rem;
-          flex-direction: column;
-          align-items: stretch;
-          gap: 0.75rem;
+          padding: 1rem;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1rem;
         }
 
         .game-opponent {
-          gap: 0.75rem;
+          display: flex;
           align-items: center;
-          justify-content: flex-start;
+          gap: 0.75rem;
+          flex: 1;
+          min-width: 0;
         }
 
         .opponent-logo {
           width: 28px;
           height: 28px;
+          flex-shrink: 0;
         }
 
         .opponent-info {
           flex: 1;
+          min-width: 0;
         }
 
         .opponent-name {
-          font-size: 0.95rem;
+          font-size: 0.9rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .opponent-record {
@@ -553,9 +568,9 @@
         }
         
         .game-result {
-          align-self: center;
-          text-align: center;
-          min-width: auto;
+          text-align: right;
+          min-width: 80px;
+          flex-shrink: 0;
         }
 
         .game-score {
@@ -564,7 +579,7 @@
 
         .game-date {
           font-size: 0.8rem;
-          margin-top: 0.3rem;
+          margin-top: 0.2rem;
         }
 
         .modal-content {
@@ -574,6 +589,11 @@
         
         .modal-body {
           padding: 1rem;
+        }
+
+        .game-details-grid {
+          grid-template-columns: 1fr !important;
+          gap: 1rem !important;
         }
         
         .pick-item-enhanced {
@@ -592,9 +612,10 @@
           grid-template-columns: 1fr;
         }
 
-        /* Even more compact on very small screens */
+        /* Maintain horizontal layout even on very small screens */
         .game-item {
-          padding: 0.5rem;
+          padding: 0.75rem;
+          gap: 0.75rem;
         }
 
         .opponent-logo {
@@ -603,7 +624,7 @@
         }
 
         .opponent-name {
-          font-size: 0.9rem;
+          font-size: 0.85rem;
         }
 
         .opponent-record {
@@ -611,11 +632,15 @@
         }
 
         .game-score {
-          font-size: 0.95rem;
+          font-size: 0.9rem;
         }
 
         .game-date {
           font-size: 0.75rem;
+        }
+
+        .game-result {
+          min-width: 70px;
         }
 
         .player-item {
@@ -626,6 +651,12 @@
 
         .player-rel {
           align-self: flex-end;
+        }
+
+        /* Additional modal mobile formatting */
+        .game-details-grid {
+          grid-template-columns: 1fr !important;
+          gap: 1rem !important;
         }
       }
 
@@ -1385,9 +1416,9 @@
           `;
         };
         
-        // Generate the modal content
+        // Generate the modal content with responsive grid
         modalContent.innerHTML = `
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;" class="game-details-grid">
             ${generateLineupTable(team1Lineups, team1Id, team1Total, winner === team1Id)}
             ${generateLineupTable(team2Lineups, team2Id, team2Total, winner === team2Id)}
           </div>
