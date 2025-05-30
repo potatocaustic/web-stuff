@@ -410,6 +410,7 @@
           <div class="category-btn active" data-category="total_points">Total Karma</div>
           <div class="category-btn" data-category="rel_mean">REL Mean</div>
           <div class="category-btn" data-category="rel_median">REL Median</div>
+          <div class="category-btn" data-category="median_rank">Median Rank</div> 
           <div class="category-btn" data-category="aag_mean">Games Above Mean</div>
           <div class="category-btn" data-category="aag_median">Games Above Median</div>
         </div>
@@ -494,6 +495,16 @@
           sortField: 'calculated_rel_median',
           descending: true,
           formatValue: (value) => parseFloat(value || 0).toFixed(3) // Show 3 decimal places
+        },
+        median_rank: {  // ADD THIS ENTIRE SECTION
+          title: 'Median Rank Leaders',
+          columns: ['Rank', 'Player', 'Median Rank', 'Games'],
+          sortField: 'calculated_median_rank',
+          descending: false, // Lower rank is better, so ascending order
+          formatValue: (value) => {
+            const rank = parseFloat(value || 0);
+            return rank > 0 ? Math.round(rank) : '-';
+          }
         },
         aag_mean: {
           title: 'Games Above Mean Leaders',
@@ -653,7 +664,7 @@
 
       // Function to calculate REL for all players
       function calculateRELForAllPlayers(players, weeklyAverages, lineups) {
-        console.log('Calculating REL values for all players...');
+        console.log('Calculating REL values and median ranks for all players...');
         
         // Create lookup map for weekly averages by date - using parseNumber for comma handling
         const weeklyAveragesMap = {};
@@ -680,7 +691,8 @@
             return {
               ...player,
               calculated_rel_mean: 0,
-              calculated_rel_median: 0
+              calculated_rel_median: 0,
+              calculated_median_rank: 0
             };
           }
           
@@ -723,9 +735,21 @@
           const relMeanAvgRaw = avgMeanKarma > 0 ? (avgPlayerKarmaRaw / avgMeanKarma) : 0;
           const relMedianAvgRaw = avgMedianKarma > 0 ? (avgPlayerKarmaRaw / avgMedianKarma) : 0;
           
+          // Calculate median rank
+          let medianRank = 0;
+          if (ranks.length > 0) {
+            ranks.sort((a, b) => a - b);
+            const mid = Math.floor(ranks.length / 2);
+            if (ranks.length % 2 === 0) {
+              medianRank = (ranks[mid - 1] + ranks[mid]) / 2;
+            } else {
+              medianRank = ranks[mid];
+            }
+          }
+          
           const relMeanAvgFinal = avgMeanKarma > 0 ? (avgPlayerKarmaFinal / avgMeanKarma) : 0;
           const relMedianAvgFinal = avgMedianKarma > 0 ? (avgPlayerKarmaFinal / avgMedianKarma) : 0;
-          
+    
           if (validGames > 0) {
             console.log(`${player.player_handle}: ${validGames} games`);
             console.log(`  Total Raw: ${totalPlayerKarmaRaw.toLocaleString()}, Total Final: ${totalPlayerKarmaFinal.toLocaleString()}`);
@@ -740,7 +764,8 @@
           return {
             ...player,
             calculated_rel_mean: relMeanAvgRaw,
-            calculated_rel_median: relMedianAvgRaw
+            calculated_rel_median: relMedianAvgRaw,
+            calculated_median_rank: medianRank
           };
         });
       }
