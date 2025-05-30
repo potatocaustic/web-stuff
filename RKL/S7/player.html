@@ -914,12 +914,6 @@
         return rankings;
       }
 
-      // Function to set leaderboard category and redirect
-      function setLeaderboardCategory(category) {
-        // Store the category in sessionStorage so the leaderboards page can pick it up
-        sessionStorage.setItem('selectedLeaderboardCategory', category);
-      }
-
       // Function to calculate REL for all players (needed for rankings)
       function calculateRELForAllPlayers(players, weeklyAverages, lineups) {
         console.log('Calculating REL values and median ranks for all players...');
@@ -1161,17 +1155,17 @@
         const medianRank = playerData.calculated_median_rank || 0;
         
         document.getElementById('player-stats').innerHTML = `
-          <a href="leaderboards.html" class="stat-card" onclick="setLeaderboardCategory('total_points')">
+          <a href="leaderboards.html?category=total_points" class="stat-card">
             <div class="stat-value">${Math.round(totalPoints).toLocaleString()}</div>
             <div class="stat-label">Total Karma</div>
             <div class="stat-rank">#${rankings.totalKarma} League-wide</div>
           </a>
-          <a href="leaderboards.html" class="stat-card" onclick="setLeaderboardCategory('rel_median')">
+          <a href="leaderboards.html?category=rel_median" class="stat-card">
             <div class="stat-value">${relMedian.toFixed(3)}</div>
             <div class="stat-label">REL Median</div>
             <div class="stat-rank">#${rankings.relMedian} League-wide</div>
           </a>
-          <a href="leaderboards.html" class="stat-card" onclick="setLeaderboardCategory('aag_median')">
+          <a href="leaderboards.html?category=aag_median" class="stat-card">
             <div class="stat-value">${gamesAboveMedian}</div>
             <div class="stat-label">Games Above Median</div>
             <div class="stat-rank">#${rankings.gamesAboveMedian} League-wide</div>
@@ -1181,7 +1175,7 @@
             <div class="stat-label">Above Median %</div>
             <div class="stat-rank">#${rankings.aboveMedianPct} League-wide</div>
           </div>
-          <a href="leaderboards.html" class="stat-card" onclick="setLeaderboardCategory('median_rank')">
+          <a href="leaderboards.html?category=median_rank" class="stat-card">
             <div class="stat-value">${medianRank > 0 ? Math.round(medianRank) : '-'}</div>
             <div class="stat-label">Median Rank</div>
             <div class="stat-rank">${rankings.medianRank > 0 ? `#${rankings.medianRank} League-wide` : 'Not ranked'}</div>
