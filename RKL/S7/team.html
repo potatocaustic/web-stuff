@@ -755,14 +755,14 @@
         }
       }
       
-      // Simple CSV parser
+      // Simple CSV parser that properly handles quoted fields and commas within values
       function parseCSV(csvText) {
         const lines = csvText.trim().split('\n');
-        const headers = lines[0].split(',').map(h => h.replace(/"/g, ''));
+        const headers = parseCSVLine(lines[0]);
         const data = [];
         
         for (let i = 1; i < lines.length; i++) {
-          const values = lines[i].split(',').map(v => v.replace(/"/g, ''));
+          const values = parseCSVLine(lines[i]);
           const row = {};
           headers.forEach((header, index) => {
             row[header] = values[index] || '';
@@ -771,6 +771,41 @@
         }
         
         return data;
+      }
+      
+      // Parse a single CSV line, handling quoted fields properly
+      function parseCSVLine(line) {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+          const char = line[i];
+          
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            result.push(current.trim());
+            current = '';
+          } else {
+            current += char;
+          }
+        }
+        
+        // Add the last field
+        result.push(current.trim());
+        
+        // Clean up quotes from fields
+        return result.map(field => field.replace(/^"(.*)"$/, '$1'));
+      }
+
+      // Helper function to parse numbers that might have comma formatting
+      function parseNumber(value) {
+        if (!value) return 0;
+        // Remove commas and parse as float
+        const cleaned = value.toString().replace(/,/g, '');
+        const parsed = parseFloat(cleaned);
+        return isNaN(parsed) ? 0 : parsed;
       }
       
       // Get URL parameter
@@ -1251,18 +1286,24 @@
           return parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0);
         });
         
-        // Calculate team totals
+        // Calculate team totals using parseNumber helper
         const team1Total = team1Lineups.reduce((sum, player) => {
-          const points = parseFloat(player.points_final || 0);
+          const points = parseNumber(player.points_final);
           return sum + points;
         }, 0);
         
         const team2Total = team2Lineups.reduce((sum, player) => {
-          const points = parseFloat(player.points_final || 0);
+          const points = parseNumber(player.points_final);
           return sum + points;
         }, 0);
         
         const winner = game.winner;
+        
+        // Debug logging
+        console.log('Team1 lineups:', team1Lineups);
+        console.log('Team2 lineups:', team2Lineups);
+        console.log('Team1 total:', team1Total);
+        console.log('Team2 total:', team2Total);
         
         // Generate lineup tables
         const generateLineupTable = (lineups, teamId, total, isWinner) => {
@@ -1288,11 +1329,20 @@
           
           const lineupRows = lineups.map(player => {
             const isCaptain = player.captain === 'TRUE' || player.captain === true || player.captain === 'true';
-            const pointsRaw = parseFloat(player.points_raw || 0);
-            const pointsFinal = parseFloat(player.points_final || 0);
-            const globalRank = parseFloat(player.global_rank || 0);
+            const pointsRaw = parseNumber(player.points_raw);
+            const pointsFinal = parseNumber(player.points_final);
+            const globalRank = parseNumber(player.global_rank);
             
             const captainBonus = isCaptain ? Math.round(pointsRaw * 0.5) : 0;
+            
+            // Debug individual player data
+            console.log(`Player ${player.player_handle}:`, {
+              raw: pointsRaw,
+              final: pointsFinal,
+              captain: isCaptain,
+              bonus: captainBonus,
+              rank: globalRank
+            });
             
             return `
               <tr style="${isCaptain ? 'background-color: #fff3cd; font-weight: bold;' : ''}">
