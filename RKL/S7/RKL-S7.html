@@ -1203,7 +1203,7 @@
         if (lineups.length === 0) {
           return `
             <div class="team-breakdown ${isWinner ? 'winner' : ''}">
-              <div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.open('team.html?id=${teamId}', '_blank')" style="cursor: pointer;">
+              <div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamId}'" style="cursor: pointer;">
                 <img src="icons/${teamId}.webp" alt="${getTeamName(teamId, allTeams)}" class="team-logo" onerror="this.style.display='none'">
                 <div>
                   <h4>${getTeamName(teamId, allTeams)}</h4>
@@ -1241,7 +1241,7 @@
         
         return `
           <div class="team-breakdown ${isWinner ? 'winner' : ''}">
-            <div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.open('team.html?id=${teamId}', '_blank')" style="cursor: pointer;">
+                    <div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamId}'" style="cursor: pointer;">
               <img src="icons/${teamId}.webp" alt="${getTeamName(teamId, allTeams)}" class="team-logo" onerror="this.style.display='none'">
               <div>
                 <h4>${getTeamName(teamId, allTeams)}</h4>
