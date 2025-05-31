@@ -185,8 +185,9 @@
       }
 
       .roster-header {
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: 1fr 80px;
+        gap: 1rem;
         align-items: center;
         padding: 1rem;
         background-color: #f8f9fa;
@@ -197,12 +198,10 @@
       }
 
       .roster-header .header-player {
-        flex: 1;
         text-align: left;
       }
 
       .roster-header .header-rel {
-        min-width: 80px;
         text-align: center;
       }
 
@@ -211,8 +210,9 @@
       }
 
       .player-item {
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: 1fr 80px;
+        gap: 1rem;
         align-items: center;
         padding: 1rem;
         border-bottom: 1px solid #eee;
@@ -230,6 +230,7 @@
       .player-info {
         display: flex;
         flex-direction: column;
+        min-width: 0;
       }
 
       .player-name {
@@ -286,6 +287,7 @@
         transition: background-color 0.2s;
         margin-left: 20px;
         position: relative;
+        min-height: 60px;
       }
 
       .game-item:hover {
@@ -300,6 +302,7 @@
         display: flex;
         align-items: center;
         gap: 0.75rem;
+        min-height: 44px;
       }
 
       .team-side.home-team {
@@ -338,21 +341,26 @@
       .opponent-info {
         display: flex;
         flex-direction: column;
+        justify-content: center;
         min-width: 0;
         flex: 1;
+        min-height: 44px;
       }
 
       .opponent-name {
         font-weight: 500;
         font-size: 1rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        line-height: 1.2;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        hyphens: auto;
       }
 
       .opponent-record {
         font-size: 0.8rem;
         color: #666;
+        line-height: 1;
+        margin-top: 0.2rem;
       }
 
       .game-result {
