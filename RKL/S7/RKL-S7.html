@@ -393,7 +393,7 @@
       .modal-header {
         background-color: #333;
         color: white;
-        padding: 0.8rem;
+        padding: 1.5rem;
         border-radius: 8px 8px 0 0;
         display: flex;
         justify-content: space-between;
@@ -403,8 +403,7 @@
       .modal-header h3 {
         color: white;
         margin: 0;
-        font-size: 1rem;
-        line-height: 1.2; 
+        font-size: 1.4rem;
       }
 
       .close-btn {
@@ -660,11 +659,32 @@
           width: 36px;
           height: 36px;
         }
+
+        /* Enhanced modal header for mobile */
+        .modal-header {
+          padding: 1rem;
+        }
+        
+        .modal-header h3 {
+          font-size: 1.1rem;
+          line-height: 1.3;
+          word-break: break-word;
+          hyphens: auto;
+        }
       }
 
       @media (max-width: 480px) {
         .quick-nav {
           grid-template-columns: 1fr;
+        }
+
+        .modal-header {
+          padding: 0.8rem;
+        }
+        
+        .modal-header h3 {
+          font-size: 1rem;
+          line-height: 1.2;
         }
       }
 
@@ -891,7 +911,13 @@
         return result.map(field => field.replace(/^"(.*)"$/, '$1'));
       }
       
-      // Function to format date for display
+      // Function to format date for display (used in recent games)
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }
+      
+      // Function to format date for modal titles (MM/DD/YY format)
       function formatDateShort(dateString) {
         const date = new Date(dateString);
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -1196,15 +1222,50 @@
         
         const winner = game.winner;
         
-      // Updated generateLineupTable function for RKL-S7.html
-      // Replace the existing generateLineupTable function with this version
-      
-      const generateLineupTable = (lineups, teamId, total, isWinner) => {
-        // Get team record
-        const teamData = allTeams.find(t => t.team_id === teamId);
-        const teamRecord = teamData ? `${teamData.wins || 0}-${teamData.losses || 0}` : '';
-        
-        if (lineups.length === 0) {
+        const generateLineupTable = (lineups, teamId, total, isWinner) => {
+          // Get team record
+          const teamData = allTeams.find(t => t.team_id === teamId);
+          const teamRecord = teamData ? `${teamData.wins || 0}-${teamData.losses || 0}` : '';
+          
+          if (lineups.length === 0) {
+            return `
+              <div class="team-breakdown ${isWinner ? 'winner' : ''}">
+                <div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamId}'" style="cursor: pointer;">
+                  <img src="icons/${teamId}.webp" alt="${getTeamName(teamId, allTeams)}" class="team-logo" onerror="this.style.display='none'">
+                  <div>
+                    <h4>${getTeamName(teamId, allTeams)}</h4>
+                    <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
+                  </div>
+                </div>
+                <div class="team-total">Total: ${Math.round(total).toLocaleString()}</div>
+                <div style="padding: 2rem; text-align: center; color: #666;">No lineup data available</div>
+              </div>
+            `;
+          }
+          
+          const lineupRows = lineups.map(player => {
+            const isCaptain = player.captain === 'TRUE' || player.captain === true || player.captain === 'true';
+            const pointsRaw = parseNumber(player.points_raw);
+            const pointsFinal = parseNumber(player.points_final);
+            const globalRank = parseNumber(player.global_rank);
+            
+            const captainBonus = isCaptain ? Math.round(pointsRaw * 0.5) : 0;
+            
+            return `
+              <tr class="${isCaptain ? 'captain-row' : ''}">
+                <td class="player-name-cell">
+                  ${player.player_handle || 'Unknown'}
+                  ${isCaptain ? '<span class="captain-badge">C</span>' : ''}
+                </td>
+                <td class="points-cell">
+                  ${Math.round(pointsRaw).toLocaleString()}
+                  ${isCaptain ? `<div class="captain-bonus">+${captainBonus.toLocaleString()}</div>` : ''}
+                </td>
+                <td class="rank-cell">${globalRank > 0 ? Math.round(globalRank) : '-'}</td>
+              </tr>
+            `;
+          }).join('');
+          
           return `
             <div class="team-breakdown ${isWinner ? 'winner' : ''}">
               <div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamId}'" style="cursor: pointer;">
@@ -1214,60 +1275,22 @@
                   <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
                 </div>
               </div>
-              <div class="team-total">Total: ${Math.round(total).toLocaleString()}</div>
-              <div style="padding: 2rem; text-align: center; color: #666;">No lineup data available</div>
+              <div class="team-total">Total: ${isNaN(total) ? '-' : Math.round(total).toLocaleString()}</div>
+              <table class="lineup-table">
+                <thead>
+                  <tr>
+                    <th>Player</th>
+                    <th>Points</th>
+                    <th>Rank</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${lineupRows}
+                </tbody>
+              </table>
             </div>
           `;
-        }
-        
-        const lineupRows = lineups.map(player => {
-          const isCaptain = player.captain === 'TRUE' || player.captain === true || player.captain === 'true';
-          const pointsRaw = parseNumber(player.points_raw);
-          const pointsFinal = parseNumber(player.points_final);
-          const globalRank = parseNumber(player.global_rank);
-          
-          const captainBonus = isCaptain ? Math.round(pointsRaw * 0.5) : 0;
-          
-          return `
-            <tr class="${isCaptain ? 'captain-row' : ''}">
-              <td class="player-name-cell">
-                ${player.player_handle || 'Unknown'}
-                ${isCaptain ? '<span class="captain-badge">C</span>' : ''}
-              </td>
-              <td class="points-cell">
-                ${Math.round(pointsRaw).toLocaleString()}
-                ${isCaptain ? `<div class="captain-bonus">+${captainBonus.toLocaleString()}</div>` : ''}
-              </td>
-              <td class="rank-cell">${globalRank > 0 ? Math.round(globalRank) : '-'}</td>
-            </tr>
-          `;
-        }).join('');
-        
-        return `
-          <div class="team-breakdown ${isWinner ? 'winner' : ''}">
-                    <div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamId}'" style="cursor: pointer;">
-              <img src="icons/${teamId}.webp" alt="${getTeamName(teamId, allTeams)}" class="team-logo" onerror="this.style.display='none'">
-              <div>
-                <h4>${getTeamName(teamId, allTeams)}</h4>
-                <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
-              </div>
-            </div>
-            <div class="team-total">Total: ${isNaN(total) ? '-' : Math.round(total).toLocaleString()}</div>
-            <table class="lineup-table">
-              <thead>
-                <tr>
-                  <th>Player</th>
-                  <th>Points</th>
-                  <th>Rank</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${lineupRows}
-              </tbody>
-            </table>
-          </div>
-        `;
-      };
+        };
         
         // Generate the modal content
         modalContent.innerHTML = `
