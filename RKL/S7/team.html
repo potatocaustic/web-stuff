@@ -657,16 +657,18 @@
           transform: none;
         }
 
+        /* Show mobile layout elements */
         .team-matchup {
-          display: flex;
+          display: flex !important;
           align-items: center;
           justify-content: space-between;
           width: 100%;
           gap: 0.5rem;
+          margin-top: 20px; /* Account for week badge */
         }
 
         .team-side {
-          display: flex;
+          display: flex !important;
           align-items: center;
           gap: 0.5rem;
           flex: 1;
@@ -683,7 +685,7 @@
         }
 
         .mobile-team-info {
-          display: flex;
+          display: flex !important;
           flex-direction: column;
           min-width: 0;
           flex: 1;
@@ -694,6 +696,7 @@
         }
 
         .mobile-team-name {
+          display: block !important;
           font-weight: 500;
           font-size: 0.9rem;
           white-space: nowrap;
@@ -702,11 +705,13 @@
         }
 
         .mobile-team-record {
+          display: block !important;
           font-size: 0.8rem;
           color: #666;
         }
 
         .mobile-logo {
+          display: block !important;
           width: 28px;
           height: 28px;
           border-radius: 50%;
@@ -715,6 +720,7 @@
         }
 
         .mobile-score {
+          display: block !important;
           font-weight: bold;
           font-size: 1.1rem;
           min-width: 50px;
@@ -722,6 +728,7 @@
         }
 
         .mobile-vs {
+          display: block !important;
           font-weight: bold;
           color: #666;
           font-size: 1rem;
