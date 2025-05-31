@@ -545,6 +545,18 @@
         font-weight: 500;
       }
 
+      .player-link {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .player-link:hover {
+        color: #0056b3;
+        text-decoration: underline;
+      }
+
       .points-cell {
         text-align: center;
         font-weight: bold;
@@ -1254,7 +1266,9 @@
             return `
               <tr class="${isCaptain ? 'captain-row' : ''}">
                 <td class="player-name-cell">
-                  ${player.player_handle || 'Unknown'}
+                  <a href="player.html?player=${encodeURIComponent(player.player_handle || 'Unknown')}" class="player-link">
+                    ${player.player_handle || 'Unknown'}
+                  </a>
                   ${isCaptain ? '<span class="captain-badge">C</span>' : ''}
                 </td>
                 <td class="points-cell">
