@@ -851,8 +851,39 @@
         allTeams = teams;
         allLineups = lineups || [];
         
+        // Determine current week before setting up selector
+        currentWeek = determineCurrentWeek(schedule);
+        
         setupWeekSelector();
         displayWeek(currentWeek);
+      }
+      
+      // Determine the current week based on game completion status
+      function determineCurrentWeek(schedule) {
+        // Group games by week and check completion status
+        const gamesByWeek = {};
+        schedule.forEach(game => {
+          const week = parseInt(game.week);
+          if (!gamesByWeek[week]) {
+            gamesByWeek[week] = { total: 0, completed: 0 };
+          }
+          gamesByWeek[week].total++;
+          if (game.completed === 'TRUE') {
+            gamesByWeek[week].completed++;
+          }
+        });
+        
+        const weeks = Object.keys(gamesByWeek).map(w => parseInt(w)).sort((a, b) => a - b);
+        
+        // Find first week with incomplete games, or last week if all complete
+        for (const week of weeks) {
+          if (gamesByWeek[week].completed < gamesByWeek[week].total) {
+            return week;
+          }
+        }
+        
+        // If all games are complete, return the last week
+        return weeks[weeks.length - 1] || 1;
       }
       
       // Setup week selector buttons
