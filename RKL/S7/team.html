@@ -640,23 +640,23 @@
           padding: 0.75rem;
         }
 
-        /* Use the same mobile game styling as RKL-S7.html recent games */
+        /* Mobile game styling with optimized week badge positioning */
         .game-item {
           padding: 0.75rem;
           margin-left: 0;
           position: relative;
-          padding-top: 1rem; /* Add top padding to accommodate week badge */
         }
 
         .week-badge {
           position: absolute;
-          top: -8px;
-          right: 8px;
+          top: 0.75rem; /* Position at the edge of content */
+          right: 0.75rem;
           left: auto;
           transform: none;
           width: 28px;
           height: 28px;
           font-size: 0.8rem;
+          z-index: 2;
         }
 
         .game-matchup {
@@ -664,7 +664,8 @@
           flex-direction: column;
           gap: 0.75rem;
           align-items: stretch;
-          margin-top: 25px;
+          margin-top: 0;
+          padding-right: 35px; /* Space for week badge */
         }
 
         .team {
