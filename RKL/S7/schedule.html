@@ -296,14 +296,6 @@
         font-weight: 500;
       }
 
-      .click-hint {
-        font-size: 0.8rem;
-        color: #007bff;
-        font-style: italic;
-        margin-top: 0.3rem;
-        text-align: center;
-      }
-
       /* Summary stats */
       .week-summary {
         background-color: #e9ecef;
@@ -934,6 +926,26 @@
         // Update title
         document.getElementById('games-title').textContent = `Week ${week} Games`;
         
+        // Add subtitle for completed games instruction
+        const completedCount = weekGames.filter(game => game.completed === 'TRUE').length;
+        const existingSubtitle = document.querySelector('.games-subtitle');
+        if (existingSubtitle) {
+          existingSubtitle.remove();
+        }
+        
+        if (completedCount > 0) {
+          const subtitle = document.createElement('p');
+          subtitle.className = 'games-subtitle';
+          subtitle.textContent = 'Click on completed games to view detailed lineups';
+          subtitle.style.cssText = `
+            margin: 0;
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+          `;
+          document.querySelector('.games-header').appendChild(subtitle);
+        }
+        
         // Update summary
         const completedCount = weekGames.filter(game => game.completed === 'TRUE').length;
         const upcomingCount = weekGames.length - completedCount;
@@ -1005,8 +1017,6 @@
                   <div class="game-status ${isCompleted ? 'completed' : 'upcoming'}">
                     ${isCompleted ? 'Final' : 'Upcoming'}
                   </div>
-                  
-                  ${isCompleted ? '<div class="click-hint">Click for details</div>' : ''}
                 </div>
               `;
             }).join('');
