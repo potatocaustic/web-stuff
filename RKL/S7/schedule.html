@@ -927,13 +927,13 @@
         document.getElementById('games-title').textContent = `Week ${week} Games`;
         
         // Add subtitle for completed games instruction
-        const completedCount = weekGames.filter(game => game.completed === 'TRUE').length;
+        const weekCompletedCount = weekGames.filter(game => game.completed === 'TRUE').length;
         const existingSubtitle = document.querySelector('.games-subtitle');
         if (existingSubtitle) {
           existingSubtitle.remove();
         }
         
-        if (completedCount > 0) {
+        if (weekCompletedCount > 0) {
           const subtitle = document.createElement('p');
           subtitle.className = 'games-subtitle';
           subtitle.textContent = 'Click on completed games to view detailed lineups';
@@ -947,7 +947,7 @@
         }
         
         // Update summary
-        const completedCount = weekGames.filter(game => game.completed === 'TRUE').length;
+        const completedCount = weekCompletedCount;
         const upcomingCount = weekGames.length - completedCount;
         
         document.getElementById('total-games').textContent = weekGames.length;
