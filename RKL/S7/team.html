@@ -232,6 +232,15 @@
       .player-name {
         font-weight: 500;
         font-size: 1.1rem;
+        color: #007bff;
+        text-decoration: none;
+        cursor: pointer;
+        transition: color 0.3s ease;
+      }
+
+      .player-name:hover {
+        color: #0056b3;
+        text-decoration: underline;
       }
 
       .player-stats {
@@ -381,6 +390,12 @@
       .pick-origin {
         color: #666;
         font-size: 0.8rem;
+      }
+
+      .pick-origin-stats {
+        font-size: 0.75rem;
+        color: #007bff;
+        margin-left: 0.5rem;
       }
 
       /* Game item hover effects for completed games */
@@ -764,6 +779,7 @@
       let teamId = null;
       let teamData = null;
       let allTeams = [];
+      let allWeeklyAverages = [];
       
       // Helper function to format numbers in thousands (e.g., 36552 -> 36.6k)
       function formatInThousands(value) {
@@ -857,12 +873,29 @@
         return team ? team.team_name : teamId;
       }
       
-      // Get team record from ID
-      function getTeamRecord(teamId) {
-        const team = allTeams.find(t => t.team_id === teamId);
-        if (!team) return '';
-        const wins = parseInt(team.wins || 0);
-        const losses = parseInt(team.losses || 0);
+      // Get team record at specific date (useful for historical records)
+      function getTeamRecordAtDate(teamId, targetDate, schedule) {
+        // Get all completed games for this team up to the target date
+        const completedGames = schedule.filter(game => {
+          const gameDate = new Date(game.date);
+          const target = new Date(targetDate);
+          return gameDate <= target && 
+                 game.completed === 'TRUE' && 
+                 (game.team1_id === teamId || game.team2_id === teamId);
+        });
+        
+        let wins = 0;
+        let losses = 0;
+        
+        completedGames.forEach(game => {
+          const winner = game.winner;
+          if (winner === teamId) {
+            wins++;
+          } else if (winner && (game.team1_id === teamId || game.team2_id === teamId)) {
+            losses++;
+          }
+        });
+        
         return `${wins}-${losses}`;
       }
 
@@ -878,6 +911,51 @@
           console.log('Found median rank related fields:', foundFields);
         }
       }
+
+      // Calculate REL Median for a specific player (matches leaderboards.html)
+      function calculatePlayerRELMedian(playerHandle, weeklyAverages, lineups) {
+        // Get all games where this player started
+        const playerGames = lineups.filter(lineup => 
+          lineup.player_handle === playerHandle && 
+          (lineup.started === 'TRUE' || lineup.started === true || lineup.started === 'true')
+        );
+        
+        if (playerGames.length === 0) {
+          return 0;
+        }
+        
+        // Create lookup map for weekly averages by date
+        const weeklyAveragesMap = {};
+        weeklyAverages.forEach(week => {
+          if (week.date) {
+            weeklyAveragesMap[week.date] = {
+              median_score: parseNumber(week.median_score)
+            };
+          }
+        });
+        
+        // Calculate average REL
+        let totalPlayerKarma = 0;
+        let totalMedianKarma = 0;
+        let validGames = 0;
+        
+        playerGames.forEach(game => {
+          const gameDate = game.date;
+          const playerKarma = parseNumber(game.points_raw);
+          
+          if (weeklyAveragesMap[gameDate]) {
+            totalPlayerKarma += playerKarma;
+            totalMedianKarma += weeklyAveragesMap[gameDate].median_score;
+            validGames++;
+          }
+        });
+        
+        // Calculate average-based REL
+        const avgPlayerKarma = validGames > 0 ? totalPlayerKarma / validGames : 0;
+        const avgMedianKarma = validGames > 0 ? totalMedianKarma / validGames : 0;
+        
+        return avgMedianKarma > 0 ? (avgPlayerKarma / avgMedianKarma) : 0;
+      }
       
       // Load team data
       async function loadTeamData() {
@@ -888,7 +966,11 @@
           return;
         }
         
-        const teams = await fetchSheetData('Teams');
+        const [teams, weeklyAverages] = await Promise.all([
+          fetchSheetData('Teams'),
+          fetchSheetData('Weekly_Averages')
+        ]);
+        
         if (!teams) {
           document.getElementById('team-main-info').innerHTML = 
             '<div class="error">Error loading team data</div>';
@@ -899,6 +981,7 @@
         verifyTeamDataFields(teams);
         
         allTeams = teams;
+        allWeeklyAverages = weeklyAverages || [];
         teamData = teams.find(team => team.team_id === teamId);
         if (!teamData) {
           document.getElementById('team-main-info').innerHTML = 
@@ -959,7 +1042,7 @@
         document.getElementById('team-stats').style.display = 'grid';
       }
       
-      // Load roster
+      // Load roster with proper REL calculation and clickable player names
       async function loadRoster() {
         const [players, lineups] = await Promise.all([
           fetchSheetData('Players'),
@@ -973,8 +1056,7 @@
         }
         
         const teamPlayers = players
-          .filter(player => player.current_team_id === teamId && player.player_status === 'ACTIVE')
-          .sort((a, b) => parseFloat(b.rel_median || 0) - parseFloat(a.rel_median || 0));
+          .filter(player => player.current_team_id === teamId && player.player_status === 'ACTIVE');
         
         if (teamPlayers.length === 0) {
           document.getElementById('roster-list').innerHTML = 
@@ -982,8 +1064,17 @@
           return;
         }
         
-        const rosterHTML = teamPlayers.map(player => {
-          const relMedian = Math.round(parseFloat(player.rel_median || 0));
+        // Calculate REL Median for each player and sort by it
+        const playersWithREL = teamPlayers.map(player => {
+          const relMedian = calculatePlayerRELMedian(player.player_handle, allWeeklyAverages, lineups || []);
+          return {
+            ...player,
+            calculated_rel_median: relMedian
+          };
+        }).sort((a, b) => b.calculated_rel_median - a.calculated_rel_median);
+        
+        const rosterHTML = playersWithREL.map(player => {
+          const relMedian = player.calculated_rel_median;
           const gamesPlayed = parseInt(player.games_played || 0);
           
           // Calculate average global rank from lineups data
@@ -1005,13 +1096,13 @@
           return `
             <div class="player-item">
               <div class="player-info">
-                <div class="player-name">${player.player_handle}</div>
+                <a href="player.html?player=${encodeURIComponent(player.player_handle)}" class="player-name">${player.player_handle}</a>
                 <div class="player-stats">
                   ${gamesPlayed} games • 
                   ${avgGlobalRank > 0 ? avgGlobalRank : '-'} avg rank
                 </div>
               </div>
-              <div class="player-rel">${relMedian}</div>
+              <div class="player-rel">${relMedian.toFixed(3)}</div>
             </div>
           `;
         }).join('');
@@ -1029,7 +1120,7 @@
         document.getElementById('roster-list').innerHTML = finalHTML;
       }
       
-      // Load complete schedule (all games) with game popup modal capability
+      // Load complete schedule with historical opponent records
       async function loadSchedule() {
         const schedule = await fetchSheetData('Schedule');
         
@@ -1053,8 +1144,18 @@
           const isTeam1 = game.team1_id === teamId;
           const opponentId = isTeam1 ? game.team2_id : game.team1_id;
           const opponentName = getTeamName(opponentId);
-          const opponentRecord = getTeamRecord(opponentId);
           const isCompleted = game.completed === 'TRUE';
+          
+          // Calculate opponent's record immediately following this game
+          let opponentRecord = '';
+          if (isCompleted) {
+            opponentRecord = getTeamRecordAtDate(opponentId, game.date, schedule);
+          } else {
+            // For upcoming games, show record up to the previous game
+            const previousDate = new Date(game.date);
+            previousDate.setDate(previousDate.getDate() - 1);
+            opponentRecord = getTeamRecordAtDate(opponentId, previousDate.toISOString().split('T')[0], schedule);
+          }
           
           let resultContent = '';
           let clickHandler = '';
@@ -1099,7 +1200,7 @@
         document.getElementById('team-schedule').innerHTML = gamesHTML;
       }
       
-      // Load draft capital with enhanced styling
+      // Load draft capital with original team stats for acquired picks
       async function loadDraftCapital() {
         const draftPicks = await fetchSheetData('Draft_Capital');
         if (!draftPicks) {
@@ -1144,11 +1245,25 @@
               const isOriginal = pick.original_team === teamId;
               const isForfeited = pick.notes && pick.notes.includes('FORFEITED');
               
+              let originInfo = '';
+              if (!isOriginal && !isForfeited) {
+                // Get original team's current record and PAM
+                const originalTeamData = allTeams.find(t => t.team_id === pick.original_team);
+                if (originalTeamData) {
+                  const originalWins = parseInt(originalTeamData.wins || 0);
+                  const originalLosses = parseInt(originalTeamData.losses || 0);
+                  const originalPAM = Math.round(parseFloat(originalTeamData.pam || 0));
+                  originInfo = `from ${getTeamName(pick.original_team)} <span class="pick-origin-stats">(${originalWins}-${originalLosses}, ${originalPAM} PAM)</span>`;
+                } else {
+                  originInfo = `from ${getTeamName(pick.original_team)}`;
+                }
+              }
+              
               return `
                 <div class="pick-item-enhanced" style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; border-bottom: 1px solid #eee; background-color: ${isOriginal ? '#e8f5e8' : '#fff3cd'};">
                   <div>
                     <span class="pick-description" style="font-weight: 500; font-family: monospace;">${pick.pick_description}</span>
-                    ${!isOriginal ? `<div class="pick-origin" style="font-size: 0.8rem; color: #666;">from ${getTeamName(pick.original_team)}</div>` : ''}
+                    ${!isOriginal && !isForfeited ? `<div class="pick-origin" style="font-size: 0.8rem; color: #666;">${originInfo}</div>` : ''}
                     ${isForfeited ? '<div class="pick-origin" style="font-size: 0.8rem; color: #dc3545; font-weight: bold;">FORFEITED</div>' : ''}
                   </div>
                   <div class="pick-status" style="font-size: 0.8rem; color: #666;">
@@ -1330,12 +1445,6 @@
         
         const winner = game.winner;
         
-        // Debug logging
-        console.log('Team1 lineups:', team1Lineups);
-        console.log('Team2 lineups:', team2Lineups);
-        console.log('Team1 total:', team1Total);
-        console.log('Team2 total:', team2Total);
-        
         // Generate lineup tables
         const generateLineupTable = (lineups, teamId, total, isWinner) => {
           // Get team record
@@ -1365,15 +1474,6 @@
             const globalRank = parseNumber(player.global_rank);
             
             const captainBonus = isCaptain ? Math.round(pointsRaw * 0.5) : 0;
-            
-            // Debug individual player data
-            console.log(`Player ${player.player_handle}:`, {
-              raw: pointsRaw,
-              final: pointsFinal,
-              captain: isCaptain,
-              bonus: captainBonus,
-              rank: globalRank
-            });
             
             return `
               <tr style="${isCaptain ? 'background-color: #fff3cd; font-weight: bold;' : ''}">
