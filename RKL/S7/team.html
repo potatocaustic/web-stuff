@@ -399,14 +399,16 @@
 
       /* Hide mobile layout on desktop */
       .team-matchup,
-      .team-side,
-      .mobile-team-info,
-      .mobile-team-name,
-      .mobile-team-record,
-      .mobile-logo,
-      .mobile-score,
-      .mobile-vs {
+      .team,
+      .team-info,
+      .vs {
         display: none;
+      }
+
+      .team-logo {
+        width: 20px;
+        height: 20px;
+        vertical-align: middle;
       }
 
       /* Week badge styling */
@@ -638,15 +640,11 @@
           padding: 0.75rem;
         }
 
-        /* Simplified mobile schedule layout */
+        /* Use the same mobile game styling as RKL-S7.html recent games */
         .game-item {
-          display: flex;
-          flex-direction: column;
-          padding: 1rem;
+          padding: 0.75rem;
           margin-left: 0;
           position: relative;
-          min-height: auto;
-          gap: 0.75rem;
         }
 
         .week-badge {
@@ -657,91 +655,59 @@
           transform: none;
         }
 
-        /* Show mobile layout elements */
-        .team-matchup {
-          display: flex !important;
-          align-items: flex-start;
-          justify-content: space-between;
-          width: 100%;
-          gap: 0.5rem;
-          margin-top: 25px; /* Account for week badge */
+        .game-matchup {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+          align-items: stretch;
+          margin-top: 25px;
         }
 
-        .team-side {
-          display: flex !important;
+        .team {
+          display: flex;
           align-items: center;
           gap: 0.5rem;
-          flex: 1;
-          min-width: 0;
-          max-width: 42%;
+          min-width: auto;
+          width: 100%;
         }
 
-        .team-side.left {
-          justify-content: flex-start;
-        }
-
-        .team-side.right {
-          justify-content: flex-end;
-          flex-direction: row-reverse;
-        }
-
-        .mobile-team-info {
-          display: flex !important;
+        .team-info {
+          display: flex;
           flex-direction: column;
           min-width: 0;
           flex: 1;
-          overflow: hidden;
         }
 
-        .mobile-team-info.right {
-          text-align: right;
-        }
-
-        .mobile-team-name {
-          display: block !important;
+        .team-name {
           font-weight: 500;
-          font-size: 0.8rem;
-          line-height: 1.1;
+          font-size: 0.9rem;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          max-width: 100%;
         }
 
-        .mobile-team-record {
-          display: block !important;
-          font-size: 0.75rem;
+        .team-record {
+          font-size: 0.8rem;
           color: #666;
-          line-height: 1;
-          white-space: nowrap;
         }
 
-        .mobile-logo {
-          display: block !important;
-          width: 28px;
-          height: 28px;
-          border-radius: 50%;
-          flex-shrink: 0;
-          border: 1px solid #ddd;
-        }
-
-        .mobile-score {
-          display: block !important;
+        .team-score {
           font-weight: bold;
-          font-size: 1rem;
-          min-width: 50px;
-          text-align: center;
-          white-space: nowrap;
+          color: #333;
+          margin-left: auto;
+          min-width: 35px;
+          text-align: right;
+          flex-shrink: 0;
         }
 
-        .mobile-vs {
-          display: block !important;
-          font-weight: bold;
-          color: #666;
-          font-size: 0.9rem;
-          margin: 0;
-          flex-shrink: 0;
-          align-self: center;
+        .vs {
+          display: none;
+        }
+
+        .team-logo {
+          width: 32px;
+          height: 32px;
+          vertical-align: middle;
         }
 
         /* Hide desktop layout elements on mobile */
@@ -792,15 +758,6 @@
 
         .mobile-team-record {
           font-size: 0.75rem;
-        }
-
-        .mobile-score {
-          font-size: 1rem;
-        }
-
-        .mobile-logo {
-          width: 24px;
-          height: 24px;
         }
 
         .player-item {
@@ -1333,26 +1290,24 @@
               
               <div class="game-meta"></div>
               
-              <!-- Mobile layout (hidden on desktop) -->
-              <div class="team-matchup">
-                <div class="team-side left">
-                  <img src="icons/${teamId}.webp" alt="${teamData.team_name}" class="mobile-logo" onerror="this.style.display='none'">
-                  <div class="mobile-team-info">
-                    <div class="mobile-team-name">${teamData.team_name}</div>
-                    <div class="mobile-team-record">${teamRecord}</div>
+              <!-- Mobile layout (visible on mobile) - same structure as RKL-S7.html recent games -->
+              <div class="game-matchup">
+                <div class="team ${teamScoreClass}">
+                  <img src="icons/${teamId}.webp" alt="${teamData.team_name}" class="team-logo" onerror="this.style.display='none'">
+                  <div class="team-info">
+                    <span class="team-name">${teamData.team_name}</span>
+                    <span class="team-record">${teamRecord}</span>
                   </div>
-                  <div class="mobile-score ${teamScoreClass}">${teamScore}</div>
+                  <span class="team-score ${teamScoreClass}">${teamScore}</span>
                 </div>
-                
-                <div class="mobile-vs">vs</div>
-                
-                <div class="team-side right">
-                  <div class="mobile-score ${oppScoreClass}">${oppScore}</div>
-                  <div class="mobile-team-info right">
-                    <div class="mobile-team-name">${opponentName}</div>
-                    <div class="mobile-team-record">${opponentRecord}</div>
+                <span class="vs">vs</span>
+                <div class="team ${oppScoreClass}">
+                  <img src="icons/${opponentId}.webp" alt="${opponentName}" class="team-logo" onerror="this.style.display='none'">
+                  <div class="team-info">
+                    <span class="team-name">${opponentName}</span>
+                    <span class="team-record">${opponentRecord}</span>
                   </div>
-                  <img src="icons/${opponentId}.webp" alt="${opponentName}" class="mobile-logo" onerror="this.style.display='none'">
+                  <span class="team-score ${oppScoreClass}">${oppScore}</span>
                 </div>
               </div>
             </div>
