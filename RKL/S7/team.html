@@ -265,14 +265,6 @@
         margin-top: 0.2rem;
       }
 
-      .player-rel {
-        font-weight: bold;
-        font-size: 1.1rem;
-        color: #333;
-        text-align: center;
-        min-width: 80px;
-      }
-
       /* Schedule section */
       .schedule-section {
         background-color: #fff;
@@ -389,39 +381,6 @@
         font-size: 0.8rem;
         color: #666;
         line-height: 1;
-        margin-top: 0.2rem;
-      }
-
-      /* Remove old team-side styles since we're restructuring */
-      .team-side {
-        display: none;
-      }
-
-      .team-info {
-        display: none;
-      }
-
-      .opponent-logo {
-        display: none;
-      }
-
-      .game-score {
-        display: none;
-      }
-
-      .game-result {
-        text-align: right;
-        min-width: 80px;
-      }
-
-      .game-score {
-        font-weight: bold;
-        font-size: 1.1rem;
-      }
-
-      .game-date {
-        font-size: 0.8rem;
-        color: #666;
         margin-top: 0.2rem;
       }
 
@@ -623,6 +582,26 @@
         margin: 1rem;
       }
 
+      /* Back button */
+      .back-button {
+        background-color: #007bff;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 1rem;
+        display: inline-block;
+        margin-bottom: 2rem;
+        transition: background-color 0.3s;
+      }
+
+      .back-button:hover {
+        background-color: #0056b3;
+        text-decoration: none;
+        color: white;
+      }
+
       /* Mobile responsive */
       @media (max-width: 768px) {
         .content-grid {
@@ -647,7 +626,6 @@
           padding: 0.75rem;
         }
 
-        /* Keep game items horizontal on mobile */
         .game-item {
           padding: 1rem;
           display: grid;
@@ -655,10 +633,6 @@
           gap: 0.5rem;
           align-items: center;
           margin-left: 20px;
-        }
-
-        .team-side {
-          gap: 0.5rem;
         }
 
         .opponent-logo {
@@ -716,7 +690,6 @@
           grid-template-columns: 1fr;
         }
 
-        /* Maintain horizontal layout even on very small screens */
         .game-item {
           padding: 0.75rem;
           grid-template-columns: 1fr auto 1fr auto;
@@ -755,31 +728,10 @@
           align-self: flex-end;
         }
 
-        /* Additional modal mobile formatting */
         .game-details-grid {
           grid-template-columns: 1fr !important;
           gap: 1rem !important;
         }
-      }
-
-      /* Back button */
-      .back-button {
-        background-color: #007bff;
-        color: white;
-        padding: 0.8rem 1.5rem;
-        border: none;
-        border-radius: 4px;
-        text-decoration: none;
-        font-size: 1rem;
-        display: inline-block;
-        margin-bottom: 2rem;
-        transition: background-color 0.3s;
-      }
-
-      .back-button:hover {
-        background-color: #0056b3;
-        text-decoration: none;
-        color: white;
       }
 
       /* Footer */
@@ -986,19 +938,6 @@
         return `${wins}-${losses}`;
       }
 
-      // Data verification function for team data
-      function verifyTeamDataFields(teams) {
-        if (teams.length > 0) {
-          console.log('Available team data fields:', Object.keys(teams[0]));
-          console.log('Sample team data:', teams[0]);
-          
-          // Check for various possible field names for median starter rank
-          const medianRankFields = ['med_starter_rank', 'median_starter_rank', 'avg_starter_rank', 'med_rank'];
-          const foundFields = medianRankFields.filter(field => teams[0].hasOwnProperty(field));
-          console.log('Found median rank related fields:', foundFields);
-        }
-      }
-
       // Calculate REL Median for a specific player (matches leaderboards.html)
       function calculatePlayerRELMedian(playerHandle, weeklyAverages, lineups) {
         // Get all games where this player started
@@ -1063,9 +1002,6 @@
             '<div class="error">Error loading team data</div>';
           return;
         }
-        
-        // Verify team data fields
-        verifyTeamDataFields(teams);
         
         allTeams = teams;
         allWeeklyAverages = weeklyAverages || [];
@@ -1188,10 +1124,460 @@
                   ${gamesPlayed} games • 
                   ${avgGlobalRank > 0 ? avgGlobalRank : '-'} avg rank
                 </div>
+              </div>
+              <div class="player-rel">${relMedian.toFixed(3)}</div>
+            </div>
+          `;
+        }).join('');
+        
+        const finalHTML = `
+          <div class="roster-header">
+            <span class="header-player">Player</span>
+            <span class="header-rel">REL Median</span>
+          </div>
+          <div class="roster-content">
+            ${rosterHTML}
+          </div>
+        `;
+        
+        document.getElementById('roster-list').innerHTML = finalHTML;
+      }
+      
+      // Load complete schedule with historical opponent records
+      async function loadSchedule() {
+        const schedule = await fetchSheetData('Schedule');
+        
+        if (!schedule) {
+          document.getElementById('team-schedule').innerHTML = 
+            '<div class="error">Error loading schedule data</div>';
+          return;
+        }
+        
+        const teamGames = schedule
+          .filter(game => game.team1_id === teamId || game.team2_id === teamId)
+          .sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort by date ascending
+        
+        if (teamGames.length === 0) {
+          document.getElementById('team-schedule').innerHTML = 
+            '<div style="text-align: center; padding: 2rem; color: #666;">No games scheduled</div>';
+          return;
+        }
+        
+        const gamesHTML = teamGames.map(game => {
+          const isTeam1 = game.team1_id === teamId;
+          const opponentId = isTeam1 ? game.team2_id : game.team1_id;
+          const opponentName = getTeamName(opponentId);
+          const isCompleted = game.completed === 'TRUE';
+          const gameWeek = game.week || 'TBD';
+          
+          // Calculate opponent's record immediately following this game
+          let opponentRecord = '';
+          if (isCompleted) {
+            opponentRecord = getTeamRecordAtDate(opponentId, game.date, schedule);
+          } else {
+            // For upcoming games, show record up to the previous game
+            const previousDate = new Date(game.date);
+            previousDate.setDate(previousDate.getDate() - 1);
+            opponentRecord = getTeamRecordAtDate(opponentId, previousDate.toISOString().split('T')[0], schedule);
+          }
+
+          // Calculate team's record immediately following this game
+          let teamRecord = '';
+          if (isCompleted) {
+            teamRecord = getTeamRecordAtDate(teamId, game.date, schedule);
+          } else {
+            // For upcoming games, show current record up to previous game
+            const previousDate = new Date(game.date);
+            previousDate.setDate(previousDate.getDate() - 1);
+            teamRecord = getTeamRecordAtDate(teamId, previousDate.toISOString().split('T')[0], schedule);
+          }
+          
+          let clickHandler = '';
+          let teamScore = '';
+          let oppScore = '';
+          let teamScoreClass = '';
+          let oppScoreClass = '';
+          
+          if (isCompleted) {
+            const teamScoreValue = parseFloat(isTeam1 ? game.team1_score : game.team2_score);
+            const oppScoreValue = parseFloat(isTeam1 ? game.team2_score : game.team1_score);
+            const teamWon = teamScoreValue > oppScoreValue;
+            const oppWon = oppScoreValue > teamScoreValue;
+            
+            teamScore = formatInThousands(teamScoreValue);
+            oppScore = formatInThousands(oppScoreValue);
+            
+            // Only color scores green if they are the winning score
+            teamScoreClass = teamWon ? 'win' : 'loss';
+            oppScoreClass = oppWon ? 'win' : 'loss';
+            
+            // Add click handler for completed games to show game details modal
+            clickHandler = `onclick="showGameDetails('${game.team1_id}', '${game.team2_id}', '${game.date}')" style="cursor: pointer;"`;
+          } else {
+            teamScore = '-';
+            oppScore = '-';
+            teamScoreClass = 'upcoming';
+            oppScoreClass = 'upcoming';
+          }
+          
+          return `
+            <div class="game-item" ${clickHandler}>
+              <!-- Week badge -->
+              <div class="week-badge">${gameWeek}</div>
+              
+              <!-- Left team name (home team) -->
+              <div class="team-name-left">
+                <div class="opponent-name">${teamData.team_name}</div>
+                <div class="opponent-record">${teamRecord}</div>
+              </div>
+              
+              <!-- Left team logo -->
+              <img src="icons/${teamId}.webp" alt="${teamData.team_name}" class="logo-left" onerror="this.style.display='none'">
+              
+              <!-- Left team score -->
+              <div class="score-left ${teamScoreClass}">${teamScore}</div>
+              
+              <!-- VS divider -->
+              <div class="vs-divider">vs</div>
+              
+              <!-- Right team score -->
+              <div class="score-right ${oppScoreClass}">${oppScore}</div>
+              
+              <!-- Right team logo -->
+              <img src="icons/${opponentId}.webp" alt="${opponentName}" class="logo-right" onerror="this.style.display='none'">
+              
+              <!-- Right team name (opponent) -->
+              <div class="team-name-right">
+                <div class="opponent-name">${opponentName}</div>
+                <div class="opponent-record">${opponentRecord}</div>
+              </div>
+              
+              <!-- Game meta info - Date and Final labels removed to prevent text wrapping -->
+              <div class="game-meta">
+              </div>
+            </div>
+          `;
+        }).join('');
+        
+        document.getElementById('team-schedule').innerHTML = gamesHTML;
+      }
+      
+      // Load draft capital with original team stats for acquired picks
+      async function loadDraftCapital() {
+        const draftPicks = await fetchSheetData('Draft_Capital');
+        if (!draftPicks) {
+          document.getElementById('draft-picks').innerHTML = 
+            '<div class="error">Error loading draft capital data</div>';
+          return;
+        }
+        
+        const teamPicks = draftPicks
+          .filter(pick => pick.current_owner === teamId)
+          .sort((a, b) => {
+            const seasonA = parseInt(a.season || 0);
+            const seasonB = parseInt(b.season || 0);
+            if (seasonA !== seasonB) return seasonA - seasonB;
+            return parseInt(a.round || 0) - parseInt(b.round || 0);
+          });
+        
+        if (teamPicks.length === 0) {
+          document.getElementById('draft-picks').innerHTML = 
+            '<div style="text-align: center; padding: 2rem; color: #666;">No draft picks owned</div>';
+          return;
+        }
+        
+        // Group picks by season
+        const picksBySeason = {};
+        teamPicks.forEach(pick => {
+          const season = pick.season;
+          if (!picksBySeason[season]) {
+            picksBySeason[season] = [];
+          }
+          picksBySeason[season].push(pick);
+        });
+        
+        // Generate HTML grouped by season with color coding
+        const seasonsHTML = Object.keys(picksBySeason)
+          .sort((a, b) => parseInt(a) - parseInt(b))
+          .map(season => {
+            const picks = picksBySeason[season];
+            const seasonColor = getSeasonColor(parseInt(season));
+            
+            const picksHTML = picks.map(pick => {
+              const isOriginal = pick.original_team === teamId;
+              const isForfeited = pick.notes && pick.notes.includes('FORFEITED');
+              
+              let originInfo = '';
+              if (!isOriginal && !isForfeited) {
+                // Get original team's current record and PAM
+                const originalTeamData = allTeams.find(t => t.team_id === pick.original_team);
+                if (originalTeamData) {
+                  const originalWins = parseInt(originalTeamData.wins || 0);
+                  const originalLosses = parseInt(originalTeamData.losses || 0);
+                  const originalPAM = parseFloat(originalTeamData.pam || 0);
+                  // Format PAM in thousands for all seasons
+                  const pamFormatted = Math.abs(originalPAM) >= 1000 ? 
+                    (originalPAM / 1000).toFixed(1) + 'k' : 
+                    Math.round(originalPAM).toString();
+                  originInfo = `from ${getTeamName(pick.original_team)} <span class="pick-origin-stats">(${originalWins}-${originalLosses}, ${pamFormatted} PAM)</span>`;
+                } else {
+                  originInfo = `from ${getTeamName(pick.original_team)}`;
+                }
+              }
+              
+              return `
+                <div class="pick-item-enhanced" style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; border-bottom: 1px solid #eee; background-color: ${isOriginal ? '#e8f5e8' : '#fff3cd'};">
+                  <div>
+                    <span class="pick-description" style="font-weight: 500; font-family: monospace;">${pick.pick_description}</span>
+                    ${!isOriginal && !isForfeited ? `<div class="pick-origin" style="font-size: 0.8rem; color: #666;">${originInfo}</div>` : ''}
+                    ${isForfeited ? '<div class="pick-origin" style="font-size: 0.8rem; color: #dc3545; font-weight: bold;">FORFEITED</div>' : ''}
+                  </div>
+                  <div class="pick-status" style="font-size: 0.8rem; color: #666;">
+                    ${isOriginal ? 'Own Pick' : 'Acquired'}
+                  </div>
+                </div>
+              `;
+            }).join('');
+            
+            return `
+              <div class="season-group" style="margin-bottom: 1.5rem;">
+                <div class="season-header" style="background-color: ${seasonColor}; color: white; padding: 1rem; border-radius: 6px 6px 0 0; font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
+                  <span>Season ${season} Draft</span>
+                  <span style="background-color: rgba(255,255,255,0.2); padding: 0.3rem 0.6rem; border-radius: 12px; font-size: 0.9rem;">${picks.length} pick${picks.length !== 1 ? 's' : ''}</span>
+                </div>
+                <div class="season-picks" style="border: 1px solid ${seasonColor}; border-top: none; border-radius: 0 0 6px 6px;">
+                  ${picksHTML}
+                </div>
+              </div>
+            `;
+          }).join('');
+        
+        // Add summary at the top
+        const totalPicks = teamPicks.length;
+        const ownPicks = teamPicks.filter(p => p.original_team === teamId).length;
+        const acquiredPicks = teamPicks.filter(p => p.original_team !== teamId && !(p.notes && p.notes.includes('FORFEITED'))).length;
+        const forfeitedPicks = teamPicks.filter(p => p.notes && p.notes.includes('FORFEITED')).length;
+        
+        const summaryHTML = `
+          <div class="draft-summary" style="background-color: #f8f9fa; padding: 1.5rem; border-radius: 6px; margin-bottom: 1.5rem; border: 1px solid #ddd;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; text-align: center;">
+              <div>
+                <div style="font-size: 1.5rem; font-weight: bold; color: #333;">${totalPicks}</div>
+                <div style="font-size: 0.9rem; color: #666;">Total Picks</div>
+              </div>
+              <div>
+                <div style="font-size: 1.5rem; font-weight: bold; color: #28a745;">${ownPicks}</div>
+                <div style="font-size: 0.9rem; color: #666;">Own Picks</div>
+              </div>
+              <div>
+                <div style="font-size: 1.5rem; font-weight: bold; color: #007bff;">${acquiredPicks}</div>
+                <div style="font-size: 0.9rem; color: #666;">Acquired</div>
+              </div>
+              ${forfeitedPicks > 0 ? `
+                <div>
+                  <div style="font-size: 1.5rem; font-weight: bold; color: #dc3545;">${forfeitedPicks}</div>
+                  <div style="font-size: 0.9rem; color: #666;">Forfeited</div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `;
+        
+        document.getElementById('draft-picks').innerHTML = summaryHTML + seasonsHTML;
+      }
+
+      // Helper function to get season-specific colors
+      function getSeasonColor(season) {
+        const colors = {
+          8: '#007bff',   // Blue
+          9: '#28a745',   // Green
+          10: '#ffc107',  // Yellow
+          11: '#dc3545',  // Red
+          12: '#6c757d'   // Gray
+        };
+        return colors[season] || '#6c757d';
+      }
+
+      // Add game details modal functionality
+      async function showGameDetails(team1Id, team2Id, date) {
+        // Create modal if it doesn't exist
+        if (!document.getElementById('game-modal')) {
+          const modalHTML = `
+            <div id="game-modal" class="modal" style="display: none;">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h3 id="modal-title">Game Details</h3>
+                  <button class="close-btn" onclick="closeGameModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                  <div id="modal-content">
+                    <div class="loading">Loading game details...</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+          document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+        
+        const modal = document.getElementById('game-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalContent = document.getElementById('modal-content');
+        
+        // Show modal and loading state
+        modal.style.display = 'block';
+        modalTitle.textContent = `${getTeamName(team1Id)} vs ${getTeamName(team2Id)}`;
+        modalContent.innerHTML = '<div class="loading">Loading game details...</div>';
+        
+        // Get game details from the schedule data
+        const schedule = await fetchSheetData('Schedule');
+        if (!schedule) {
+          modalContent.innerHTML = '<div class="error">Error loading game details</div>';
+          return;
+        }
+        
+        const game = schedule.find(g => 
+          g.team1_id === team1Id && 
+          g.team2_id === team2Id && 
+          g.date === date
+        );
+        
+        if (!game) {
+          modalContent.innerHTML = '<div class="error">Game not found</div>';
+          return;
+        }
+        
+        // Get lineups for both teams on this date
+        const lineups = await fetchSheetData('Lineups');
+        if (!lineups) {
+          modalContent.innerHTML = '<div class="error">Error loading lineup data</div>';
+          return;
+        }
+        
+        const team1AllLineups = lineups.filter(lineup => 
+          lineup.team_id === team1Id && lineup.date === date
+        );
+        const team2AllLineups = lineups.filter(lineup => 
+          lineup.team_id === team2Id && lineup.date === date
+        );
+        
+        // Filter for started players and sort properly
+        const team1Lineups = team1AllLineups.filter(lineup => {
+          const isStarted = lineup.started === 'TRUE' || 
+                           lineup.started === true || 
+                           lineup.started === 'true' || 
+                           lineup.started === 1 || 
+                           lineup.started === '1';
+          return isStarted;
+        }).sort((a, b) => {
+          const aCaptain = a.captain === 'TRUE' || a.captain === true || a.captain === 'true';
+          const bCaptain = b.captain === 'TRUE' || b.captain === true || b.captain === 'true';
+          
+          if (aCaptain && !bCaptain) return -1;
+          if (!aCaptain && bCaptain) return 1;
+          
+          return parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0);
+        });
+        
+        const team2Lineups = team2AllLineups.filter(lineup => {
+          const isStarted = lineup.started === 'TRUE' || 
+                           lineup.started === true || 
+                           lineup.started === 'true' || 
+                           lineup.started === 1 || 
+                           lineup.started === '1';
+          return isStarted;
+        }).sort((a, b) => {
+          const aCaptain = a.captain === 'TRUE' || a.captain === true || a.captain === 'true';
+          const bCaptain = b.captain === 'TRUE' || b.captain === true || b.captain === 'true';
+          
+          if (aCaptain && !bCaptain) return -1;
+          if (!aCaptain && bCaptain) return 1;
+          
+          return parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0);
+        });
+        
+        // Calculate team totals
+        const team1Total = team1Lineups.reduce((sum, player) => {
+          const points = parseNumber(player.points_final);
+          return sum + points;
+        }, 0);
+        
+        const team2Total = team2Lineups.reduce((sum, player) => {
+          const points = parseNumber(player.points_final);
+          return sum + points;
+        }, 0);
+        
+        const winner = game.winner;
+        
+        // Generate lineup tables
+        const generateLineupTable = (lineups, teamId, total, isWinner) => {
+          const teamData = allTeams.find(t => t.team_id === teamId);
+          const teamRecord = teamData ? `${teamData.wins || 0}-${teamData.losses || 0}` : '';
+          
+          if (lineups.length === 0) {
+            return `
+              <div style="background-color: #f8f9fa; border-radius: 8px; overflow: hidden; border: ${isWinner ? '2px solid #28a745' : '1px solid #ddd'};">
+                <div style="background-color: ${isWinner ? '#28a745' : '#333'}; color: white; padding: 1.5rem; text-align: center; cursor: pointer;" onclick="window.location.href='team.html?id=${teamId}'">
+                  <img src="icons/${teamId}.webp" alt="${getTeamName(teamId)}" style="width: 48px; height: 48px; border-radius: 4px;" onerror="this.style.display='none'">
+                  <div>
+                    <h4 style="color: white; margin: 0;">${getTeamName(teamId)}</h4>
+                    <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
+                  </div>
+                </div>
+                <div style="background-color: #e9ecef; padding: 1rem; text-align: center; font-weight: bold;">Total: ${Math.round(total).toLocaleString()}</div>
+                <div style="padding: 2rem; text-align: center; color: #666;">No lineup data available</div>
+              </div>
+            `;
+          }
+          
+          const lineupRows = lineups.map(player => {
+            const isCaptain = player.captain === 'TRUE' || player.captain === true || player.captain === 'true';
+            const pointsRaw = parseNumber(player.points_raw);
+            const globalRank = parseNumber(player.global_rank);
+            const captainBonus = isCaptain ? Math.round(pointsRaw * 0.5) : 0;
+            
+            return `
+              <tr style="${isCaptain ? 'background-color: #fff3cd; font-weight: bold;' : ''}">
+                <td style="padding: 0.8rem; text-align: left;">
+                  ${player.player_handle || 'Unknown'}
+                  ${isCaptain ? '<span style="background-color: #ffc107; color: #333; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.7rem; margin-left: 0.5rem;">C</span>' : ''}
+                </td>
+                <td style="padding: 0.8rem; text-align: center; font-weight: bold;">
+                  ${Math.round(pointsRaw).toLocaleString()}
+                  ${isCaptain ? `<div style="font-size: 0.75rem; color: #ffc107;">+${captainBonus.toLocaleString()}</div>` : ''}
+                </td>
+                <td style="padding: 0.8rem; text-align: center; color: #666;">${globalRank > 0 ? Math.round(globalRank) : '-'}</td>
+              </tr>
+            `;
+          }).join('');
+          
+          return `
+            <div style="background-color: #f8f9fa; border-radius: 8px; overflow: hidden; border: ${isWinner ? '2px solid #28a745' : '1px solid #ddd'};">
+              <div style="background-color: ${isWinner ? '#28a745' : '#333'}; color: white; padding: 1.5rem; text-align: center; cursor: pointer;" onclick="window.location.href='team.html?id=${teamId}'">
+                <img src="icons/${teamId}.webp" alt="${getTeamName(teamId)}" style="width: 48px; height: 48px; border-radius: 4px;" onerror="this.style.display='none'">
+                <div>
+                  <h4 style="color: white; margin: 0;">${getTeamName(teamId)}</h4>
+                  <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
+                </div>
+              </div>
+              <div style="background-color: #e9ecef; padding: 1rem; text-align: center; font-weight: bold;">Total: ${isNaN(total) ? '-' : Math.round(total).toLocaleString()}</div>
+              <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr style="background-color: #f8f9fa;">
+                    <th style="padding: 0.8rem; text-align: left; border-bottom: 2px solid #ddd;">Player</th>
+                    <th style="padding: 0.8rem; text-align: center; border-bottom: 2px solid #ddd;">Points</th>
+                    <th style="padding: 0.8rem; text-align: center; border-bottom: 2px solid #ddd;">Rank</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${lineupRows}
+                </tbody>
+              </table>
+            </div>
           `;
         };
         
-        // Generate the modal content with responsive grid
+        // Generate the modal content
         modalContent.innerHTML = `
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;" class="game-details-grid">
             ${generateLineupTable(team1Lineups, team1Id, team1Total, winner === team1Id)}
@@ -1200,7 +1586,7 @@
         `;
       }
       
-      // Add close modal function
+      // Close modal function
       function closeGameModal() {
         const modal = document.getElementById('game-modal');
         if (modal) {
@@ -1220,4 +1606,4 @@
       document.addEventListener('DOMContentLoaded', loadTeamData);
     </script>
   </body>
-</html>>
+</html>
