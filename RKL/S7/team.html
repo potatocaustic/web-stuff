@@ -663,8 +663,8 @@
           align-items: center;
           justify-content: space-between;
           width: 100%;
-          gap: 0.5rem;
-          margin-top: 20px; /* Account for week badge */
+          gap: 0.75rem;
+          margin-top: 25px; /* Account for week badge */
         }
 
         .team-side {
@@ -673,6 +673,7 @@
           gap: 0.5rem;
           flex: 1;
           min-width: 0;
+          max-width: 45%;
         }
 
         .team-side.left {
@@ -698,22 +699,23 @@
         .mobile-team-name {
           display: block !important;
           font-weight: 500;
-          font-size: 0.9rem;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+          font-size: 0.85rem;
+          line-height: 1.2;
+          word-break: break-word;
+          overflow-wrap: break-word;
         }
 
         .mobile-team-record {
           display: block !important;
-          font-size: 0.8rem;
+          font-size: 0.75rem;
           color: #666;
+          line-height: 1;
         }
 
         .mobile-logo {
           display: block !important;
-          width: 28px;
-          height: 28px;
+          width: 32px;
+          height: 32px;
           border-radius: 50%;
           flex-shrink: 0;
           border: 1px solid #ddd;
@@ -722,8 +724,8 @@
         .mobile-score {
           display: block !important;
           font-weight: bold;
-          font-size: 1.1rem;
-          min-width: 50px;
+          font-size: 1rem;
+          min-width: 55px;
           text-align: center;
         }
 
@@ -731,8 +733,9 @@
           display: block !important;
           font-weight: bold;
           color: #666;
-          font-size: 1rem;
-          margin: 0 0.5rem;
+          font-size: 0.9rem;
+          margin: 0;
+          flex-shrink: 0;
         }
 
         /* Hide desktop layout elements on mobile */
