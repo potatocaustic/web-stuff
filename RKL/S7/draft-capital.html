@@ -202,7 +202,6 @@
         /* Font properties removed to inherit from body/table */
       }
 
-      /* ***** MODIFIED .owner-cell: flex properties removed ***** */
       .owner-cell { 
         border: 1px dashed #ccc; /* Light border to see cell boundaries */
         /* display: flex; -- MOVED TO INNER DIV */
@@ -210,8 +209,7 @@
         /* gap: 0.5rem; -- MOVED TO INNER DIV */
       }
 
-      /* ***** NEW CLASS for inner div flex layout ***** */
-      .cell-content-flex {
+      .cell-content-flex { /* For inner div flex layout */
         display: flex;
         align-items: center;
         gap: 0.5rem;
@@ -379,7 +377,7 @@
         background-color: #fff0f0 !important;
         font-weight: bold !important;
         padding: 0.8rem !important; 
-        min-_width: 100px; 
+        min-width: 100px; 
       }
 
       @media (max-width: 768px) {
@@ -738,17 +736,18 @@
           }
           
           const safeFormattedPickDescription = escapeHTML(formattedPickDescription);
-          const currentOwnerNameText = escapeHTML(getTeamName(pick.current_owner)); // D2 content variable
-          // originalTeamNameText not needed as D3 is a placeholder for this test
+          const currentOwnerNameText = escapeHTML(getTeamName(pick.current_owner));
+          // ***** originalTeamNameText is now needed again for D3 *****
+          const originalTeamNameText = escapeHTML(getTeamName(pick.original_team)); 
           const safeTradeStatus = escapeHTML(tradeStatus);
 
-          // ***** MODIFIED HTML FOR D2 AND D3 FOR DEBUGGING *****
+          // ***** D2 (Current Owner) and D3 (Original Team) now use inner flex div *****
           return `
             <tr class="${rowClass}">
               <td class="pick-description">${safeFormattedPickDescription}</td>
-              <td class="owner-cell"><div class="cell-content-flex">${getTeamLogoHTML(pick.current_owner)} ${currentOwnerNameText}</div></td> {/* D2 RESTORED with inner flex div */}
-              <td class="owner-cell">CELL D3 PLACEHOLDER</td>   {/* D3 REMAINS PLACEHOLDER */}
-              <td class="trade-status-debug">${safeTradeStatus}</td> {/* D4 */}
+              <td class="owner-cell"><div class="cell-content-flex">${getTeamLogoHTML(pick.current_owner)} ${currentOwnerNameText}</div></td>
+              <td class="owner-cell"><div class="cell-content-flex">${getTeamLogoHTML(pick.original_team)} ${originalTeamNameText}</div></td>
+              <td class="trade-status-debug">${safeTradeStatus}</td>
             </tr>
           `;
         }).join('');
@@ -800,7 +799,7 @@
             return `
               <div class="team-card">
                 <div class="team-header">
-                  ${getTeamLogoHTML(teamId)}
+                  ${getTeamLogoHTML(teamId)} {/* Already uses escapeHTML for alt in getTeamLogoHTML */}
                   <h4>${safeTeamName}</h4>
                   <span>(${pickCount} pick${pickCount !==1 ? 's' : ''})</span>
                 </div>
