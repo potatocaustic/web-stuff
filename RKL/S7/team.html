@@ -623,6 +623,142 @@
         gap: 2rem;
       }
 
+      .team-breakdown {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #ddd;
+      }
+
+      .team-breakdown.winner {
+        border-color: #28a745;
+        border-width: 2px;
+      }
+
+      .team-header {
+        background-color: #333;
+        color: white;
+        padding: 1.5rem;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        flex-direction: column;
+      }
+
+      .team-header.winner {
+        background-color: #28a745;
+      }
+
+      .team-header h4 {
+        color: white;
+        margin: 0;
+        font-size: 1.2rem;
+      }
+
+      .team-header .team-logo {
+        width: 48px;
+        height: 48px;
+        border-radius: 4px;
+      }
+
+      .team-total {
+        background-color: #e9ecef;
+        padding: 1rem;
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.1rem;
+        border-bottom: 2px solid #ddd;
+      }
+
+      .lineup-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .lineup-table th {
+        background-color: #f8f9fa;
+        padding: 0.8rem 0.5rem;
+        text-align: center;
+        font-weight: bold;
+        border-bottom: 2px solid #ddd;
+        font-size: 0.9rem;
+      }
+
+      .lineup-table th:first-child {
+        text-align: left;
+        width: 50%;
+      }
+
+      .lineup-table th:nth-child(2),
+      .lineup-table th:nth-child(3) {
+        width: 25%;
+      }
+
+      .lineup-table td {
+        padding: 0.8rem 0.5rem;
+        border-bottom: 1px solid #eee;
+        font-size: 0.9rem;
+        text-align: center;
+      }
+
+      .lineup-table td:first-child {
+        text-align: left;
+      }
+
+      .lineup-table tr:hover {
+        background-color: white;
+      }
+
+      .captain-row {
+        background-color: #fff3cd !important;
+        font-weight: bold;
+      }
+
+      .captain-badge {
+        background-color: #ffc107;
+        color: #333;
+        padding: 0.2rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        margin-left: 0.5rem;
+      }
+
+      .captain-bonus {
+        font-size: 0.75rem;
+        color: #ffc107;
+        font-weight: 500;
+        margin-top: 0.2rem;
+      }
+
+      .player-name-cell {
+        font-weight: 500;
+      }
+
+      .player-link {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .player-link:hover {
+        color: #0056b3;
+        text-decoration: underline;
+      }
+
+      .points-cell {
+        text-align: center;
+        font-weight: bold;
+      }
+
+      .rank-cell {
+        text-align: center;
+        color: #666;
+      }
+
       /* Enhanced pick items */
       .pick-item-enhanced {
         transition: background-color 0.2s ease;
@@ -826,8 +962,6 @@
           display: none;
         }
 
-        /* Mobile date styling - only applied when dynamically added */
-
         .modal-content {
           margin: 1rem;
           width: calc(100% - 2rem);
@@ -953,6 +1087,21 @@
         </div>
       </div>
     </main>
+
+    <!-- Game Details Modal -->
+    <div id="game-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modal-title">Game Details</h3>
+          <button class="close-btn" onclick="closeGameModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div id="modal-content">
+            <div class="loading">Loading game details...</div>
+          </div>
+        </div>
+      </div>
+    </div>
     
     <footer>
       <p>&copy; caustic.info</p>
@@ -983,6 +1132,15 @@
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         return `${month}-${day}`;
+      }
+
+      // Function to format date for modal titles (MM/DD/YY format)
+      function formatDateShort(dateString) {
+        const date = new Date(dateString);
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const year = String(date.getFullYear()).slice(-2);
+        return `${month}/${day}/${year}`;
       }
       
       // Function to fetch data from Google Sheets
@@ -1607,35 +1765,15 @@
         return colors[season] || '#6c757d';
       }
 
-      // Add game details modal functionality
+      // Add game details modal functionality with date in title and clickable player names
       async function showGameDetails(team1Id, team2Id, date) {
-        // Create modal if it doesn't exist
-        if (!document.getElementById('game-modal')) {
-          const modalHTML = `
-            <div id="game-modal" class="modal" style="display: none;">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h3 id="modal-title">Game Details</h3>
-                  <button class="close-btn" onclick="closeGameModal()">&times;</button>
-                </div>
-                <div class="modal-body">
-                  <div id="modal-content">
-                    <div class="loading">Loading game details...</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          `;
-          document.body.insertAdjacentHTML('beforeend', modalHTML);
-        }
-        
         const modal = document.getElementById('game-modal');
         const modalTitle = document.getElementById('modal-title');
         const modalContent = document.getElementById('modal-content');
         
-        // Show modal and loading state
+        // Show modal and loading state with date in title
         modal.style.display = 'block';
-        modalTitle.textContent = `${getTeamName(team1Id)} vs ${getTeamName(team2Id)}`;
+        modalTitle.textContent = `${getTeamName(team1Id)} vs ${getTeamName(team2Id)} - ${formatDateShort(date)}`;
         modalContent.innerHTML = '<div class="loading">Loading game details...</div>';
         
         // Get game details from the schedule data
@@ -1685,7 +1823,7 @@
           if (aCaptain && !bCaptain) return -1;
           if (!aCaptain && bCaptain) return 1;
           
-          return parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0);
+          return parseNumber(b.points_final) - parseNumber(a.points_final);
         });
         
         const team2Lineups = team2AllLineups.filter(lineup => {
@@ -1702,7 +1840,7 @@
           if (aCaptain && !bCaptain) return -1;
           if (!aCaptain && bCaptain) return 1;
           
-          return parseFloat(b.points_final || 0) - parseFloat(a.points_final || 0);
+          return parseNumber(b.points_final) - parseNumber(a.points_final);
         });
         
         // Calculate team totals
@@ -1718,22 +1856,22 @@
         
         const winner = game.winner;
         
-        // Generate lineup tables
+        // Generate lineup tables with clickable player names
         const generateLineupTable = (lineups, teamId, total, isWinner) => {
           const teamData = allTeams.find(t => t.team_id === teamId);
           const teamRecord = teamData ? `${teamData.wins || 0}-${teamData.losses || 0}` : '';
           
           if (lineups.length === 0) {
             return `
-              <div style="background-color: #f8f9fa; border-radius: 8px; overflow: hidden; border: ${isWinner ? '2px solid #28a745' : '1px solid #ddd'};">
-                <div style="background-color: ${isWinner ? '#28a745' : '#333'}; color: white; padding: 1.5rem; text-align: center; cursor: pointer;" onclick="window.location.href='team.html?id=${teamId}'">
-                  <img src="icons/${teamId}.webp" alt="${getTeamName(teamId)}" style="width: 48px; height: 48px; border-radius: 4px;" onerror="this.style.display='none'">
+              <div class="team-breakdown ${isWinner ? 'winner' : ''}">
+                <div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamId}'" style="cursor: pointer;">
+                  <img src="icons/${teamId}.webp" alt="${getTeamName(teamId)}" class="team-logo" onerror="this.style.display='none'">
                   <div>
-                    <h4 style="color: white; margin: 0;">${getTeamName(teamId)}</h4>
+                    <h4>${getTeamName(teamId)}</h4>
                     <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
                   </div>
                 </div>
-                <div style="background-color: #e9ecef; padding: 1rem; text-align: center; font-weight: bold;">Total: ${Math.round(total).toLocaleString()}</div>
+                <div class="team-total">Total: ${Math.round(total).toLocaleString()}</div>
                 <div style="padding: 2rem; text-align: center; color: #666;">No lineup data available</div>
               </div>
             `;
@@ -1742,40 +1880,44 @@
           const lineupRows = lineups.map(player => {
             const isCaptain = player.captain === 'TRUE' || player.captain === true || player.captain === 'true';
             const pointsRaw = parseNumber(player.points_raw);
+            const pointsFinal = parseNumber(player.points_final);
             const globalRank = parseNumber(player.global_rank);
+            
             const captainBonus = isCaptain ? Math.round(pointsRaw * 0.5) : 0;
             
             return `
-              <tr style="${isCaptain ? 'background-color: #fff3cd; font-weight: bold;' : ''}">
-                <td style="padding: 0.8rem; text-align: left;">
-                  ${player.player_handle || 'Unknown'}
-                  ${isCaptain ? '<span style="background-color: #ffc107; color: #333; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.7rem; margin-left: 0.5rem;">C</span>' : ''}
+              <tr class="${isCaptain ? 'captain-row' : ''}">
+                <td class="player-name-cell">
+                  <a href="player.html?player=${encodeURIComponent(player.player_handle || 'Unknown')}" class="player-link">
+                    ${player.player_handle || 'Unknown'}
+                  </a>
+                  ${isCaptain ? '<span class="captain-badge">C</span>' : ''}
                 </td>
-                <td style="padding: 0.8rem; text-align: center; font-weight: bold;">
+                <td class="points-cell">
                   ${Math.round(pointsRaw).toLocaleString()}
-                  ${isCaptain ? `<div style="font-size: 0.75rem; color: #ffc107;">+${captainBonus.toLocaleString()}</div>` : ''}
+                  ${isCaptain ? `<div class="captain-bonus">+${captainBonus.toLocaleString()}</div>` : ''}
                 </td>
-                <td style="padding: 0.8rem; text-align: center; color: #666;">${globalRank > 0 ? Math.round(globalRank) : '-'}</td>
+                <td class="rank-cell">${globalRank > 0 ? Math.round(globalRank) : '-'}</td>
               </tr>
             `;
           }).join('');
           
           return `
-            <div style="background-color: #f8f9fa; border-radius: 8px; overflow: hidden; border: ${isWinner ? '2px solid #28a745' : '1px solid #ddd'};">
-              <div style="background-color: ${isWinner ? '#28a745' : '#333'}; color: white; padding: 1.5rem; text-align: center; cursor: pointer;" onclick="window.location.href='team.html?id=${teamId}'">
-                <img src="icons/${teamId}.webp" alt="${getTeamName(teamId)}" style="width: 48px; height: 48px; border-radius: 4px;" onerror="this.style.display='none'">
+            <div class="team-breakdown ${isWinner ? 'winner' : ''}">
+              <div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamId}'" style="cursor: pointer;">
+                <img src="icons/${teamId}.webp" alt="${getTeamName(teamId)}" class="team-logo" onerror="this.style.display='none'">
                 <div>
-                  <h4 style="color: white; margin: 0;">${getTeamName(teamId)}</h4>
+                  <h4>${getTeamName(teamId)}</h4>
                   <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
                 </div>
               </div>
-              <div style="background-color: #e9ecef; padding: 1rem; text-align: center; font-weight: bold;">Total: ${isNaN(total) ? '-' : Math.round(total).toLocaleString()}</div>
-              <table style="width: 100%; border-collapse: collapse;">
+              <div class="team-total">Total: ${isNaN(total) ? '-' : Math.round(total).toLocaleString()}</div>
+              <table class="lineup-table">
                 <thead>
-                  <tr style="background-color: #f8f9fa;">
-                    <th style="padding: 0.8rem; text-align: left; border-bottom: 2px solid #ddd;">Player</th>
-                    <th style="padding: 0.8rem; text-align: center; border-bottom: 2px solid #ddd;">Points</th>
-                    <th style="padding: 0.8rem; text-align: center; border-bottom: 2px solid #ddd;">Rank</th>
+                  <tr>
+                    <th>Player</th>
+                    <th>Points</th>
+                    <th>Rank</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1788,7 +1930,7 @@
         
         // Generate the modal content
         modalContent.innerHTML = `
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;" class="game-details-grid">
+          <div class="game-details-grid">
             ${generateLineupTable(team1Lineups, team1Id, team1Total, winner === team1Id)}
             ${generateLineupTable(team2Lineups, team2Id, team2Total, winner === team2Id)}
           </div>
