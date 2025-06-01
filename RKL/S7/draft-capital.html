@@ -231,7 +231,8 @@
         background-color: #fff3cd;
       }
 
-      .forfeited-pick {
+      /* This class is now used for "Pending Forfeiture" */
+      .forfeited-pick { 
         background-color: #f8d7da;
         opacity: 0.7; 
       }
@@ -449,7 +450,8 @@
               <option value="all">All Picks</option>
               <option value="original">Original Owner</option>
               <option value="traded">Traded</option>
-              <option value="forfeited">Forfeited</option>
+              {/* MODIFIED: Filter option text and value */}
+              <option value="pending_forfeiture">Pending Forfeiture</option>
             </select>
           </div>
         </div>
@@ -625,6 +627,7 @@
         });
       }
       
+      // ***** MODIFIED getFilteredPicks for "pending_forfeiture" *****
       function getFilteredPicks() {
         const roundFilter = document.getElementById('round-filter').value;
         const ownerFilter = document.getElementById('owner-filter').value;
@@ -634,13 +637,14 @@
           if (parseInt(pick.season) !== currentSeason) return false;
           if (roundFilter !== 'all' && parseInt(pick.round) !== parseInt(roundFilter)) return false;
           if (ownerFilter !== 'all' && pick.current_owner !== ownerFilter) return false;
+          
           if (statusFilter !== 'all') {
             const isOriginal = pick.current_owner === pick.original_team;
-            const isForfeited = pick.notes && pick.notes.toUpperCase().includes('FORFEITED');
+            const isPendingForfeiture = pick.notes && pick.notes.toUpperCase() === 'PENDING FORFEITURE';
             
             if (statusFilter === 'original' && !isOriginal) return false;
-            if (statusFilter === 'traded' && (isOriginal || isForfeited)) return false; 
-            if (statusFilter === 'forfeited' && !isForfeited) return false;
+            if (statusFilter === 'traded' && (isOriginal || isPendingForfeiture)) return false; 
+            if (statusFilter === 'pending_forfeiture' && !isPendingForfeiture) return false;
           }
           return true;
         });
@@ -659,38 +663,33 @@
         const filteredPicks = getFilteredPicks();
         
         const totalPicks = filteredPicks.length;
-        const originalPicksCount = filteredPicks.filter(p => p.current_owner === p.original_team && !(p.notes && p.notes.toUpperCase().includes('FORFEITED'))).length;
-        const forfeitedPicksCount = filteredPicks.filter(p => p.notes && p.notes.toUpperCase().includes('FORFEITED')).length;
-        const tradedPicksCount = filteredPicks.filter(p => p.current_owner !== p.original_team && !(p.notes && p.notes.toUpperCase().includes('FORFEITED'))).length;
+        const originalPicksCount = filteredPicks.filter(p => p.current_owner === p.original_team && !(p.notes && p.notes.toUpperCase() === 'PENDING FORFEITURE')).length;
+        // ***** MODIFIED for Pending Forfeiture Count and Label *****
+        const pendingForfeiturePicksCount = filteredPicks.filter(p => p.notes && p.notes.toUpperCase() === 'PENDING FORFEITURE').length;
+        const tradedPicksCount = filteredPicks.filter(p => p.current_owner !== p.original_team && !(p.notes && p.notes.toUpperCase() === 'PENDING FORFEITURE')).length;
         
         document.getElementById('pick-summary').innerHTML = `
           <div class="summary-grid">
             <div class="summary-item"><div class="summary-number">${totalPicks}</div><div class="summary-label">Total Picks</div></div>
             <div class="summary-item"><div class="summary-number">${originalPicksCount}</div><div class="summary-label">Original Owner</div></div>
             <div class="summary-item"><div class="summary-number">${tradedPicksCount}</div><div class="summary-label">Traded</div></div>
-            <div class="summary-item"><div class="summary-number">${forfeitedPicksCount}</div><div class="summary-label">Forfeited</div></div>
+            <div class="summary-item"><div class="summary-number">${pendingForfeiturePicksCount}</div><div class="summary-label">Pending Forfeiture</div></div>
           </div>`;
         
-        // ***** MODIFIED SORTING LOGIC *****
         const sortedPicks = filteredPicks.sort((a, b) => {
-          // Primary sort: Group by original_team's name (alphabetical)
           const teamNameA = getTeamName(a.original_team);
           const teamNameB = getTeamName(b.original_team);
-
           if (teamNameA < teamNameB) return -1;
           if (teamNameA > teamNameB) return 1;
-
-          // Secondary sort: By round (ascending)
           const roundA = parseInt(a.round);
           const roundB = parseInt(b.round);
           if (roundA !== roundB) return roundA - roundB;
-
-          // Tertiary sort (fallback): by pick_description
           return (a.pick_description || '').localeCompare(b.pick_description || '');
         });
         
         const tableHTML = sortedPicks.map(pick => {
-          const isForfeited = pick.notes && pick.notes.toUpperCase().includes('FORFEITED');
+          // ***** MODIFIED to check for "PENDING FORFEITURE" *****
+          const isPendingForfeiture = pick.notes && pick.notes.toUpperCase() === 'PENDING FORFEITURE';
           let tradeStatusText = 'Original Owner'; 
           let rowClass = 'original-pick';
 
@@ -706,9 +705,9 @@
               }
           }
 
-          if (isForfeited) {
-            tradeStatusText = 'FORFEITED';
-            rowClass = 'forfeited-pick';
+          if (isPendingForfeiture) {
+            tradeStatusText = 'Pending Forfeiture';
+            rowClass = 'forfeited-pick'; // Use existing class for styling
           } else if (pick.current_owner !== pick.original_team) {
             rowClass = 'traded-pick';
             const relevantTransactions = (allTransactionsLogData || [])
@@ -736,7 +735,8 @@
           
           let finalTradeStatusHTML = escapeHTML(tradeStatusText); 
 
-          if (!isForfeited && pick.current_owner !== pick.original_team && pick.notes) {
+          // Link only if actually traded (not original owner) AND not pending forfeiture AND has notes for linking
+          if (pick.current_owner !== pick.original_team && !isPendingForfeiture && pick.notes) {
               const citationRegex = /\b([A-Z]{2,4})\s*\/\s*([A-Z]{2,4})\s+(\d{1,2}\/\d{1,2}\/\d{4})\b/i;
               const match = pick.notes.match(citationRegex);
 
@@ -757,7 +757,8 @@
           }
           
           let originalTeamCellClasses = "owner-cell"; 
-          if (pick.current_owner !== pick.original_team && !isForfeited) { 
+          // Apply opacity if traded and NOT pending forfeiture
+          if (pick.current_owner !== pick.original_team && !isPendingForfeiture) { 
             originalTeamCellClasses += " original-team-cell-traded";
           }
 
@@ -826,10 +827,11 @@
                 <div class="team-picks">
                   ${sortedPicks.map(pick => {
                     const isOwn = pick.current_owner === pick.original_team;
-                    const isForfeited = pick.notes && pick.notes.toUpperCase().includes('FORFEITED');
+                    // ***** MODIFIED to check for "PENDING FORFEITURE" *****
+                    const isPendingForfeiture = pick.notes && pick.notes.toUpperCase() === 'PENDING FORFEITURE';
                     let originText = '';
-                    if (isForfeited) {
-                        originText = '<div class="pick-origin" style="color: #dc3545;">FORFEITED</div>'; 
+                    if (isPendingForfeiture) { // Use isPendingForfeiture here
+                        originText = '<div class="pick-origin" style="color: #dc3545;">PENDING FORFEITURE</div>'; 
                     } else if (!isOwn) {
                         originText = `<div class="pick-origin">from ${escapeHTML(getTeamName(pick.original_team))}</div>`;
                     }
@@ -845,8 +847,15 @@
                     }
                     const safeFormattedPickDescInTeamView = escapeHTML(formattedPickDescInTeamView);
                     
+                    // Apply forfeited-pick class styling in team view as well
+                    let pickItemClass = isOwn && !isPendingForfeiture ? 'own' : 'acquired';
+                    if (isPendingForfeiture) {
+                        pickItemClass = 'forfeited-pick'; // Reuse for styling consistency if desired
+                    }
+
+
                     return `
-                      <div class="pick-item ${isForfeited ? 'forfeited-pick' : (isOwn ? 'own' : 'acquired')}">
+                      <div class="pick-item ${pickItemClass}">
                         ${safeFormattedPickDescInTeamView}
                         ${originText}
                       </div>
