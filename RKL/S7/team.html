@@ -741,12 +741,8 @@
         }
 
         /* Show mobile date */
-        .mobile-game-date {
-          display: block;
-          text-align: center;
-          margin-top: 0.5rem;
-          font-size: 0.75rem;
-          color: #666;
+        .mobile-game-date-inline {
+          display: block !important;
         }
 
         .modal-content {
@@ -1347,7 +1343,7 @@
                   </div>
                   <span class="team-score ${oppScoreClass}">${oppScore}</span>
                 </div>
-                <div class="mobile-game-date">${gameDate}</div>
+                <div class="mobile-game-date-inline" style="text-align: center; margin-top: 0.5rem; font-size: 0.75rem; color: #666;">${gameDate}</div>
               </div>
             </div>
           `;
