@@ -270,7 +270,6 @@
           grid-template-columns: 1fr 1fr;
         }
         
-        /* Hide extra stats on mobile - only show record and PAM */
         .team-stats .stat-item:nth-child(3),
         .team-stats .stat-item:nth-child(4) {
           display: none;
@@ -373,15 +372,13 @@
         return data;
       }
       
-      function getPlayoffIndicator(conference, rank) {
-        if (rank <= 6) {
-          return `<div class="playoff-position playoff-seed">${rank}</div>`;
-        } else if (rank <= 10) {
-          return `<div class="playoff-position playin-seed">${rank}</div>`;
+      function getPlayoffIndicator(conference, rankInConference) { // Renamed parameter for clarity
+        if (rankInConference <= 6) {
+          return `<div class="playoff-position playoff-seed">${rankInConference}</div>`;
+        } else if (rankInConference <= 10) {
+          return `<div class="playoff-position playin-seed">${rankInConference}</div>`;
         } else {
-          // For ranks > 10, no specific indicator shown, or you can add one for 'eliminated'
-          // return `<div class="playoff-position eliminated">${rank}</div>`; // If you want to show eliminated
-          return ''; // No indicator for teams outside top 10 for now
+          return ''; 
         }
       }
       
@@ -414,31 +411,33 @@
           team.team_id && 
           team.team_id.toUpperCase() !== 'RETIRED' && 
           team.team_id.toUpperCase() !== 'FREE_AGENT' &&
-          team.team_id.toUpperCase() !== 'FA' && // Added FA check
+          team.team_id.toUpperCase() !== 'FA' && 
           team.conference && (team.conference.toLowerCase() === 'eastern' || team.conference.toLowerCase() === 'western')
         );
         
+        // ***** MODIFIED SORTING LOGIC: Reverted to Wins then PAM *****
         const easternTeams = activeTeams
           .filter(team => team.conference.toLowerCase() === 'eastern')
           .sort((a, b) => {
-            const rankA = parseInt(a.conf_rank || 99); // Sort by conference rank
-            const rankB = parseInt(b.conf_rank || 99);
-            return rankA - rankB;
+            const winsA = parseInt(a.wins || 0);
+            const winsB = parseInt(b.wins || 0);
+            if (winsB !== winsA) return winsB - winsA; // Primary sort: wins descending
+            return parseFloat(b.pam || 0) - parseFloat(a.pam || 0); // Secondary sort: pam descending
           });
           
         const westernTeams = activeTeams
           .filter(team => team.conference.toLowerCase() === 'western')
           .sort((a, b) => {
-            const rankA = parseInt(a.conf_rank || 99); // Sort by conference rank
-            const rankB = parseInt(b.conf_rank || 99);
-            return rankA - rankB;
+            const winsA = parseInt(a.wins || 0);
+            const winsB = parseInt(b.wins || 0);
+            if (winsB !== winsA) return winsB - winsA; // Primary sort: wins descending
+            return parseFloat(b.pam || 0) - parseFloat(a.pam || 0); // Secondary sort: pam descending
           });
         
-        function generateTeamCard(team, rankInConference) {
+        function generateTeamCard(team, rankInConference) { // rankInConference is now based on sort order (index + 1)
           const wins = parseInt(team.wins || 0);
           const losses = parseInt(team.losses || 0);
           const pam = parseFloat(team.pam || 0);
-          // Using med_starter_rank for the display, label changed to "Med Rank"
           const medianStarterRank = parseFloat(team.med_starter_rank || 0); 
           
           return `
@@ -479,20 +478,17 @@
         }
         
         const easternHTML = easternTeams.map((team, index) => {
-          // rankInConference is directly from the sorted data's conf_rank if available, otherwise use index.
-          // Assuming conf_rank is reliable for playoff indicator, otherwise index+1 is fallback.
-          return generateTeamCard(team, parseInt(team.conf_rank || index + 1));
+          return generateTeamCard(team, index + 1); // Use index + 1 for rank after sorting
         }).join('');
         
         const westernHTML = westernTeams.map((team, index) => {
-          return generateTeamCard(team, parseInt(team.conf_rank || index + 1));
+          return generateTeamCard(team, index + 1); // Use index + 1 for rank after sorting
         }).join('');
         
         document.getElementById('eastern-teams').innerHTML = easternHTML || 
           '<p class="error" style="grid-column: 1 / -1;">No Eastern Conference teams found or data error.</p>';
         document.getElementById('western-teams').innerHTML = westernHTML || 
           '<p class="error" style="grid-column: 1 / -1;">No Western Conference teams found or data error.</p>';
-        
       }
       
       document.addEventListener('DOMContentLoaded', loadTeams);
