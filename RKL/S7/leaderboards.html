@@ -142,7 +142,7 @@
         margin: 0;
         font-size: 1.4rem;
       }
-      .leaderboard-subtitle { /* Style for subtitle if added */
+      .leaderboard-subtitle { 
         font-size: 0.9rem;
         opacity: 0.8;
         margin-top: 0.5rem;
@@ -177,28 +177,28 @@
       }
 
       .leaderboard-table th:nth-child(1), 
-      .leaderboard-table td:nth-child(1) { /* Rank */
+      .leaderboard-table td:nth-child(1) { 
         width: 12%; 
         text-align: center;
         min-width: 60px;
       }
 
       .leaderboard-table th:nth-child(2), 
-      .leaderboard-table td:nth-child(2) { /* Player */
+      .leaderboard-table td:nth-child(2) { 
         width: 50%; 
         text-align: left;
         min-width: 180px;
       }
 
       .leaderboard-table th:nth-child(3), 
-      .leaderboard-table td:nth-child(3) { /* Stat (Karma / Daily Rank / etc.) */
+      .leaderboard-table td:nth-child(3) { 
         width: 19%; 
         text-align: center;
         min-width: 80px;
       }
 
       .leaderboard-table th:nth-child(4), 
-      .leaderboard-table td:nth-child(4) { /* Secondary (Games / Week / Percentage) */
+      .leaderboard-table td:nth-child(4) { 
         width: 19%; 
         text-align: center;
         min-width: 60px;
@@ -392,11 +392,9 @@
         const rank = parseInt(value || 0);
         return rank > 0 ? rank : '-';
       }
-      // Helper to format percentages
       function formatPercentage(value) {
           return `${(parseFloat(value || 0) * 100).toFixed(1)}%`;
       }
-
 
       const categories = {
         total_points: {
@@ -533,14 +531,14 @@
       }
 
       function parseNumber(value) {
-        if (value === null || typeof value === 'undefined' || value.trim() === '') return 0;
+        if (value === null || typeof value === 'undefined' || String(value).trim() === '') return 0;
         const cleaned = String(value).replace(/,/g, '');
         const parsed = parseFloat(cleaned);
         return isNaN(parsed) ? 0 : parsed;
       }
 
-      // ***** RESTORED FULL calculateRELForAllPlayers function *****
       function calculateRELForAllPlayers(players, weeklyAverages, lineups) {
+        // This is the full function from your original file
         console.log('Calculating REL values and median ranks for all players...');
         const weeklyAveragesMap = {};
         weeklyAverages.forEach(week => {
@@ -605,7 +603,7 @@
           const games_played_count = parseInt(player.games_played || 0);
 
           return {
-            ...player, // Spread existing player fields like player_handle, current_team_id, total_points
+            ...player, 
             calculated_rel_mean: calculated_rel_mean,
             calculated_rel_median: calculated_rel_median,
             calculated_median_rank: calculated_median_rank,
@@ -613,8 +611,8 @@
             aag_mean_pct: games_played_count > 0 ? gamesAboveMean / games_played_count : 0,
             aag_median: gamesAboveMedian,
             aag_median_pct: games_played_count > 0 ? gamesAboveMedian / games_played_count : 0,
-            // Ensure total_points is a number for sorting
-            total_points: parseNumber(player.total_points)
+            total_points: parseNumber(player.total_points),
+            games_played: games_played_count // Ensure games_played is a number
           };
         });
       }
@@ -624,31 +622,34 @@
         const gamePerformances = [];
         const dateToWeekMap = {};
         weeklyAverages.forEach(wa => {
-          if (wa.date && wa.week) {
-            dateToWeekMap[wa.date] = wa.week;
+          if (wa.date && wa.week) { // Ensure both date and week exist
+            dateToWeekMap[wa.date] = String(wa.week).trim(); // Store week as string, trim whitespace
           }
         });
 
         const playerTeamMap = {}; 
         playersFullData.forEach(p => {
-            playerTeamMap[p.player_handle] = p.current_team_id;
+            if(p.player_handle) playerTeamMap[p.player_handle] = p.current_team_id;
         });
 
         lineups.forEach(game => {
           if (game.started && (String(game.started).toUpperCase() === 'TRUE')) {
             const karma = parseNumber(game.points_final);
             const dailyRank = parseNumber(game.global_rank);
-            const week = dateToWeekMap[game.date] || 'N/A'; // Make sure week from Weekly_Averages is just the number
+            const weekStr = dateToWeekMap[game.date];
             
-            if ((karma > 0 || dailyRank > 0) && week !== 'N/A' && String(week).match(/^\d+$/) ) { // Ensure week is a number
-              gamePerformances.push({
-                player_handle: game.player_handle,
-                team_id: game.team_id || playerTeamMap[game.player_handle] || 'FA', 
-                karma: karma,
-                daily_rank: dailyRank,
-                week: parseInt(week), // Store week as number
-                date: game.date 
-              });
+            // Ensure weekStr is valid and a number before parsing
+            if (weekStr && weekStr !== 'N/A' && String(weekStr).match(/^\d+$/)) {
+              if (karma > 0 || dailyRank > 0) { // Include if either karma or rank is valid
+                gamePerformances.push({
+                  player_handle: game.player_handle,
+                  team_id: game.team_id || playerTeamMap[game.player_handle] || 'FA', 
+                  karma: karma,
+                  daily_rank: dailyRank,
+                  week: parseInt(weekStr), 
+                  date: game.date 
+                });
+              }
             }
           }
         });
@@ -674,12 +675,9 @@
         }
         
         allTeams = teamsData; 
-
-        // Process for existing player-aggregate leaderboards
-        // ***** ENSURE THIS USES THE FULL FUNCTION *****
         const playersWithREL = calculateRELForAllPlayers(playersData, weeklyAveragesData, lineupsData);
         allPlayers = playersWithREL.filter(player => 
-          player.player_status === 'ACTIVE' && parseInt(player.games_played || 0) >= 0 // Allow 0 games played for some views
+          player.player_status === 'ACTIVE' //&& parseInt(player.games_played || 0) > 0 // Keep this flexible if 0 games is ok for some views
         );
         
         allGamePerformances = processGamePerformances(lineupsData, weeklyAveragesData, playersData);
@@ -687,14 +685,19 @@
         displayLeaderboard();
       }
       
-      // ***** MODIFIED getTeamName for robustness *****
       function getTeamName(teamId) {
         if (!teamId || String(teamId).toLowerCase() === 'undefined' || String(teamId).trim() === '') return 'N/A';
         const team = allTeams.find(t => t.team_id === teamId);
-        return team ? team.team_name : teamId; 
+        // If team not found by ID, return the ID itself if it's not 'FA' or 'N/A', otherwise 'N/A'
+        return team ? team.team_name : ( (teamId === 'FA' || teamId === 'N/A') ? 'N/A' : teamId ); 
       }
 
-      function getRankIndicator(rank) { /* ... (existing code) ... */ }
+      function getRankIndicator(rank) {
+        if (rank === 1) { return `<div class="first-place">${rank}</div>`; }
+        else if (rank === 2) { return `<div class="second-place">${rank}</div>`; }
+        else if (rank === 3) { return `<div class="third-place">${rank}</div>`; }
+        else { return `<span>${rank}</span>`; }
+      }
       
       function displayLeaderboard() {
         const category = categories[currentCategory];
@@ -741,7 +744,7 @@
           
           let primarySort = category.descending ? bVal - aVal : aVal - bVal;
           
-          if (primarySort === 0) { // Tie-breaking logic
+          if (primarySort === 0) { 
             if (!isGameLeaderboard && (currentCategory === 'aag_mean' || currentCategory === 'aag_median')) {
               const aREL = parseFloat(a.calculated_rel_median || 0);
               const bREL = parseFloat(b.calculated_rel_median || 0);
@@ -775,22 +778,23 @@
           if (isGameLeaderboard) {
             playerHandle = item.player_handle;
             teamIdForLogo = item.team_id; 
-            statValue = category.formatValue(item[category.sortField]); // Use sortField directly
-            secondaryValueCellContent = item[category.secondaryField] !== undefined ? category.formatSecondaryValue(item[category.secondaryField]) : '-';
+            statValue = category.formatValue(item[category.sortField], category.sortField);
+            secondaryValueCellContent = item[category.secondaryField] !== undefined ? category.formatSecondaryValue(item[category.secondaryField], category.secondaryField) : '-';
           } else { 
             playerHandle = item.player_handle;
             teamIdForLogo = item.current_team_id;
-            statValue = category.formatValue(item[category.sortField]);
-            secondaryValueCellContent = item[category.secondaryField] !== undefined ? category.formatSecondaryValue(item[category.secondaryField]) : '-';
+            statValue = category.formatValue(item[category.sortField], category.sortField);
+            secondaryValueCellContent = item[category.secondaryField] !== undefined ? category.formatSecondaryValue(item[category.secondaryField], category.secondaryField) : '-';
           }
           
-          const teamLogoSrc = (teamIdForLogo && String(teamIdForLogo).toLowerCase() !== 'undefined' && String(teamIdForLogo).trim() !== '') 
+          const teamLogoSrc = (teamIdForLogo && String(teamIdForLogo).toLowerCase() !== 'undefined' && String(teamIdForLogo).trim() !== '' && teamIdForLogo !== 'N/A') 
                               ? `icons/${encodeURIComponent(teamIdForLogo)}.webp` 
-                              : 'icons/FA.webp'; // Fallback logo
+                              : 'icons/FA.webp'; 
 
           return `
             <tr>
-              <td class="rank-cell">${getRankIndicator(rank)}</td>
+              {/* MODIFIED: Rank display directly using rank variable */}
+              <td class="rank-cell">${rank}</td>
               <td class="player-cell">
                 <img src="${teamLogoSrc}" alt="${getTeamName(teamIdForLogo)}" class="team-logo" onerror="this.style.display='none'; this.src='icons/FA.webp';">
                 <div>
@@ -809,7 +813,7 @@
         }).join('');
         
         leaderboardBody.innerHTML = tableHTML;
-        leaderboardTable.dataset.activeColumns = category.columns.length; // For mobile CSS
+        leaderboardTable.dataset.activeColumns = category.columns.length;
       }
       
       document.addEventListener('DOMContentLoaded', () => { 
@@ -828,7 +832,13 @@
           if (storedCategory) sessionStorage.removeItem('selectedLeaderboardCategory');
           if (categoryParam) window.history.replaceState({}, document.title, window.location.pathname);
         } else {
-            currentCategory = 'total_points'; // Fallback if invalid category from URL/storage
+            currentCategory = 'total_points'; 
+            document.querySelectorAll('.category-btn').forEach(btn => { // Ensure default is active
+                btn.classList.remove('active');
+                if (btn.dataset.category === currentCategory) {
+                btn.classList.add('active');
+                }
+            });
         }
         
         document.querySelectorAll('.category-btn').forEach(btn => {
@@ -836,10 +846,21 @@
             document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentCategory = btn.dataset.category;
+            sessionStorage.setItem('selectedLeaderboardCategory', currentCategory); // Store selection
             displayLeaderboard();
           });
         });
-        document.getElementById('show-count').addEventListener('change', displayLeaderboard);
+        document.getElementById('show-count').addEventListener('change', () => {
+            sessionStorage.setItem('selectedLeaderboardShowCount', document.getElementById('show-count').value);
+            displayLeaderboard();
+        });
+        
+        // Restore show count from session storage
+        const storedShowCount = sessionStorage.getItem('selectedLeaderboardShowCount');
+        if (storedShowCount) {
+            document.getElementById('show-count').value = storedShowCount;
+        }
+
         loadData();
       });
     </script>
