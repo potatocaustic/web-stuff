@@ -1349,14 +1349,20 @@
         
         // Add mobile dates dynamically for mobile screens only
         if (window.innerWidth <= 768) {
-          const gameItems = document.querySelectorAll('.game-matchup');
+          const gameItems = document.querySelectorAll('.game-item');
           teamGames.forEach((game, index) => {
             if (gameItems[index]) {
               const mobileDate = document.createElement('div');
-              mobileDate.style.textAlign = 'center';
-              mobileDate.style.marginTop = '0.5rem';
-              mobileDate.style.fontSize = '0.75rem';
+              mobileDate.className = 'mobile-date-under-badge';
+              mobileDate.style.position = 'absolute';
+              mobileDate.style.top = '2.75rem'; // Position under the week badge
+              mobileDate.style.right = '0.75rem';
+              mobileDate.style.fontSize = '0.65rem';
               mobileDate.style.color = '#666';
+              mobileDate.style.fontWeight = '500';
+              mobileDate.style.textAlign = 'center';
+              mobileDate.style.width = '28px'; // Same width as week badge
+              mobileDate.style.zIndex = '1';
               mobileDate.textContent = formatDateMMDD(game.date);
               gameItems[index].appendChild(mobileDate);
             }
