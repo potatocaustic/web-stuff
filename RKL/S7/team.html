@@ -307,9 +307,9 @@
       .game-info-table {
         display: grid;
         grid-template-rows: 1fr 1fr;
-        width: 45px;
-        min-width: 45px;
-        max-width: 45px;
+        width: 50px;
+        min-width: 50px;
+        max-width: 50px;
         flex-shrink: 0;
         border-right: 1px solid #ddd;
         background-color: #f8f9fa;
@@ -770,6 +770,18 @@
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+        }
+
+        .team-name.win {
+          color: #28a745;
+        }
+
+        .team-name.loss {
+          color: #dc3545;
+        }
+
+        .team-name.upcoming {
+          color: #333;
         }
 
         .team-record {
@@ -1398,22 +1410,22 @@
                 <!-- Mobile week badge -->
                 <div class="week-badge">${gameWeek}</div>
                 
-                <div class="team ${teamScoreClass}">
+                <div class="team ${teamWon ? 'winner' : oppWon ? 'loser' : 'upcoming'}">
                   <img src="icons/${teamId}.webp" alt="${teamData.team_name}" class="team-logo" onerror="this.style.display='none'">
                   <div class="team-info">
-                    <span class="team-name">${teamData.team_name}</span>
+                    <span class="team-name ${teamWon ? 'win' : oppWon ? 'loss' : 'upcoming'}">${teamData.team_name}</span>
                     <span class="team-record">${teamRecord}</span>
                   </div>
-                  <span class="team-score ${teamScoreClass}">${teamScore}</span>
+                  <span class="team-score">${teamScore}</span>
                 </div>
                 <span class="vs">vs</span>
-                <div class="team ${oppScoreClass}">
+                <div class="team ${oppWon ? 'winner' : teamWon ? 'loser' : 'upcoming'}">
                   <img src="icons/${opponentId}.webp" alt="${opponentName}" class="team-logo" onerror="this.style.display='none'">
                   <div class="team-info">
-                    <span class="team-name">${opponentName}</span>
+                    <span class="team-name ${oppWon ? 'win' : teamWon ? 'loss' : 'upcoming'}">${opponentName}</span>
                     <span class="team-record">${opponentRecord}</span>
                   </div>
-                  <span class="team-score ${oppScoreClass}">${oppScore}</span>
+                  <span class="team-score">${oppScore}</span>
                 </div>
               </div>
             </div>
