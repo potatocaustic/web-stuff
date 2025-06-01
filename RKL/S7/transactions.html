@@ -216,13 +216,8 @@
 
 
       .draft-pick {
-        /* background-color: #f0f0f0; */ /* Removed */
-        /* padding: 0.2rem 0.5rem; */   /* Removed */
-        /* border-radius: 3px; */      /* Removed */
-        font-family: monospace;
+        /* font-family: monospace; */ /* Removed for page default font */
         font-size: 0.9rem;
-        /* border: 1px solid #ddd; */    /* Removed */
-        /* color: #333; */ /* Inherits text color or set specific if needed */
       }
 
       /* Multi-transaction group */
@@ -534,7 +529,7 @@
       }
 
       function escapeRegExp(string) {
-        if (typeof string !== 'string') return ''; // Handle non-string inputs
+        if (typeof string !== 'string') return '';
         return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       }
       
@@ -642,7 +637,9 @@
           return;
         }
         
-        document.getElementById('transactions-title').textContent = `${finalGroupsToShow.length} Transaction Group${finalGroupsToShow.length !== 1 ? 's' : ''}`;
+        // Corrected title text
+        document.getElementById('transactions-title').textContent = 
+          `${finalGroupsToShow.length} Transaction${finalGroupsToShow.length !== 1 ? 's' : ''}`;
         
         const transactionsHTML = finalGroupsToShow.map(group => {
           const isTradeGroup = group.some(t => t.transaction_type === "TRADE");
@@ -731,7 +728,6 @@
                 let formattedPickDesc = transaction.draft_pick_id; 
                 if (pickInfo && pickInfo.pick_description) {
                     formattedPickDesc = pickInfo.pick_description;
-                    // Using pickInfo.original_team as per previous correction
                     if (pickInfo.original_team && pickInfo.original_team !== 'N/A' && pickInfo.original_team !== '') {
                         const originalOwnerData = getTeamData(pickInfo.original_team);
                         const originalOwnerAbbreviation = originalOwnerData.team_id; 
