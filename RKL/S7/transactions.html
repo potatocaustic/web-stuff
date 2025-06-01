@@ -145,17 +145,13 @@
         padding: 1.5rem;
         border-bottom: 1px solid #eee;
         transition: background-color 0.2s;
-        display: block; /* For <a> tag to behave like a block */
-        text-decoration: none; /* Remove underline from <a> tag */
-        color: inherit; /* Inherit text color for <a> tag */
+        /* display: block; /* Not needed if it's a div by default */
+        /* text-decoration: none; /* Not needed for div */
+        /* color: inherit; /* Not needed for div */
       }
 
-      .transaction-item.clickable:hover {
-        background-color: #e9f5ff; /* Lighter blue for hover on clickable */
-        cursor: pointer;
-      }
-       .transaction-item:not(.clickable):hover {
-        background-color: #f8f9fa; /* Original hover for non-clickable */
+      .transaction-item:hover {
+        background-color: #f8f9fa;
       }
 
 
@@ -184,7 +180,6 @@
       .transaction-type.drop { background-color: #ffc107; color: #333; }
       .transaction-type.gm_resignation { background-color: #6c757d; color: white; }
       .transaction-type.gm_hired { background-color: #17a2b8; color: white; }
-      /* Add more types if needed */
       .transaction-type.waiver_claim { background-color: #fd7e14; color: white; }
       .transaction-type.signing { background-color: #20c997; color: white; }
 
@@ -207,13 +202,25 @@
         border-radius: 3px;
       }
 
-      .player-name { font-weight: bold; color: #007bff;}
+      .player-name-link, .team-name-link { 
+        font-weight: bold; 
+        color: #007bff;
+        text-decoration: none;
+      }
+      .player-name-link:hover, .team-name-link:hover {
+        text-decoration: underline;
+      }
+      .team-name-link { /* Slightly less bold for team name links in text if desired */
+          font-weight: 500;
+      }
+
       .player-stats-inline { font-size: 0.85em; color: #555; }
-      .gm-name { font-weight: bold; color: #17a2b8; }
-      .team-name { font-weight: 500; color: #333; }
+      .gm-name { font-weight: bold; color: #17a2b8; } /* GM names might not be linkable if no GM pages */
+      /* .team-name { font-weight: 500; color: #333; } /* This class might be redundant if all team names are links */
+
 
       .draft-pick {
-        background-color: #f0f0f0; /* Slightly different background for picks */
+        background-color: #f0f0f0; 
         padding: 0.2rem 0.5rem;
         border-radius: 3px;
         font-family: monospace;
@@ -224,14 +231,13 @@
       /* Multi-transaction group */
       .multi-transaction {
         border-left: 4px solid #007bff;
-        /* background-color: #f8f9fa; */ /* Can be removed if clickable hover is preferred */
       }
 
       .trade-parts {
         display: grid;
         grid-template-columns: 1fr auto 1fr;
         gap: 1rem;
-        align-items: flex-start; /* Align items to the top */
+        align-items: flex-start; 
         margin-top: 1rem;
       }
 
@@ -247,16 +253,20 @@
         color: #007bff;
         font-weight: bold;
         text-align: center;
-        margin-top: 1.5rem; /* Adjust for better vertical alignment with content */
+        margin-top: 1.5rem; 
       }
 
-      .trade-team {
+      .trade-team { /* This div contains the team logo and name + verb */
         font-weight: bold;
-        color: #0056b3; /* Darker blue for team names in trades */
+        /* color: #0056b3; /* Color handled by link */
         margin-bottom: 0.75rem;
         display: flex;
         align-items: center;
       }
+      .trade-team .team-name-link {
+          color: #0056b3; /* Darker blue for team names in trades */
+      }
+
 
       .trade-assets {
         list-style: none;
@@ -272,10 +282,6 @@
       .trade-assets li:last-child {
         border-bottom: none;
       }
-      .trade-assets li .player-name {
-        color: #007bff; /* Standard player name color */
-      }
-
 
       /* Loading and error states */
       .loading { text-align: center; padding: 3rem; color: #666; font-size: 1.1rem; }
@@ -369,12 +375,10 @@
       let allTransactions = [];
       let allTeams = [];
       let allDraftPicks = [];
-      // --- NEW: Global storage for player related data ---
       let allPlayers = [];
       let allLineupsData = [];
       let allWeeklyAverages = [];
-      let playerStatsCache = {}; // Cache for calculated player stats
-      // --- END NEW ---
+      let playerStatsCache = {}; 
       
       async function fetchSheetData(sheetName) {
         try {
@@ -388,7 +392,6 @@
         }
       }
       
-      // Using more robust CSV parser
       function parseCSV(csvText) {
         const lines = csvText.trim().split('\n');
         const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
@@ -399,7 +402,7 @@
             let inQuotes = false;
             for (let j = 0; j < lines[i].length; j++) {
                 const char = lines[i][j];
-                if (char === '"' && (j === 0 || lines[i][j-1] !== '\\')) { // Handle escaped quotes if any, basic version
+                if (char === '"' && (j === 0 || lines[i][j-1] !== '\\')) { 
                     inQuotes = !inQuotes;
                 } else if (char === ',' && !inQuotes) {
                     values.push(currentVal.replace(/^"|"$/g, '').trim());
@@ -430,30 +433,30 @@
         return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
       }
       
-      function getTeamName(teamId) {
-        if (!teamId) return 'N/A';
+      function getTeamData(teamId) { // Returns full team object or a fallback
+        if (!teamId) return { team_id: teamId, team_name: 'N/A' };
         const team = allTeams.find(t => t.team_id === teamId);
-        return team ? team.team_name : teamId;
+        return team || { team_id: teamId, team_name: teamId }; // Fallback to ID if not found
       }
+
+      function getTeamNameLink(teamId) {
+        const team = getTeamData(teamId);
+        return `<a href="team.html?id=${encodeURIComponent(team.team_id)}" class="team-name-link">${team.team_name}</a>`;
+      }
+      
+      function getPlayerNameLink(playerHandle) {
+          if (!playerHandle) return 'N/A';
+          return `<a href="player.html?player=${encodeURIComponent(playerHandle)}" class="player-name-link">${playerHandle}</a>`;
+      }
+
 
       function getTeamLogo(teamId) {
         if (!teamId) return '';
-        // Path from transactions.html (in S7 folder) to icons (in S7/icons folder)
-        return `<img src="icons/${teamId}.webp" alt="${getTeamName(teamId)}" class="team-logo-inline" onerror="this.style.display='none'">`;
+        const team = getTeamData(teamId); // Use getTeamData to get name for alt text
+        return `<img src="icons/${team.team_id}.webp" alt="${team.team_name}" class="team-logo-inline" onerror="this.style.display='none'">`;
       }
 
-      function isValidHttpUrl(string) {
-        let url;
-        try {
-          url = new URL(string);
-        } catch (_) {
-          return false;  
-        }
-        return url.protocol === "http:" || url.protocol === "https:";
-      }
-
-      // --- NEW: Player Stat Calculation Functions (adapted from player.html) ---
-      function parsePlayerNumber(value) { // Specific parser for player stats
+      function parsePlayerNumber(value) { 
         if (value === null || value === undefined || value === '') return 0;
         const cleaned = String(value).replace(/,/g, '');
         const parsed = parseFloat(cleaned);
@@ -468,7 +471,7 @@
         if (playerGames.length === 0) return 0;
         
         const weeklyAveragesMap = {};
-        weeklyAverages.forEach(week => {
+        (weeklyAverages || []).forEach(week => { // Add guard for weeklyAverages
           if (week.date) {
             weeklyAveragesMap[week.date] = { median_score: parsePlayerNumber(week.median_score) };
           }
@@ -502,12 +505,14 @@
       async function precalculateAllPlayerStats() {
         if (!allPlayers || !allLineupsData || !allWeeklyAverages) {
             console.error("Missing data for player stats precalculation.");
+            playerStatsCache = {}; // Ensure cache is empty/reset if data is missing
             return;
         }
-        playerStatsCache = {}; // Clear previous cache
+        playerStatsCache = {}; 
         for (const player of allPlayers) {
           if (player.player_handle) {
-            const gamesPlayed = parseInt(player.games_played || 0); // Assuming games_played is in Players sheet
+            // Assuming 'games_played' is directly from the 'Players' sheet and is reliable
+            const gamesPlayed = parseInt(player.games_played || 0); 
             const relMedian = calculatePlayerRELMedian(player.player_handle, allWeeklyAverages, allLineupsData);
             const medianRank = calculatePlayerMedianRank(player.player_handle, allLineupsData);
             playerStatsCache[player.player_handle] = {
@@ -517,7 +522,6 @@
             };
           }
         }
-        console.log("Player stats precalculated:", playerStatsCache);
       }
 
       function getPlayerStatsString(playerHandle) {
@@ -525,9 +529,15 @@
         if (stats) {
           return ` <span class="player-stats-inline">(${stats.gp} GP, ${stats.medianRank} Med Rank, ${stats.relMedian} REL)</span>`;
         }
-        return ' <span class="player-stats-inline">(Stats N/A)</span>'; // Fallback if no stats
+        return ' <span class="player-stats-inline">(Stats N/A)</span>';
       }
-      // --- END NEW Player Stat Calculation ---
+
+      function getVerb(teamName, baseVerb) {
+        if (typeof teamName === 'string' && teamName.toLowerCase().endsWith('s')) {
+            return baseVerb;
+        }
+        return baseVerb + 's';
+      }
       
       async function loadData() {
         const transactionsListEl = document.getElementById('transactions-list');
@@ -537,9 +547,9 @@
           fetchSheetData('Transaction_Log'),
           fetchSheetData('Teams'),
           fetchSheetData('Draft_Capital'),
-          fetchSheetData('Players'),      // Fetch Players
-          fetchSheetData('Lineups'),     // Fetch Lineups
-          fetchSheetData('Weekly_Averages') // Fetch Weekly_Averages
+          fetchSheetData('Players'),      
+          fetchSheetData('Lineups'),     
+          fetchSheetData('Weekly_Averages') 
         ]);
         
         if (!transactions || !teams || !playersData || !lineups || !weeklyAvgs) {
@@ -550,31 +560,26 @@
         allTransactions = transactions.sort((a, b) => {
           const dateA = new Date(a.date || 0);
           const dateB = new Date(b.date || 0);
-          if (dateB.getTime() !== dateA.getTime()) return dateB - dateA; // Sort by date descending first
-          
-          const weekA = parseInt(a.week || 0); // Then by week (desc)
+          if (dateB.getTime() !== dateA.getTime()) return dateB - dateA; 
+          const weekA = parseInt(a.week || 0); 
           const weekB = parseInt(b.week || 0);
           if (weekB !== weekA) return weekB - weekA;
-          
-          // Then by transaction_id (descending) as a final tiebreaker
-          const idA = parseInt(String(a.transaction_id).replace(/\D/g,'') || 0); // Extract number from ID
+          const idA = parseInt(String(a.transaction_id).replace(/\D/g,'') || 0); 
           const idB = parseInt(String(b.transaction_id).replace(/\D/g,'') || 0);
           return idB - idA; 
         });
         
         allTeams = teams;
         allDraftPicks = draftPicksData || [];
-        // --- NEW: Assign fetched player data ---
         allPlayers = playersData;
         allLineupsData = lineups;
         allWeeklyAverages = weeklyAvgs;
-        // --- END NEW ---
 
         transactionsListEl.innerHTML = '<div class="loading">Calculating player stats...</div>';
-        await precalculateAllPlayerStats(); // Precalculate stats
+        await precalculateAllPlayerStats(); 
         
         setupFilters();
-        displayTransactions(); // Initial display
+        displayTransactions(); 
       }
       
       function setupFilters() {
@@ -583,7 +588,7 @@
         document.getElementById('week-filter').innerHTML = '<option value="all">All Weeks</option>' + weekOptions;
         
         const teamOptions = allTeams
-          .filter(team => team.team_id && team.team_name) // Ensure valid teams
+          .filter(team => team.team_id && team.team_name && team.team_id !== "FA") // Exclude FA from team filter if desired
           .sort((a, b) => a.team_name.localeCompare(b.team_name))
           .map(team => `<option value="${team.team_id}">${team.team_name}</option>`)
           .join('');
@@ -597,49 +602,11 @@
       function getFilteredTransactions() {
         const weekFilter = document.getElementById('week-filter').value;
         const typeFilter = document.getElementById('type-filter').value;
-        const teamFilter = document.getElementById('team-filter').value;
+        // Team filter is handled after grouping for trades
         
         return allTransactions.filter(transaction => {
           if (weekFilter !== 'all' && parseInt(transaction.week) !== parseInt(weekFilter)) return false;
           if (typeFilter !== 'all' && transaction.transaction_type !== typeFilter) return false;
-          if (teamFilter !== 'all') {
-            const involvedTeamsInTx = [];
-            if(transaction.from_team) involvedTeamsInTx.push(transaction.from_team);
-            if(transaction.to_team) involvedTeamsInTx.push(transaction.to_team);
-            // For trades, check all components
-            if(transaction.transaction_type === "TRADE") {
-                // This simple check might need enhancement if trades involve more than two primary teams in the log's main row.
-                // The current structure groups by transaction_id, so this filter applies to the "group" implicitly.
-            }
-            if(transaction.gm_involved && allTeams.find(t => t.team_id === transaction.gm_involved)) { // If gm_involved is a team ID
-                 involvedTeamsInTx.push(transaction.gm_involved);
-            }
-            // If a trade group, we need to check all `from_team` and `to_team` within the group
-            // This will be handled by displayTransactions checking the group. For now, this simple filter:
-            if (!involvedTeamsInTx.includes(teamFilter)) {
-                // For trades, we'll rely on the grouping logic to ensure all parts are shown if one part matches.
-                // This filter might hide a trade if the *main* transaction log entry doesn't list the filtered team,
-                // but a sub-part does. This is complex. Simpler: show if *any* part involves the team.
-                // The `groupTransactions` and its rendering must ensure this.
-                // For now, this filter applies to the "primary" team fields of a transaction row.
-            }
-             // A more robust team filter for trades needs to consider all teams within a trade group.
-             // For now, if any of the main fields match, it passes. The grouping will then show all related parts.
-             let involvesTeam = false;
-             if (transaction.from_team === teamFilter) involvesTeam = true;
-             if (transaction.to_team === teamFilter) involvesTeam = true;
-             // If it's a trade, check all components for the team (done implicitly by grouping, but good to be aware)
-
-             if (!involvesTeam && transaction.transaction_type === "TRADE") {
-                // If it's a trade and no direct match, we'll let the grouping logic handle it.
-                // The filter here should be loose for trades, ensuring they aren't prematurely excluded.
-                // A better way is to filter *after* grouping for trades if filtering by team.
-                // For now, if it's a trade and teamFilter is active, we'll assume it might be relevant.
-             } else if (!involvesTeam) {
-                 return false;
-             }
-
-          }
           return true;
         });
       }
@@ -655,10 +622,9 @@
       }
       
       function displayTransactions() {
-        const filtered = getFilteredTransactions(); // Initial filter
-        const transactionGroups = groupTransactions(filtered);
+        const initiallyFiltered = getFilteredTransactions(); 
+        const transactionGroups = groupTransactions(initiallyFiltered);
         
-        // For team-based filtering of trades, we need to ensure the whole trade is shown if any part matches.
         const teamFilterValue = document.getElementById('team-filter').value;
         let finalGroupsToShow = transactionGroups;
 
@@ -667,11 +633,10 @@
                 return group.some(transaction => 
                     transaction.from_team === teamFilterValue || 
                     transaction.to_team === teamFilterValue ||
-                    (transaction.gm_involved && transaction.gm_involved === teamFilterValue) // if gm_involved can be a team
+                    (transaction.gm_involved && allTeams.find(t => t.team_id === transaction.gm_involved && t.team_id === teamFilterValue)) 
                 );
             });
         }
-
 
         if (finalGroupsToShow.length === 0) {
           document.getElementById('transactions-list').innerHTML = '<div class="no-transactions">No transactions match your filters</div>';
@@ -682,13 +647,13 @@
         document.getElementById('transactions-title').textContent = `${finalGroupsToShow.length} Transaction Group${finalGroupsToShow.length !== 1 ? 's' : ''}`;
         
         const transactionsHTML = finalGroupsToShow.map(group => {
-          // For trades, check if transaction_type is TRADE for any item in the group.
           const isTradeGroup = group.some(t => t.transaction_type === "TRADE");
-          if (isTradeGroup) { // Render as multi-transaction if any part is a trade or group size > 1 and same ID
+          if (isTradeGroup && group.length > 0) { 
             return renderMultiTransaction(group);
-          } else { // Otherwise, render as single (even if technically a group of 1)
+          } else if (group.length > 0) { 
             return renderSingleTransaction(group[0]);
           }
+          return ''; // Should not happen if groups are not empty
         }).join('');
         
         document.getElementById('transactions-list').innerHTML = transactionsHTML;
@@ -698,53 +663,50 @@
         const typeClass = transaction.transaction_type.toLowerCase().replace(/_/g, '-');
         let details = '';
         const playerStats = transaction.player_handle ? getPlayerStatsString(transaction.player_handle) : '';
+        const playerNameLinked = getPlayerNameLink(transaction.player_handle);
 
         switch (transaction.transaction_type) {
           case 'RETIREMENT':
-            details = `${getTeamLogo(transaction.from_team)}<span class="player-name">${transaction.player_handle}</span>${playerStats} retired from <span class="team-name">${getTeamName(transaction.from_team)}</span>.`;
+            details = `${getTeamLogo(transaction.from_team)}${playerNameLinked}${playerStats} retired from ${getTeamNameLink(transaction.from_team)}.`;
             break;
-          case 'UNRETIREMENT': // Modified for "signing"
-             details = `${getTeamLogo(transaction.to_team)}<span class="player-name">${transaction.player_handle}</span>${playerStats} signed with <span class="team-name">${getTeamName(transaction.to_team)}</span>.`;
+          case 'UNRETIREMENT':
+            details = `${getTeamLogo(transaction.to_team)}${playerNameLinked}${playerStats} signed with ${getTeamNameLink(transaction.to_team)}.`;
             break;
-          case 'SIGNING': // Explicit signing type
-             details = `${getTeamLogo(transaction.to_team)}<span class="player-name">${transaction.player_handle}</span>${playerStats} signed with <span class="team-name">${getTeamName(transaction.to_team)}</span> as a free agent.`;
+          case 'SIGNING':
+             details = `${getTeamLogo(transaction.to_team)}${playerNameLinked}${playerStats} signed with ${getTeamNameLink(transaction.to_team)} as a free agent.`;
             break;
           case 'DROP':
-            details = `${getTeamLogo(transaction.from_team)}<span class="player-name">${transaction.player_handle}</span>${playerStats} dropped by <span class="team-name">${getTeamName(transaction.from_team)}</span>.`;
+            details = `${getTeamLogo(transaction.from_team)}${playerNameLinked}${playerStats} dropped by ${getTeamNameLink(transaction.from_team)}.`;
             break;
           case 'WAIVER_CLAIM':
-            details = `${getTeamLogo(transaction.to_team)}<span class="player-name">${transaction.player_handle}</span>${playerStats} claimed off waivers by <span class="team-name">${getTeamName(transaction.to_team)}</span> from <span class="team-name">${getTeamName(transaction.from_team)}</span>.`;
+            details = `${getTeamLogo(transaction.to_team)}${playerNameLinked}${playerStats} claimed off waivers by ${getTeamNameLink(transaction.to_team)} from ${getTeamNameLink(transaction.from_team)}.`;
             break;
           case 'GM_RESIGNATION':
-            details = `${getTeamLogo(transaction.from_team)}<span class="gm-name">${transaction.gm_involved}</span> resigned as GM of <span class="team-name">${getTeamName(transaction.from_team)}</span>.`;
+            details = `${getTeamLogo(transaction.from_team)}<span class="gm-name">${transaction.gm_involved}</span> resigned as GM of ${getTeamNameLink(transaction.from_team)}.`;
             break;
           case 'GM_HIRED':
-            details = `${getTeamLogo(transaction.to_team)}<span class="gm-name">${transaction.gm_involved}</span> hired as GM of <span class="team-name">${getTeamName(transaction.to_team)}</span>.`;
+            details = `${getTeamLogo(transaction.to_team)}<span class="gm-name">${transaction.gm_involved}</span> hired as GM of ${getTeamNameLink(transaction.to_team)}.`;
             break;
           default:
             details = `Unknown transaction: ${transaction.transaction_type} involving ${transaction.player_handle || transaction.gm_involved || 'assets'}.`;
         }
         
-        const noteUrl = transaction.notes && isValidHttpUrl(transaction.notes) ? transaction.notes : null;
-        const tag = noteUrl ? 'a' : 'div';
-        const linkAttributes = noteUrl ? `href="${noteUrl}" target="_blank" rel="noopener noreferrer" class="transaction-item clickable"` : 'class="transaction-item"';
-
         return `
-          <${tag} ${linkAttributes}>
+          <div class="transaction-item">
             <div class="transaction-header">
               <span class="transaction-type ${typeClass}">${transaction.transaction_type.replace(/_/g, ' ')}</span>
               <span class="transaction-date">Week ${transaction.week} - ${formatDate(transaction.date)}</span>
             </div>
             <div class="transaction-details">
               ${details}
-              ${transaction.notes && !noteUrl ? `<br><em>Note: ${transaction.notes}</em>` : ''}
+              ${transaction.notes ? `<br><em>Note: ${transaction.notes}</em>` : ''}
             </div>
-          </${tag}>
+          </div>
         `;
       }
       
       function renderMultiTransaction(transactions) {
-        const firstTransaction = transactions[0]; // Assume all in group share date, week, notes, type
+        const firstTransaction = transactions[0]; 
         const typeClass = firstTransaction.transaction_type.toLowerCase().replace(/_/g, '-');
         
         const teamsInvolved = new Set();
@@ -763,13 +725,21 @@
             const toTeam = transaction.to_team;
 
             if (transaction.player_handle) {
-                if(fromTeam) teamAssetsMap[fromTeam].sent_players.push(transaction.player_handle);
-                if(toTeam) teamAssetsMap[toTeam].received_players.push(transaction.player_handle);
+                if(fromTeam && teamAssetsMap[fromTeam]) teamAssetsMap[fromTeam].sent_players.push(transaction.player_handle);
+                if(toTeam && teamAssetsMap[toTeam]) teamAssetsMap[toTeam].received_players.push(transaction.player_handle);
             } else if (transaction.draft_pick_id) {
                 const pickInfo = allDraftPicks.find(p => p.pick_id === transaction.draft_pick_id);
-                const pickDescription = pickInfo ? pickInfo.pick_description : transaction.draft_pick_id;
-                if(fromTeam) teamAssetsMap[fromTeam].sent_picks.push(pickDescription);
-                if(toTeam) teamAssetsMap[toTeam].received_picks.push(pickDescription);
+                let formattedPickDesc = transaction.draft_pick_id; 
+                if (pickInfo && pickInfo.pick_description) {
+                    formattedPickDesc = pickInfo.pick_description;
+                    // Assuming pickInfo.original_team stores the ID of the original owner
+                    if (pickInfo.original_team && pickInfo.original_team !== 'N/A' && pickInfo.original_team !== '') {
+                        const originalOwnerData = getTeamData(pickInfo.original_team);
+                        formattedPickDesc += ` (from ${originalOwnerData.team_name})`;
+                    }
+                }
+                if(fromTeam && teamAssetsMap[fromTeam]) teamAssetsMap[fromTeam].sent_picks.push(formattedPickDesc);
+                if(toTeam && teamAssetsMap[toTeam]) teamAssetsMap[toTeam].received_picks.push(formattedPickDesc);
             }
         });
         
@@ -778,46 +748,51 @@
 
         teamIdsArray.forEach((teamId, index) => {
             const assets = teamAssetsMap[teamId];
+            const teamDataObject = getTeamData(teamId); // Get full team object for name
+            const teamNameForVerb = teamDataObject.team_name;
+
             tradeSummaryHtml += `
                 <div class="trade-side">
-                    <div class="trade-team">${getTeamLogo(teamId)}${getTeamName(teamId)} receives:</div>
+                    <div class="trade-team">${getTeamLogo(teamId)}${getTeamNameLink(teamId)} ${getVerb(teamNameForVerb, 'receive')}:</div>
                     <ul class="trade-assets">
-                        ${assets.received_players.map(player => `<li>📝 <span class="player-name">${player}</span>${getPlayerStatsString(player)}</li>`).join('')}
+                        ${assets.received_players.map(player => `<li>📝 ${getPlayerNameLink(player)}${getPlayerStatsString(player)}</li>`).join('')}
                         ${assets.received_picks.map(pick => `<li>🎯 <span class="draft-pick">${pick}</span></li>`).join('')}
                         ${assets.received_players.length === 0 && assets.received_picks.length === 0 ? '<li><em>Nothing</em></li>' : ''}
                     </ul>`;
+            // Only show "sends" if there are assets sent by this team in the current understanding of the trade
+            // This part can be tricky if the log isn't perfectly symmetrical for all teams in one group.
+            // The current logic populates sent_players/sent_picks based on `from_team` in the transaction log.
             if (assets.sent_players.length > 0 || assets.sent_picks.length > 0) {
                  tradeSummaryHtml += `
-                    <div class="trade-team" style="margin-top:0.5em;">${getTeamLogo(teamId)}${getTeamName(teamId)} sends:</div>
+                    <div class="trade-team" style="margin-top:0.5em;">${getTeamLogo(teamId)}${getTeamNameLink(teamId)} ${getVerb(teamNameForVerb, 'send')}:</div>
                      <ul class="trade-assets">
-                        ${assets.sent_players.map(player => `<li>📝 <span class="player-name">${player}</span>${getPlayerStatsString(player)}</li>`).join('')}
+                        ${assets.sent_players.map(player => `<li>📝 ${getPlayerNameLink(player)}${getPlayerStatsString(player)}</li>`).join('')}
                         ${assets.sent_picks.map(pick => `<li>🎯 <span class="draft-pick">${pick}</span></li>`).join('')}
                     </ul>`;
             }
             tradeSummaryHtml += `</div>`;
-            if (index < teamIdsArray.length - 1 && teamIdsArray.length > 1) { // Only show arrow if more than one team and not the last
-                tradeSummaryHtml += `<div class="trade-arrow">${teamIdsArray.length === 2 ? '⟷' : ' coinvolti '}</div>`;
+            if (index < teamIdsArray.length - 1 && teamIdsArray.length === 2) { // Only show arrow for 2-team trades
+                tradeSummaryHtml += `<div class="trade-arrow">⟷</div>`;
+            } else if (index < teamIdsArray.length - 1 && teamIdsArray.length > 2) {
+                tradeSummaryHtml += `<div class="trade-arrow" style="font-size:1em; color:#666;">then</div>`; // Connector for multi-team
             }
+
         });
         tradeSummaryHtml += '</div>';
 
-        const noteUrl = firstTransaction.notes && isValidHttpUrl(firstTransaction.notes) ? firstTransaction.notes : null;
-        const tag = noteUrl ? 'a' : 'div';
-        const linkAttributes = noteUrl ? `href="${noteUrl}" target="_blank" rel="noopener noreferrer" class="transaction-item multi-transaction clickable"` : 'class="transaction-item multi-transaction"';
-
         return `
-          <${tag} ${linkAttributes}>
+          <div class="transaction-item multi-transaction">
             <div class="transaction-header">
               <span class="transaction-type ${typeClass}">${firstTransaction.transaction_type.replace(/_/g, ' ')}</span>
               <span class="transaction-date">Week ${firstTransaction.week} - ${formatDate(firstTransaction.date)}</span>
             </div>
             ${tradeSummaryHtml}
-            ${firstTransaction.notes && !noteUrl ? `
+            ${firstTransaction.notes ? `
               <div class="transaction-details" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #ddd;">
                 <em>Note: ${firstTransaction.notes}</em>
               </div>
             ` : ''}
-          </${tag}>
+          </div>
         `;
       }
       
