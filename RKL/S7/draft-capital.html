@@ -149,7 +149,7 @@
         background-color: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        overflow: auto; /* Changed from hidden to auto for mobile if content still overflows */
+        overflow: auto; 
       }
 
       .draft-header {
@@ -199,17 +199,22 @@
       }
 
       .pick-description {
-        font-weight: bold; /* Make pick descriptions bold */
+        font-weight: bold; 
       }
 
       .owner-cell { 
-        /* display: flex properties removed, using inner div */
+        /* Base styles for owner cells if any, beyond flex wrapper */
       }
 
       .cell-content-flex { 
         display: flex;
         align-items: center;
         gap: 0.5rem;
+      }
+      
+      /* NEW STYLE for faded original team cell */
+      .original-team-cell-traded {
+        opacity: 0.6; 
       }
 
       .team-logo {
@@ -229,7 +234,7 @@
 
       .forfeited-pick {
         background-color: #f8d7da;
-        opacity: 0.7;
+        opacity: 0.7; /* This styles the whole row for forfeited picks */
       }
 
       .pick-summary {
@@ -264,7 +269,6 @@
         margin-top: 0.3rem;
       }
 
-      /* Team ownership view (styles unchanged but kept) */
       .team-ownership {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -339,8 +343,6 @@
         border-color: #007bff;
       }
       
-      /* REMOVED .trade-status-debug CSS rule */
-
       @media (max-width: 768px) {
         .filter-row {
           flex-direction: column;
@@ -351,37 +353,33 @@
         .season-tabs { flex-direction: column; }
         .season-tab { padding: 0.8rem 1rem; }
         
-        /* Original mobile table font size */
         .draft-table th, .draft-table td { 
           padding: 0.5rem 0.3rem; 
           font-size: 0.8rem; 
         }
 
-        /* Mobile Table Adjustments */
-        .draft-table th:nth-child(1), /* Pick Header */
-        .draft-table td:nth-child(1) { /* Pick Data Cell */
-          width: 25%; /* Adjust as needed, give more space to others */
-          min-width: 80px; /* Prevent it from becoming too small */
+        .draft-table th:nth-child(1), 
+        .draft-table td:nth-child(1) { 
+          width: 25%; 
+          min-width: 80px; 
         }
-        .draft-table td:nth-child(1).pick-description { /* Specifically for pick text wrapping */
-             white-space: normal; /* Ensure text wraps */
-             word-break: break-word; /* Break long words if necessary */
+        .draft-table td:nth-child(1).pick-description { 
+             white-space: normal; 
+             word-break: break-word; 
         }
 
-
-        .draft-table th:nth-child(3), /* Original Team Header */
-        .draft-table td:nth-child(3) { /* Original Team Data Cell */
-          display: none; /* Hide this column on mobile */
+        .draft-table th:nth-child(3), 
+        .draft-table td:nth-child(3) { 
+          display: none; 
         }
         
-        /* Let Current Owner and Trade Status share remaining space */
-         .draft-table th:nth-child(2), /* Current Owner Header */
-         .draft-table td:nth-child(2) { /* Current Owner Data */
-            width: 40%; /* Example width */
+         .draft-table th:nth-child(2), 
+         .draft-table td:nth-child(2) { 
+            width: 40%; 
          }
-         .draft-table th:nth-child(4), /* Trade Status Header */
-         .draft-table td:nth-child(4) { /* Trade Status Data */
-            width: 35%; /* Example width */
+         .draft-table th:nth-child(4), 
+         .draft-table td:nth-child(4) { 
+            width: 35%; 
          }
 
         .team-ownership { grid-template-columns: 1fr; }
@@ -583,9 +581,6 @@
         
         if (!draftPicks || !teams || !transactionsLog) {
           const errorMsg = '<tr><td colspan="4" class="error">Error loading critical data. Some information may be missing or incorrect. Please check the console for details.</td></tr>';
-          // Adjust colspan for mobile if one column is hidden (4 desktop, 3 mobile)
-          // This is tricky for a static message. For now, JS generated messages will handle it.
-          // Consider making the initial loading message simpler or dynamically adjustable.
           document.getElementById('draft-table-body').innerHTML = errorMsg; 
           if (document.getElementById('team-view')) {
               document.getElementById('team-view').innerHTML = '<div class="error">Error loading critical data.</div>';
@@ -728,7 +723,7 @@
                     tradeStatusText = `Acquired via ${getTeamName(fromTeamId)}`;
                 }
             } else {
-                // MODIFIED: Verbiage for trades not in log
+                // ***** MODIFIED VERBIAGE for trades not in log *****
                 tradeStatusText = `Acquired from ${getTeamName(pick.original_team)}`;
             }
           }
@@ -758,27 +753,30 @@
                   finalTradeStatusHTML = `<a href="${transactionsLink}" title="View transaction: ${escapeHTML(pick.notes)}">${escapeHTML(tradeStatusText)}</a>`;
               }
           }
+          
+          // Determine class for the Original Team cell for opacity
+          let originalTeamCellClasses = "owner-cell"; 
+          if (pick.current_owner !== pick.original_team && !isForfeited) { 
+            originalTeamCellClasses += " original-team-cell-traded";
+          }
 
-          // REMOVED stray comment from here
           return `
             <tr class="${rowClass}">
               <td class="pick-description">${safeFormattedPickDescription}</td>
               <td class="owner-cell"><div class="cell-content-flex">${getTeamLogoHTML(pick.current_owner)} ${currentOwnerNameText}</div></td>
-              <td class="owner-cell"><div class="cell-content-flex">${getTeamLogoHTML(pick.original_team)} ${originalTeamNameText}</div></td>
+              <td class="${originalTeamCellClasses}"><div class="cell-content-flex">${getTeamLogoHTML(pick.original_team)} ${originalTeamNameText}</div></td>
               <td>${finalTradeStatusHTML}</td>
             </tr>
           `;
         }).join('');
         
-        // Determine colspan based on effective number of columns (desktop vs mobile)
-        // This is a bit simplistic, assumes a global "isMobile" or relies on CSS to just let it span.
-        // For now, keeping it simple as colspan=4 will span available columns if some are display:none.
         const colSpanForMessages = 4; 
         document.getElementById('draft-table-body').innerHTML = tableHTML || 
           `<tr><td colspan="${colSpanForMessages}" style="text-align: center; padding: 2rem; color: #666;">No picks match your filters for this season.</td></tr>`;
       }
       
       function displayTeamView() {
+        // ... (Team View logic remains the same, ensure escapeHTML is used for text display)
         const seasonPicks = allDraftPicks.filter(pick => parseInt(pick.season) === currentSeason);
         const teamPicksMap = {};
         allTeams.forEach(team => {
