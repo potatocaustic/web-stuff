@@ -538,7 +538,6 @@
       }
 
       function calculateRELForAllPlayers(players, weeklyAverages, lineups) {
-        // This is the full function from your original file
         console.log('Calculating REL values and median ranks for all players...');
         const weeklyAveragesMap = {};
         weeklyAverages.forEach(week => {
@@ -612,7 +611,7 @@
             aag_median: gamesAboveMedian,
             aag_median_pct: games_played_count > 0 ? gamesAboveMedian / games_played_count : 0,
             total_points: parseNumber(player.total_points),
-            games_played: games_played_count // Ensure games_played is a number
+            games_played: games_played_count 
           };
         });
       }
@@ -622,8 +621,8 @@
         const gamePerformances = [];
         const dateToWeekMap = {};
         weeklyAverages.forEach(wa => {
-          if (wa.date && wa.week) { // Ensure both date and week exist
-            dateToWeekMap[wa.date] = String(wa.week).trim(); // Store week as string, trim whitespace
+          if (wa.date && wa.week) { 
+            dateToWeekMap[wa.date] = String(wa.week).trim(); 
           }
         });
 
@@ -638,9 +637,8 @@
             const dailyRank = parseNumber(game.global_rank);
             const weekStr = dateToWeekMap[game.date];
             
-            // Ensure weekStr is valid and a number before parsing
             if (weekStr && weekStr !== 'N/A' && String(weekStr).match(/^\d+$/)) {
-              if (karma > 0 || dailyRank > 0) { // Include if either karma or rank is valid
+              if (karma > 0 || dailyRank > 0) { 
                 gamePerformances.push({
                   player_handle: game.player_handle,
                   team_id: game.team_id || playerTeamMap[game.player_handle] || 'FA', 
@@ -677,7 +675,7 @@
         allTeams = teamsData; 
         const playersWithREL = calculateRELForAllPlayers(playersData, weeklyAveragesData, lineupsData);
         allPlayers = playersWithREL.filter(player => 
-          player.player_status === 'ACTIVE' //&& parseInt(player.games_played || 0) > 0 // Keep this flexible if 0 games is ok for some views
+          player.player_status === 'ACTIVE' 
         );
         
         allGamePerformances = processGamePerformances(lineupsData, weeklyAveragesData, playersData);
@@ -688,7 +686,6 @@
       function getTeamName(teamId) {
         if (!teamId || String(teamId).toLowerCase() === 'undefined' || String(teamId).trim() === '') return 'N/A';
         const team = allTeams.find(t => t.team_id === teamId);
-        // If team not found by ID, return the ID itself if it's not 'FA' or 'N/A', otherwise 'N/A'
         return team ? team.team_name : ( (teamId === 'FA' || teamId === 'N/A') ? 'N/A' : teamId ); 
       }
 
@@ -696,7 +693,8 @@
         if (rank === 1) { return `<div class="first-place">${rank}</div>`; }
         else if (rank === 2) { return `<div class="second-place">${rank}</div>`; }
         else if (rank === 3) { return `<div class="third-place">${rank}</div>`; }
-        else { return `<span>${rank}</span>`; }
+        // Fallback for ranks > 3 or if rank is not a number (though it should be)
+        else { return `<span>${ (typeof rank === 'number' && !isNaN(rank)) ? rank : '-'}</span>`; }
       }
       
       function displayLeaderboard() {
@@ -748,6 +746,7 @@
             if (!isGameLeaderboard && (currentCategory === 'aag_mean' || currentCategory === 'aag_median')) {
               const aREL = parseFloat(a.calculated_rel_median || 0);
               const bREL = parseFloat(b.calculated_rel_median || 0);
+              // console.log(`TIE BREAK (${currentCategory}): ${a.player_handle} (REL: ${aREL}) vs ${b.player_handle} (REL: ${bREL})`);
               return bREL - aREL; 
             } else if (isGameLeaderboard) {
               if (currentCategory === 'single_game_karma') { 
@@ -772,7 +771,7 @@
         }
 
         const tableHTML = itemsToShow.map((item, index) => {
-          const rank = index + 1;
+          const rank = index + 1; // Rank is based on the sorted position
           let playerHandle, teamIdForLogo, statValue, secondaryValueCellContent;
 
           if (isGameLeaderboard) {
@@ -791,10 +790,10 @@
                               ? `icons/${encodeURIComponent(teamIdForLogo)}.webp` 
                               : 'icons/FA.webp'; 
 
+          // ***** REMOVED STRAY COMMENT from here, using 'rank' directly *****
           return `
             <tr>
-              {/* MODIFIED: Rank display directly using rank variable */}
-              <td class="rank-cell">${rank}</td>
+              <td class="rank-cell">${rank}</td> 
               <td class="player-cell">
                 <img src="${teamLogoSrc}" alt="${getTeamName(teamIdForLogo)}" class="team-logo" onerror="this.style.display='none'; this.src='icons/FA.webp';">
                 <div>
@@ -829,11 +828,15 @@
               btn.classList.add('active');
             }
           });
-          if (storedCategory) sessionStorage.removeItem('selectedLeaderboardCategory');
-          if (categoryParam) window.history.replaceState({}, document.title, window.location.pathname);
-        } else {
+          // Don't remove storedCategory immediately, allow it to set the default
+          // if (storedCategory) sessionStorage.removeItem('selectedLeaderboardCategory'); 
+          if (categoryParam) { // If category came from URL, clear storage and update URL
+            sessionStorage.removeItem('selectedLeaderboardCategory');
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        } else { // Fallback if category is invalid
             currentCategory = 'total_points'; 
-            document.querySelectorAll('.category-btn').forEach(btn => { // Ensure default is active
+            document.querySelectorAll('.category-btn').forEach(btn => {
                 btn.classList.remove('active');
                 if (btn.dataset.category === currentCategory) {
                 btn.classList.add('active');
@@ -846,21 +849,21 @@
             document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentCategory = btn.dataset.category;
-            sessionStorage.setItem('selectedLeaderboardCategory', currentCategory); // Store selection
+            sessionStorage.setItem('selectedLeaderboardCategory', currentCategory); 
             displayLeaderboard();
           });
         });
-        document.getElementById('show-count').addEventListener('change', () => {
-            sessionStorage.setItem('selectedLeaderboardShowCount', document.getElementById('show-count').value);
+
+        const showCountElement = document.getElementById('show-count');
+        const storedShowCount = sessionStorage.getItem('selectedLeaderboardShowCount');
+        if (storedShowCount) {
+            showCountElement.value = storedShowCount;
+        }
+        showCountElement.addEventListener('change', () => {
+            sessionStorage.setItem('selectedLeaderboardShowCount', showCountElement.value);
             displayLeaderboard();
         });
         
-        // Restore show count from session storage
-        const storedShowCount = sessionStorage.getItem('selectedLeaderboardShowCount');
-        if (storedShowCount) {
-            document.getElementById('show-count').value = storedShowCount;
-        }
-
         loadData();
       });
     </script>
