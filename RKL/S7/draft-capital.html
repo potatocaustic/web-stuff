@@ -457,7 +457,7 @@
         <button class="toggle-btn" data-view="teams">By Team</button>
       </div>
 
-      <div class="filter-controls">
+      <div id="filter-controls" class="filter-controls"> 
         <div class="filter-row">
           <div class="filter-group">
             <label for="round-filter">Round:</label>
@@ -487,32 +487,10 @@
       </div>
 
       <div id="table-view" class="draft-board">
-        <div class="draft-header">
-          <h3 id="draft-title">Season 8 Draft Picks</h3>
         </div>
-        <div class="pick-summary" id="pick-summary">
-          <div class="loading">Loading draft pick summary...</div>
-        </div>
-        <table class="draft-table">
-          <thead>
-            <tr>
-              <th>Pick</th>
-              <th>Current Owner</th>
-              <th>Original Team</th>
-              <th>Trade Status</th>
-              </tr>
-          </thead>
-          <tbody id="draft-table-body">
-            <tr>
-              <td colspan="4" class="loading">Loading draft picks...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
 
       <div id="team-view" class="team-ownership" style="display: none;">
-        <div class="loading">Loading team ownership view...</div>
-      </div>
+        </div>
     </main>
     
     <footer>
