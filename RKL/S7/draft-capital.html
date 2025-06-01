@@ -202,11 +202,19 @@
         /* Font properties removed to inherit from body/table */
       }
 
+      /* ***** MODIFIED .owner-cell: flex properties removed ***** */
       .owner-cell { 
-        display: flex; 
-        align-items: center; 
-        gap: 0.5rem; 
         border: 1px dashed #ccc; /* Light border to see cell boundaries */
+        /* display: flex; -- MOVED TO INNER DIV */
+        /* align-items: center; -- MOVED TO INNER DIV */
+        /* gap: 0.5rem; -- MOVED TO INNER DIV */
+      }
+
+      /* ***** NEW CLASS for inner div flex layout ***** */
+      .cell-content-flex {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
       }
 
       .team-logo {
@@ -371,7 +379,7 @@
         background-color: #fff0f0 !important;
         font-weight: bold !important;
         padding: 0.8rem !important; 
-        min-width: 100px; 
+        min-_width: 100px; 
       }
 
       @media (max-width: 768px) {
@@ -730,15 +738,15 @@
           }
           
           const safeFormattedPickDescription = escapeHTML(formattedPickDescription);
-          const currentOwnerNameText = escapeHTML(getTeamName(pick.current_owner)); // RESTORED: Define currentOwnerNameText
-          // const originalTeamNameText = escapeHTML(getTeamName(pick.original_team)); // Not used for D3 placeholder
+          const currentOwnerNameText = escapeHTML(getTeamName(pick.current_owner)); // D2 content variable
+          // originalTeamNameText not needed as D3 is a placeholder for this test
           const safeTradeStatus = escapeHTML(tradeStatus);
 
-          // ***** CURRENT OWNER CELL (D2) RESTORED, ORIGINAL TEAM CELL (D3) IS PLACEHOLDER *****
+          // ***** MODIFIED HTML FOR D2 AND D3 FOR DEBUGGING *****
           return `
             <tr class="${rowClass}">
               <td class="pick-description">${safeFormattedPickDescription}</td>
-              <td class="owner-cell">${getTeamLogoHTML(pick.current_owner)} ${currentOwnerNameText}</td> {/* D2 RESTORED */}
+              <td class="owner-cell"><div class="cell-content-flex">${getTeamLogoHTML(pick.current_owner)} ${currentOwnerNameText}</div></td> {/* D2 RESTORED with inner flex div */}
               <td class="owner-cell">CELL D3 PLACEHOLDER</td>   {/* D3 REMAINS PLACEHOLDER */}
               <td class="trade-status-debug">${safeTradeStatus}</td> {/* D4 */}
             </tr>
