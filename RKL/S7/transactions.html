@@ -113,6 +113,11 @@
         font-size: 1rem;
         min-width: 150px;
       }
+      .filter-group select:disabled {
+        background-color: #e9ecef;
+        opacity: 0.7;
+      }
+
 
       /* Transaction feed */
       .transactions-container {
@@ -216,7 +221,7 @@
 
 
       .draft-pick {
-        /* font-family: monospace; */ /* Removed for page default font */
+        /* font-family: monospace; */ 
         font-size: 0.9rem;
       }
 
@@ -320,7 +325,7 @@
             <label for="week-filter">Week:</label>
             <select id="week-filter">
               <option value="all">All Weeks</option>
-            </select>
+              </select>
           </div>
           <div class="filter-group">
             <label for="type-filter">Transaction Type:</label>
@@ -340,7 +345,7 @@
             <label for="team-filter">Team:</label>
             <select id="team-filter">
               <option value="all">All Teams</option>
-            </select>
+              </select>
           </div>
         </div>
       </div>
@@ -371,6 +376,12 @@
       let allWeeklyAverages = [];
       let playerStatsCache = {}; 
       
+      // --- NEW: Global variables for URL parameters ---
+      let urlDateFilter = null;
+      let urlTeamFilters = [];
+      let urlTransactionType = null;
+      // --- END NEW ---
+
       async function fetchSheetData(sheetName) {
         try {
           const response = await fetch(BASE_URL + encodeURIComponent(sheetName));
@@ -422,6 +433,16 @@
         const date = new Date(dateString);
         if (isNaN(date)) return 'Invalid Date';
         return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+      }
+       // Helper to format date as YYYY-MM-DD for comparison
+      function getComparableDate(dateString) {
+        if (!dateString) return null;
+        const date = new Date(dateString);
+        if (isNaN(date)) return null;
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
       }
       
       function getTeamData(teamId) { 
@@ -533,7 +554,16 @@
         return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       }
       
+      // --- MODIFIED: loadData to parse URL parameters ---
       async function loadData() {
+        const params = new URLSearchParams(window.location.search);
+        urlDateFilter = params.get('date'); // Expects YYYY-MM-DD
+        urlTransactionType = params.get('type');
+        const teamFiltersParam = params.get('teamFilters'); // Expects comma-separated team IDs
+        if (teamFiltersParam) {
+            urlTeamFilters = teamFiltersParam.split(',');
+        }
+
         const transactionsListEl = document.getElementById('transactions-list');
         transactionsListEl.innerHTML = '<div class="loading">Loading core data...</div>';
 
@@ -572,34 +602,89 @@
         transactionsListEl.innerHTML = '<div class="loading">Calculating player stats...</div>';
         await precalculateAllPlayerStats(); 
         
-        setupFilters();
+        setupFilters(); // Setup filters after data load, potentially reflecting URL params
         displayTransactions(); 
       }
       
+      // --- MODIFIED: setupFilters to reflect URL parameters ---
       function setupFilters() {
+        const weekFilterEl = document.getElementById('week-filter');
+        const typeFilterEl = document.getElementById('type-filter');
+        const teamFilterEl = document.getElementById('team-filter');
+
+        // Week filter (populate as before)
         const weeks = [...new Set(allTransactions.map(t => t.week && parseInt(t.week)).filter(Boolean))].sort((a, b) => b - a);
         const weekOptions = weeks.map(week => `<option value="${week}">Week ${week}</option>`).join('');
-        document.getElementById('week-filter').innerHTML = '<option value="all">All Weeks</option>' + weekOptions;
+        weekFilterEl.innerHTML = '<option value="all">All Weeks</option>' + weekOptions;
         
+        // Team filter (populate as before)
         const teamOptions = allTeams
           .filter(team => team.team_id && team.team_name && team.team_id !== "FA") 
           .sort((a, b) => a.team_name.localeCompare(b.team_name))
           .map(team => `<option value="${team.team_id}">${team.team_name}</option>`)
           .join('');
-        document.getElementById('team-filter').innerHTML = '<option value="all">All Teams</option>' + teamOptions;
+        teamFilterEl.innerHTML = '<option value="all">All Teams</option>' + teamOptions;
+
+        // Set filter values from URL params if they exist
+        if (urlTransactionType) {
+            typeFilterEl.value = urlTransactionType;
+            typeFilterEl.disabled = true; // Optionally disable if URL overrides
+        }
+        if (urlDateFilter) {
+            weekFilterEl.value = 'all'; // Or a special value like "custom"
+            weekFilterEl.disabled = true; 
+        }
+        if (urlTeamFilters.length > 0) {
+            teamFilterEl.value = 'all'; // Or a special value
+            teamFilterEl.disabled = true;
+        }
         
-        ['week-filter', 'type-filter', 'team-filter'].forEach(filterId => {
-          document.getElementById(filterId).addEventListener('change', displayTransactions);
+        [weekFilterEl, typeFilterEl, teamFilterEl].forEach(filterEl => {
+          filterEl.addEventListener('change', () => {
+            // If user changes a filter, clear relevant URL params so dropdown takes precedence
+            if (filterEl.id === 'week-filter' && urlDateFilter) {
+                urlDateFilter = null;
+                weekFilterEl.disabled = false; // Re-enable
+            }
+            if (filterEl.id === 'type-filter' && urlTransactionType) {
+                urlTransactionType = null;
+                typeFilterEl.disabled = false;
+            }
+            if (filterEl.id === 'team-filter' && urlTeamFilters.length > 0) {
+                urlTeamFilters = [];
+                teamFilterEl.disabled = false;
+            }
+            displayTransactions();
+          });
         });
       }
       
+      // --- MODIFIED: getFilteredTransactions to consider URL parameters ---
       function getFilteredTransactions() {
-        const weekFilter = document.getElementById('week-filter').value;
-        const typeFilter = document.getElementById('type-filter').value;
-        
+        const weekFilterValue = document.getElementById('week-filter').value;
+        const typeFilterValue = document.getElementById('type-filter').value;
+        // Team dropdown filter is handled in displayTransactions after grouping for URL teamFilters
+
         return allTransactions.filter(transaction => {
-          if (weekFilter !== 'all' && parseInt(transaction.week) !== parseInt(weekFilter)) return false;
-          if (typeFilter !== 'all' && transaction.transaction_type !== typeFilter) return false;
+          // URL Date Filter (takes precedence over week dropdown)
+          if (urlDateFilter) {
+            // Ensure transaction.date is also formatted as YYYY-MM-DD for comparison
+            const transactionDateComparable = getComparableDate(transaction.date);
+            if (transactionDateComparable !== urlDateFilter) return false;
+          } else if (weekFilterValue !== 'all' && parseInt(transaction.week) !== parseInt(weekFilterValue)) {
+            return false; // Week dropdown filter
+          }
+          
+          // URL Type Filter (takes precedence over type dropdown)
+          if (urlTransactionType) {
+            if (transaction.transaction_type !== urlTransactionType) return false;
+          } else if (typeFilterValue !== 'all' && transaction.transaction_type !== typeFilterValue) {
+            return false; // Type dropdown filter
+          }
+          
+          // Team dropdown filter (for non-trade types or when URL teamFilters are not active)
+          // will be applied in displayTransactions more effectively for trades.
+          // Here, we are doing a preliminary pass.
           return true;
         });
       }
@@ -614,19 +699,31 @@
         return Object.values(groups);
       }
       
+      // --- MODIFIED: displayTransactions to handle URL teamFilters ---
       function displayTransactions() {
         const initiallyFiltered = getFilteredTransactions(); 
         const transactionGroups = groupTransactions(initiallyFiltered);
         
-        const teamFilterValue = document.getElementById('team-filter').value;
         let finalGroupsToShow = transactionGroups;
+        const teamFilterDropdownValue = document.getElementById('team-filter').value;
 
-        if (teamFilterValue !== 'all') {
+        if (urlTeamFilters.length > 0) {
+            // Filter by URL teamFilters (for trades, ensures ALL listed teams are involved)
+            finalGroupsToShow = transactionGroups.filter(group => {
+                const teamsInGroup = new Set();
+                group.forEach(t => { 
+                    if(t.from_team) teamsInGroup.add(t.from_team);
+                    if(t.to_team) teamsInGroup.add(t.to_team);
+                });
+                return urlTeamFilters.every(tid => teamsInGroup.has(tid));
+            });
+        } else if (teamFilterDropdownValue !== 'all') {
+            // Filter by dropdown if no URL team filter is active
             finalGroupsToShow = transactionGroups.filter(group => {
                 return group.some(transaction => 
-                    transaction.from_team === teamFilterValue || 
-                    transaction.to_team === teamFilterValue ||
-                    (transaction.gm_involved && allTeams.find(t => t.team_id === transaction.gm_involved && t.team_id === teamFilterValue)) 
+                    transaction.from_team === teamFilterDropdownValue || 
+                    transaction.to_team === teamFilterDropdownValue ||
+                    (transaction.gm_involved && allTeams.find(t => t.team_id === transaction.gm_involved && t.team_id === teamFilterDropdownValue)) 
                 );
             });
         }
@@ -728,6 +825,7 @@
                 let formattedPickDesc = transaction.draft_pick_id; 
                 if (pickInfo && pickInfo.pick_description) {
                     formattedPickDesc = pickInfo.pick_description;
+                    // Using pickInfo.original_team as per previous correction
                     if (pickInfo.original_team && pickInfo.original_team !== 'N/A' && pickInfo.original_team !== '') {
                         const originalOwnerData = getTeamData(pickInfo.original_team);
                         const originalOwnerAbbreviation = originalOwnerData.team_id; 
