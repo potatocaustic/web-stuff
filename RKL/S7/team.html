@@ -1342,12 +1342,14 @@
           let oppScore = '';
           let teamScoreClass = '';
           let oppScoreClass = '';
+          let teamWon = false;
+          let oppWon = false;
           
           if (isCompleted) {
             const teamScoreValue = parseFloat(isTeam1 ? game.team1_score : game.team2_score);
             const oppScoreValue = parseFloat(isTeam1 ? game.team2_score : game.team1_score);
-            const teamWon = teamScoreValue > oppScoreValue;
-            const oppWon = oppScoreValue > teamScoreValue;
+            teamWon = teamScoreValue > oppScoreValue;
+            oppWon = oppScoreValue > teamScoreValue;
             
             teamScore = formatInThousands(teamScoreValue);
             oppScore = formatInThousands(oppScoreValue);
