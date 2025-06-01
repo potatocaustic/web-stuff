@@ -319,7 +319,6 @@
         <p>Click on any team to view detailed roster and statistics</p>
       </div>
 
-      <!-- Eastern Conference -->
       <div class="conference-section">
         <div class="conference-header">
           <h3>Eastern Conference</h3>
@@ -329,7 +328,6 @@
         </div>
       </div>
 
-      <!-- Western Conference -->
       <div class="conference-section">
         <div class="conference-header">
           <h3>Western Conference</h3>
@@ -345,11 +343,9 @@
     </footer>
 
     <script>
-      // Configuration - REPLACE WITH YOUR ACTUAL GOOGLE SHEET ID
-      const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4'; // Replace this with your actual sheet ID
+      const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4'; 
       const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
       
-      // Function to fetch data from Google Sheets
       async function fetchSheetData(sheetName) {
         try {
           const response = await fetch(BASE_URL + encodeURIComponent(sheetName));
@@ -361,7 +357,6 @@
         }
       }
       
-      // Simple CSV parser
       function parseCSV(csvText) {
         const lines = csvText.trim().split('\n');
         const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim());
@@ -375,22 +370,21 @@
           });
           data.push(row);
         }
-        
         return data;
       }
       
-      // Get playoff position indicator
       function getPlayoffIndicator(conference, rank) {
         if (rank <= 6) {
           return `<div class="playoff-position playoff-seed">${rank}</div>`;
         } else if (rank <= 10) {
           return `<div class="playoff-position playin-seed">${rank}</div>`;
         } else {
-          return `<div class="playoff-position eliminated">${rank}</div>`;
+          // For ranks > 10, no specific indicator shown, or you can add one for 'eliminated'
+          // return `<div class="playoff-position eliminated">${rank}</div>`; // If you want to show eliminated
+          return ''; // No indicator for teams outside top 10 for now
         }
       }
       
-      // Get PAM styling
       function getPAMClass(pam) {
         const pamValue = parseFloat(pam);
         if (pamValue > 0) return 'pam-positive';
@@ -398,7 +392,6 @@
         return '';
       }
       
-      // Get record styling
       function getRecordClass(wins, losses) {
         const w = parseInt(wins || 0);
         const l = parseInt(losses || 0);
@@ -407,7 +400,6 @@
         return '';
       }
       
-      // Load and display teams
       async function loadTeams() {
         const teams = await fetchSheetData('Teams');
         if (!teams) {
@@ -418,51 +410,49 @@
           return;
         }
         
-        // Filter out retired and free agent entries
         const activeTeams = teams.filter(team => 
           team.team_id && 
-          team.team_id !== 'RETIRED' && 
-          team.team_id !== 'FREE_AGENT' &&
-          team.conference
+          team.team_id.toUpperCase() !== 'RETIRED' && 
+          team.team_id.toUpperCase() !== 'FREE_AGENT' &&
+          team.team_id.toUpperCase() !== 'FA' && // Added FA check
+          team.conference && (team.conference.toLowerCase() === 'eastern' || team.conference.toLowerCase() === 'western')
         );
         
-        // Separate and sort teams by conference
         const easternTeams = activeTeams
-          .filter(team => team.conference === 'Eastern')
+          .filter(team => team.conference.toLowerCase() === 'eastern')
           .sort((a, b) => {
-            const winsA = parseInt(a.wins || 0);
-            const winsB = parseInt(b.wins || 0);
-            if (winsB !== winsA) return winsB - winsA;
-            return parseFloat(b.pam || 0) - parseFloat(a.pam || 0);
+            const rankA = parseInt(a.conf_rank || 99); // Sort by conference rank
+            const rankB = parseInt(b.conf_rank || 99);
+            return rankA - rankB;
           });
           
         const westernTeams = activeTeams
-          .filter(team => team.conference === 'Western')
+          .filter(team => team.conference.toLowerCase() === 'western')
           .sort((a, b) => {
-            const winsA = parseInt(a.wins || 0);
-            const winsB = parseInt(b.wins || 0);
-            if (winsB !== winsA) return winsB - winsA;
-            return parseFloat(b.pam || 0) - parseFloat(a.pam || 0);
+            const rankA = parseInt(a.conf_rank || 99); // Sort by conference rank
+            const rankB = parseInt(b.conf_rank || 99);
+            return rankA - rankB;
           });
         
-        // Generate team card HTML function
-        function generateTeamCard(team, rank) {
+        function generateTeamCard(team, rankInConference) {
           const wins = parseInt(team.wins || 0);
           const losses = parseInt(team.losses || 0);
           const pam = parseFloat(team.pam || 0);
-          const avgRank = parseFloat(team.med_starter_rank || 0);
+          // Using med_starter_rank for the display, label changed to "Med Rank"
+          const medianStarterRank = parseFloat(team.med_starter_rank || 0); 
           
           return `
             <a href="team.html?id=${team.team_id}" class="team-card">
-              ${getPlayoffIndicator(team.conference, rank)}
+              ${getPlayoffIndicator(team.conference, rankInConference)}
               <div class="team-header">
                 <img src="icons/${team.team_id}.webp" 
                      alt="${team.team_name}" 
-                     class="team-logo">
+                     class="team-logo"
+                     onerror="this.onerror=null; this.src='icons/FA.webp';"> {/* Fallback icon */}
                 <div class="team-info">
                   <div class="team-name">${team.team_name}</div>
                   <div class="team-id">${team.team_id}</div>
-                  <div class="gm-name">GM: ${team.gm_handle}</div>
+                  <div class="gm-name">GM: ${team.gm_handle || 'N/A'}</div>
                 </div>
               </div>
               
@@ -476,8 +466,9 @@
                   <div class="stat-label">PAM</div>
                 </div>
                 <div class="stat-item">
-                  <div class="stat-value">${avgRank > 0 ? Math.round(avgRank) : '-'}</div>
-                  <div class="stat-label">Avg Rank</div>
+                  {/* Value uses medianStarterRank, label changed to "Med Rank" */}
+                  <div class="stat-value">${medianStarterRank > 0 ? Math.round(medianStarterRank) : '-'}</div>
+                  <div class="stat-label">Med Rank</div> {/* CHANGED LABEL */}
                 </div>
                 <div class="stat-item">
                   <div class="stat-value">${team.total_transactions || 0}</div>
@@ -488,30 +479,23 @@
           `;
         }
         
-        // Generate Eastern Conference HTML
         const easternHTML = easternTeams.map((team, index) => {
-          return generateTeamCard(team, index + 1);
+          // rankInConference is directly from the sorted data's conf_rank if available, otherwise use index.
+          // Assuming conf_rank is reliable for playoff indicator, otherwise index+1 is fallback.
+          return generateTeamCard(team, parseInt(team.conf_rank || index + 1));
         }).join('');
         
-        // Generate Western Conference HTML
         const westernHTML = westernTeams.map((team, index) => {
-          return generateTeamCard(team, index + 1);
+          return generateTeamCard(team, parseInt(team.conf_rank || index + 1));
         }).join('');
         
-        // Update the grids
         document.getElementById('eastern-teams').innerHTML = easternHTML || 
-          '<div class="error">No Eastern Conference teams found</div>';
+          '<p class="error" style="grid-column: 1 / -1;">No Eastern Conference teams found or data error.</p>';
         document.getElementById('western-teams').innerHTML = westernHTML || 
-          '<div class="error">No Western Conference teams found</div>';
+          '<p class="error" style="grid-column: 1 / -1;">No Western Conference teams found or data error.</p>';
         
-        // Debug logging
-        console.log('Eastern teams:', easternTeams.length);
-        console.log('Western teams:', westernTeams.length);
-        console.log('Total active teams:', activeTeams.length);
-        console.log('Sample team data:', activeTeams[0]);
       }
       
-      // Initialize page
       document.addEventListener('DOMContentLoaded', loadTeams);
     </script>
   </body>
