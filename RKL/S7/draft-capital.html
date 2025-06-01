@@ -212,7 +212,6 @@
         gap: 0.5rem;
       }
       
-      /* NEW STYLE for faded original team cell */
       .original-team-cell-traded {
         opacity: 0.6; 
       }
@@ -234,7 +233,7 @@
 
       .forfeited-pick {
         background-color: #f8d7da;
-        opacity: 0.7; /* This styles the whole row for forfeited picks */
+        opacity: 0.7; 
       }
 
       .pick-summary {
@@ -672,17 +671,21 @@
             <div class="summary-item"><div class="summary-number">${forfeitedPicksCount}</div><div class="summary-label">Forfeited</div></div>
           </div>`;
         
+        // ***** MODIFIED SORTING LOGIC *****
         const sortedPicks = filteredPicks.sort((a, b) => {
+          // Primary sort: Group by original_team's name (alphabetical)
+          const teamNameA = getTeamName(a.original_team);
+          const teamNameB = getTeamName(b.original_team);
+
+          if (teamNameA < teamNameB) return -1;
+          if (teamNameA > teamNameB) return 1;
+
+          // Secondary sort: By round (ascending)
           const roundA = parseInt(a.round);
           const roundB = parseInt(b.round);
           if (roundA !== roundB) return roundA - roundB;
-          
-          const originalTeamA = allTeams.find(t => t.team_id === a.original_team);
-          const originalTeamB = allTeams.find(t => t.team_id === b.original_team);
-          const teamAOrder = originalTeamA ? (originalTeamA.draft_order || allTeams.indexOf(originalTeamA)) : Infinity;
-          const teamBOrder = originalTeamB ? (originalTeamB.draft_order || allTeams.indexOf(originalTeamB)) : Infinity;
-          if (teamAOrder !== teamBOrder) return teamAOrder - teamBOrder;
 
+          // Tertiary sort (fallback): by pick_description
           return (a.pick_description || '').localeCompare(b.pick_description || '');
         });
         
@@ -723,7 +726,6 @@
                     tradeStatusText = `Acquired via ${getTeamName(fromTeamId)}`;
                 }
             } else {
-                // ***** MODIFIED VERBIAGE for trades not in log *****
                 tradeStatusText = `Acquired from ${getTeamName(pick.original_team)}`;
             }
           }
@@ -754,7 +756,6 @@
               }
           }
           
-          // Determine class for the Original Team cell for opacity
           let originalTeamCellClasses = "owner-cell"; 
           if (pick.current_owner !== pick.original_team && !isForfeited) { 
             originalTeamCellClasses += " original-team-cell-traded";
@@ -776,7 +777,6 @@
       }
       
       function displayTeamView() {
-        // ... (Team View logic remains the same, ensure escapeHTML is used for text display)
         const seasonPicks = allDraftPicks.filter(pick => parseInt(pick.season) === currentSeason);
         const teamPicksMap = {};
         allTeams.forEach(team => {
