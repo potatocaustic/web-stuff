@@ -1348,11 +1348,13 @@
         const pam = parseFloat(teamData.pam || 0);
         
         document.getElementById('team-main-info').innerHTML = `
-          <img src="icons/${teamData.team_id}.webp" alt="${teamData.team_name}" class="team-logo-large" onerror="this.style.display='none'">
-          <div class="team-details">
-            <h2>${teamData.team_name}</h2>
-            <div class="team-subtitle">${teamData.team_id} • ${teamData.conference} Conference</div>
-            <div class="gm-info">General Manager: ${teamData.gm_handle}</div>
+          <div style="display: flex; align-items: center; gap: 1.5rem;">
+            <img src="icons/${teamData.team_id}.webp" alt="${teamData.team_name}" class="team-logo-large" onerror="this.style.display='none'">
+            <div class="team-details">
+              <h2>${teamData.team_name}</h2>
+              <div class="team-subtitle">${teamData.team_id} • ${teamData.conference} Conference</div>
+              <div class="gm-info">General Manager: ${teamData.gm_handle}</div>
+            </div>
           </div>
         `;
         
