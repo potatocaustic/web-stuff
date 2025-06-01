@@ -307,9 +307,9 @@
       .game-info-table {
         display: grid;
         grid-template-rows: 1fr 1fr;
-        width: 50px;
-        min-width: 50px;
-        max-width: 50px;
+        width: 80px;
+        min-width: 80px;
+        max-width: 80px;
         flex-shrink: 0;
         border-right: 1px solid #ddd;
         background-color: #f8f9fa;
@@ -455,6 +455,11 @@
       .team,
       .team-info,
       .vs {
+        display: none;
+      }
+
+      /* Hide mobile week badge on desktop specifically */
+      .game-matchup .week-badge {
         display: none;
       }
 
@@ -702,7 +707,9 @@
           display: block; /* Override desktop grid */
         }
 
-        .week-badge {
+        /* Show mobile week badge only on mobile */
+        .game-matchup .week-badge {
+          display: flex !important;
           position: absolute;
           top: 0.75rem;
           right: 0.75rem;
@@ -715,7 +722,6 @@
           background-color: #007bff;
           color: white;
           border-radius: 50%;
-          display: flex;
           align-items: center;
           justify-content: center;
           font-weight: bold;
