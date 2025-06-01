@@ -171,14 +171,30 @@
         border-collapse: collapse;
       }
 
+      /* ***** MODIFIED TH STYLE ***** */
       .draft-table th {
         background-color: #f8f9fa;
-        padding: 1rem 0.5rem;
-        text-align: left;
-        font-weight: bold;
+        padding: 1rem 0.5rem;   
+        text-align: left;       
+        font-weight: bold;      
         border-bottom: 2px solid #ddd;
-        font-size: 0.9rem;
+        font-size: 0.9rem;      
+
+        /* ADDED/MODIFIED FOR DEBUGGING COLUMN ALIGNMENT */
+        display: table-cell !important; 
+        width: auto !important;         
+        min-width: 80px; /* Give each header some minimum substance */
+        border-left: 1px dotted blue; 
+        border-right: 1px dotted blue;
+        box-sizing: border-box; 
       }
+      .draft-table th:first-child {
+        border-left: 2px solid darkblue !important;
+      }
+      .draft-table th:last-child {
+        border-right: 2px solid darkblue !important;
+      }
+
 
       .draft-table td {
         padding: 0.8rem 0.5rem;
@@ -358,13 +374,12 @@
         border-color: #007bff;
       }
       
-      /* ***** DEBUGGING STYLE FOR TRADE STATUS COLUMN ***** */
       .trade-status-debug {
         border: 2px solid red !important;
         background-color: #fff0f0 !important;
         font-weight: bold !important;
-        padding: 0.8rem !important; /* Ensure padding is applied */
-        min-width: 100px; /* Ensure cell has some width */
+        padding: 0.8rem !important; 
+        min-width: 100px; 
       }
 
       @media (max-width: 768px) {
@@ -727,7 +742,6 @@
           const originalTeamNameText = escapeHTML(getTeamName(pick.original_team));
           const safeTradeStatus = escapeHTML(tradeStatus);
 
-          // ***** DEBUGGING CLASS ADDED TO TRADE STATUS CELL *****
           return `
             <tr class="${rowClass}">
               <td class="pick-description">${safeFormattedPickDescription}</td>
