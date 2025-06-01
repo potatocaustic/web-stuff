@@ -436,18 +436,19 @@
 
       function getTeamNameLink(teamId) {
         const team = getTeamData(teamId);
-        return `<a href="team.html?id=${encodeURIComponent(team.team_id)}" class="team-name-link">${team.team_name}</a>`;
+        // Ensure team.team_id is URI encoded for the link
+        return `<a href="team.html?id=${encodeURIComponent(String(team.team_id || ''))}" class="team-name-link">${team.team_name}</a>`;
       }
       
       function getPlayerNameLink(playerHandle) {
           if (!playerHandle) return 'N/A';
-          return `<a href="player.html?player=${encodeURIComponent(playerHandle)}" class="player-name-link">${playerHandle}</a>`;
+          return `<a href="player.html?player=${encodeURIComponent(String(playerHandle || ''))}" class="player-name-link">${playerHandle}</a>`;
       }
 
       function getTeamLogo(teamId) {
         if (!teamId) return '';
         const team = getTeamData(teamId); 
-        return `<img src="icons/${team.team_id}.webp" alt="${team.team_name}" class="team-logo-inline" onerror="this.style.display='none'">`;
+        return `<img src="icons/${encodeURIComponent(String(team.team_id || ''))}.webp" alt="${team.team_name}" class="team-logo-inline" onerror="this.style.display='none'">`;
       }
 
       function parsePlayerNumber(value) { 
@@ -532,9 +533,8 @@
         return baseVerb + 's';
       }
 
-      // --- NEW: Helper function to escape special characters for RegExp ---
       function escapeRegExp(string) {
-        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       }
       
       async function loadData() {
@@ -676,7 +676,6 @@
             details = `${getTeamLogo(transaction.from_team)}${playerNameLinked}${playerStats} dropped by ${getTeamNameLink(transaction.from_team)}.`;
             break;
           case 'WAIVER_CLAIM':
-            // Assuming from_team is present for waiver claims for context
             const fromTeamText = transaction.from_team ? ` from ${getTeamNameLink(transaction.from_team)}` : '';
             details = `${getTeamLogo(transaction.to_team)}${playerNameLinked}${playerStats} claimed off waivers by ${getTeamNameLink(transaction.to_team)}${fromTeamText}.`;
             break;
@@ -690,7 +689,6 @@
             details = `Unknown transaction: ${transaction.transaction_type} involving ${transaction.player_handle || transaction.gm_involved || 'assets'}.`;
         }
         
-        // Display notes as plain text, not a link
         return `
           <div class="transaction-item">
             <div class="transaction-header">
@@ -732,19 +730,20 @@
                 let formattedPickDesc = transaction.draft_pick_id; 
                 if (pickInfo && pickInfo.pick_description) {
                     formattedPickDesc = pickInfo.pick_description;
-                    // Adjusting for "S9 JAM 3rd" -> "S9 Jammers 3rd"
-                    if (pickInfo.original_team_id && pickInfo.original_team_id !== 'N/A' && pickInfo.original_team_id !== '') {
-                        const originalOwnerData = getTeamData(pickInfo.original_team_id);
+                    // Field name for original team ID in Draft_Capital sheet: pickInfo.original_team
+                    if (pickInfo.original_team && pickInfo.original_team !== 'N/A' && pickInfo.original_team !== '') {
+                        const originalOwnerData = getTeamData(pickInfo.original_team);
                         const originalOwnerAbbreviation = originalOwnerData.team_id; 
                         const originalOwnerFullName = originalOwnerData.team_name;
                         
-                        const abbreviationPattern = new RegExp(`\\b${escapeRegExp(originalOwnerAbbreviation)}\\b`, 'i'); // Case-insensitive 'i'
-                        
-                        if (formattedPickDesc.match(abbreviationPattern)) {
-                            formattedPickDesc = formattedPickDesc.replace(abbreviationPattern, originalOwnerFullName);
-                        } else if (originalOwnerFullName !== originalOwnerAbbreviation && originalOwnerFullName !== 'N/A') {
-                            // Only add "(from ...)" if abbreviation wasn't in the description AND it's a meaningful name
-                            formattedPickDesc += ` (from ${originalOwnerFullName})`;
+                        if (originalOwnerAbbreviation && originalOwnerFullName && originalOwnerFullName !== originalOwnerAbbreviation) {
+                            const abbreviationPattern = new RegExp(`\\b${escapeRegExp(originalOwnerAbbreviation)}\\b`, 'gi'); 
+                            
+                            if (formattedPickDesc.match(abbreviationPattern)) {
+                                formattedPickDesc = formattedPickDesc.replace(abbreviationPattern, originalOwnerFullName);
+                            } else if (!formattedPickDesc.toLowerCase().includes(`(from ${originalOwnerFullName.toLowerCase()}`)) {
+                                formattedPickDesc += ` (from ${originalOwnerFullName})`;
+                            }
                         }
                     }
                 }
@@ -786,7 +785,6 @@
         });
         tradeSummaryHtml += '</div>';
 
-        // Display notes as plain text
         return `
           <div class="transaction-item multi-transaction">
             <div class="transaction-header">
