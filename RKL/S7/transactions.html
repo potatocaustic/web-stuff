@@ -145,9 +145,6 @@
         padding: 1.5rem;
         border-bottom: 1px solid #eee;
         transition: background-color 0.2s;
-        /* display: block; /* Not needed if it's a div by default */
-        /* text-decoration: none; /* Not needed for div */
-        /* color: inherit; /* Not needed for div */
       }
 
       .transaction-item:hover {
@@ -210,13 +207,12 @@
       .player-name-link:hover, .team-name-link:hover {
         text-decoration: underline;
       }
-      .team-name-link { /* Slightly less bold for team name links in text if desired */
+      .team-name-link {
           font-weight: 500;
       }
 
       .player-stats-inline { font-size: 0.85em; color: #555; }
-      .gm-name { font-weight: bold; color: #17a2b8; } /* GM names might not be linkable if no GM pages */
-      /* .team-name { font-weight: 500; color: #333; } /* This class might be redundant if all team names are links */
+      .gm-name { font-weight: bold; color: #17a2b8; } 
 
 
       .draft-pick {
@@ -256,15 +252,14 @@
         margin-top: 1.5rem; 
       }
 
-      .trade-team { /* This div contains the team logo and name + verb */
+      .trade-team { 
         font-weight: bold;
-        /* color: #0056b3; /* Color handled by link */
         margin-bottom: 0.75rem;
         display: flex;
         align-items: center;
       }
       .trade-team .team-name-link {
-          color: #0056b3; /* Darker blue for team names in trades */
+          color: #0056b3; 
       }
 
 
@@ -433,10 +428,10 @@
         return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
       }
       
-      function getTeamData(teamId) { // Returns full team object or a fallback
+      function getTeamData(teamId) { 
         if (!teamId) return { team_id: teamId, team_name: 'N/A' };
         const team = allTeams.find(t => t.team_id === teamId);
-        return team || { team_id: teamId, team_name: teamId }; // Fallback to ID if not found
+        return team || { team_id: teamId, team_name: teamId }; 
       }
 
       function getTeamNameLink(teamId) {
@@ -449,10 +444,9 @@
           return `<a href="player.html?player=${encodeURIComponent(playerHandle)}" class="player-name-link">${playerHandle}</a>`;
       }
 
-
       function getTeamLogo(teamId) {
         if (!teamId) return '';
-        const team = getTeamData(teamId); // Use getTeamData to get name for alt text
+        const team = getTeamData(teamId); 
         return `<img src="icons/${team.team_id}.webp" alt="${team.team_name}" class="team-logo-inline" onerror="this.style.display='none'">`;
       }
 
@@ -471,7 +465,7 @@
         if (playerGames.length === 0) return 0;
         
         const weeklyAveragesMap = {};
-        (weeklyAverages || []).forEach(week => { // Add guard for weeklyAverages
+        (weeklyAverages || []).forEach(week => { 
           if (week.date) {
             weeklyAveragesMap[week.date] = { median_score: parsePlayerNumber(week.median_score) };
           }
@@ -505,13 +499,12 @@
       async function precalculateAllPlayerStats() {
         if (!allPlayers || !allLineupsData || !allWeeklyAverages) {
             console.error("Missing data for player stats precalculation.");
-            playerStatsCache = {}; // Ensure cache is empty/reset if data is missing
+            playerStatsCache = {}; 
             return;
         }
         playerStatsCache = {}; 
         for (const player of allPlayers) {
           if (player.player_handle) {
-            // Assuming 'games_played' is directly from the 'Players' sheet and is reliable
             const gamesPlayed = parseInt(player.games_played || 0); 
             const relMedian = calculatePlayerRELMedian(player.player_handle, allWeeklyAverages, allLineupsData);
             const medianRank = calculatePlayerMedianRank(player.player_handle, allLineupsData);
@@ -537,6 +530,11 @@
             return baseVerb;
         }
         return baseVerb + 's';
+      }
+
+      // --- NEW: Helper function to escape special characters for RegExp ---
+      function escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
       }
       
       async function loadData() {
@@ -588,7 +586,7 @@
         document.getElementById('week-filter').innerHTML = '<option value="all">All Weeks</option>' + weekOptions;
         
         const teamOptions = allTeams
-          .filter(team => team.team_id && team.team_name && team.team_id !== "FA") // Exclude FA from team filter if desired
+          .filter(team => team.team_id && team.team_name && team.team_id !== "FA") 
           .sort((a, b) => a.team_name.localeCompare(b.team_name))
           .map(team => `<option value="${team.team_id}">${team.team_name}</option>`)
           .join('');
@@ -602,7 +600,6 @@
       function getFilteredTransactions() {
         const weekFilter = document.getElementById('week-filter').value;
         const typeFilter = document.getElementById('type-filter').value;
-        // Team filter is handled after grouping for trades
         
         return allTransactions.filter(transaction => {
           if (weekFilter !== 'all' && parseInt(transaction.week) !== parseInt(weekFilter)) return false;
@@ -653,7 +650,7 @@
           } else if (group.length > 0) { 
             return renderSingleTransaction(group[0]);
           }
-          return ''; // Should not happen if groups are not empty
+          return ''; 
         }).join('');
         
         document.getElementById('transactions-list').innerHTML = transactionsHTML;
@@ -679,7 +676,9 @@
             details = `${getTeamLogo(transaction.from_team)}${playerNameLinked}${playerStats} dropped by ${getTeamNameLink(transaction.from_team)}.`;
             break;
           case 'WAIVER_CLAIM':
-            details = `${getTeamLogo(transaction.to_team)}${playerNameLinked}${playerStats} claimed off waivers by ${getTeamNameLink(transaction.to_team)} from ${getTeamNameLink(transaction.from_team)}.`;
+            // Assuming from_team is present for waiver claims for context
+            const fromTeamText = transaction.from_team ? ` from ${getTeamNameLink(transaction.from_team)}` : '';
+            details = `${getTeamLogo(transaction.to_team)}${playerNameLinked}${playerStats} claimed off waivers by ${getTeamNameLink(transaction.to_team)}${fromTeamText}.`;
             break;
           case 'GM_RESIGNATION':
             details = `${getTeamLogo(transaction.from_team)}<span class="gm-name">${transaction.gm_involved}</span> resigned as GM of ${getTeamNameLink(transaction.from_team)}.`;
@@ -691,6 +690,7 @@
             details = `Unknown transaction: ${transaction.transaction_type} involving ${transaction.player_handle || transaction.gm_involved || 'assets'}.`;
         }
         
+        // Display notes as plain text, not a link
         return `
           <div class="transaction-item">
             <div class="transaction-header">
@@ -732,10 +732,20 @@
                 let formattedPickDesc = transaction.draft_pick_id; 
                 if (pickInfo && pickInfo.pick_description) {
                     formattedPickDesc = pickInfo.pick_description;
-                    // Assuming pickInfo.original_team stores the ID of the original owner
-                    if (pickInfo.original_team && pickInfo.original_team !== 'N/A' && pickInfo.original_team !== '') {
-                        const originalOwnerData = getTeamData(pickInfo.original_team);
-                        formattedPickDesc += ` (from ${originalOwnerData.team_name})`;
+                    // Adjusting for "S9 JAM 3rd" -> "S9 Jammers 3rd"
+                    if (pickInfo.original_team_id && pickInfo.original_team_id !== 'N/A' && pickInfo.original_team_id !== '') {
+                        const originalOwnerData = getTeamData(pickInfo.original_team_id);
+                        const originalOwnerAbbreviation = originalOwnerData.team_id; 
+                        const originalOwnerFullName = originalOwnerData.team_name;
+                        
+                        const abbreviationPattern = new RegExp(`\\b${escapeRegExp(originalOwnerAbbreviation)}\\b`, 'i'); // Case-insensitive 'i'
+                        
+                        if (formattedPickDesc.match(abbreviationPattern)) {
+                            formattedPickDesc = formattedPickDesc.replace(abbreviationPattern, originalOwnerFullName);
+                        } else if (originalOwnerFullName !== originalOwnerAbbreviation && originalOwnerFullName !== 'N/A') {
+                            // Only add "(from ...)" if abbreviation wasn't in the description AND it's a meaningful name
+                            formattedPickDesc += ` (from ${originalOwnerFullName})`;
+                        }
                     }
                 }
                 if(fromTeam && teamAssetsMap[fromTeam]) teamAssetsMap[fromTeam].sent_picks.push(formattedPickDesc);
@@ -748,7 +758,7 @@
 
         teamIdsArray.forEach((teamId, index) => {
             const assets = teamAssetsMap[teamId];
-            const teamDataObject = getTeamData(teamId); // Get full team object for name
+            const teamDataObject = getTeamData(teamId);
             const teamNameForVerb = teamDataObject.team_name;
 
             tradeSummaryHtml += `
@@ -759,9 +769,6 @@
                         ${assets.received_picks.map(pick => `<li>🎯 <span class="draft-pick">${pick}</span></li>`).join('')}
                         ${assets.received_players.length === 0 && assets.received_picks.length === 0 ? '<li><em>Nothing</em></li>' : ''}
                     </ul>`;
-            // Only show "sends" if there are assets sent by this team in the current understanding of the trade
-            // This part can be tricky if the log isn't perfectly symmetrical for all teams in one group.
-            // The current logic populates sent_players/sent_picks based on `from_team` in the transaction log.
             if (assets.sent_players.length > 0 || assets.sent_picks.length > 0) {
                  tradeSummaryHtml += `
                     <div class="trade-team" style="margin-top:0.5em;">${getTeamLogo(teamId)}${getTeamNameLink(teamId)} ${getVerb(teamNameForVerb, 'send')}:</div>
@@ -771,15 +778,15 @@
                     </ul>`;
             }
             tradeSummaryHtml += `</div>`;
-            if (index < teamIdsArray.length - 1 && teamIdsArray.length === 2) { // Only show arrow for 2-team trades
+            if (index < teamIdsArray.length - 1 && teamIdsArray.length === 2) { 
                 tradeSummaryHtml += `<div class="trade-arrow">⟷</div>`;
             } else if (index < teamIdsArray.length - 1 && teamIdsArray.length > 2) {
-                tradeSummaryHtml += `<div class="trade-arrow" style="font-size:1em; color:#666;">then</div>`; // Connector for multi-team
+                tradeSummaryHtml += `<div class="trade-arrow" style="font-size:1em; color:#666;">then</div>`; 
             }
-
         });
         tradeSummaryHtml += '</div>';
 
+        // Display notes as plain text
         return `
           <div class="transaction-item multi-transaction">
             <div class="transaction-header">
