@@ -184,19 +184,19 @@
         padding: 0.8rem 0.5rem;
         border-bottom: 1px solid #eee;
         font-size: 0.9rem;
-        vertical-align: middle; /* Align content vertically */
+        vertical-align: middle; 
       }
 
       .draft-table tr:hover {
         background-color: #f8f9fa;
       }
 
-      .pick-description {
-        font-family: monospace;
+      .pick-description-cell { /* Renamed from .pick-description for clarity if needed */
+        font-family: Arial, sans-serif; /* Match page font */
         font-weight: 500;
       }
 
-      .owner-cell { /* New class for owner cells */
+      .owner-cell { 
         display: flex;
         align-items: center;
         gap: 0.5rem;
@@ -206,7 +206,7 @@
         width: 20px;
         height: 20px;
         border-radius: 2px;
-        object-fit: contain; /* Ensure logo fits well */
+        object-fit: contain; 
       }
 
       .original-pick {
@@ -221,11 +221,11 @@
         background-color: #f8d7da;
         opacity: 0.7;
       }
-      .trade-info a { /* Style for citation links */
+      .trade-info-cell a { /* For citation links if they were to be used in this column */
         color: #007bff;
         text-decoration: none;
       }
-      .trade-info a:hover {
+      .trade-info-cell a:hover {
         text-decoration: underline;
       }
 
@@ -263,7 +263,7 @@
         margin-top: 0.3rem;
       }
 
-      /* Round sections */
+      /* Round sections (if used, but not in current table view) */
       .round-section {
         margin-bottom: 2rem;
       }
@@ -292,7 +292,7 @@
         overflow: hidden;
       }
 
-      .team-card .team-header { /* Specific to team card header */
+      .team-card .team-header { 
         background-color: #333;
         color: white;
         padding: 1rem;
@@ -318,7 +318,7 @@
       .pick-item {
         padding: 0.5rem;
         border-bottom: 1px solid #eee;
-        font-family: monospace;
+        /* font-family: monospace; */ /* Removed for page default font */
         font-size: 0.9rem;
       }
 
@@ -507,12 +507,12 @@
               <th>Current Owner</th>
               <th>Original Team</th>
               <th>Trade Status</th>
-              <th>Notes</th>
-            </tr>
+              </tr>
           </thead>
           <tbody id="draft-table-body">
             <tr>
-              <td colspan="5" class="loading">Loading draft picks...</td>
+              <td colspan="4" class="loading">Loading draft picks...</td> 
+              {/* Colspan changed to 4 */}
             </tr>
           </tbody>
         </table>
@@ -535,7 +535,7 @@
       let currentView = 'table';
       let allDraftPicks = [];
       let allTeams = [];
-      let allTransactionsLogData = []; // To store Transaction_Log data
+      let allTransactionsLogData = []; 
 
       async function fetchSheetData(sheetName) {
         try {
@@ -548,7 +548,7 @@
         }
       }
       
-      function parseCSV(csvText) { // Using the more robust CSV parser
+      function parseCSV(csvText) {
         const lines = csvText.trim().split('\n');
         const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
         const data = [];
@@ -582,30 +582,55 @@
         return data;
       }
       
-      function getTeamName(teamId) {
-        if (!teamId) return 'N/A';
+      function getTeamData(teamId) { 
+        if (!teamId) return { team_id: teamId, team_name: 'N/A' };
         const team = allTeams.find(t => t.team_id === teamId);
-        return team ? team.team_name : teamId;
+        return team || { team_id: teamId, team_name: teamId }; 
+      }
+      
+      function getTeamName(teamId) {
+        return getTeamData(teamId).team_name;
       }
 
-      // --- NEW: Helper to get team logo HTML ---
       function getTeamLogoHTML(teamId) {
         if (!teamId || teamId === 'N/A') return '';
-        const teamName = getTeamName(teamId); // For alt text
+        const teamName = getTeamName(teamId); 
         return `<img src="icons/${encodeURIComponent(teamId)}.webp" alt="${teamName}" class="team-logo" onerror="this.style.display='none'">`;
+      }
+
+      // --- NEW: Helper function to escape special characters for RegExp ---
+      function escapeRegExp(string) {
+        if (typeof string !== 'string') return '';
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      }
+
+      // --- NEW: Function to format pick description with full team names ---
+      function formatPickDescription(description, teams) {
+        if (!description) return 'N/A';
+        let formattedDescription = description;
+        (teams || []).forEach(team => {
+            if (team.team_id && team.team_name && team.team_id !== team.team_name) { // Only replace if ID is different from name
+                const abbreviationPattern = new RegExp(`\\b${escapeRegExp(team.team_id)}\\b`, 'gi');
+                if (formattedDescription.match(abbreviationPattern)) {
+                    formattedDescription = formattedDescription.replace(abbreviationPattern, team.team_name);
+                }
+            }
+        });
+        return formattedDescription;
       }
       
       async function loadData() {
-        // Fetch Transaction_Log along with other data
         const [draftPicks, teams, transactionsLog] = await Promise.all([
           fetchSheetData('Draft_Capital'),
           fetchSheetData('Teams'),
-          fetchSheetData('Transaction_Log') // Fetch transaction log
+          fetchSheetData('Transaction_Log') 
         ]);
         
+        const errorTarget = document.getElementById('draft-table-body') || document.body;
+
         if (!draftPicks || !teams || !transactionsLog) {
-          document.getElementById('draft-table-body').innerHTML = 
-            '<tr><td colspan="5" class="error">Error loading data. Check console.</td></tr>';
+          errorTarget.innerHTML = 
+            '<tr><td colspan="4" class="error">Error loading data. Check console.</td></tr>'; // Colspan 4
           if (!draftPicks) console.error("Failed to load Draft_Capital");
           if (!teams) console.error("Failed to load Teams");
           if (!transactionsLog) console.error("Failed to load Transaction_Log");
@@ -614,7 +639,7 @@
         
         allDraftPicks = draftPicks;
         allTeams = teams;
-        allTransactionsLogData = transactionsLog.sort((a, b) => { // Sort transactions for finding latest
+        allTransactionsLogData = transactionsLog.sort((a, b) => { 
             const dateA = new Date(a.date || 0);
             const dateB = new Date(b.date || 0);
             if (dateB.getTime() !== dateA.getTime()) return dateB - dateA;
@@ -694,11 +719,10 @@
           const roundA = parseInt(a.round);
           const roundB = parseInt(b.round);
           if (roundA !== roundB) return roundA - roundB;
-          // Sort by original team for consistent pick ordering within a round
           const originalTeamAOrder = allTeams.findIndex(t => t.team_id === a.original_team);
           const originalTeamBOrder = allTeams.findIndex(t => t.team_id === b.original_team);
           if (originalTeamAOrder !== originalTeamBOrder) return originalTeamAOrder - originalTeamBOrder;
-          return (a.pick_description || '').localeCompare(b.pick_description || ''); // Fallback sort by description
+          return (a.pick_description || '').localeCompare(b.pick_description || '');
         });
         
         const tableHTML = sortedPicks.map(pick => {
@@ -711,66 +735,69 @@
             rowClass = 'forfeited-pick';
           } else if (pick.current_owner !== pick.original_team) {
             rowClass = 'traded-pick';
-            // Find immediate previous owner
             const relevantTransactions = (allTransactionsLogData || [])
                 .filter(t => t.draft_pick_id === pick.pick_id && t.to_team === pick.current_owner && t.transaction_type === 'TRADE');
-            // No need to re-sort here if allTransactionsLogData is already sorted globally
+            // Already sorted globally, first element [0] is the latest
             
             if (relevantTransactions.length > 0) {
-                const lastAcquisition = relevantTransactions[0]; // Already sorted, first one is latest
-                tradeStatus = `Acquired from ${getTeamName(lastAcquisition.from_team)}`;
+                const lastAcquisition = relevantTransactions[0];
+                const previousOwnerId = lastAcquisition.from_team;
+                if (previousOwnerId === pick.original_team) {
+                    tradeStatus = `Acquired from ${getTeamName(pick.original_team)}`;
+                } else {
+                    tradeStatus = `Acquired via ${getTeamName(previousOwnerId)}`;
+                }
             } else {
-                // Fallback if no specific trade transaction found to this owner (might be initial assignment or direct data entry)
                 tradeStatus = `Acquired (Origin: ${getTeamName(pick.original_team)})`;
             }
           }
           
-          let notesContent = pick.notes || '-';
-          const citationRegex = /\b([A-Z]{2,4})\s*\/\s*([A-Z]{2,4})\s+(\d{1,2}\/\d{1,2}\/\d{4})\b/i; // More flexible with spaces around /
-          const match = (pick.notes || '').match(citationRegex);
+          // Format pick description
+          const formattedPickDesc = formatPickDescription(pick.pick_description, allTeams);
 
-          if (match) {
-              const team1ID = match[1].toUpperCase();
-              const team2ID = match[2].toUpperCase();
-              const dateStr = match[3];
-              const dateParts = dateStr.split('/');
-              const formattedDateForLink = `${dateParts[2]}-${String(dateParts[0]).padStart(2, '0')}-${String(dateParts[1]).padStart(2, '0')}`;
-              
-              // Link to transactions.html, it will need to handle these query params
-              const transactionsLink = `transactions.html?type=TRADE&date=${formattedDateForLink}&teamFilters=${team1ID},${team2ID}`;
-              notesContent = `<a href="${transactionsLink}" title="View transaction: ${pick.notes}">${pick.notes}</a>`;
-          }
-
+          // Handle clickable notes (removed from display but logic kept if needed elsewhere)
+          // let notesContent = pick.notes || '-';
+          // const citationRegex = /\b([A-Z]{2,4})\s*\/\s*([A-Z]{2,4})\s+(\d{1,2}\/\d{1,2}\/\d{4})\b/i;
+          // const match = (pick.notes || '').match(citationRegex);
+          // if (match) {
+          //     const team1ID = match[1].toUpperCase();
+          //     const team2ID = match[2].toUpperCase();
+          //     const dateStr = match[3];
+          //     const dateParts = dateStr.split('/');
+          //     const formattedDateForLink = `${dateParts[2]}-${String(dateParts[0]).padStart(2, '0')}-${String(dateParts[1]).padStart(2, '0')}`;
+          //     const transactionsLink = `transactions.html?type=TRADE&date=${formattedDateForLink}&teamFilters=${team1ID},${team2ID}`;
+          //     notesContent = `<a href="${transactionsLink}" title="View transaction: ${pick.notes}">${pick.notes}</a>`;
+          // }
+          
           return `
             <tr class="${rowClass}">
-              <td class="pick-description">${pick.pick_description}</td>
+              <td class="pick-description-cell">${formattedPickDesc}</td>
               <td class="owner-cell">${getTeamLogoHTML(pick.current_owner)} ${getTeamName(pick.current_owner)}</td>
               <td class="owner-cell">${getTeamLogoHTML(pick.original_team)} ${getTeamName(pick.original_team)}</td>
               <td>${tradeStatus}</td>
-              <td class="trade-info">${notesContent}</td>
-            </tr>
+              </tr>
           `;
         }).join('');
         
         document.getElementById('draft-table-body').innerHTML = tableHTML || 
-          '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: #666;">No picks match your filters for this season.</td></tr>';
+          '<tr><td colspan="4" style="text-align: center; padding: 2rem; color: #666;">No picks match your filters for this season.</td></tr>'; // Colspan 4
       }
       
       function displayTeamView() {
         const seasonPicks = allDraftPicks.filter(pick => parseInt(pick.season) === currentSeason);
         const teamPicksMap = {};
         allTeams.forEach(team => {
-            if (team.team_id && team.team_id !== "FA") { // Exclude "FA" or other non-drafting entities
+            if (team.team_id && team.team_id !== "FA") { 
                  teamPicksMap[team.team_id] = seasonPicks.filter(pick => pick.current_owner === team.team_id);
             }
         });
         
         const teamHTML = Object.entries(teamPicksMap)
-          .sort(([teamIdA, picksA], [teamIdB, picksB]) => { // Sort teams alphabetically
+          .sort(([teamIdA, picksA], [teamIdB, picksB]) => { 
               return getTeamName(teamIdA).localeCompare(getTeamName(teamIdB));
           })
           .map(([teamId, picks]) => {
-            if (picks.length === 0) return ''; // Don't show teams with no picks for the season
+            if (picks.length === 0) return ''; 
             const team = allTeams.find(t => t.team_id === teamId);
             const sortedPicks = picks.sort((a, b) => {
               const roundA = parseInt(a.round);
@@ -781,7 +808,7 @@
             
             return `
               <div class="team-card">
-                <div class="team-header">
+                <div class="team-card-header team-header"> {/* Added .team-header for consistency if needed */}
                   ${getTeamLogoHTML(teamId)}
                   <h4>${team.team_name}</h4>
                   <span>(${picks.length} pick${picks.length !==1 ? 's' : ''})</span>
@@ -790,16 +817,30 @@
                   ${sortedPicks.map(pick => {
                     const isOwn = pick.current_owner === pick.original_team;
                     const isForfeited = pick.notes && pick.notes.toUpperCase().includes('FORFEITED');
+                    const formattedPickDescTeamView = formatPickDescription(pick.pick_description, allTeams);
+                    
                     let originText = '';
                     if (isForfeited) {
                         originText = '<div class="pick-origin" style="color: #dc3545;">FORFEITED</div>';
                     } else if (!isOwn) {
-                        originText = `<div class="pick-origin">from ${getTeamName(pick.original_team)}</div>`;
+                        // For team view, determine if it was acquired from original or via another team
+                        let acquiredFromText = `from ${getTeamName(pick.original_team)}`; // Default
+                        const relevantTransactions = (allTransactionsLogData || [])
+                            .filter(t => t.draft_pick_id === pick.pick_id && t.to_team === pick.current_owner && t.transaction_type === 'TRADE');
+                        
+                        if (relevantTransactions.length > 0) {
+                            const lastAcquisition = relevantTransactions[0];
+                            const previousOwnerId = lastAcquisition.from_team;
+                            if (previousOwnerId !== pick.original_team) {
+                                acquiredFromText = `via ${getTeamName(previousOwnerId)}`;
+                            }
+                        }
+                        originText = `<div class="pick-origin">${acquiredFromText}</div>`;
                     }
                     
                     return `
                       <div class="pick-item ${isForfeited ? 'forfeited-pick' : (isOwn ? 'own' : 'acquired')}">
-                        ${pick.pick_description}
+                        ${formattedPickDescTeamView}
                         ${originText}
                       </div>
                     `;
