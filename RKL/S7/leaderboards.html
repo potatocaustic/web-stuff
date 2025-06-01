@@ -109,7 +109,7 @@
         transition: all 0.3s ease;
         text-align: center;
         font-weight: 500;
-        font-size: 0.95rem; /* Slightly adjust for longer text */
+        font-size: 0.95rem; 
       }
 
       .category-btn:hover {
@@ -270,13 +270,13 @@
         background-color: #f8f9fa;
         border-bottom: 1px solid #ddd;
         text-align: center;
-        display: flex; /* Use flex for better alignment of controls */
+        display: flex; 
         justify-content: center;
         align-items: center;
-        gap: 1rem; /* Space between controls */
+        gap: 1rem; 
         flex-wrap: wrap;
       }
-      .show-count-selector, #min-games-filter-container { margin: 0 0.5rem; } /* Reduce individual margins */
+      .show-count-selector, #min-games-filter-container { margin: 0 0.5rem; } 
       .show-count-selector select, #min-games {
         padding: 0.5rem; border: 1px solid #ddd;
         border-radius: 4px; font-size: 1rem;
@@ -345,13 +345,11 @@
           <div class="category-btn active" data-category="total_points">Total Karma</div>
           <div class="category-btn" data-category="rel_mean">REL Mean</div>
           <div class="category-btn" data-category="rel_median">REL Median</div>
-          {/* MODIFIED: Median Rank button text and data-category */}
           <div class="category-btn" data-category="median_gameday_rank">Median Gameday Rank</div>
           <div class="category-btn" data-category="aag_mean">Games Above Mean</div>
           <div class="category-btn" data-category="aag_median">Games Above Median</div>
           <div class="category-btn" data-category="single_game_karma">Single Game Karma</div>
           <div class="category-btn" data-category="single_game_rank">Single Game Rank</div>
-          {/* ADDED: T100 Finishes button */}
           <div class="category-btn" data-category="t100_finishes">T100 Finishes</div>
         </div>
       </div>
@@ -369,15 +367,13 @@
             <option value="50">Top 50</option>
             <option value="all">All Players/Games</option>
           </select>
-          {/* ADDED: Min Games Filter Container (initially hidden) */}
           <span id="min-games-filter-container" style="display:none;">
             <label for="min-games">Min Games: </label>
             <input type="number" id="min-games" value="3" min="0" step="1" style="width: 60px; padding: 0.4rem;">
           </span>
         </div>
         
-        <table class="leaderboard-table" id="leaderboardTable">
-          <thead id="table-header">
+        <table class="leaderboard-table" id="leaderboardTable"> <thead id="table-header">
             <tr>
               <th>Rank</th>
               <th>Player</th>
@@ -433,7 +429,7 @@
           secondaryField: 'games_played',
           formatSecondaryValue: (value) => parseInt(value || 0),
           dataSourceType: 'players',
-          hasMinGamesFilter: true // Flag for min games filter
+          hasMinGamesFilter: true 
         },
         rel_median: {
           title: 'REL Median Leaders', 
@@ -444,11 +440,10 @@
           secondaryField: 'games_played',
           formatSecondaryValue: (value) => parseInt(value || 0),
           dataSourceType: 'players',
-          hasMinGamesFilter: true // Flag for min games filter
+          hasMinGamesFilter: true 
         },
-        // MODIFIED: Key and title for Median Gameday Rank
         median_gameday_rank: { 
-          title: 'Median Gameday Rank Leaders',
+          title: 'Median Gameday Rank Leaders', // MODIFIED TITLE
           columns: ['Rank', 'Player', 'Median Rank', 'Games'],
           sortField: 'calculated_median_rank',
           descending: false, 
@@ -456,7 +451,7 @@
           secondaryField: 'games_played',
           formatSecondaryValue: (value) => parseInt(value || 0),
           dataSourceType: 'players',
-          hasMinGamesFilter: true // Flag for min games filter
+          hasMinGamesFilter: true 
         },
         aag_mean: {
           title: 'Games Above Mean Leaders',
@@ -487,7 +482,7 @@
           descending: true,
           formatValue: (value) => formatKarma(value), 
           secondaryField: 'week',
-          formatSecondaryValue: (value) => value, // Week is already a number
+          formatSecondaryValue: (value) => value,
           dataSourceType: 'games' 
         },
         single_game_rank: {
@@ -497,11 +492,10 @@
           descending: false, 
           formatValue: (value) => formatRank(value), 
           secondaryField: 'week',
-          formatSecondaryValue: (value) => value, // Week is already a number
+          formatSecondaryValue: (value) => value,
           dataSourceType: 'games' 
         },
-        // ADDED: T100 Finishes category
-        t100_finishes: {
+        t100_finishes: { // ADDED T100 Finishes
           title: 'T100 Finishes Leaders',
           subtitle: 'Ties broken by REL Median',
           columns: ['Rank', 'Player', 'T100 Finishes', '% of Games'],
@@ -567,7 +561,6 @@
         return isNaN(parsed) ? 0 : parsed;
       }
 
-      // MODIFIED: calculateRELForAllPlayers to include T100 finishes
       function calculateRELForAllPlayers(players, weeklyAverages, lineups) {
         console.log('Calculating REL, Median Rank, and T100 Finishes for all players...');
         const weeklyAveragesMap = {};
@@ -593,7 +586,7 @@
           const ranks = [];
           let gamesAboveMean = 0;
           let gamesAboveMedian = 0;
-          let t100_finishes = 0; // Initialize T100 finishes count
+          let t100_finishes = 0; 
 
           playerGames.forEach(game => {
             const gameDate = game.date;
@@ -610,7 +603,7 @@
             }
             if (globalRank > 0) {
               ranks.push(globalRank);
-              if (globalRank <= 100) { // Count T100 finishes
+              if (globalRank <= 100) { 
                 t100_finishes++;
               }
             }
@@ -641,8 +634,8 @@
             aag_mean_pct: games_played_count > 0 ? gamesAboveMean / games_played_count : 0,
             aag_median: gamesAboveMedian,
             aag_median_pct: games_played_count > 0 ? gamesAboveMedian / games_played_count : 0,
-            t100_finishes: t100_finishes, // Add T100 count
-            t100_finishes_pct: games_played_count > 0 ? (t100_finishes / games_played_count) : 0, // Add T100 percentage
+            t100_finishes: t100_finishes, 
+            t100_finishes_pct: games_played_count > 0 ? (t100_finishes / games_played_count) : 0,
             total_points: parseNumber(player.total_points),
             games_played: games_played_count 
           };
@@ -688,7 +681,7 @@
         return gamePerformances;
       }
 
-      async function loadData() { /* ... (no changes to this function itself) ... */ 
+      async function loadData() { /* ... (no changes) ... */ 
         const leaderboardBody = document.getElementById('leaderboard-body');
         leaderboardBody.innerHTML = '<tr><td colspan="4" class="loading">Loading data from sheets...</td></tr>';
 
@@ -706,14 +699,14 @@
         }
         
         allTeams = teamsData; 
-        const playersWithCalculatedStats = calculateRELForAllPlayers(playersData, weeklyAveragesData, lineupsData); // Renamed for clarity
+        const playersWithCalculatedStats = calculateRELForAllPlayers(playersData, weeklyAveragesData, lineupsData); 
         allPlayers = playersWithCalculatedStats.filter(player => 
           player.player_status === 'ACTIVE' 
         );
         
         allGamePerformances = processGamePerformances(lineupsData, weeklyAveragesData, playersData);
         
-        displayLeaderboard(); // Initial display after data load
+        displayLeaderboard(); 
       }
       
       function getTeamName(teamId) { /* ... (no changes) ... */ 
@@ -729,34 +722,31 @@
         else { return `<span>${ (typeof rank === 'number' && !isNaN(rank)) ? rank : '-'}</span>`; }
       }
       
-      // ***** MODIFIED displayLeaderboard for Min Games Filter and T100 Finishes Tie-breaking *****
       function displayLeaderboard() {
         const category = categories[currentCategory];
         const showCount = document.getElementById('show-count').value;
         const leaderboardTable = document.getElementById('leaderboardTable');
         const leaderboardBody = document.getElementById('leaderboard-body');
         
-        // Min Games Filter UI
+        // Min Games Filter UI and Logic
         const minGamesContainer = document.getElementById('min-games-filter-container');
         const minGamesInput = document.getElementById('min-games');
-        const affectedCategoriesForMinGames = ['rel_mean', 'rel_median', 'median_gameday_rank'];
-
-        if (affectedCategoriesForMinGames.includes(currentCategory)) {
-            minGamesContainer.style.display = 'inline-block';
-            // Set default for input if not driven by prior user interaction in this session for this category
-            // This logic attempts to set a smart default when the category is first shown or re-shown
-            if (!minGamesInput.dataset.userInteracted || minGamesInput.dataset.lastCategory !== currentCategory) {
+        
+        if (category.hasMinGamesFilter) {
+            minGamesContainer.style.display = 'inline-block'; // Show the filter
+            // Set default value for minGamesInput if user hasn't interacted with it for this category view
+            if (minGamesInput.dataset.lastCategory !== currentCategory || minGamesInput.dataset.userInteracted === "false") {
                 const playersMeeting3Games = allPlayers.filter(p => (p.games_played || 0) >= 3).length;
                 if (playersMeeting3Games < 120) {
                     minGamesInput.value = "1";
                 } else {
                     minGamesInput.value = "3";
                 }
-                minGamesInput.dataset.userInteracted = "false"; // Reset interaction flag
+                 minGamesInput.dataset.userInteracted = "false"; // Mark as not yet interacted by user for this category display
             }
             minGamesInput.dataset.lastCategory = currentCategory;
         } else {
-            minGamesContainer.style.display = 'none';
+            minGamesContainer.style.display = 'none'; // Hide for other categories
         }
         
         leaderboardBody.innerHTML = `<tr><td colspan="${category.columns.length || 4}" class="loading">Processing leaderboard...</td></tr>`;
@@ -790,10 +780,11 @@
           }
         } else {
           sourceData = [...allPlayers];
-          // Apply Min Games Filter if applicable
-          if (affectedCategoriesForMinGames.includes(currentCategory)) {
+          // Apply Min Games Filter if applicable for player leaderboards
+          if (category.hasMinGamesFilter) {
             const minGames = parseInt(minGamesInput.value) || 0;
-            if (minGames > 0) {
+            if (minGames > 0) { // Only filter if minGames is a positive number
+                console.log(`Filtering by min games: ${minGames} for category ${currentCategory}`);
                 sourceData = sourceData.filter(player => (player.games_played || 0) >= minGames);
             }
           }
@@ -855,7 +846,7 @@
 
           return `
             <tr>
-              <td class="rank-cell">${rank}</td> 
+              <td class="rank-cell">${rank}</td>
               <td class="player-cell">
                 <img src="${teamLogoSrc}" alt="${getTeamName(teamIdForLogo)}" class="team-logo" onerror="this.style.display='none'; this.src='icons/FA.webp';">
                 <div>
@@ -891,7 +882,7 @@
             }
           });
           if (categoryParam) { 
-            sessionStorage.setItem('selectedLeaderboardCategory', currentCategory); // Store if from URL
+            sessionStorage.setItem('selectedLeaderboardCategory', currentCategory); 
             window.history.replaceState({}, document.title, window.location.pathname);
           }
         } else { 
@@ -911,7 +902,6 @@
             btn.classList.add('active');
             currentCategory = btn.dataset.category;
             sessionStorage.setItem('selectedLeaderboardCategory', currentCategory); 
-            // When category changes, reset min-games input user interaction flag so default can be re-evaluated
             document.getElementById('min-games').dataset.userInteracted = "false"; 
             displayLeaderboard();
           });
@@ -927,10 +917,13 @@
             displayLeaderboard();
         });
 
-        // Min Games Filter Listener
         const minGamesInputElement = document.getElementById('min-games');
         minGamesInputElement.addEventListener('change', () => {
-            minGamesInputElement.dataset.userInteracted = "true"; // Mark that user has changed it
+            minGamesInputElement.dataset.userInteracted = "true"; 
+            displayLeaderboard();
+        });
+        minGamesInputElement.addEventListener('input', () => { // Also trigger on input for immediate feedback
+            minGamesInputElement.dataset.userInteracted = "true"; 
             displayLeaderboard();
         });
         
