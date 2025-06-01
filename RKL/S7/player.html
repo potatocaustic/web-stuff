@@ -419,7 +419,7 @@
         border-width: 2px;
       }
 
-      .team-header {
+      .team-header { /* This class name is duplicated, ensure it's styled for the modal context */
         background-color: #333;
         color: white;
         padding: 1.5rem;
@@ -431,17 +431,17 @@
         flex-direction: column;
       }
 
-      .team-header.winner {
+      .team-header.winner { /* Ensure this targets the modal's team header */
         background-color: #28a745;
       }
 
-      .team-header h4 {
+      .team-header h4 { /* Ensure this targets the modal's team header */
         color: white;
         margin: 0;
         font-size: 1.2rem;
       }
 
-      .team-header .team-logo {
+      .team-header .team-logo { /* Ensure this targets the modal's team header */
         width: 48px;
         height: 48px;
         border-radius: 4px;
@@ -495,12 +495,12 @@
         background-color: white;
       }
 
-      .captain-row {
+      .captain-row { /* This class name is duplicated, ensure it's styled for the modal context if different */
         background-color: #fff3cd !important;
         font-weight: bold;
       }
 
-      .captain-badge {
+      .captain-badge { /* This class name is duplicated, ensure it's styled for the modal context */
         background-color: #ffc107;
         color: #333;
         padding: 0.2rem 0.5rem;
@@ -635,7 +635,7 @@
           font-size: 0.8rem;
         }
 
-        .team-header .team-logo {
+        .team-header .team-logo { /* Target modal specific team logo */
           width: 36px;
           height: 36px;
         }
@@ -709,20 +709,16 @@
     <main>
       <a href="leaderboards.html" class="back-button">← Back to Leaderboards</a>
       
-      <!-- Player Header -->
       <div class="player-header">
         <div class="player-main-info" id="player-main-info">
           <div class="loading">Loading player information...</div>
         </div>
         
         <div class="player-stats-grid" id="player-stats" style="display: none;">
-          <!-- Stats will be populated by JavaScript -->
-        </div>
+          </div>
       </div>
 
-      <!-- Content Grid -->
       <div class="content-grid">
-        <!-- Weekly Performance -->
         <div class="performance-section">
           <div class="section-header">
             <h3>Weekly Performance</h3>
@@ -746,7 +742,6 @@
           </div>
         </div>
 
-        <!-- Game History -->
         <div class="performance-section">
           <div class="section-header">
             <h3>Game History</h3>
@@ -758,7 +753,6 @@
       </div>
     </main>
 
-    <!-- Game Details Modal -->
     <div id="game-modal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
@@ -943,7 +937,7 @@
           // Get all games where this player started
           const playerGames = lineups.filter(lineup => 
             lineup.player_handle === player.player_handle && 
-            (lineup.started === 'TRUE' || lineup.started === true || lineup.started === 'true')
+            (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1)
           );
           
           if (playerGames.length === 0) {
@@ -1016,7 +1010,7 @@
         // Get all games where this player started
         const playerGames = lineups.filter(lineup => 
           lineup.player_handle === playerHandle && 
-          (lineup.started === 'TRUE' || lineup.started === true || lineup.started === 'true')
+          (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1)
         );
         
         if (playerGames.length === 0) {
@@ -1060,7 +1054,7 @@
       function calculatePlayerMedianRank(playerHandle, lineups) {
         const playerGames = lineups.filter(lineup => 
           lineup.player_handle === playerHandle && 
-          (lineup.started === 'TRUE' || lineup.started === true || lineup.started === 'true') &&
+          (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1) &&
           lineup.global_rank && 
           parseFloat(lineup.global_rank) > 0
         );
@@ -1100,7 +1094,7 @@
         }
         
         allTeams = teams;
-        allLineups = lineups || [];
+        allLineups = lineups || []; // Ensure allLineups is populated
         
         // Calculate REL values for all players (needed for rankings)
         const playersWithREL = weeklyAverages ? calculateRELForAllPlayers(players, weeklyAverages, allLineups) : players;
@@ -1112,15 +1106,16 @@
           return;
         }
         
-        // Calculate REL Median and Median Rank for this player
+        // Re-calculate REL Median and Median Rank specifically for this player to ensure it's up-to-date
+        // (though calculateRELForAllPlayers should have handled it, this is a safeguard or can be primary if preferred)
         const calculatedRELMedian = weeklyAverages ? calculatePlayerRELMedian(playerHandle, weeklyAverages, allLineups) : 0;
         const medianRank = calculatePlayerMedianRank(playerHandle, allLineups);
         
-        // Add calculated values to player data
+        // Add/update calculated values to player data
         playerData.calculated_rel_median = calculatedRELMedian;
         playerData.calculated_median_rank = medianRank;
         
-        // Calculate rankings for all stats
+        // Calculate rankings for all stats using the comprehensive playersWithREL list
         const activePlayersWithREL = playersWithREL.filter(p => 
           p.player_status === 'ACTIVE' && parseInt(p.games_played || 0) > 0
         );
@@ -1130,8 +1125,8 @@
         
         // Load other data in parallel
         await Promise.all([
-          loadPerformanceData(),
-          loadGameHistory()
+          loadPerformanceData(), // Uses allLineups
+          loadGameHistory()      // Uses allLineups and schedule
         ]);
       }
       
@@ -1180,8 +1175,7 @@
             <div class="stat-label">Games Above Median</div>
             <div class="stat-rank">${getOrdinal(rankings.gamesAboveMedian)} Overall</div>
           </a>
-          <a href="leaderboards.html?category=aag_median" class="stat-card">
-            <div class="stat-value">${Math.round(aboveMedianPct)}%</div>
+          <a href="leaderboards.html?category=aag_median_pct" class="stat-card"> <div class="stat-value">${Math.round(aboveMedianPct)}%</div>
             <div class="stat-label">Above Median %</div>
             <div class="stat-rank">${getOrdinal(rankings.aboveMedianPct)} Overall</div>
           </a>
@@ -1204,7 +1198,8 @@
         }
         
         const playerLineups = allLineups
-          .filter(lineup => lineup.player_handle === playerHandle && lineup.started === 'TRUE')
+          .filter(lineup => lineup.player_handle === playerHandle && 
+                           (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1))
           .sort((a, b) => parseInt(a.week || 0) - parseInt(b.week || 0)); // Sort chronologically (oldest first)
         
         if (playerLineups.length === 0) {
@@ -1214,9 +1209,9 @@
         }
         
         const performanceHTML = playerLineups.map(lineup => {
-          const isCaptain = lineup.captain === 'TRUE' || lineup.captain === true || lineup.captain === 'true';
+          const isCaptain = String(lineup.captain).toLowerCase() === 'true' || lineup.captain === true || lineup.captain === 1;
           const pointsRaw = parseNumber(lineup.points_raw);
-          const pointsFinal = parseNumber(lineup.points_final);
+          // const pointsFinal = parseNumber(lineup.points_final); // Not used in this table display
           const globalRank = parseNumber(lineup.global_rank);
           
           return `
@@ -1232,51 +1227,77 @@
         document.getElementById('performance-table').innerHTML = performanceHTML;
       }
       
-      // Load game history with modal functionality
+      // Load game history with modal functionality (REVISED VERSION)
       async function loadGameHistory() {
-        const schedule = await fetchSheetData('Schedule');
+        const schedule = await fetchSheetData('Schedule'); // Fetches all games
         
-        if (!schedule || !allLineups) {
+        // allLineups is global, assumed to be populated correctly in loadPlayerData
+        if (!schedule || !allLineups) { 
           document.getElementById('game-history').innerHTML = 
-            '<div class="error">Error loading game history</div>';
+            '<div class="error">Error loading game history data.</div>';
           return;
         }
         
-        // Get player's team games and match with lineup data
-        const playerTeamId = playerData.current_team_id;
-        const teamGames = schedule
-          .filter(game => 
-            (game.team1_id === playerTeamId || game.team2_id === playerTeamId) && 
-            game.completed === 'TRUE'
-          )
-          .sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort chronologically (oldest first)
-        
-        const gamesWithPerformance = teamGames.map(game => {
-          const opponentId = game.team1_id === playerTeamId ? game.team2_id : game.team1_id;
-          const lineup = allLineups.find(l => 
-            l.player_handle === playerHandle && 
-            l.date === game.date && 
-            l.started === 'TRUE'
+        // 1. Get all "started" lineup entries for the current player
+        // Ensure robust boolean check for 'started' property
+        const playerStartedLineups = allLineups.filter(lineup => 
+            lineup.player_handle === playerHandle &&
+            (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1)
+        );
+
+        if (playerStartedLineups.length === 0) {
+          document.getElementById('game-history').innerHTML = 
+            '<div style="text-align: center; padding: 2rem; color: #666;">No game history found (player has not started any games).</div>';
+          return;
+        }
+
+        const gamesWithPerformance = playerStartedLineups.map(lineup => {
+          // For each lineup entry, find the corresponding game in the schedule
+          // It's assumed lineup.team_id stores the ID of the team the player played for in that specific game
+          const gameForThisLineup = schedule.find(sGame => 
+            sGame.date === lineup.date && // Match by date
+            (sGame.team1_id === lineup.team_id || sGame.team2_id === lineup.team_id) && // Match by team_id in THIS lineup entry
+            String(sGame.completed).toLowerCase() === 'true' // Ensure game is completed
           );
+
+          if (!gameForThisLineup) {
+            console.warn(`No matching completed game found in schedule for player ${playerHandle} on date ${lineup.date} with team ${lineup.team_id}`);
+            return null; 
+          }
+
+          // Determine opponentId based on the team_id from the lineup entry for this specific game
+          const opponentId = gameForThisLineup.team1_id === lineup.team_id ? gameForThisLineup.team2_id : gameForThisLineup.team1_id;
           
           return {
-            ...game,
-            opponentId,
-            lineup
+            ...gameForThisLineup, // Spread all game details from the schedule
+            opponentId,          // Add the determined opponent ID
+            lineup: lineup       // Keep the original lineup data (contains player's performance for this game)
           };
-        }).filter(game => game.lineup); // Only show games where player participated
-        
+        }).filter(game => game !== null) // Remove any entries where a matching game wasn't found
+          .sort((a, b) => { // Sort by date, then by week if dates are the same (though unlikely for different games)
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            if (dateA.getTime() !== dateB.getTime()) {
+                return dateA - dateB;
+            }
+            // If dates are identical, fallback to week number if available
+            const weekA = parseInt(a.lineup.week || '0');
+            const weekB = parseInt(b.lineup.week || '0');
+            return weekA - weekB;
+          });
+
         if (gamesWithPerformance.length === 0) {
           document.getElementById('game-history').innerHTML = 
-            '<div style="text-align: center; padding: 2rem; color: #666;">No game history found</div>';
+            '<div style="text-align: center; padding: 2rem; color: #666;">No completed game history found for started games.</div>';
           return;
         }
         
         const historyHTML = gamesWithPerformance.map(game => {
-          const isCaptain = game.lineup.captain === 'TRUE' || game.lineup.captain === true || game.lineup.captain === 'true';
+          const isCaptain = String(game.lineup.captain).toLowerCase() === 'true' || game.lineup.captain === true || game.lineup.captain === 1;
           const pointsRaw = parseNumber(game.lineup.points_raw);
           const globalRank = parseNumber(game.lineup.global_rank);
           
+          // Use game.team1_id and game.team2_id from the matched schedule game for the modal click
           return `
             <div class="game-item" onclick="showGameDetails('${game.team1_id}', '${game.team2_id}', '${game.date}')">
               <div class="game-opponent">
@@ -1301,7 +1322,7 @@
         document.getElementById('game-history').innerHTML = historyHTML;
       }
 
-      // Show game details modal
+      // Show game details modal (This function remains largely the same as in your original file)
       async function showGameDetails(team1Id, team2Id, date) {
         const modal = document.getElementById('game-modal');
         const modalTitle = document.getElementById('modal-title');
@@ -1309,13 +1330,13 @@
         
         // Show modal and loading state
         modal.style.display = 'block';
-        modalTitle.textContent = `${getTeamName(team1Id)} vs ${getTeamName(team2Id)}`;
+        modalTitle.textContent = `${getTeamName(team1Id)} vs ${getTeamName(team2Id)} - ${formatDate(date)}`; // Using formatDate for consistency
         modalContent.innerHTML = '<div class="loading">Loading game details...</div>';
         
         // Get game details from the schedule data
         const schedule = await fetchSheetData('Schedule');
         if (!schedule) {
-          modalContent.innerHTML = '<div class="error">Error loading game details</div>';
+          modalContent.innerHTML = '<div class="error">Error loading game details (schedule)</div>';
           return;
         }
         
@@ -1326,102 +1347,85 @@
         );
         
         if (!game) {
-          modalContent.innerHTML = '<div class="error">Game not found</div>';
+          modalContent.innerHTML = '<div class="error">Game not found in schedule</div>';
           return;
         }
         
-        // Get lineups for both teams on this date
-        const team1AllLineups = allLineups.filter(lineup => 
+        // Get lineups for both teams on this date (allLineups is already fetched)
+        if (!allLineups) {
+             modalContent.innerHTML = '<div class="error">Error loading game details (lineups)</div>';
+            return;
+        }
+
+        const team1AllGameLineups = allLineups.filter(lineup => 
           lineup.team_id === team1Id && lineup.date === date
         );
-        const team2AllLineups = allLineups.filter(lineup => 
+        const team2AllGameLineups = allLineups.filter(lineup => 
           lineup.team_id === team2Id && lineup.date === date
         );
         
         // Filter for started players and sort properly
-        const team1Lineups = team1AllLineups.filter(lineup => {
-          const isStarted = lineup.started === 'TRUE' || 
-                           lineup.started === true || 
-                           lineup.started === 'true' || 
-                           lineup.started === 1 || 
-                           lineup.started === '1';
+        const team1Lineups = team1AllGameLineups.filter(lineup => {
+          const isStarted = String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1;
           return isStarted;
         }).sort((a, b) => {
-          // Captain always goes first, then sort by points
-          const aCaptain = a.captain === 'TRUE' || a.captain === true || a.captain === 'true';
-          const bCaptain = b.captain === 'TRUE' || b.captain === true || b.captain === 'true';
-          
+          const aCaptain = String(a.captain).toLowerCase() === 'true' || a.captain === true || a.captain === 1;
+          const bCaptain = String(b.captain).toLowerCase() === 'true' || b.captain === true || b.captain === 1;
           if (aCaptain && !bCaptain) return -1;
           if (!aCaptain && bCaptain) return 1;
-          
           return parseNumber(b.points_final) - parseNumber(a.points_final);
         });
         
-        const team2Lineups = team2AllLineups.filter(lineup => {
-          const isStarted = lineup.started === 'TRUE' || 
-                           lineup.started === true || 
-                           lineup.started === 'true' || 
-                           lineup.started === 1 || 
-                           lineup.started === '1';
+        const team2Lineups = team2AllGameLineups.filter(lineup => {
+          const isStarted = String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1;
           return isStarted;
         }).sort((a, b) => {
-          // Captain always goes first, then sort by points
-          const aCaptain = a.captain === 'TRUE' || a.captain === true || a.captain === 'true';
-          const bCaptain = b.captain === 'TRUE' || b.captain === true || b.captain === 'true';
-          
+          const aCaptain = String(a.captain).toLowerCase() === 'true' || a.captain === true || a.captain === 1;
+          const bCaptain = String(b.captain).toLowerCase() === 'true' || b.captain === true || b.captain === 1;
           if (aCaptain && !bCaptain) return -1;
           if (!aCaptain && bCaptain) return 1;
-          
           return parseNumber(b.points_final) - parseNumber(a.points_final);
         });
         
         // Calculate team totals
-        const team1Total = team1Lineups.reduce((sum, player) => {
-          const points = parseNumber(player.points_final);
-          return sum + points;
-        }, 0);
-        
-        const team2Total = team2Lineups.reduce((sum, player) => {
-          const points = parseNumber(player.points_final);
-          return sum + points;
-        }, 0);
+        const team1Total = team1Lineups.reduce((sum, player) => sum + parseNumber(player.points_final), 0);
+        const team2Total = team2Lineups.reduce((sum, player) => sum + parseNumber(player.points_final), 0);
         
         const winner = game.winner;
         
         // Generate lineup tables
-        const generateLineupTable = (lineups, teamId, total, isWinner) => {
-          // Get team record
-          const teamData = allTeams.find(t => t.team_id === teamId);
-          const teamRecord = teamData ? `${teamData.wins || 0}-${teamData.losses || 0}` : '';
+        const generateLineupTable = (lineups, teamIdForTable, total, isWinner) => {
+          const teamDetails = allTeams.find(t => t.team_id === teamIdForTable);
+          const teamRecord = teamDetails ? `${teamDetails.wins || 0}-${teamDetails.losses || 0}` : '';
           
           if (lineups.length === 0) {
             return `
               <div class="team-breakdown ${isWinner ? 'winner' : ''}">
-                <div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamId}'" style="cursor: pointer;">
-                  <img src="icons/${teamId}.webp" alt="${getTeamName(teamId)}" class="team-logo" onerror="this.style.display='none'">
+                <div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamIdForTable}'" style="cursor: pointer;">
+                  <img src="icons/${teamIdForTable}.webp" alt="${getTeamName(teamIdForTable)}" class="team-logo" onerror="this.style.display='none'">
                   <div>
-                    <h4>${getTeamName(teamId)}</h4>
+                    <h4>${getTeamName(teamIdForTable)}</h4>
                     <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
                   </div>
                 </div>
                 <div class="team-total">Total: ${Math.round(total).toLocaleString()}</div>
-                <div style="padding: 2rem; text-align: center; color: #666;">No lineup data available</div>
+                <div style="padding: 2rem; text-align: center; color: #666;">No lineup data available for this game.</div>
               </div>
             `;
           }
           
           const lineupRows = lineups.map(player => {
-            const isCaptain = player.captain === 'TRUE' || player.captain === true || player.captain === 'true';
+            const isCaptain = String(player.captain).toLowerCase() === 'true' || player.captain === true || player.captain === 1;
             const pointsRaw = parseNumber(player.points_raw);
-            const pointsFinal = parseNumber(player.points_final);
+            // const pointsFinal = parseNumber(player.points_final); // Already used for total
             const globalRank = parseNumber(player.global_rank);
-            
             const captainBonus = isCaptain ? Math.round(pointsRaw * 0.5) : 0;
             
             return `
               <tr class="${isCaptain ? 'captain-row' : ''}">
                 <td class="player-name-cell">
-                  ${player.player_handle || 'Unknown'}
+                  <a href="player.html?player=${encodeURIComponent(player.player_handle || 'Unknown')}" target="_blank" class="player-link"> ${player.player_handle || 'Unknown'}
+                  </a>
                   ${isCaptain ? '<span class="captain-badge">C</span>' : ''}
                 </td>
                 <td class="points-cell">
@@ -1435,10 +1439,10 @@
           
           return `
             <div class="team-breakdown ${isWinner ? 'winner' : ''}">
-              <div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamId}'" style="cursor: pointer;">
-                <img src="icons/${teamId}.webp" alt="${getTeamName(teamId)}" class="team-logo" onerror="this.style.display='none'">
+              <div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamIdForTable}'" style="cursor: pointer;">
+                <img src="icons/${teamIdForTable}.webp" alt="${getTeamName(teamIdForTable)}" class="team-logo" onerror="this.style.display='none'">
                 <div>
-                  <h4>${getTeamName(teamId)}</h4>
+                  <h4>${getTeamName(teamIdForTable)}</h4>
                   <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
                 </div>
               </div>
