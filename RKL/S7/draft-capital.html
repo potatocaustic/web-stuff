@@ -149,7 +149,7 @@
         background-color: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        overflow: hidden; /* Helps contain table border radius */
+        overflow: hidden; 
       }
 
       .draft-header {
@@ -184,7 +184,7 @@
         padding: 0.8rem 0.5rem;
         border-bottom: 1px solid #eee;
         font-size: 0.9rem;
-        vertical-align: middle; /* Align content vertically */
+        vertical-align: middle; 
       }
 
       .draft-table tr:hover {
@@ -192,11 +192,10 @@
       }
 
       .pick-description {
-        /* font-family: monospace; */ /* Removed for default font */
-        /* font-weight: 500; */    /* Removed for default font weight */
+        /* Font properties removed to inherit from body/table */
       }
 
-      .owner-cell { /* Class for owner cells (Current and Original) */
+      .owner-cell { 
         display: flex;
         align-items: center;
         gap: 0.5rem;
@@ -206,7 +205,7 @@
         width: 20px;
         height: 20px;
         border-radius: 2px;
-        object-fit: contain; /* Ensure logo fits well */
+        object-fit: contain; 
       }
 
       .original-pick {
@@ -222,7 +221,6 @@
         opacity: 0.7;
       }
 
-      /* Pick count summary */
       .pick-summary {
         background-color: #f8f9fa;
         padding: 1rem;
@@ -255,7 +253,6 @@
         margin-top: 0.3rem;
       }
 
-      /* Team ownership view */
       .team-ownership {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -270,7 +267,7 @@
         overflow: hidden;
       }
 
-      .team-card .team-header { /* Specific to team card header */
+      .team-card .team-header { 
         background-color: #333;
         color: white;
         padding: 1rem;
@@ -296,7 +293,6 @@
       .pick-item {
         padding: 0.5rem;
         border-bottom: 1px solid #eee;
-        /* font-family: monospace; */ /* Match pick description font change */
         font-size: 0.9rem;
       }
 
@@ -319,7 +315,6 @@
         margin-left: 1rem;
       }
 
-      /* Loading and error states */
       .loading {
         text-align: center;
         padding: 3rem;
@@ -336,7 +331,6 @@
         margin: 1rem;
       }
 
-      /* View toggle */
       .view-toggle {
         text-align: center;
         margin-bottom: 2rem;
@@ -364,42 +358,19 @@
         border-color: #007bff;
       }
 
-      /* Mobile responsive */
       @media (max-width: 768px) {
         .filter-row {
           flex-direction: column;
           align-items: stretch;
         }
-        
-        .filter-group {
-          width: 100%;
-        }
-        
-        .filter-group select {
-          min-width: auto;
-          width: 100%;
-        }
-        
-        .season-tabs {
-          flex-direction: column;
-        }
-        
-        .season-tab {
-          padding: 0.8rem 1rem;
-        }
-        
-        .draft-table th,
-        .draft-table td {
-          padding: 0.5rem 0.3rem;
-          font-size: 0.8rem;
-        }
-        
-        .team-ownership {
-          grid-template-columns: 1fr;
-        }
+        .filter-group { width: 100%; }
+        .filter-group select { min-width: auto; width: 100%; }
+        .season-tabs { flex-direction: column; }
+        .season-tab { padding: 0.8rem 1rem; }
+        .draft-table th, .draft-table td { padding: 0.5rem 0.3rem; font-size: 0.8rem; }
+        .team-ownership { grid-template-columns: 1fr; }
       }
 
-      /* Footer */
       footer {
         text-align: center;
         margin-top: 3rem;
@@ -514,6 +485,16 @@
       let allTeams = [];
       let allTransactionsLogData = [];
 
+      // ***** NEW HELPER FUNCTION *****
+      function escapeHTML(str) {
+        if (typeof str !== 'string') return str; // Return non-strings as is
+        return str.replace(/&/g, '&amp;')
+                  .replace(/</g, '&lt;')
+                  .replace(/>/g, '&gt;')
+                  .replace(/"/g, '&quot;')
+                  .replace(/'/g, '&#039;');
+      }
+
       async function fetchSheetData(sheetName) {
         try {
           const response = await fetch(BASE_URL + encodeURIComponent(sheetName));
@@ -571,12 +552,11 @@
         return team ? team.team_name : teamId;
       }
 
-      // ***** MODIFIED FUNCTION *****
+      // ***** MODIFIED FUNCTION to use escapeHTML for alt text *****
       function getTeamLogoHTML(teamId) {
         if (!teamId || teamId === 'N/A') return '';
-        let teamName = getTeamName(teamId); // For alt text
-        // Escape double quotes for the alt attribute to prevent breaking HTML
-        const altText = teamName.replace(/"/g, '&quot;');
+        const teamName = getTeamName(teamId); // Raw team name for consistency
+        const altText = escapeHTML(teamName);   // Fully escape for attribute safety
         return `<img src="icons/${encodeURIComponent(teamId)}.webp" alt="${altText}" class="team-logo" onerror="this.style.display='none'">`;
       }
       
@@ -624,7 +604,7 @@
         const teamOptions = allTeams
           .filter(team => team.team_id && team.team_name && team.team_id !== "FA") 
           .sort((a, b) => a.team_name.localeCompare(b.team_name))
-          .map(team => `<option value="${team.team_id}">${team.team_name}</option>`)
+          .map(team => `<option value="${escapeHTML(team.team_id)}">${escapeHTML(team.team_name)}</option>`) // Escape options
           .join('');
         document.getElementById('owner-filter').innerHTML = 
           '<option value="all">All Teams</option>' + teamOptions;
@@ -656,7 +636,7 @@
       }
       
       function displayDraftBoard() {
-        document.getElementById('draft-title').textContent = `Season ${currentSeason} Draft Picks`;
+        document.getElementById('draft-title').textContent = `Season ${currentSeason} Draft Picks`; // Season number is safe
         if (currentView === 'table') {
           displayTableView();
         } else {
@@ -672,6 +652,7 @@
         const forfeitedPicksCount = filteredPicks.filter(p => p.notes && p.notes.toUpperCase().includes('FORFEITED')).length;
         const tradedPicksCount = filteredPicks.filter(p => p.current_owner !== p.original_team && !(p.notes && p.notes.toUpperCase().includes('FORFEITED'))).length;
         
+        // Numbers are safe, labels are static text
         document.getElementById('pick-summary').innerHTML = `
           <div class="summary-grid">
             <div class="summary-item"><div class="summary-number">${totalPicks}</div><div class="summary-label">Total Picks</div></div>
@@ -735,12 +716,18 @@
             }
           }
           
+          // ***** APPLY escapeHTML to all dynamic text content *****
+          const safeFormattedPickDescription = escapeHTML(formattedPickDescription);
+          const currentOwnerNameText = escapeHTML(getTeamName(pick.current_owner));
+          const originalTeamNameText = escapeHTML(getTeamName(pick.original_team));
+          const safeTradeStatus = escapeHTML(tradeStatus);
+
           return `
             <tr class="${rowClass}">
-              <td class="pick-description">${formattedPickDescription}</td>
-              <td class="owner-cell">${getTeamLogoHTML(pick.current_owner)} ${getTeamName(pick.current_owner)}</td>
-              <td class="owner-cell">${getTeamLogoHTML(pick.original_team)} ${getTeamName(pick.original_team)}</td>
-              <td>${tradeStatus}</td>
+              <td class="pick-description">${safeFormattedPickDescription}</td>
+              <td class="owner-cell">${getTeamLogoHTML(pick.current_owner)} ${currentOwnerNameText}</td>
+              <td class="owner-cell">${getTeamLogoHTML(pick.original_team)} ${originalTeamNameText}</td>
+              <td>${safeTradeStatus}</td>
             </tr>
           `;
         }).join('');
@@ -765,6 +752,10 @@
           .map(([teamId, picks]) => {
             if (picks.length === 0) return ''; 
             const team = allTeams.find(t => t.team_id === teamId);
+            // Ensure team name in header is escaped
+            const safeTeamName = escapeHTML(team.team_name);
+            const pickCount = picks.length;
+
             const sortedPicks = picks.sort((a, b) => {
               const roundA = parseInt(a.round);
               const roundB = parseInt(b.round);
@@ -790,8 +781,8 @@
               <div class="team-card">
                 <div class="team-header">
                   ${getTeamLogoHTML(teamId)}
-                  <h4>${team.team_name}</h4>
-                  <span>(${picks.length} pick${picks.length !==1 ? 's' : ''})</span>
+                  <h4>${safeTeamName}</h4>
+                  <span>(${pickCount} pick${pickCount !==1 ? 's' : ''})</span>
                 </div>
                 <div class="team-picks">
                   ${sortedPicks.map(pick => {
@@ -799,9 +790,10 @@
                     const isForfeited = pick.notes && pick.notes.toUpperCase().includes('FORFEITED');
                     let originText = '';
                     if (isForfeited) {
-                        originText = '<div class="pick-origin" style="color: #dc3545;">FORFEITED</div>';
+                        originText = '<div class="pick-origin" style="color: #dc3545;">FORFEITED</div>'; // Static, safe
                     } else if (!isOwn) {
-                        originText = `<div class="pick-origin">from ${getTeamName(pick.original_team)}</div>`;
+                        // Escape original team name in origin text
+                        originText = `<div class="pick-origin">from ${escapeHTML(getTeamName(pick.original_team))}</div>`;
                     }
 
                     let formattedPickDescInTeamView = pick.pick_description;
@@ -813,10 +805,12 @@
                             formattedPickDescInTeamView = `${descParts[1]} ${fullTeamName} ${descParts[3]}`;
                         }
                     }
+                    // Escape the final pick description for display
+                    const safeFormattedPickDescInTeamView = escapeHTML(formattedPickDescInTeamView);
                     
                     return `
                       <div class="pick-item ${isForfeited ? 'forfeited-pick' : (isOwn ? 'own' : 'acquired')}">
-                        ${formattedPickDescInTeamView}
+                        ${safeFormattedPickDescInTeamView}
                         ${originText}
                       </div>
                     `;
