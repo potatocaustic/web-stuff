@@ -203,10 +203,10 @@
       }
 
       .owner-cell { 
-        /* display: flex; */ /* Temporarily commented out for D2/D3 placeholder test if needed, but likely fine */
-        /* align-items: center; */
-        /* gap: 0.5rem; */
-         border: 1px dashed #ccc; /* Added a light border to all owner-cells for this test */
+        display: flex; 
+        align-items: center; 
+        gap: 0.5rem; 
+        border: 1px dashed #ccc; /* Light border to see cell boundaries */
       }
 
       .team-logo {
@@ -730,16 +730,16 @@
           }
           
           const safeFormattedPickDescription = escapeHTML(formattedPickDescription);
-          // const currentOwnerNameText = escapeHTML(getTeamName(pick.current_owner)); // Not used for this debug step
-          // const originalTeamNameText = escapeHTML(getTeamName(pick.original_team)); // Not used for this debug step
+          const currentOwnerNameText = escapeHTML(getTeamName(pick.current_owner)); // RESTORED: Define currentOwnerNameText
+          // const originalTeamNameText = escapeHTML(getTeamName(pick.original_team)); // Not used for D3 placeholder
           const safeTradeStatus = escapeHTML(tradeStatus);
 
-          // ***** TEMPORARY CHANGE TO CURRENT OWNER (D2) AND ORIGINAL TEAM (D3) CELLS FOR DEBUGGING *****
+          // ***** CURRENT OWNER CELL (D2) RESTORED, ORIGINAL TEAM CELL (D3) IS PLACEHOLDER *****
           return `
             <tr class="${rowClass}">
               <td class="pick-description">${safeFormattedPickDescription}</td>
-              <td class="owner-cell">CELL D2 PLACEHOLDER</td>   {/* MODIFIED D2 FOR DEBUGGING */}
-              <td class="owner-cell">CELL D3 PLACEHOLDER</td>   {/* MODIFIED D3 FOR DEBUGGING */}
+              <td class="owner-cell">${getTeamLogoHTML(pick.current_owner)} ${currentOwnerNameText}</td> {/* D2 RESTORED */}
+              <td class="owner-cell">CELL D3 PLACEHOLDER</td>   {/* D3 REMAINS PLACEHOLDER */}
               <td class="trade-status-debug">${safeTradeStatus}</td> {/* D4 */}
             </tr>
           `;
