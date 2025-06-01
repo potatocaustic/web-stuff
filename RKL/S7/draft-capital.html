@@ -149,7 +149,7 @@
         background-color: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        overflow: hidden; 
+        overflow: auto; /* Changed from hidden to auto for mobile if content still overflows */
       }
 
       .draft-header {
@@ -171,7 +171,6 @@
         border-collapse: collapse;
       }
 
-      /* REVERTED TH STYLE (removed debugging borders/backgrounds) */
       .draft-table th {
         background-color: #f8f9fa;
         padding: 1rem 0.5rem;   
@@ -181,14 +180,12 @@
         font-size: 0.9rem;      
       }
 
-
       .draft-table td {
         padding: 0.8rem 0.5rem;
         border-bottom: 1px solid #eee;
         font-size: 0.9rem;
         vertical-align: middle; 
       }
-      /* Style for links within table data cells */
       .draft-table td a {
         color: #007bff;
         text-decoration: none;
@@ -197,21 +194,19 @@
         text-decoration: underline;
       }
 
-
       .draft-table tr:hover {
         background-color: #f8f9fa;
       }
 
       .pick-description {
-        /* Font properties removed to inherit from body/table */
+        font-weight: bold; /* Make pick descriptions bold */
       }
 
-      /* REMOVED debug border from .owner-cell */
       .owner-cell { 
-        /* border: 1px dashed #ccc; */ 
+        /* display: flex properties removed, using inner div */
       }
 
-      .cell-content-flex { /* For inner div flex layout */
+      .cell-content-flex { 
         display: flex;
         align-items: center;
         gap: 0.5rem;
@@ -269,21 +264,20 @@
         margin-top: 0.3rem;
       }
 
+      /* Team ownership view (styles unchanged but kept) */
       .team-ownership {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 1rem;
         margin-top: 2rem;
       }
-
       .team-card {
         background-color: #fff;
         border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         overflow: hidden;
       }
-
-      .team-card .team-header { 
+      .team-card .team-header {
         background-color: #333;
         color: white;
         padding: 1rem;
@@ -293,43 +287,14 @@
         justify-content: center;
         gap: 0.5rem;
       }
+      .team-card .team-header h4 { color: white; margin: 0; font-size: 1.1rem; }
+      .team-picks { padding: 1rem; max-height: 300px; overflow-y: auto; }
+      .pick-item { padding: 0.5rem; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+      .pick-item:last-child { border-bottom: none; }
+      .pick-item.own { color: #28a745; font-weight: 500; }
+      .pick-item.acquired { color: #007bff; }
+      .pick-origin { font-size: 0.8rem; color: #666; margin-left: 1rem; }
 
-      .team-card .team-header h4 {
-        color: white;
-        margin: 0;
-        font-size: 1.1rem;
-      }
-
-      .team-picks {
-        padding: 1rem;
-        max-height: 300px;
-        overflow-y: auto;
-      }
-
-      .pick-item {
-        padding: 0.5rem;
-        border-bottom: 1px solid #eee;
-        font-size: 0.9rem;
-      }
-
-      .pick-item:last-child {
-        border-bottom: none;
-      }
-
-      .pick-item.own {
-        color: #28a745;
-        font-weight: 500;
-      }
-
-      .pick-item.acquired {
-        color: #007bff;
-      }
-
-      .pick-origin {
-        font-size: 0.8rem;
-        color: #666;
-        margin-left: 1rem;
-      }
 
       .loading {
         text-align: center;
@@ -385,7 +350,40 @@
         .filter-group select { min-width: auto; width: 100%; }
         .season-tabs { flex-direction: column; }
         .season-tab { padding: 0.8rem 1rem; }
-        .draft-table th, .draft-table td { padding: 0.5rem 0.3rem; font-size: 0.8rem; }
+        
+        /* Original mobile table font size */
+        .draft-table th, .draft-table td { 
+          padding: 0.5rem 0.3rem; 
+          font-size: 0.8rem; 
+        }
+
+        /* Mobile Table Adjustments */
+        .draft-table th:nth-child(1), /* Pick Header */
+        .draft-table td:nth-child(1) { /* Pick Data Cell */
+          width: 25%; /* Adjust as needed, give more space to others */
+          min-width: 80px; /* Prevent it from becoming too small */
+        }
+        .draft-table td:nth-child(1).pick-description { /* Specifically for pick text wrapping */
+             white-space: normal; /* Ensure text wraps */
+             word-break: break-word; /* Break long words if necessary */
+        }
+
+
+        .draft-table th:nth-child(3), /* Original Team Header */
+        .draft-table td:nth-child(3) { /* Original Team Data Cell */
+          display: none; /* Hide this column on mobile */
+        }
+        
+        /* Let Current Owner and Trade Status share remaining space */
+         .draft-table th:nth-child(2), /* Current Owner Header */
+         .draft-table td:nth-child(2) { /* Current Owner Data */
+            width: 40%; /* Example width */
+         }
+         .draft-table th:nth-child(4), /* Trade Status Header */
+         .draft-table td:nth-child(4) { /* Trade Status Data */
+            width: 35%; /* Example width */
+         }
+
         .team-ownership { grid-template-columns: 1fr; }
       }
 
@@ -585,7 +583,10 @@
         
         if (!draftPicks || !teams || !transactionsLog) {
           const errorMsg = '<tr><td colspan="4" class="error">Error loading critical data. Some information may be missing or incorrect. Please check the console for details.</td></tr>';
-          document.getElementById('draft-table-body').innerHTML = errorMsg;
+          // Adjust colspan for mobile if one column is hidden (4 desktop, 3 mobile)
+          // This is tricky for a static message. For now, JS generated messages will handle it.
+          // Consider making the initial loading message simpler or dynamically adjustable.
+          document.getElementById('draft-table-body').innerHTML = errorMsg; 
           if (document.getElementById('team-view')) {
               document.getElementById('team-view').innerHTML = '<div class="error">Error loading critical data.</div>';
           }
@@ -692,7 +693,7 @@
         
         const tableHTML = sortedPicks.map(pick => {
           const isForfeited = pick.notes && pick.notes.toUpperCase().includes('FORFEITED');
-          let tradeStatusText = 'Original Owner'; // Base text for the trade status
+          let tradeStatusText = 'Original Owner'; 
           let rowClass = 'original-pick';
 
           let formattedPickDescription = pick.pick_description;
@@ -727,7 +728,8 @@
                     tradeStatusText = `Acquired via ${getTeamName(fromTeamId)}`;
                 }
             } else {
-                tradeStatusText = `Acquired (Origin: ${getTeamName(pick.original_team)})`;
+                // MODIFIED: Verbiage for trades not in log
+                tradeStatusText = `Acquired from ${getTeamName(pick.original_team)}`;
             }
           }
           
@@ -735,10 +737,8 @@
           const currentOwnerNameText = escapeHTML(getTeamName(pick.current_owner));
           const originalTeamNameText = escapeHTML(getTeamName(pick.original_team)); 
           
-          // ***** NEW LOGIC FOR TRADE STATUS HTML (potentially a link) *****
-          let finalTradeStatusHTML = escapeHTML(tradeStatusText); // Default to escaped plain text
+          let finalTradeStatusHTML = escapeHTML(tradeStatusText); 
 
-          // Only attempt to make a link if the pick was traded and not forfeited, and has notes
           if (!isForfeited && pick.current_owner !== pick.original_team && pick.notes) {
               const citationRegex = /\b([A-Z]{2,4})\s*\/\s*([A-Z]{2,4})\s+(\d{1,2}\/\d{1,2}\/\d{4})\b/i;
               const match = pick.notes.match(citationRegex);
@@ -746,34 +746,36 @@
               if (match) {
                   const team1ID = match[1].toUpperCase();
                   const team2ID = match[2].toUpperCase();
-                  const dateStr = match[3]; // e.g., 5/31/2025
+                  const dateStr = match[3]; 
                   const dateParts = dateStr.split('/'); 
                   
-                  // Ensure date parts are correctly ordered for YYYY-MM-DD format
                   const year = dateParts[2];
                   const month = String(dateParts[0]).padStart(2, '0');
                   const day = String(dateParts[1]).padStart(2, '0');
                   const formattedDateForLink = `${year}-${month}-${day}`;
                   
                   const transactionsLink = `transactions.html?type=TRADE&date=${formattedDateForLink}&teamFilters=${team1ID},${team2ID}`;
-                  // Use the already determined tradeStatusText as the link text
                   finalTradeStatusHTML = `<a href="${transactionsLink}" title="View transaction: ${escapeHTML(pick.notes)}">${escapeHTML(tradeStatusText)}</a>`;
               }
           }
 
-          // ***** Both D2 and D3 now use inner flex div, debug class removed from D4 *****
+          // REMOVED stray comment from here
           return `
             <tr class="${rowClass}">
               <td class="pick-description">${safeFormattedPickDescription}</td>
               <td class="owner-cell"><div class="cell-content-flex">${getTeamLogoHTML(pick.current_owner)} ${currentOwnerNameText}</div></td>
               <td class="owner-cell"><div class="cell-content-flex">${getTeamLogoHTML(pick.original_team)} ${originalTeamNameText}</div></td>
-              <td>${finalTradeStatusHTML}</td> {/* Use finalTradeStatusHTML, no debug class */}
+              <td>${finalTradeStatusHTML}</td>
             </tr>
           `;
         }).join('');
         
+        // Determine colspan based on effective number of columns (desktop vs mobile)
+        // This is a bit simplistic, assumes a global "isMobile" or relies on CSS to just let it span.
+        // For now, keeping it simple as colspan=4 will span available columns if some are display:none.
+        const colSpanForMessages = 4; 
         document.getElementById('draft-table-body').innerHTML = tableHTML || 
-          '<tr><td colspan="4" style="text-align: center; padding: 2rem; color: #666;">No picks match your filters for this season.</td></tr>';
+          `<tr><td colspan="${colSpanForMessages}" style="text-align: center; padding: 2rem; color: #666;">No picks match your filters for this season.</td></tr>`;
       }
       
       function displayTeamView() {
