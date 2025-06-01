@@ -407,8 +407,7 @@
         text-overflow: ellipsis;
       }
       .team-name-game.win { color: #28a745; }
-      /* Losing team name defaults to black by not having .loss or specific color */
-      .team-name-game.upcoming { color: #333; } /* Explicit for upcoming consistency */
+      .team-name-game.upcoming { color: #333; }
 
 
       .team-record-game {
@@ -420,8 +419,7 @@
       }
       
       .score.win { color: #28a745; }
-      /* Losing score defaults to black by not having .loss or specific color */
-      .score.upcoming { color: #333; } /* Explicit for upcoming consistency */
+      .score.upcoming { color: #333; }
 
 
       .week-badge {
@@ -540,6 +538,7 @@
         }
         .team-name.win { color: #28a745; }
         .team-name.upcoming { color: #333; }
+
         .team-record { font-size: 0.8rem; color: #666; }
         .team-score {
           font-weight: bold; color: #333; 
@@ -651,14 +650,15 @@
       const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
       
       let teamId = null;
-      // teamData is fetched in loadTeamData and used by displayTeamHeader
-      let allTeams = []; // This will be populated by loadTeamData
-      let allWeeklyAverages = []; // Populated in loadTeamData, used by loadRoster
+      let allGames = [];    // Added to be populated for showGameDetails
+      let allLineups = [];  // Added to be populated for showGameDetails
+      let allTeams = [];    // Already here, used by getTeamName and loadTeamData
+      let allWeeklyAverages = []; 
       
       function formatInThousands(value) {
-        const num = parseFloat(value); // parseNumber not defined here, ensure parseFloat handles it
+        const num = parseFloat(value); 
         if (isNaN(num)) return '-';
-        if (Math.abs(num) >= 1000) { // Check absolute value for k formatting
+        if (Math.abs(num) >= 1000) { 
           return (num / 1000).toFixed(1) + 'k';
         }
         return Math.round(num).toLocaleString();
@@ -667,8 +667,8 @@
       function formatDateMMDD(dateString) {
         if (!dateString) return 'N/A';
         const date = new Date(dateString);
-        if (isNaN(date.getTime())) return 'N/A'; // Handle invalid date strings
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+        if (isNaN(date.getTime())) return 'N/A'; 
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); 
         const day = String(date.getUTCDate()).padStart(2, '0');
         return `${month}-${day}`;
       }
@@ -704,7 +704,7 @@
         for (let i = 1; i < lines.length; i++) {
           if (lines[i].trim() === "") continue;
           const values = parseCSVLine(lines[i]);
-          if (values.length === headers.length) { // Strict check
+          if (values.length === headers.length) { 
             const row = {};
             headers.forEach((header, index) => {
               row[header] = values[index] || '';
@@ -736,7 +736,7 @@
         return result.map(field => field.replace(/^"(.*)"$/, '$1').replace(/\\"/g,'"'));
       }
 
-      function parseNumberGlobal(value) { // Renamed to avoid conflict if one exists in other files
+      function parseNumberGlobal(value) { 
         if (value === null || typeof value === 'undefined' || String(value).trim() === '') return 0;
         const cleaned = String(value).replace(/,/g, '');
         const parsed = parseFloat(cleaned);
@@ -756,7 +756,7 @@
       
       function getTeamRecordAtDate(teamIdToFind, targetDateStr, schedule) {
         if (!schedule || schedule.length === 0 || !teamIdToFind || !targetDateStr) return '0-0';
-        const targetDate = new Date(targetDateStr); // Ensure targetDate is a Date object
+        const targetDate = new Date(targetDateStr); 
         if (isNaN(targetDate.getTime())) return '0-0';
 
         const completedGames = schedule.filter(game => {
@@ -773,7 +773,7 @@
         return `${wins}-${losses}`;
       }
 
-      function calculatePlayerRELMedian(playerHandle, localWeeklyAverages, localLineups) { // Use local params
+      function calculatePlayerRELMedian(playerHandle, localWeeklyAverages, localLineups) { 
         if (!localLineups || localLineups.length === 0 || !localWeeklyAverages || localWeeklyAverages.length === 0) return 0;
 
         const playerGames = localLineups.filter(lineup => 
@@ -783,7 +783,7 @@
         if (playerGames.length === 0) return 0;
         
         const weeklyAveragesMap = {};
-        localWeeklyAverages.forEach(week => { // Use localWeeklyAverages
+        localWeeklyAverages.forEach(week => { 
           if (week.date) weeklyAveragesMap[week.date] = { median_score: parseNumberGlobal(week.median_score) };
         });
         
@@ -810,7 +810,7 @@
         return n + (s[(v - 20) % 10] || s[v] || s[0]);
       }
       
-      function calculateTeamRankings(currentTeamDataLocal, allActiveTeams) { // Use local params
+      function calculateTeamRankings(currentTeamDataLocal, allActiveTeams) { 
         const rankings = { record: 'N/A', pam: 'N/A', medRank: 'N/A' };
         if (!currentTeamDataLocal || !allActiveTeams || allActiveTeams.length === 0) return rankings;
 
@@ -837,6 +837,7 @@
         return rankings;
       }
       
+      // ***** MODIFIED loadTeamData to fetch all necessary data upfront *****
       async function loadTeamData() {
         teamId = getUrlParameter('id');
         if (!teamId) {
@@ -844,19 +845,26 @@
           return;
         }
         
-        const [teamsData, weeklyAvgsData] = await Promise.all([
+        // Fetch all data needed by sub-functions globally
+        const [teamsData, weeklyAvgsData, scheduleData, lineupsData, draftPicksData] = await Promise.all([
           fetchSheetData('Teams'),
-          fetchSheetData('Weekly_Averages')
+          fetchSheetData('Weekly_Averages'),
+          fetchSheetData('Schedule'), // For loadSchedule and showGameDetails
+          fetchSheetData('Lineups'),   // For loadRoster and showGameDetails
+          fetchSheetData('Draft_Capital') // For loadDraftCapital
         ]);
         
-        if (!teamsData) {
-          document.getElementById('team-main-info').innerHTML = '<div class="error">Error loading team data</div>';
+        if (!teamsData || !scheduleData ) { // Lineups/DraftPicks can be optional depending on page sections
+          document.getElementById('team-main-info').innerHTML = '<div class="error">Error loading core team data</div>';
           return;
         }
         
         allTeams = teamsData; 
         allWeeklyAverages = weeklyAvgsData || []; 
-        const currentTeamObject = allTeams.find(team => team.team_id === teamId); // Use a different name
+        allGames = scheduleData; // Store globally for showGameDetails and loadSchedule
+        allLineups = lineupsData || []; // Store globally for showGameDetails and loadRoster
+        
+        const currentTeamObject = allTeams.find(team => team.team_id === teamId); 
 
         if (!currentTeamObject) {
           document.getElementById('team-main-info').innerHTML = '<div class="error">Team not found</div>';
@@ -870,12 +878,10 @@
         
         displayTeamHeader(currentTeamObject, rankings); 
         
-        // Pass currentTeamObject to functions that need it, and other global data as params
-        await Promise.all([
-          loadRoster(currentTeamObject, allWeeklyAverages), 
-          loadSchedule(currentTeamObject, allTeams), // Pass allTeams for opponent name lookup
-          loadDraftCapital(currentTeamObject, allTeams) // Pass allTeams for original team name lookup
-        ]);
+        // Call sub-functions, they will use the global data arrays
+        loadRoster(currentTeamObject); 
+        loadSchedule(currentTeamObject);
+        loadDraftCapital(currentTeamObject, draftPicksData); // Pass draftPicksData directly
       }
       
       function displayTeamHeader(currentTeamDataLocal, rankings) { 
@@ -923,27 +929,25 @@
         document.getElementById('team-stats').style.display = 'grid';
       } 
       
-      async function loadRoster(currentTeamObject, localWeeklyAverages) { 
-        const [players, lineups] = await Promise.all([
-          fetchSheetData('Players'),
-          fetchSheetData('Lineups')
-        ]);
-        
-        if (!players) {
-          document.getElementById('roster-list').innerHTML = '<div class="error">Error loading roster data</div>';
-          return;
-        }
-        
-        const teamPlayers = players.filter(player => player.current_team_id === currentTeamObject.team_id && player.player_status === 'ACTIVE');
+      // ***** MODIFIED loadRoster to use global allLineups and allWeeklyAverages *****
+      async function loadRoster(currentTeamObject) { 
+        // Players sheet is fetched in loadTeamData if not already present in allTeams
+        // For simplicity, we assume allTeams is populated with full player data or we fetch Players again.
+        // For now, let's assume allTeams (from Teams sheet) has enough player info for roster display.
+        // If roster needs more fields than Teams sheet provides, fetch Players sheet here or pass `playersData` from loadTeamData.
+        // For this iteration, assuming players on a team are determined by current_team_id in allTeams.
+        // This may need to be adjusted if 'Players' sheet has more detailed roster info.
+
+        const teamPlayers = allTeams.filter(player => player.current_team_id === currentTeamObject.team_id && player.player_status === 'ACTIVE');
         
         if (teamPlayers.length === 0) {
-          document.getElementById('roster-list').innerHTML = '<div style="text-align: center; padding: 2rem; color: #666;">No active players found</div>';
+          document.getElementById('roster-list').innerHTML = '<div style="text-align: center; padding: 2rem; color: #666;">No active players found on this team.</div>';
           return;
         }
         
-        const localLineups = lineups || []; // Ensure lineups is an array
         const playersWithREL = teamPlayers.map(player => {
-          const relMedian = calculatePlayerRELMedian(player.player_handle, localWeeklyAverages, localLineups);
+          // Ensure allLineups and allWeeklyAverages are available globally
+          const relMedian = calculatePlayerRELMedian(player.player_handle, allWeeklyAverages, allLineups);
           return { ...player, calculated_rel_median: relMedian };
         }).sort((a, b) => b.calculated_rel_median - a.calculated_rel_median);
         
@@ -951,7 +955,7 @@
           const relMedian = player.calculated_rel_median;
           const gamesPlayed = parseInt(player.games_played || 0);
           let avgGlobalRank = 0;
-          const playerLineups = localLineups.filter(lineup => lineup.player_handle === player.player_handle && lineup.global_rank && parseFloat(lineup.global_rank) > 0 && String(lineup.started).toUpperCase() === 'TRUE');
+          const playerLineups = allLineups.filter(lineup => lineup.player_handle === player.player_handle && lineup.global_rank && parseFloat(lineup.global_rank) > 0 && String(lineup.started).toUpperCase() === 'TRUE');
           if (playerLineups.length > 0) {
             const totalRank = playerLineups.reduce((sum, lineup) => sum + parseFloat(lineup.global_rank), 0);
             avgGlobalRank = Math.round(totalRank / playerLineups.length);
@@ -971,15 +975,10 @@
           <div class="roster-content">${rosterHTML}</div>`;
       }
       
-      // ***** MODIFIED loadSchedule to adjust score/name styling *****
-      async function loadSchedule(currentTeamObject, localAllTeams) { 
-        const schedule = await fetchSheetData('Schedule');
-        if (!schedule) {
-          document.getElementById('team-schedule').innerHTML = '<div class="error">Error loading schedule data</div>';
-          return;
-        }
-        
-        const teamGames = schedule
+      // ***** MODIFIED loadSchedule to use global allGames and adjust score/name styling *****
+      async function loadSchedule(currentTeamObject) { 
+        // allGames is now global
+        const teamGames = allGames
           .filter(game => game.team1_id === currentTeamObject.team_id || game.team2_id === currentTeamObject.team_id)
           .sort((a, b) => parseInt(a.week || 0) - parseInt(b.week || 0) || new Date(a.date) - new Date(b.date));
         
@@ -991,7 +990,7 @@
         const gamesHTML = teamGames.map(game => {
           const isTeam1 = game.team1_id === currentTeamObject.team_id;
           const opponentId = isTeam1 ? game.team2_id : game.team1_id;
-          const opponentName = getTeamName(opponentId); // Uses global allTeams (or passed localAllTeams)
+          const opponentName = getTeamName(opponentId); 
           const isCompleted = game.completed === 'TRUE';
           const gameWeek = game.week || 'TBD';
           const gameDate = formatDateMMDD(game.date);
@@ -999,21 +998,37 @@
           const teamScoreValue = parseNumberGlobal(isTeam1 ? game.team1_score : game.team2_score);
           const oppScoreValue = parseNumberGlobal(isTeam1 ? game.team2_score : game.team1_score);
 
-          let thisTeamClass = '';
-          let oppClass = '';
-          let thisTeamScoreDisplay = isCompleted ? formatInThousands(teamScoreValue) : '-';
-          let oppScoreDisplay = isCompleted ? formatInThousands(oppScoreValue) : '-';
+          let thisTeamNameClass = '';
+          let oppNameClass = '';
+          let thisTeamScoreClass = '';
+          let oppScoreClass = '';
+          let thisTeamOverallClass = ''; // For the .team div in mobile view
+          let oppTeamOverallClass = '';  // For the .team div in mobile view
+
 
           if (isCompleted) {
-            if (game.winner === currentTeamObject.team_id) thisTeamClass = 'win';
-            else if (game.winner === opponentId) oppClass = 'win';
-            // If not a win, class remains empty, defaulting to black/standard color
+            if (game.winner === currentTeamObject.team_id) {
+                thisTeamNameClass = 'win';
+                thisTeamScoreClass = 'win';
+                thisTeamOverallClass = 'winner'; // For mobile view if it uses .team.winner
+            } else if (game.winner === opponentId) {
+                oppNameClass = 'win';
+                oppScoreClass = 'win';
+                oppTeamOverallClass = 'winner';
+            }
+            // Losing teams/scores will have no specific class, defaulting to black
           } else {
-            thisTeamClass = 'upcoming';
-            oppClass = 'upcoming';
+            thisTeamNameClass = 'upcoming';
+            oppNameClass = 'upcoming';
+            thisTeamScoreClass = 'upcoming';
+            oppScoreClass = 'upcoming';
           }
           
-          const clickHandler = isCompleted ? `onclick="showGameDetails('${game.team1_id}', '${game.team2_id}', '${game.date}')"` : '';
+          const teamScoreDisplay = isCompleted ? formatInThousands(teamScoreValue) : '-';
+          const oppScoreDisplay = isCompleted ? formatInThousands(oppScoreValue) : '-';
+          
+          // Using original onclick for game cards: team1_id, team2_id, date
+          const clickHandler = isCompleted ? `onclick="showGameDetails('${escapeHTML(game.team1_id)}', '${escapeHTML(game.team2_id)}', '${escapeHTML(game.date)}')" ` : '';
           
           return `
             <div class="game-item" ${clickHandler}>
@@ -1025,17 +1040,17 @@
                 <div class="team-section left">
                   <img src="icons/${currentTeamObject.team_id}.webp" alt="${currentTeamObject.team_name}" class="team-logo-game" onerror="this.onerror=null;this.src='icons/FA.webp';">
                   <div class="team-details">
-                    <div class="team-name-game ${thisTeamClass}">${currentTeamObject.team_name}</div>
+                    <div class="team-name-game ${thisTeamNameClass}">${currentTeamObject.team_name}</div>
                   </div>
                 </div>
                 <div class="scores-section">
-                  <div class="score ${thisTeamClass}">${thisTeamScoreDisplay}</div>
+                  <div class="score ${thisTeamScoreClass}">${teamScoreDisplay}</div>
                   <div class="vs-text">vs</div>
-                  <div class="score ${oppClass}">${oppScoreDisplay}</div>
+                  <div class="score ${oppScoreClass}">${oppScoreDisplay}</div>
                 </div>
                 <div class="team-section right">
                   <div class="team-details right">
-                    <div class="team-name-game ${oppClass}">${opponentName}</div>
+                    <div class="team-name-game ${oppNameClass}">${opponentName}</div>
                   </div>
                   <img src="icons/${opponentId}.webp" alt="${opponentName}" class="team-logo-game" onerror="this.onerror=null;this.src='icons/FA.webp';">
                 </div>
@@ -1043,15 +1058,15 @@
               <div class="game-matchup" ${clickHandler}>
                 <div class="week-badge">${gameWeek}</div>
                  <span class="mobile-date-under-badge" style="display:none;">${gameDate}</span>
-                <div class="team">
+                <div class="team ${thisTeamOverallClass}">
                   <img src="icons/${currentTeamObject.team_id}.webp" alt="${currentTeamObject.team_name}" class="team-logo" onerror="this.onerror=null;this.src='icons/FA.webp';">
-                  <div class="team-info"><span class="team-name ${thisTeamClass}">${currentTeamObject.team_name}</span></div>
-                  <span class="team-score ${thisTeamClass}">${thisTeamScoreDisplay}</span>
+                  <div class="team-info"><span class="team-name ${thisTeamNameClass}">${currentTeamObject.team_name}</span></div>
+                  <span class="team-score ${thisTeamScoreClass}">${teamScoreDisplay}</span>
                 </div>
-                <div class="team">
+                <div class="team ${oppTeamOverallClass}">
                   <img src="icons/${opponentId}.webp" alt="${opponentName}" class="team-logo" onerror="this.onerror=null;this.src='icons/FA.webp';">
-                  <div class="team-info"><span class="team-name ${oppClass}">${opponentName}</span></div>
-                  <span class="team-score ${oppClass}">${oppScoreDisplay}</span>
+                  <div class="team-info"><span class="team-name ${oppNameClass}">${opponentName}</span></div>
+                  <span class="team-score ${oppScoreClass}">${oppScoreDisplay}</span>
                 </div>
               </div>
             </div>
@@ -1060,8 +1075,7 @@
         document.getElementById('team-schedule').innerHTML = gamesHTML;
       }
       
-      async function loadDraftCapital(currentTeamObject, localAllTeams) { 
-        const draftPicksData = await fetchSheetData('Draft_Capital'); 
+      async function loadDraftCapital(currentTeamObject, draftPicksData) { 
         if (!draftPicksData) {
           document.getElementById('draft-picks').innerHTML = '<div class="error">Error loading draft capital data</div>';
           return;
@@ -1095,7 +1109,7 @@
               const isForfeited = pick.notes && pick.notes.toUpperCase().includes('FORFEITED'); 
               let originInfo = '';
               if (!isOriginal && !isForfeited) {
-                const originalTeamData = localAllTeams.find(t => t.team_id === pick.original_team);
+                const originalTeamData = allTeams.find(t => t.team_id === pick.original_team); // Use global allTeams
                 if (originalTeamData) {
                   const originalWins = parseInt(originalTeamData.wins || 0);
                   const originalLosses = parseInt(originalTeamData.losses || 0);
@@ -1148,23 +1162,36 @@
         return colors[season] || '#6c757d';
        }
 
+      // ***** REVERTED showGameDetails to original signature and logic for finding game and lineups *****
       async function showGameDetails(team1Id, team2Id, date) { 
         const modal = document.getElementById('game-modal');
         const modalTitle = document.getElementById('modal-title');
         const modalContent = document.getElementById('modal-content');
         
+        if (!team1Id || !team2Id || !date) {
+            console.error("showGameDetails called with incomplete identifiers for game lookup.");
+            modal.style.display = 'block'; // Show modal to display error
+            modalContent.innerHTML = '<div class="error">Could not load game details due to missing identifiers.</div>';
+            return;
+        }
+
         modal.style.display = 'block';
         modalTitle.textContent = `${getTeamName(team1Id)} vs ${getTeamName(team2Id)} - ${formatDateShort(date)}`;
         modalContent.innerHTML = '<div class="loading">Loading game details...</div>';
         
-        // Use global allGames and allLineups
-        const game = allGames.find(g => g.team1_id === team1Id && g.team2_id === team2Id && g.date === date);
+        // Find the game from allGames using the provided team IDs and date
+        const game = allGames.find(g => 
+            g.date === date && 
+            ((g.team1_id === team1Id && g.team2_id === team2Id) || (g.team1_id === team2Id && g.team2_id === team1Id))
+        );
         
         if (!game) {
-          modalContent.innerHTML = '<div class="error">Game not found</div>';
+          modalContent.innerHTML = '<div class="error">Game data not found.</div>';
+          console.error("Game not found in allGames for:", team1Id, team2Id, date);
           return;
         }
         
+        // Filter lineups based on the game's date and the two teams involved
         const gameLineups = allLineups.filter(lineup => 
           lineup.date === game.date && 
           (lineup.team_id === game.team1_id || lineup.team_id === game.team2_id) &&
@@ -1180,20 +1207,21 @@
         const team1Lineups = gameLineups.filter(l => l.team_id === game.team1_id);
         const team2Lineups = gameLineups.filter(l => l.team_id === game.team2_id);
         
+        // Scores from the game object in Schedule sheet are considered definitive
         const team1Total = parseNumberGlobal(game.team1_score); 
         const team2Total = parseNumberGlobal(game.team2_score); 
         const winner = game.winner;
         
-        const generateLineupTable = (lineups, teamIdForTable, totalScoreFromSchedule, isWinner) => {
-          const teamDataForTable = allTeams.find(t => t.team_id === teamIdForTable);
+        const generateLineupTable = (lineups, idOfTeamInCell, totalScoreFromSchedule, isWinner) => {
+          const teamDataForTable = allTeams.find(t => t.team_id === idOfTeamInCell);
           const teamRecord = teamDataForTable ? `${teamDataForTable.wins || 0}-${teamDataForTable.losses || 0}` : 'N/A';
           
           if (lineups.length === 0) { 
             return `
               <div class="team-breakdown ${isWinner ? 'winner' : ''}">
-                <div class="modal-team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${escapeHTML(teamIdForTable)}'" style="cursor: pointer;">
-                  <img src="icons/${escapeHTML(teamIdForTable)}.webp" alt="${escapeHTML(getTeamName(teamIdForTable))}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
-                  <div><h4>${escapeHTML(getTeamName(teamIdForTable))}</h4><div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div></div>
+                <div class="modal-team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${escapeHTML(idOfTeamInCell)}'" style="cursor: pointer;">
+                  <img src="icons/${escapeHTML(idOfTeamInCell)}.webp" alt="${escapeHTML(getTeamName(idOfTeamInCell))}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
+                  <div><h4>${escapeHTML(getTeamName(idOfTeamInCell))}</h4><div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div></div>
                 </div>
                 <div class="team-total">Total: ${formatInThousands(totalScoreFromSchedule)}</div>
                 <div style="padding: 1rem; text-align: center; color: #666;">No detailed lineup data available for this game.</div>
@@ -1225,9 +1253,9 @@
           
           return `
             <div class="team-breakdown ${isWinner ? 'winner' : ''}">
-              <div class="modal-team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${escapeHTML(teamIdForTable)}'" style="cursor: pointer;">
-                 <img src="icons/${escapeHTML(teamIdForTable)}.webp" alt="${escapeHTML(getTeamName(teamIdForTable))}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
-                <div><h4>${escapeHTML(getTeamName(teamIdForTable))}</h4><div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div></div>
+              <div class="modal-team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${escapeHTML(idOfTeamInCell)}'" style="cursor: pointer;">
+                 <img src="icons/${escapeHTML(idOfTeamInCell)}.webp" alt="${escapeHTML(getTeamName(idOfTeamInCell))}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
+                <div><h4>${escapeHTML(getTeamName(idOfTeamInCell))}</h4><div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div></div>
               </div>
               <div class="team-total">Total: ${formatInThousands(totalScoreFromSchedule)}</div>
               <table class="lineup-table">
