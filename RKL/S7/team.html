@@ -712,6 +712,15 @@
           height: 28px;
           font-size: 0.8rem;
           z-index: 2;
+          background-color: #007bff;
+          color: white;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
+          border: 2px solid white;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .game-matchup {
@@ -1366,6 +1375,9 @@
 
               <!-- Mobile layout (visible on mobile) -->
               <div class="game-matchup">
+                <!-- Mobile week badge -->
+                <div class="week-badge">${gameWeek}</div>
+                
                 <div class="team ${teamScoreClass}">
                   <img src="icons/${teamId}.webp" alt="${teamData.team_name}" class="team-logo" onerror="this.style.display='none'">
                   <div class="team-info">
