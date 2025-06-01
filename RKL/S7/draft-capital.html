@@ -357,6 +357,15 @@
         color: white;
         border-color: #007bff;
       }
+      
+      /* ***** DEBUGGING STYLE FOR TRADE STATUS COLUMN ***** */
+      .trade-status-debug {
+        border: 2px solid red !important;
+        background-color: #fff0f0 !important;
+        font-weight: bold !important;
+        padding: 0.8rem !important; /* Ensure padding is applied */
+        min-width: 100px; /* Ensure cell has some width */
+      }
 
       @media (max-width: 768px) {
         .filter-row {
@@ -485,9 +494,8 @@
       let allTeams = [];
       let allTransactionsLogData = [];
 
-      // ***** NEW HELPER FUNCTION *****
       function escapeHTML(str) {
-        if (typeof str !== 'string') return str; // Return non-strings as is
+        if (typeof str !== 'string') return str; 
         return str.replace(/&/g, '&amp;')
                   .replace(/</g, '&lt;')
                   .replace(/>/g, '&gt;')
@@ -552,11 +560,10 @@
         return team ? team.team_name : teamId;
       }
 
-      // ***** MODIFIED FUNCTION to use escapeHTML for alt text *****
       function getTeamLogoHTML(teamId) {
         if (!teamId || teamId === 'N/A') return '';
-        const teamName = getTeamName(teamId); // Raw team name for consistency
-        const altText = escapeHTML(teamName);   // Fully escape for attribute safety
+        const teamName = getTeamName(teamId); 
+        const altText = escapeHTML(teamName);   
         return `<img src="icons/${encodeURIComponent(teamId)}.webp" alt="${altText}" class="team-logo" onerror="this.style.display='none'">`;
       }
       
@@ -604,7 +611,7 @@
         const teamOptions = allTeams
           .filter(team => team.team_id && team.team_name && team.team_id !== "FA") 
           .sort((a, b) => a.team_name.localeCompare(b.team_name))
-          .map(team => `<option value="${escapeHTML(team.team_id)}">${escapeHTML(team.team_name)}</option>`) // Escape options
+          .map(team => `<option value="${escapeHTML(team.team_id)}">${escapeHTML(team.team_name)}</option>`) 
           .join('');
         document.getElementById('owner-filter').innerHTML = 
           '<option value="all">All Teams</option>' + teamOptions;
@@ -636,7 +643,7 @@
       }
       
       function displayDraftBoard() {
-        document.getElementById('draft-title').textContent = `Season ${currentSeason} Draft Picks`; // Season number is safe
+        document.getElementById('draft-title').textContent = `Season ${currentSeason} Draft Picks`;
         if (currentView === 'table') {
           displayTableView();
         } else {
@@ -652,7 +659,6 @@
         const forfeitedPicksCount = filteredPicks.filter(p => p.notes && p.notes.toUpperCase().includes('FORFEITED')).length;
         const tradedPicksCount = filteredPicks.filter(p => p.current_owner !== p.original_team && !(p.notes && p.notes.toUpperCase().includes('FORFEITED'))).length;
         
-        // Numbers are safe, labels are static text
         document.getElementById('pick-summary').innerHTML = `
           <div class="summary-grid">
             <div class="summary-item"><div class="summary-number">${totalPicks}</div><div class="summary-label">Total Picks</div></div>
@@ -716,18 +722,18 @@
             }
           }
           
-          // ***** APPLY escapeHTML to all dynamic text content *****
           const safeFormattedPickDescription = escapeHTML(formattedPickDescription);
           const currentOwnerNameText = escapeHTML(getTeamName(pick.current_owner));
           const originalTeamNameText = escapeHTML(getTeamName(pick.original_team));
           const safeTradeStatus = escapeHTML(tradeStatus);
 
+          // ***** DEBUGGING CLASS ADDED TO TRADE STATUS CELL *****
           return `
             <tr class="${rowClass}">
               <td class="pick-description">${safeFormattedPickDescription}</td>
               <td class="owner-cell">${getTeamLogoHTML(pick.current_owner)} ${currentOwnerNameText}</td>
               <td class="owner-cell">${getTeamLogoHTML(pick.original_team)} ${originalTeamNameText}</td>
-              <td>${safeTradeStatus}</td>
+              <td class="trade-status-debug">${safeTradeStatus}</td>
             </tr>
           `;
         }).join('');
@@ -752,7 +758,6 @@
           .map(([teamId, picks]) => {
             if (picks.length === 0) return ''; 
             const team = allTeams.find(t => t.team_id === teamId);
-            // Ensure team name in header is escaped
             const safeTeamName = escapeHTML(team.team_name);
             const pickCount = picks.length;
 
@@ -790,9 +795,8 @@
                     const isForfeited = pick.notes && pick.notes.toUpperCase().includes('FORFEITED');
                     let originText = '';
                     if (isForfeited) {
-                        originText = '<div class="pick-origin" style="color: #dc3545;">FORFEITED</div>'; // Static, safe
+                        originText = '<div class="pick-origin" style="color: #dc3545;">FORFEITED</div>'; 
                     } else if (!isOwn) {
-                        // Escape original team name in origin text
                         originText = `<div class="pick-origin">from ${escapeHTML(getTeamName(pick.original_team))}</div>`;
                     }
 
@@ -805,7 +809,6 @@
                             formattedPickDescInTeamView = `${descParts[1]} ${fullTeamName} ${descParts[3]}`;
                         }
                     }
-                    // Escape the final pick description for display
                     const safeFormattedPickDescInTeamView = escapeHTML(formattedPickDescInTeamView);
                     
                     return `
