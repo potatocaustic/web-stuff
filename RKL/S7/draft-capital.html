@@ -487,10 +487,32 @@
       </div>
 
       <div id="table-view" class="draft-board">
+        <div class="draft-header">
+          <h3 id="draft-title">Season 8 Draft Picks</h3>
         </div>
+        <div class="pick-summary" id="pick-summary">
+          <div class="loading">Loading draft pick summary...</div>
+        </div>
+        <table class="draft-table">
+          <thead>
+            <tr>
+              <th>Pick</th>
+              <th>Current Owner</th>
+              <th>Original Team</th>
+              <th>Trade Status</th>
+              </tr>
+          </thead>
+          <tbody id="draft-table-body">
+            <tr>
+              <td colspan="4" class="loading">Loading draft picks...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <div id="team-view" class="team-ownership" style="display: none;">
-        </div>
+        <div class="loading">Loading team ownership view...</div>
+      </div>
     </main>
     
     <footer>
@@ -744,11 +766,6 @@
             } else {
                 // Fallback if no specific "TRADE" transaction is found in Transaction_Log
                 // that explicitly shows the pick moving to the current_owner.
-                // This might happen if:
-                // 1. The pick was assigned to current_owner via a different process not logged as a 'TRADE'.
-                // 2. The Draft_Capital sheet was manually updated.
-                // 3. It's an initial state in the data for a pick that is traded but not via a logged event.
-                // In this scenario, we state it's acquired, noting its original team.
                 tradeStatus = `Acquired (Origin: ${getTeamName(pick.original_team)})`;
             }
             // ---- END CHANGE 2 ----
@@ -873,25 +890,31 @@
             btn.classList.add('active');
             currentView = btn.dataset.view;
             
+            const filterControlsElement = document.getElementById('filter-controls'); // Get element once
+
             if (currentView === 'table') {
               document.getElementById('table-view').style.display = 'block';
               document.getElementById('team-view').style.display = 'none';
-              document.getElementById('filter-controls').style.display = 'block'; // Show filters for table view
+              if (filterControlsElement) filterControlsElement.style.display = 'block'; // Show filters for table view
             } else {
               document.getElementById('table-view').style.display = 'none';
               document.getElementById('team-view').style.display = 'grid';
-              document.getElementById('filter-controls').style.display = 'none'; // Hide filters for team view
+              if (filterControlsElement) filterControlsElement.style.display = 'none'; // Hide filters for team view
             }
             displayDraftBoard(); // Refresh board after view change
           });
         });
         
         // Initial setup based on default view
-        if (currentView === 'table') {
-            document.getElementById('filter-controls').style.display = 'block';
-        } else {
-            document.getElementById('filter-controls').style.display = 'none';
+        const initialFilterControlsElement = document.getElementById('filter-controls');
+        if (initialFilterControlsElement) { // Check if element exists before trying to set style
+            if (currentView === 'table') {
+                initialFilterControlsElement.style.display = 'block';
+            } else {
+                initialFilterControlsElement.style.display = 'none';
+            }
         }
+
 
         loadData();
       });
