@@ -140,7 +140,14 @@
         color: #666;
         margin-top: 0.5rem;
       }
-
+      
+      .stat-rank {
+        font-size: 0.8rem;
+        color: #007bff;
+        margin-top: 0.3rem;
+        font-weight: 500;
+      }
+      
       .positive {
         color: #28a745;
       }
@@ -1296,6 +1303,45 @@
         
         return avgMedianKarma > 0 ? (avgPlayerKarma / avgMedianKarma) : 0;
       }
+
+            // Helper function to convert number to ordinal (1st, 2nd, 3rd, 4th, etc.)
+      function getOrdinal(num) {
+        const n = parseInt(num);
+        if (n <= 0) return 'Unranked';
+        
+        const suffix = ['th', 'st', 'nd', 'rd'];
+        const v = n % 100;
+        return n + (suffix[(v - 20) % 10] || suffix[v] || suffix[0]);
+      }
+      
+      // Calculate team rankings for each stat
+      function calculateTeamRankings(teamData, allTeamsData) {
+        const rankings = {};
+        
+        // Record ranking within conference
+        const conferenceTeams = allTeamsData
+          .filter(t => t.conference === teamData.conference)
+          .sort((a, b) => {
+            const winsA = parseInt(a.wins || 0);
+            const winsB = parseInt(b.wins || 0);
+            if (winsB !== winsA) return winsB - winsA;
+            return parseFloat(b.pam || 0) - parseFloat(a.pam || 0);
+          });
+        rankings.record = conferenceTeams.findIndex(t => t.team_id === teamData.team_id) + 1;
+        
+        // PAM ranking overall
+        const pamTeams = allTeamsData
+          .sort((a, b) => parseFloat(b.pam || 0) - parseFloat(a.pam || 0));
+        rankings.pam = pamTeams.findIndex(t => t.team_id === teamData.team_id) + 1;
+        
+        // Med Rank ranking overall (lower median rank is better)
+        const medRankTeams = allTeamsData
+          .filter(t => parseFloat(t.med_starter_rank || 0) > 0)
+          .sort((a, b) => parseFloat(a.med_starter_rank || 999) - parseFloat(b.med_starter_rank || 999));
+        rankings.medRank = medRankTeams.findIndex(t => t.team_id === teamData.team_id) + 1;
+        
+        return rankings;
+      }
       
       // Load team data
       async function loadTeamData() {
@@ -1326,7 +1372,16 @@
           return;
         }
         
-        displayTeamHeader();
+        // Calculate rankings for team stats
+        const activeTeams = teams.filter(t => 
+          t.team_id && 
+          t.team_id !== 'RETIRED' && 
+          t.team_id !== 'FREE_AGENT' &&
+          t.conference
+        );
+        const rankings = calculateTeamRankings(teamData, activeTeams);
+        
+        displayTeamHeader(rankings);
         
         // Load other data in parallel
         await Promise.all([
@@ -1358,28 +1413,34 @@
           </div>
         `;
         
-        // Team stats - Updated to use correct field name and label
-        document.getElementById('team-stats').innerHTML = `
-          <div class="stat-card">
-            <div class="stat-value ${wins > losses ? 'positive' : losses > wins ? 'negative' : ''}">${wins}-${losses}</div>
-            <div class="stat-label">Record</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value ${pam > 0 ? 'positive' : pam < 0 ? 'negative' : ''}">${Math.round(pam).toLocaleString()}</div>
-            <div class="stat-label">PAM</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">${Math.round(parseFloat(teamData.med_starter_rank || 0))}</div>
-            <div class="stat-label">Med Rank</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">${teamData.total_transactions || 0}</div>
-            <div class="stat-label">Transactions</div>
-          </div>
-        `;
-        
-        document.getElementById('team-stats').style.display = 'grid';
-      }
+        function displayTeamHeader(rankings) {
+      
+          const medRank = parseFloat(teamData.med_starter_rank || 0);
+          
+          document.getElementById('team-stats').innerHTML = `
+            <div class="stat-card">
+              <div class="stat-value ${wins > losses ? 'positive' : losses > wins ? 'negative' : ''}">${wins}-${losses}</div>
+              <div class="stat-label">Record</div>
+              <div class="stat-rank">${getOrdinal(rankings.record)} in ${teamData.conference} Conference</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value ${pam > 0 ? 'positive' : pam < 0 ? 'negative' : ''}">${Math.round(pam).toLocaleString()}</div>
+              <div class="stat-label">PAM</div>
+              <div class="stat-rank">${getOrdinal(rankings.pam)} Overall</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">${Math.round(medRank)}</div>
+              <div class="stat-label">Med Rank</div>
+              <div class="stat-rank">${rankings.medRank > 0 ? `${getOrdinal(rankings.medRank)} Overall` : 'Not ranked'}</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">${teamData.total_transactions || 0}</div>
+              <div class="stat-label">Transactions</div>
+            </div>
+          `;
+          
+          document.getElementById('team-stats').style.display = 'grid';
+        }
       
       // Load roster with proper REL calculation and clickable player names
       async function loadRoster() {
