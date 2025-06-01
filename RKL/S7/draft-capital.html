@@ -171,19 +171,14 @@
         border-collapse: collapse;
       }
 
+      /* REVERTED TH STYLE (removed debugging borders/backgrounds) */
       .draft-table th {
-        display: table-cell !important;
-        border: 1px solid limegreen !important; 
-        padding: 5px !important;
-        background-color: #e0ffe0 !important; 
-        min-width: 70px !important; 
-        width: auto !important; 
-        overflow: hidden; 
-        text-align: left !important;
-        font-weight: bold !important;
-        font-size: 0.9rem !important;
-        box-sizing: border-box !important;
-        border-bottom: 2px solid #aaa; 
+        background-color: #f8f9fa;
+        padding: 1rem 0.5rem;   
+        text-align: left;       
+        font-weight: bold;      
+        border-bottom: 2px solid #ddd;
+        font-size: 0.9rem;      
       }
 
 
@@ -193,6 +188,15 @@
         font-size: 0.9rem;
         vertical-align: middle; 
       }
+      /* Style for links within table data cells */
+      .draft-table td a {
+        color: #007bff;
+        text-decoration: none;
+      }
+      .draft-table td a:hover {
+        text-decoration: underline;
+      }
+
 
       .draft-table tr:hover {
         background-color: #f8f9fa;
@@ -202,11 +206,9 @@
         /* Font properties removed to inherit from body/table */
       }
 
+      /* REMOVED debug border from .owner-cell */
       .owner-cell { 
-        border: 1px dashed #ccc; /* Light border to see cell boundaries */
-        /* display: flex; -- MOVED TO INNER DIV */
-        /* align-items: center; -- MOVED TO INNER DIV */
-        /* gap: 0.5rem; -- MOVED TO INNER DIV */
+        /* border: 1px dashed #ccc; */ 
       }
 
       .cell-content-flex { /* For inner div flex layout */
@@ -372,13 +374,7 @@
         border-color: #007bff;
       }
       
-      .trade-status-debug {
-        border: 2px solid red !important;
-        background-color: #fff0f0 !important;
-        font-weight: bold !important;
-        padding: 0.8rem !important; 
-        min-width: 100px; 
-      }
+      /* REMOVED .trade-status-debug CSS rule */
 
       @media (max-width: 768px) {
         .filter-row {
@@ -696,7 +692,7 @@
         
         const tableHTML = sortedPicks.map(pick => {
           const isForfeited = pick.notes && pick.notes.toUpperCase().includes('FORFEITED');
-          let tradeStatus = 'Original Owner';
+          let tradeStatusText = 'Original Owner'; // Base text for the trade status
           let rowClass = 'original-pick';
 
           let formattedPickDescription = pick.pick_description;
@@ -712,7 +708,7 @@
           }
 
           if (isForfeited) {
-            tradeStatus = 'FORFEITED';
+            tradeStatusText = 'FORFEITED';
             rowClass = 'forfeited-pick';
           } else if (pick.current_owner !== pick.original_team) {
             rowClass = 'traded-pick';
@@ -726,28 +722,52 @@
                 const fromTeamId = lastAcquisition.from_team;
                 
                 if (fromTeamId === pick.original_team) {
-                    tradeStatus = `Acquired from ${getTeamName(pick.original_team)}`;
+                    tradeStatusText = `Acquired from ${getTeamName(pick.original_team)}`;
                 } else {
-                    tradeStatus = `Acquired via ${getTeamName(fromTeamId)}`;
+                    tradeStatusText = `Acquired via ${getTeamName(fromTeamId)}`;
                 }
             } else {
-                tradeStatus = `Acquired (Origin: ${getTeamName(pick.original_team)})`;
+                tradeStatusText = `Acquired (Origin: ${getTeamName(pick.original_team)})`;
             }
           }
           
           const safeFormattedPickDescription = escapeHTML(formattedPickDescription);
           const currentOwnerNameText = escapeHTML(getTeamName(pick.current_owner));
-          // ***** originalTeamNameText is now needed again for D3 *****
           const originalTeamNameText = escapeHTML(getTeamName(pick.original_team)); 
-          const safeTradeStatus = escapeHTML(tradeStatus);
+          
+          // ***** NEW LOGIC FOR TRADE STATUS HTML (potentially a link) *****
+          let finalTradeStatusHTML = escapeHTML(tradeStatusText); // Default to escaped plain text
 
-          // ***** D2 (Current Owner) and D3 (Original Team) now use inner flex div *****
+          // Only attempt to make a link if the pick was traded and not forfeited, and has notes
+          if (!isForfeited && pick.current_owner !== pick.original_team && pick.notes) {
+              const citationRegex = /\b([A-Z]{2,4})\s*\/\s*([A-Z]{2,4})\s+(\d{1,2}\/\d{1,2}\/\d{4})\b/i;
+              const match = pick.notes.match(citationRegex);
+
+              if (match) {
+                  const team1ID = match[1].toUpperCase();
+                  const team2ID = match[2].toUpperCase();
+                  const dateStr = match[3]; // e.g., 5/31/2025
+                  const dateParts = dateStr.split('/'); 
+                  
+                  // Ensure date parts are correctly ordered for YYYY-MM-DD format
+                  const year = dateParts[2];
+                  const month = String(dateParts[0]).padStart(2, '0');
+                  const day = String(dateParts[1]).padStart(2, '0');
+                  const formattedDateForLink = `${year}-${month}-${day}`;
+                  
+                  const transactionsLink = `transactions.html?type=TRADE&date=${formattedDateForLink}&teamFilters=${team1ID},${team2ID}`;
+                  // Use the already determined tradeStatusText as the link text
+                  finalTradeStatusHTML = `<a href="${transactionsLink}" title="View transaction: ${escapeHTML(pick.notes)}">${escapeHTML(tradeStatusText)}</a>`;
+              }
+          }
+
+          // ***** Both D2 and D3 now use inner flex div, debug class removed from D4 *****
           return `
             <tr class="${rowClass}">
               <td class="pick-description">${safeFormattedPickDescription}</td>
               <td class="owner-cell"><div class="cell-content-flex">${getTeamLogoHTML(pick.current_owner)} ${currentOwnerNameText}</div></td>
               <td class="owner-cell"><div class="cell-content-flex">${getTeamLogoHTML(pick.original_team)} ${originalTeamNameText}</div></td>
-              <td class="trade-status-debug">${safeTradeStatus}</td>
+              <td>${finalTradeStatusHTML}</td> {/* Use finalTradeStatusHTML, no debug class */}
             </tr>
           `;
         }).join('');
@@ -799,7 +819,7 @@
             return `
               <div class="team-card">
                 <div class="team-header">
-                  ${getTeamLogoHTML(teamId)} {/* Already uses escapeHTML for alt in getTeamLogoHTML */}
+                  ${getTeamLogoHTML(teamId)} 
                   <h4>${safeTeamName}</h4>
                   <span>(${pickCount} pick${pickCount !==1 ? 's' : ''})</span>
                 </div>
