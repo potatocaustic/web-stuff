@@ -283,7 +283,7 @@
 
       .game-item {
         display: grid;
-        grid-template-columns: 2fr auto auto auto auto 2fr 100px;
+        grid-template-columns: 2fr auto auto auto auto 2fr 90px;
         gap: 0.5rem;
         align-items: center;
         padding: 1rem;
@@ -366,6 +366,17 @@
         color: #666;
         font-size: 0.8rem;
         min-width: 80px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.2rem;
+      }
+
+      .game-date {
+        font-size: 0.8rem;
+        color: #666;
+        font-weight: 500;
+        white-space: nowrap;
       }
 
       .opponent-name {
@@ -649,7 +660,7 @@
 
         .week-badge {
           position: absolute;
-          top: 0.75rem; /* Position at the edge of content */
+          top: 0.75rem;
           right: 0.75rem;
           left: auto;
           transform: none;
@@ -725,6 +736,15 @@
         .vs-divider,
         .game-meta {
           display: none;
+        }
+
+        /* Show mobile date in the game date area */
+        .mobile-game-date {
+          display: block;
+          text-align: center;
+          margin-top: 0.5rem;
+          font-size: 0.75rem;
+          color: #666;
         }
 
         .modal-content {
@@ -874,6 +894,14 @@
           return (num / 1000).toFixed(1) + 'k';
         }
         return Math.round(num).toLocaleString();
+      }
+
+      // Helper function to format date as MM-DD
+      function formatDateMMDD(dateString) {
+        const date = new Date(dateString);
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${month}-${day}`;
       }
       
       // Function to fetch data from Google Sheets
@@ -1190,7 +1218,7 @@
         document.getElementById('roster-list').innerHTML = finalHTML;
       }
       
-      // Load complete schedule with historical opponent records
+      // Load complete schedule with historical opponent records and dates
       async function loadSchedule() {
         const schedule = await fetchSheetData('Schedule');
         
@@ -1216,6 +1244,7 @@
           const opponentName = getTeamName(opponentId);
           const isCompleted = game.completed === 'TRUE';
           const gameWeek = game.week || 'TBD';
+          const gameDate = formatDateMMDD(game.date);
           
           // Calculate opponent's record immediately following this game
           let opponentRecord = '';
@@ -1293,9 +1322,11 @@
                 <div class="opponent-record">${opponentRecord}</div>
               </div>
               
-              <div class="game-meta"></div>
+              <div class="game-meta">
+                <div class="game-date">${gameDate}</div>
+              </div>
               
-              <!-- Mobile layout (visible on mobile) - same structure as RKL-S7.html recent games -->
+              <!-- Mobile layout (visible on mobile) -->
               <div class="game-matchup">
                 <div class="team ${teamScoreClass}">
                   <img src="icons/${teamId}.webp" alt="${teamData.team_name}" class="team-logo" onerror="this.style.display='none'">
@@ -1314,6 +1345,7 @@
                   </div>
                   <span class="team-score ${oppScoreClass}">${oppScore}</span>
                 </div>
+                <div class="mobile-game-date">${gameDate}</div>
               </div>
             </div>
           `;
