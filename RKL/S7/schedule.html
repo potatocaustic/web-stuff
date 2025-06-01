@@ -168,7 +168,7 @@
         background-color: #e9ecef;
         padding: 1rem;
         border-radius: 6px;
-        margin-bottom: 1rem; /* Will be margin between this and standouts */
+        margin-bottom: 1rem; 
         text-align: center;
       }
 
@@ -196,28 +196,27 @@
         color: #666;
       }
       
-      /* ***** NEW: Week Standouts Section Styles ***** */
       .week-standouts-section {
-        background-color: #f0f8ff; /* Light AliceBlue background */
+        background-color: #f0f8ff; 
         padding: 1.5rem;
-        border-radius: 8px; /* Rounded corners for the section */
-        margin-bottom: 2rem; /* Space before game dates */
-        border: 1px solid #cfe2f3; /* Light blue border */
+        border-radius: 8px; 
+        margin-bottom: 2rem; 
+        border: 1px solid #cfe2f3; 
       }
       .week-standouts-section h4 {
         text-align: center;
         margin-bottom: 1.5rem;
-        font-size: 1.4em; /* Slightly larger title */
-        color: #0056b3; /* Darker blue for title */
+        font-size: 1.4em; 
+        color: #0056b3; 
       }
       .standouts-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* Responsive columns */
-        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Adjusted minmax for potentially 4 items in a row */
+        gap: 1rem; /* Slightly reduced gap */
       }
       .standout-item {
         background-color: #fff;
-        padding: 1.2rem;
+        padding: 1rem; /* Slightly reduced padding */
         border-radius: 6px;
         border: 1px solid #e0e0e0;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
@@ -225,7 +224,7 @@
         flex-direction: column;
       }
       .standout-item h5 {
-        font-size: 1.05rem;
+        font-size: 1rem; /* Adjusted title size */
         color: #333;
         margin-bottom: 0.75rem;
         border-bottom: 1px solid #eee;
@@ -233,17 +232,12 @@
         display: flex;
         align-items: center;
       }
-      .standout-icon { /* Style for icons next to h5 titles */
-        width: 20px;
-        height: 20px;
-        margin-right: 0.5rem;
-        opacity: 0.7;
-      }
+      /* .standout-icon CSS removed as icons are now text/emoji */
       .standout-item p {
         font-size: 0.9rem;
         color: #555;
         line-height: 1.5;
-        flex-grow: 1; /* Allows paragraphs to take available space */
+        flex-grow: 1; 
       }
       .standout-item p .player-link, .standout-item p .team-link { 
         font-weight: 500;
@@ -255,13 +249,13 @@
       }
       .standout-item .detail { 
         font-weight: bold;
-        color: #17a2b8; /* Info color for details */
+        color: #17a2b8; 
       }
-       .standout-item .detail-bad { /* For worst performances */
+       .standout-item .detail-bad { 
         font-weight: bold;
-        color: #dc3545; /* Danger color */
+        color: #dc3545; 
       }
-      .standout-item .meta-info { /* For date or week info */
+      .standout-item .meta-info { 
         font-size: 0.8rem;
         color: #777;
         margin-top: 0.3rem;
@@ -407,8 +401,6 @@
         font-weight: 500;
       }
 
-
-      /* Modal styles */
       .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow-y: auto; }
       .modal-content { background-color: #fff; margin: 2rem auto; border-radius: 8px; width: 95%; max-width: 900px; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
       .modal-header { background-color: #333; color: white; padding: 1.5rem; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; }
@@ -438,31 +430,10 @@
       .player-link { color: #007bff; text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
       .player-link:hover { color: #0056b3; text-decoration: underline; }
       .points-cell { text-align: center; font-weight: bold; }
-      /* .rank-cell defined in leaderboard styles, using it here too */
 
-
-      .loading {
-        text-align: center;
-        padding: 3rem;
-        color: #666;
-        font-size: 1.1rem;
-      }
-
-      .error {
-        text-align: center;
-        padding: 2rem;
-        color: #dc3545;
-        background-color: #f8d7da;
-        border-radius: 4px;
-        margin: 1rem;
-      }
-
-      .no-games {
-        text-align: center;
-        padding: 3rem;
-        color: #666;
-        font-style: italic;
-      }
+      .loading { text-align: center; padding: 3rem; color: #666; font-size: 1.1rem; }
+      .error { text-align: center; padding: 2rem; color: #dc3545; background-color: #f8d7da; border-radius: 4px; margin: 1rem; }
+      .no-games { text-align: center; padding: 3rem; color: #666; font-style: italic; }
 
       @media (max-width: 768px) {
         .week-buttons { gap: 0.3rem; }
@@ -477,7 +448,7 @@
         .team-logo { width: 28px; height: 28px; }
         .modal-header { padding: 1rem; }
         .modal-header h3 { font-size: 1.1rem; line-height: 1.3; word-break: break-word; hyphens: auto; }
-        .standouts-grid { grid-template-columns: 1fr; } /* Stack standouts on mobile */
+        .standouts-grid { grid-template-columns: 1fr; } 
       }
 
       @media (max-width: 480px) {
@@ -485,7 +456,6 @@
         .modal-header h3 { font-size: 1rem; line-height: 1.2; }
       }
 
-      /* Footer */
       footer {
         text-align: center;
         margin-top: 3rem;
@@ -545,23 +515,24 @@
           </div>
         </div>
 
+        {/* MODIFIED: Standouts Section HTML with new titles and emoji/text placeholders */}
         <div id="week-standouts-section" class="week-standouts-section" style="display: none;">
           <h4>Week <span id="standout-week-number">-</span> Standouts</h4>
           <div class="standouts-grid">
             <div class="standout-item">
-              <h5><img src="icons/trophy_gold.svg" class="standout-icon" alt="Trophy">Best Team Performance</h5>
+              <h5>🏆 Best Team</h5>
               <p id="best-team-perf">Calculating...</p>
             </div>
             <div class="standout-item">
-              <h5><img src="icons/star_gold.svg" class="standout-icon" alt="Star">Best Player Performance</h5>
+              <h5>🌟 Best Player</h5>
               <p id="best-player-perf">Calculating...</p>
             </div>
             <div class="standout-item">
-              <h5><img src="icons/thumb_down.svg" class="standout-icon" alt="Thumbs Down">Worst Team Performance</h5>
+              <h5>📉 Worst Team</h5>
               <p id="worst-team-perf">Calculating...</p>
             </div>
             <div class="standout-item">
-              <h5><img src="icons/sad_face.svg" class="standout-icon" alt="Sad Face">Worst Player Performance</h5>
+              <h5>😞 Worst Player</h5>
               <p id="worst-player-perf">Calculating...</p>
             </div>
           </div>
@@ -606,7 +577,7 @@
         if (num >= 1000) { return (num / 1000).toFixed(1) + 'k'; }
         return Math.round(num).toLocaleString();
       }
-      function escapeHTML(str) { // Added escapeHTML for safety
+      function escapeHTML(str) { 
         if (typeof str !== 'string') return str;
         return str.replace(/&/g, '&amp;')
                   .replace(/</g, '&lt;')
@@ -619,9 +590,10 @@
       let allGames = [];
       let allTeams = [];
       let allLineups = [];
-      let allWeeklyAverages = []; // ***** NEW global variable
-      let dateToMedianScoreMap = {}; // ***** NEW global map
-      let dateToWeekMap = {}; // ***** NEW global map
+      let allWeeklyAverages = []; 
+      let allWeeklyScores = []; // ***** NEW global variable for Weekly_Scores
+      let dateToMedianTeamScoreMap = {}; // ***** NEW global map for team medians
+      let dateToWeekMap = {}; 
       
       async function fetchSheetData(sheetName) {
         try {
@@ -634,7 +606,7 @@
         }
       }
       
-      function parseCSV(csvText) { /* ... (existing, unchanged) ... */ 
+      function parseCSV(csvText) { 
         const lines = csvText.trim().split('\n');
         const headers = parseCSVLine(lines[0]);
         const data = [];
@@ -652,7 +624,7 @@
         }
         return data;
       }
-      function parseCSVLine(line) { /* ... (existing, unchanged) ... */
+      function parseCSVLine(line) {
         const result = []; let current = ''; let inQuotes = false;
         for (let i = 0; i < line.length; i++) {
           const char = line[i];
@@ -666,12 +638,14 @@
         return result.map(field => field.replace(/^"(.*)"$/, '$1').replace(/\\"/g, '"'));
        }
       
-      function formatDate(dateString) { /* ... (existing, unchanged) ... */
+      function formatDate(dateString) { 
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
        }
-      function formatDateShort(dateString) { /* ... (existing, unchanged) ... */
+      function formatDateShort(dateString) {
+        if (!dateString) return 'N/A';
         const date = new Date(dateString);
+         if (isNaN(date.getTime())) return 'Invalid Date';
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         const year = String(date.getFullYear()).slice(-2);
@@ -684,30 +658,40 @@
         return team ? team.team_name : ( (teamId === 'FA' || teamId === 'N/A') ? 'N/A' : teamId ); 
       }
       
-      // ***** MODIFIED loadData to fetch Weekly_Averages and create maps *****
       async function loadData() {
-        const [schedule, teams, lineups, weeklyAveragesData] = await Promise.all([
+        // Fetch Weekly_Scores along with other data
+        const [schedule, teams, lineups, weeklyAveragesData, weeklyScoresData] = await Promise.all([
           fetchSheetData('Schedule'),
           fetchSheetData('Teams'),
           fetchSheetData('Lineups'),
-          fetchSheetData('Weekly_Averages') // Fetch new sheet
+          fetchSheetData('Weekly_Averages'),
+          fetchSheetData('Weekly_Scores') // Fetching the new sheet
         ]);
         
-        if (!schedule || !teams || !weeklyAveragesData) { // Lineups can be optional if no games completed
+        if (!schedule || !teams || !weeklyAveragesData || !weeklyScoresData) { 
           document.getElementById('games-content').innerHTML = 
-            '<div class="error">Error loading core schedule data (Schedule, Teams, or Weekly Averages)</div>';
+            '<div class="error">Error loading core schedule data</div>';
           return;
         }
         
         allGames = schedule;
         allTeams = teams;
-        allLineups = lineups || []; // Handle if lineups sheet is empty or fails
+        allLineups = lineups || []; 
         allWeeklyAverages = weeklyAveragesData || [];
+        allWeeklyScores = weeklyScoresData || []; // Store weekly scores
 
+        // Create maps
         allWeeklyAverages.forEach(wa => {
           if (wa.date) {
-            if (wa.median_score !== undefined && wa.median_score !== '') dateToMedianScoreMap[wa.date] = parseNumber(wa.median_score);
+            // dateToMedianScoreMap (player median) is not used by standouts now, but keep if other features use it
             if (wa.week !== undefined && wa.week !== '') dateToWeekMap[wa.date] = String(wa.week).trim();
+          }
+        });
+
+        // Create map for daily median TEAM scores
+        allWeeklyScores.forEach(ws => {
+          if (ws.date && ws.daily_median !== undefined && ws.daily_median !== '') {
+            dateToMedianTeamScoreMap[ws.date] = parseNumber(ws.daily_median);
           }
         });
         
@@ -716,7 +700,7 @@
         displayWeek(currentWeek);
       }
       
-      function determineCurrentWeek(schedule) { /* ... (existing, unchanged) ... */
+      function determineCurrentWeek(schedule) { /* ... (existing) ... */
         const gamesByWeek = {};
         schedule.forEach(game => {
           const week = parseInt(game.week);
@@ -737,7 +721,7 @@
         return weeks.length > 0 ? weeks[weeks.length - 1] : 1;
        }
       
-      function setupWeekSelector() { /* ... (existing, unchanged) ... */
+      function setupWeekSelector() { /* ... (existing) ... */
         const weeks = [...new Set(allGames.map(game => parseInt(game.week)))].sort((a, b) => a - b);
         const weekButtonsHTML = weeks.map(week => {
           const weekGames = allGames.filter(game => parseInt(game.week) === week);
@@ -757,16 +741,18 @@
         });
        }
       
-      // ***** MODIFIED displayWeek to include Standouts logic *****
       function displayWeek(week) {
         const weekGames = allGames.filter(game => parseInt(game.week) === week);
         const weekStandoutsSection = document.getElementById('week-standouts-section');
+        const standoutWeekNumSpan = document.getElementById('standout-week-number');
         
+        if (standoutWeekNumSpan) standoutWeekNumSpan.textContent = week;
+
         if (weekGames.length === 0) {
           document.getElementById('games-title').textContent = `Week ${week} - No Games`;
           document.getElementById('games-content').innerHTML = '<div class="no-games">No games scheduled for this week</div>';
           document.getElementById('week-summary').style.display = 'none';
-          weekStandoutsSection.style.display = 'none'; // Hide standouts
+          if (weekStandoutsSection) weekStandoutsSection.style.display = 'none';
           return;
         }
         
@@ -790,18 +776,14 @@
           document.querySelector('.games-header').appendChild(subtitle);
         }
 
-        // --- Standouts Logic ---
         const allGamesInWeekCompleted = weekGames.length > 0 && completedCount === weekGames.length;
-        document.getElementById('standout-week-number').textContent = week;
-
-        if (allGamesInWeekCompleted) {
+        if (allGamesInWeekCompleted && allLineups.length > 0 && Object.keys(dateToMedianTeamScoreMap).length > 0) {
           calculateAndDisplayStandouts(week, completedGamesThisWeek);
-          weekStandoutsSection.style.display = 'block';
+          if (weekStandoutsSection) weekStandoutsSection.style.display = 'block';
         } else {
-          weekStandoutsSection.style.display = 'none';
+          if (weekStandoutsSection) weekStandoutsSection.style.display = 'none';
         }
         
-        // --- Display Games (existing logic) ---
         const gamesByDate = {};
         weekGames.forEach(game => {
           const date = game.date;
@@ -858,96 +840,84 @@
         document.getElementById('games-content').innerHTML = datesHTML;
       }
 
-      // ***** NEW: Function to Calculate and Display Standouts *****
       function calculateAndDisplayStandouts(week, completedGamesThisWeek) {
         let bestTeam = { team_id: null, team_name: 'N/A', percentage_diff: -Infinity, score: 0, median: 0, date: '' };
         let worstTeam = { team_id: null, team_name: 'N/A', percentage_diff: Infinity, score: 0, median: 0, date: '' };
         
         completedGamesThisWeek.forEach(game => {
-          const medianScore = dateToMedianScoreMap[game.date];
-          if (medianScore === undefined || medianScore === 0) return; // Skip if no median or median is 0
+          const dailyMedianTeamScore = dateToMedianTeamScoreMap[game.date]; // Use new map
+          if (dailyMedianTeamScore === undefined || dailyMedianTeamScore === 0) {
+            console.warn(`Median team score not found or is zero for date: ${game.date} in week ${week}`);
+            return; 
+          }
 
           const teamsInGame = [
-            { id: game.team1_id, score: parseNumber(game.team1_score) },
-            { id: game.team2_id, score: parseNumber(game.team2_score) }
+            { id: game.team1_id, name: getTeamName(game.team1_id), score: parseNumber(game.team1_score) },
+            { id: game.team2_id, name: getTeamName(game.team2_id), score: parseNumber(game.team2_score) }
           ];
 
           teamsInGame.forEach(team => {
-            const percentageDiff = ((team.score / medianScore) - 1) * 100;
+            if (!team.id || team.id === 'N/A') return; // Skip if no valid team ID
+            const percentageDiff = ((team.score / dailyMedianTeamScore) - 1) * 100;
             if (percentageDiff > bestTeam.percentage_diff) {
-              bestTeam = { team_id: team.id, team_name: getTeamName(team.id), percentage_diff: percentageDiff, score: team.score, median: medianScore, date: game.date };
+              bestTeam = { team_id: team.id, team_name: team.name, percentage_diff: percentageDiff, score: team.score, median: dailyMedianTeamScore, date: game.date };
             }
             if (percentageDiff < worstTeam.percentage_diff) {
-              worstTeam = { team_id: team.id, team_name: getTeamName(team.id), percentage_diff: percentageDiff, score: team.score, median: medianScore, date: game.date };
+              worstTeam = { team_id: team.id, team_name: team.name, percentage_diff: percentageDiff, score: team.score, median: dailyMedianTeamScore, date: game.date };
             }
           });
         });
 
-        let bestPlayer = { players: [], rank: Infinity, date: '', team_id: null };
-        let worstPlayer = { players: [], rank: -Infinity, date: '', team_id: null };
+        let bestPlayer = { players: [], rank: Infinity, date: '', team_id: null, team_name: '' };
+        let worstPlayer = { players: [], rank: -Infinity, date: '', team_id: null, team_name: '' };
         
         const gameDatesInWeek = [...new Set(completedGamesThisWeek.map(g => g.date))];
         const relevantLineups = allLineups.filter(l => 
             gameDatesInWeek.includes(l.date) && 
-            dateToWeekMap[l.date] == week && // Ensure game from lineup is in the current week
+            dateToWeekMap[l.date] == week && 
             l.started && String(l.started).toUpperCase() === 'TRUE'
         );
 
         relevantLineups.forEach(lineup => {
           const rank = parseNumber(lineup.global_rank);
-          if (rank > 0) { // Only consider valid ranks
+          if (rank > 0) { 
+            const playerDisplay = { handle: lineup.player_handle, team_id: lineup.team_id, team_name: getTeamName(lineup.team_id), date: lineup.date };
             if (rank < bestPlayer.rank) {
-              bestPlayer = { players: [lineup.player_handle], rank: rank, date: lineup.date, team_id: lineup.team_id };
+              bestPlayer = { players: [playerDisplay], rank: rank, date: lineup.date, team_id: lineup.team_id, team_name: getTeamName(lineup.team_id) };
             } else if (rank === bestPlayer.rank) {
-              if (!bestPlayer.players.includes(lineup.player_handle)) { // Add if tied and not already listed
-                bestPlayer.players.push(lineup.player_handle);
+              if (!bestPlayer.players.find(p=>p.handle === lineup.player_handle)) { 
+                bestPlayer.players.push(playerDisplay);
               }
             }
 
             if (rank > worstPlayer.rank) {
-              worstPlayer = { players: [lineup.player_handle], rank: rank, date: lineup.date, team_id: lineup.team_id };
+              worstPlayer = { players: [playerDisplay], rank: rank, date: lineup.date, team_id: lineup.team_id, team_name: getTeamName(lineup.team_id) };
             } else if (rank === worstPlayer.rank) {
-               if (!worstPlayer.players.includes(lineup.player_handle)) {
-                worstPlayer.players.push(lineup.player_handle);
+               if (!worstPlayer.players.find(p=>p.handle === lineup.player_handle)) {
+                worstPlayer.players.push(playerDisplay);
               }
             }
           }
         });
 
-        // Populate standout elements
-        const bestTeamP = document.getElementById('best-team-perf');
-        if (bestTeam.team_id) {
-          bestTeamP.innerHTML = `<a href="team.html?id=${bestTeam.team_id}" class="team-link">${escapeHTML(bestTeam.team_name)}</a>: <span class="detail">+${bestTeam.percentage_diff.toFixed(1)}%</span> (Score: ${formatInThousands(bestTeam.score)}, Median: ${formatInThousands(bestTeam.median)}) <span class="meta-info">on ${formatDateShort(bestTeam.date)}</span>`;
-        } else {
-          bestTeamP.textContent = 'Not enough data.';
-        }
-
-        const worstTeamP = document.getElementById('worst-team-perf');
-        if (worstTeam.team_id && worstTeam.percentage_diff < 0) { // Ensure it's actually below median
-          worstTeamP.innerHTML = `<a href="team.html?id=${worstTeam.team_id}" class="team-link">${escapeHTML(worstTeam.team_name)}</a>: <span class="detail-bad">${worstTeam.percentage_diff.toFixed(1)}%</span> (Score: ${formatInThousands(worstTeam.score)}, Median: ${formatInThousands(worstTeam.median)}) <span class="meta-info">on ${formatDateShort(worstTeam.date)}</span>`;
-        } else {
-          worstTeamP.textContent = 'Not enough data or no team below median.';
-        }
-
-        const bestPlayerP = document.getElementById('best-player-perf');
-        if (bestPlayer.players.length > 0 && bestPlayer.rank !== Infinity) {
-          const playerLinks = bestPlayer.players.map(p => `<a href="player.html?player=${encodeURIComponent(p)}" class="player-link">${escapeHTML(p)}</a>`).join(', ');
-          bestPlayerP.innerHTML = `${playerLinks} (Team: ${getTeamName(bestPlayer.team_id)}): <span class="detail">Rank ${bestPlayer.rank}</span> <span class="meta-info">on ${formatDateShort(bestPlayer.date)}</span>`;
-        } else {
-          bestPlayerP.textContent = 'No ranked player data.';
-        }
+        document.getElementById('best-team-perf').innerHTML = bestTeam.team_id ? 
+          `<a href="team.html?id=${bestTeam.team_id}" class="team-link">${escapeHTML(bestTeam.team_name)}</a>: <span class="detail">+${bestTeam.percentage_diff.toFixed(1)}%</span> vs median <span class="meta-info">(Score: ${formatInThousands(bestTeam.score)} on ${formatDateShort(bestTeam.date)})</span>` : 
+          'Not enough data.';
         
-        const worstPlayerP = document.getElementById('worst-player-perf');
-        if (worstPlayer.players.length > 0 && worstPlayer.rank > 0) { // rank > 0 ensures it's a valid rank
-          const playerLinks = worstPlayer.players.map(p => `<a href="player.html?player=${encodeURIComponent(p)}" class="player-link">${escapeHTML(p)}</a>`).join(', ');
-          worstPlayerP.innerHTML = `${playerLinks} (Team: ${getTeamName(worstPlayer.team_id)}): <span class="detail-bad">Rank ${worstPlayer.rank}</span> <span class="meta-info">on ${formatDateShort(worstPlayer.date)}</span>`;
-        } else {
-          worstPlayerP.textContent = 'No ranked player data.';
-        }
+        document.getElementById('worst-team-perf').innerHTML = (worstTeam.team_id && worstTeam.percentage_diff < 0 && worstTeam.percentage_diff !== Infinity) ?
+          `<a href="team.html?id=${worstTeam.team_id}" class="team-link">${escapeHTML(worstTeam.team_name)}</a>: <span class="detail-bad">${worstTeam.percentage_diff.toFixed(1)}%</span> vs median <span class="meta-info">(Score: ${formatInThousands(worstTeam.score)} on ${formatDateShort(worstTeam.date)})</span>` :
+          'Not enough data or no team significantly below median.';
+
+        document.getElementById('best-player-perf').innerHTML = (bestPlayer.players.length > 0 && bestPlayer.rank !== Infinity) ?
+          `${bestPlayer.players.map(p => `<a href="player.html?player=${encodeURIComponent(p.handle)}" class="player-link">${escapeHTML(p.handle)}</a> (${escapeHTML(p.team_name)})`).join(', ')} <span class="detail">Rank ${bestPlayer.rank}</span> <span class="meta-info">on ${formatDateShort(bestPlayer.date)}</span>` :
+          'No ranked player data.';
+        
+        document.getElementById('worst-player-perf').innerHTML = (worstPlayer.players.length > 0 && worstPlayer.rank > 0 && worstPlayer.rank !== -Infinity) ?
+          `${worstPlayer.players.map(p => `<a href="player.html?player=${encodeURIComponent(p.handle)}" class="player-link">${escapeHTML(p.handle)}</a> (${escapeHTML(p.team_name)})`).join(', ')} <span class="detail-bad">Rank ${worstPlayer.rank}</span> <span class="meta-info">on ${formatDateShort(worstPlayer.date)}</span>` :
+          'No ranked player data.';
       }
       
-      // MODIFIED showGameDetails to use game_id from schedule
-      async function showGameDetails(gameId) {
+      async function showGameDetails(gameId) { /* ... (existing, unchanged from last version with game_id) ... */ 
         const modal = document.getElementById('game-modal');
         const modalTitle = document.getElementById('modal-title');
         const modalContent = document.getElementById('modal-content');
@@ -978,15 +948,15 @@
         const team1Lineups = gameLineups.filter(l => l.team_id === game.team1_id);
         const team2Lineups = gameLineups.filter(l => l.team_id === game.team2_id);
         
-        const team1Total = parseNumber(game.team1_score); // Use score from schedule
-        const team2Total = parseNumber(game.team2_score); // Use score from schedule
+        const team1Total = parseNumber(game.team1_score); 
+        const team2Total = parseNumber(game.team2_score); 
         const winner = game.winner;
         
         const generateLineupTable = (lineups, teamId, total, isWinner) => {
           const teamData = allTeams.find(t => t.team_id === teamId);
           const teamRecord = teamData ? `${teamData.wins || 0}-${teamData.losses || 0}` : 'N/A';
           
-          if (lineups.length === 0) { // Still provide header if no lineup data
+          if (lineups.length === 0) { 
             return `
               <div class="team-breakdown ${isWinner ? 'winner' : ''}">
                 <div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${escapeHTML(teamId)}'" style="cursor: pointer;">
@@ -1003,7 +973,7 @@
             const pointsRaw = parseNumber(player.points_raw);
             const pointsFinal = parseNumber(player.points_final);
             const globalRank = parseNumber(player.global_rank);
-            const captainBonus = isCaptain ? Math.round(pointsRaw * 0.5) : 0; // Assuming 50% bonus
+            const captainBonus = isCaptain ? Math.round(pointsRaw * 0.5) : 0;
             
             return `
               <tr class="${isCaptain ? 'captain-row' : ''}">
@@ -1043,12 +1013,12 @@
             ${generateLineupTable(team2Lineups, game.team2_id, team2Total, winner === game.team2_id)}
           </div>
         `;
-      }
+       }
       
-      function closeGameModal() { /* ... (existing, unchanged) ... */
+      function closeGameModal() { /* ... (existing) ... */
         document.getElementById('game-modal').style.display = 'none';
        }
-      window.onclick = function(event) { /* ... (existing, unchanged) ... */
+      window.onclick = function(event) { /* ... (existing) ... */
         const modal = document.getElementById('game-modal');
         if (event.target === modal) {
           closeGameModal();
