@@ -798,6 +798,18 @@
           flex-shrink: 0;
         }
 
+        .team-score.win {
+          color: #28a745;
+        }
+
+        .team-score.loss {
+          color: #dc3545;
+        }
+
+        .team-score.upcoming {
+          color: #333;
+        }
+
         .vs {
           display: none;
         }
@@ -1418,7 +1430,7 @@
                     <span class="team-name ${teamWon ? 'win' : oppWon ? 'loss' : 'upcoming'}">${teamData.team_name}</span>
                     <span class="team-record">${teamRecord}</span>
                   </div>
-                  <span class="team-score">${teamScore}</span>
+                  <span class="team-score ${teamScoreClass}">${teamScore}</span>
                 </div>
                 <span class="vs">vs</span>
                 <div class="team ${oppWon ? 'winner' : teamWon ? 'loser' : 'upcoming'}">
@@ -1427,7 +1439,7 @@
                     <span class="team-name ${oppWon ? 'win' : teamWon ? 'loss' : 'upcoming'}">${opponentName}</span>
                     <span class="team-record">${opponentRecord}</span>
                   </div>
-                  <span class="team-score">${oppScore}</span>
+                  <span class="team-score ${oppScoreClass}">${oppScore}</span>
                 </div>
               </div>
             </div>
