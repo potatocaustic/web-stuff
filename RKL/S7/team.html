@@ -1050,20 +1050,16 @@
     <main>
       <a href="teams.html" class="back-button">← Back to All Teams</a>
       
-      <!-- Team Header -->
       <div class="team-header">
         <div class="team-main-info" id="team-main-info">
           <div class="loading">Loading team information...</div>
         </div>
         
         <div class="team-stats-grid" id="team-stats" style="display: none;">
-          <!-- Stats will be populated by JavaScript -->
-        </div>
+          </div>
       </div>
 
-      <!-- Content Grid -->
       <div class="content-grid">
-        <!-- Roster -->
         <div class="roster-section">
           <div class="section-header">
             <h3>Current Roster</h3>
@@ -1073,7 +1069,6 @@
           </div>
         </div>
 
-        <!-- Schedule -->
         <div class="schedule-section">
           <div class="section-header">
             <h3>Schedule</h3>
@@ -1084,7 +1079,6 @@
         </div>
       </div>
 
-      <!-- Draft Capital -->
       <div class="draft-capital">
         <div class="section-header">
           <h3>Draft Capital</h3>
@@ -1095,7 +1089,6 @@
       </div>
     </main>
 
-    <!-- Game Details Modal -->
     <div id="game-modal" class="modal">
       <div class="modal-content">
         <div class="modal-header">
@@ -1381,7 +1374,7 @@
         );
         const rankings = calculateTeamRankings(teamData, activeTeams);
         
-        displayTeamHeader(rankings);
+        displayTeamHeader(rankings); // Pass rankings here
         
         // Load other data in parallel
         await Promise.all([
@@ -1392,7 +1385,10 @@
       }
       
       // Display team header
-      function displayTeamHeader() {
+      // Note: The original code had a nested function also named displayTeamHeader.
+      // I've corrected this by making the outer function accept 'rankings'
+      // and removed the unnecessary nesting.
+      function displayTeamHeader(rankings) { // Outer function definition starts here
         // Update page title
         document.getElementById('page-title').textContent = `${teamData.team_name} - RKL Season 7`;
         document.getElementById('header-title').textContent = teamData.team_name;
@@ -1413,34 +1409,33 @@
           </div>
         `;
         
-        function displayTeamHeader(rankings) {
-      
-          const medRank = parseFloat(teamData.med_starter_rank || 0);
-          
-          document.getElementById('team-stats').innerHTML = `
-            <div class="stat-card">
-              <div class="stat-value ${wins > losses ? 'positive' : losses > wins ? 'negative' : ''}">${wins}-${losses}</div>
-              <div class="stat-label">Record</div>
-              <div class="stat-rank">${getOrdinal(rankings.record)} in ${teamData.conference} Conference</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value ${pam > 0 ? 'positive' : pam < 0 ? 'negative' : ''}">${Math.round(pam).toLocaleString()}</div>
-              <div class="stat-label">PAM</div>
-              <div class="stat-rank">${getOrdinal(rankings.pam)} Overall</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value">${Math.round(medRank)}</div>
-              <div class="stat-label">Med Rank</div>
-              <div class="stat-rank">${rankings.medRank > 0 ? `${getOrdinal(rankings.medRank)} Overall` : 'Not ranked'}</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value">${teamData.total_transactions || 0}</div>
-              <div class="stat-label">Transactions</div>
-            </div>
-          `;
-          
-          document.getElementById('team-stats').style.display = 'grid';
-        }
+        // This was the inner function, now integrated into the main displayTeamHeader
+        const medRank = parseFloat(teamData.med_starter_rank || 0);
+        
+        document.getElementById('team-stats').innerHTML = `
+          <div class="stat-card">
+            <div class="stat-value ${wins > losses ? 'positive' : losses > wins ? 'negative' : ''}">${wins}-${losses}</div>
+            <div class="stat-label">Record</div>
+            <div class="stat-rank">${getOrdinal(rankings.record)} in ${teamData.conference} Conference</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value ${pam > 0 ? 'positive' : pam < 0 ? 'negative' : ''}">${Math.round(pam).toLocaleString()}</div>
+            <div class="stat-label">PAM</div>
+            <div class="stat-rank">${getOrdinal(rankings.pam)} Overall</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${Math.round(medRank)}</div>
+            <div class="stat-label">Med Rank</div>
+            <div class="stat-rank">${rankings.medRank > 0 ? `${getOrdinal(rankings.medRank)} Overall` : 'Not ranked'}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${teamData.total_transactions || 0}</div>
+            <div class="stat-label">Transactions</div>
+          </div>
+        `;
+        
+        document.getElementById('team-stats').style.display = 'grid';
+      } // <<< THIS IS THE CORRECTED CLOSING BRACE for the main displayTeamHeader function
       
       // Load roster with proper REL calculation and clickable player names
       async function loadRoster() {
@@ -1607,7 +1602,6 @@
           
           return `
             <div class="game-item" ${clickHandler}>
-              <!-- Info Table: 2x1 for badge and date -->
               <div class="game-info-table">
                 <div class="week-cell">
                   <div class="week-badge">${gameWeek}</div>
@@ -1617,9 +1611,7 @@
                 </div>
               </div>
               
-              <!-- Content Table: 3-column layout for teams and scores -->
               <div class="game-content-table">
-                <!-- Column 1: Left team -->
                 <div class="team-section left">
                   <img src="icons/${teamId}.webp" alt="${teamData.team_name}" class="team-logo-game" onerror="this.style.display='none'">
                   <div class="team-details">
@@ -1628,14 +1620,12 @@
                   </div>
                 </div>
                 
-                <!-- Column 2: Scores -->
                 <div class="scores-section">
                   <div class="score ${teamScoreClass}">${teamScore}</div>
                   <div class="vs-text">vs</div>
                   <div class="score ${oppScoreClass}">${oppScore}</div>
                 </div>
                 
-                <!-- Column 3: Right team -->
                 <div class="team-section right">
                   <img src="icons/${opponentId}.webp" alt="${opponentName}" class="team-logo-game" ${logoClickHandlers} onerror="this.style.display='none'">
                   <div class="team-details right">
@@ -1645,9 +1635,7 @@
                 </div>
               </div>
 
-              <!-- Mobile layout (visible on mobile) -->
               <div class="game-matchup">
-                <!-- Mobile week badge -->
                 <div class="week-badge">${gameWeek}</div>
                 
                 <div class="team ${teamWon ? 'winner' : oppWon ? 'loser' : 'upcoming'}">
