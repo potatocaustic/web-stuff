@@ -1517,6 +1517,8 @@
           let teamWon = false;
           let oppWon = false;
           
+          let logoClickHandlers = '';
+          
           if (isCompleted) {
             const teamScoreValue = parseFloat(isTeam1 ? game.team1_score : game.team2_score);
             const oppScoreValue = parseFloat(isTeam1 ? game.team2_score : game.team1_score);
@@ -1537,6 +1539,9 @@
             oppScore = '-';
             teamScoreClass = 'upcoming';
             oppScoreClass = 'upcoming';
+            
+            // For upcoming games, make team logos clickable
+            logoClickHandlers = `onclick="window.location.href='team.html?id=${opponentId}'" style="cursor: pointer;"`;
           }
           
           return `
@@ -1571,7 +1576,7 @@
                 
                 <!-- Column 3: Right team -->
                 <div class="team-section right">
-                  <img src="icons/${opponentId}.webp" alt="${opponentName}" class="team-logo-game" onerror="this.style.display='none'">
+                  <img src="icons/${opponentId}.webp" alt="${opponentName}" class="team-logo-game" ${logoClickHandlers} onerror="this.style.display='none'">
                   <div class="team-details right">
                     <div class="team-name-game">${opponentName}</div>
                     <div class="team-record-game">${opponentRecord}</div>
@@ -1594,7 +1599,7 @@
                 </div>
                 <span class="vs">vs</span>
                 <div class="team ${oppWon ? 'winner' : teamWon ? 'loser' : 'upcoming'}">
-                  <img src="icons/${opponentId}.webp" alt="${opponentName}" class="team-logo" onerror="this.style.display='none'">
+                  <img src="icons/${opponentId}.webp" alt="${opponentName}" class="team-logo" ${logoClickHandlers} onerror="this.style.display='none'">
                   <div class="team-info">
                     <span class="team-name ${oppWon ? 'win' : teamWon ? 'loss' : 'upcoming'}">${opponentName}</span>
                     <span class="team-record">${opponentRecord}</span>
