@@ -635,7 +635,7 @@
         border-width: 2px;
       }
 
-      .team-header {
+      .modal-team-header {
         background-color: #333;
         color: white;
         padding: 1.5rem;
@@ -647,17 +647,17 @@
         flex-direction: column;
       }
 
-      .team-header.winner {
+      .modal-team-header.winner {
         background-color: #28a745;
       }
 
-      .team-header h4 {
+      .modal-team-header h4 {
         color: white;
         margin: 0;
         font-size: 1.2rem;
       }
 
-      .team-header .team-logo {
+      .modal-team-header .team-logo {
         width: 48px;
         height: 48px;
         border-radius: 4px;
@@ -1864,7 +1864,7 @@
           if (lineups.length === 0) {
             return `
               <div class="team-breakdown ${isWinner ? 'winner' : ''}">
-                <div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamId}'" style="cursor: pointer;">
+                <div class="modal-team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamId}'" style="cursor: pointer;">
                   <img src="icons/${teamId}.webp" alt="${getTeamName(teamId)}" class="team-logo" onerror="this.style.display='none'">
                   <div>
                     <h4>${getTeamName(teamId)}</h4>
@@ -1904,7 +1904,7 @@
           
           return `
             <div class="team-breakdown ${isWinner ? 'winner' : ''}">
-              <div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamId}'" style="cursor: pointer;">
+              <div class="modal-team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamId}'" style="cursor: pointer;">
                 <img src="icons/${teamId}.webp" alt="${getTeamName(teamId)}" class="team-logo" onerror="this.style.display='none'">
                 <div>
                   <h4>${getTeamName(teamId)}</h4>
