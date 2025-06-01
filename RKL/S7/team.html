@@ -282,16 +282,18 @@
       }
 
       .game-item {
-        display: grid;
-        grid-template-columns: 2fr auto auto auto auto 2fr 90px;
-        gap: 0.5rem;
-        align-items: center;
-        padding: 1rem;
+        display: flex;
+        gap: 0;
+        padding: 0;
         border-bottom: 1px solid #eee;
         transition: background-color 0.2s;
-        margin-left: 20px;
+        margin-left: 0;
         position: relative;
         min-height: 70px;
+        background-color: #fff;
+        border-radius: 4px;
+        margin-bottom: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       }
 
       .game-item:hover {
@@ -300,6 +302,45 @@
 
       .game-item:last-child {
         border-bottom: none;
+      }
+
+      .game-info-table {
+        display: grid;
+        grid-template-rows: 1fr 1fr;
+        width: 60px;
+        border-right: 1px solid #ddd;
+        background-color: #f8f9fa;
+      }
+
+      .week-cell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 1px solid #ddd;
+        padding: 0.5rem;
+      }
+
+      .date-cell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem;
+      }
+
+      .game-content-table {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        flex: 1;
+        background-color: #fff;
+      }
+
+      .game-teams-section {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex: 1;
       }
 
       .team-name-left {
@@ -362,15 +403,12 @@
       }
 
       .game-meta {
-        text-align: left;
+        text-align: right;
         color: #666;
         font-size: 0.8rem;
-        min-width: 80px;
         display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: center;
-        gap: 0.2rem;
+        align-items: center;
+        justify-content: flex-end;
       }
 
       .game-date {
@@ -423,25 +461,26 @@
         vertical-align: middle;
       }
 
-      /* Week badge styling */
+      /* Week badge styling - now in table cell */
       .week-badge {
-        position: absolute;
-        left: -15px;
-        top: 50%;
-        transform: translateY(-50%);
         background-color: #007bff;
         color: white;
         border-radius: 50%;
-        width: 25px;
-        height: 25px;
+        width: 18px;
+        height: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.8rem;
+        font-size: 0.7rem;
         font-weight: bold;
-        z-index: 1;
-        border: 2px solid white;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: 1px solid white;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+
+      .date-badge {
+        font-size: 0.65rem;
+        color: #666;
+        font-weight: 500;
       }
 
       /* Draft capital section */
@@ -729,14 +768,9 @@
         }
 
         /* Hide desktop layout elements on mobile */
-        .team-name-left,
-        .team-name-right,
-        .logo-left,
-        .logo-right,
-        .score-left,
-        .score-right,
-        .vs-divider,
-        .game-meta {
+        .game-week-row,
+        .game-date-row,
+        .game-content-row {
           display: none;
         }
 
@@ -1293,34 +1327,41 @@
           
           return `
             <div class="game-item" ${clickHandler}>
-              <!-- Week badge -->
-              <div class="week-badge">${gameWeek}</div>
-              
-              <!-- Desktop layout (hidden on mobile) -->
-              <div class="team-name-left">
-                <div class="opponent-name">${teamData.team_name}</div>
-                <div class="opponent-record">${teamRecord}</div>
+              <!-- Info Table: 2x1 for badge and date -->
+              <div class="game-info-table">
+                <div class="week-cell">
+                  <div class="week-badge">${gameWeek}</div>
+                </div>
+                <div class="date-cell">
+                  <div class="date-badge">${gameDate}</div>
+                </div>
               </div>
               
-              <img src="icons/${teamId}.webp" alt="${teamData.team_name}" class="logo-left" onerror="this.style.display='none'">
-              
-              <div class="score-left ${teamScoreClass}">${teamScore}</div>
-              
-              <div class="vs-divider">vs</div>
-              
-              <div class="score-right ${oppScoreClass}">${oppScore}</div>
-              
-              <img src="icons/${opponentId}.webp" alt="${opponentName}" class="logo-right" onerror="this.style.display='none'">
-              
-              <div class="team-name-right">
-                <div class="opponent-name">${opponentName}</div>
-                <div class="opponent-record">${opponentRecord}</div>
+              <!-- Content Table: 1x1 for all game content -->
+              <div class="game-content-table">
+                <div class="game-teams-section">
+                  <div class="team-name-left">
+                    <div class="opponent-name">${teamData.team_name}</div>
+                    <div class="opponent-record">${teamRecord}</div>
+                  </div>
+                  
+                  <img src="icons/${teamId}.webp" alt="${teamData.team_name}" class="logo-left" onerror="this.style.display='none'">
+                  
+                  <div class="score-left ${teamScoreClass}">${teamScore}</div>
+                  
+                  <div class="vs-divider">vs</div>
+                  
+                  <div class="score-right ${oppScoreClass}">${oppScore}</div>
+                  
+                  <img src="icons/${opponentId}.webp" alt="${opponentName}" class="logo-right" onerror="this.style.display='none'">
+                  
+                  <div class="team-name-right">
+                    <div class="opponent-name">${opponentName}</div>
+                    <div class="opponent-record">${opponentRecord}</div>
+                  </div>
+                </div>
               </div>
-              
-              <div class="game-meta">
-                <div class="game-date">${gameDate}</div>
-              </div>
-              
+
               <!-- Mobile layout (visible on mobile) -->
               <div class="game-matchup">
                 <div class="team ${teamScoreClass}">
