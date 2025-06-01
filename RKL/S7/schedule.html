@@ -246,14 +246,13 @@
       .standout-item p .player-link:hover, .standout-item p .team-link:hover {
         text-decoration: underline;
       }
-      .standout-metric-link { /* For clickable metrics */
+      .standout-metric-link { 
         cursor: pointer;
-        text-decoration: none; /* Initially no underline */
+        text-decoration: none; 
       }
-      .standout-metric-link:hover .detail, 
       .standout-metric-link:hover .detail-positive, 
       .standout-metric-link:hover .detail-negative {
-        text-decoration: underline; /* Underline only the metric on hover */
+        text-decoration: underline; 
       }
       .detail-positive { 
         font-weight: bold;
@@ -267,9 +266,8 @@
         font-size: 0.8rem;
         color: #777;
         margin-top: 0.3rem;
-        display: block; /* Ensure it takes its own line if needed */
+        display: block; 
       }
-
 
       /* Games by date */
       .games-by-date {
@@ -536,11 +534,11 @@
               <p id="best-player-perf">Calculating...</p>
             </div>
             <div class="standout-item">
-              <h5>💩 Worst Team</h5> {/* New Icon */}
+              <h5>💩 Worst Team</h5>
               <p id="worst-team-perf">Calculating...</p>
             </div>
             <div class="standout-item">
-              <h5>🚽 Worst Player</h5> {/* New Icon */}
+              <h5>🚽 Worst Player</h5>
               <p id="worst-player-perf">Calculating...</p>
             </div>
           </div>
@@ -598,9 +596,9 @@
       let allGames = [];
       let allTeams = [];
       let allLineups = [];
-      let allWeeklyAverages = []; 
+      // let allWeeklyAverages = []; // No longer needed for standouts if using Weekly_Scores for team median
       let allWeeklyScores = []; 
-      let dateToMedianTeamScoreMap = {}; // For team median scores
+      let dateToMedianTeamScoreMap = {}; 
       let dateToWeekMap = {}; 
       
       async function fetchSheetData(sheetName) {
@@ -617,9 +615,11 @@
       
       function parseCSV(csvText) { 
         const lines = csvText.trim().split('\n');
+        if (lines.length < 1) return []; // Handle empty CSV
         const headers = parseCSVLine(lines[0]);
         const data = [];
         for (let i = 1; i < lines.length; i++) {
+          if (lines[i].trim() === "") continue; // Skip empty lines
           const values = parseCSVLine(lines[i]);
           if (values.length === headers.length) {
             const row = {};
@@ -628,7 +628,7 @@
             });
             data.push(row);
           } else {
-            console.warn("Mismatched CSV line:", lines[i], "Headers:", headers, "Values:", values);
+            console.warn("Mismatched CSV line (length):", lines[i], "Headers:", headers.length, "Values:", values.length);
           }
         }
         return data;
@@ -655,20 +655,25 @@
        }
       function formatDateShort(dateString) {
         if (!dateString) return 'N/A';
-        const dateParts = dateString.split('-'); // Assuming YYYY-MM-DD from sheet
-        if (dateParts.length === 3) {
-            // Reorder to MM/DD/YY - be careful if dateString is not consistently YYYY-MM-DD
-            const year = dateParts[0].slice(-2);
-            const month = dateParts[1];
-            const day = dateParts[2];
-            return `${month}/${day}/${year}`;
-        }
-        // Fallback for other date formats if needed, or if direct new Date() is preferred
+        // Assuming dateString from sheets is YYYY-MM-DD or can be parsed by new Date()
         const date = new Date(dateString);
-        if (isNaN(date.getTime())) return 'Invalid Date';
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const year = String(date.getFullYear()).slice(-2);
+        if (isNaN(date.getTime())) { // Check if date is valid
+            // Try to parse YYYY-MM-DD manually if new Date() failed due to timezone issues
+            const parts = dateString.split('-');
+            if (parts.length === 3) {
+                const year = parseInt(parts[0]);
+                const month = parseInt(parts[1]) - 1; // JS months are 0-indexed
+                const day = parseInt(parts[2]);
+                const tempDate = new Date(Date.UTC(year, month, day)); // Use UTC to avoid timezone shift
+                 if (!isNaN(tempDate.getTime())) {
+                    return `${String(month + 1).padStart(2, '0')}/${String(day).padStart(2, '0')}/${String(year).slice(-2)}`;
+                }
+            }
+            return 'Invalid Date';
+        }
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Use UTC methods
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const year = String(date.getUTCFullYear()).slice(-2);
         return `${month}/${day}/${year}`;
        }
       
@@ -679,42 +684,46 @@
       }
       
       async function loadData() {
+        // Fetch Weekly_Scores and Weekly_Averages
         const [scheduleData, teamsData, lineupsData, weeklyAveragesData, weeklyScoresData] = await Promise.all([
           fetchSheetData('Schedule'),
           fetchSheetData('Teams'),
           fetchSheetData('Lineups'),
           fetchSheetData('Weekly_Averages'), 
-          fetchSheetData('Weekly_Scores') // Fetching Weekly_Scores for team medians
+          fetchSheetData('Weekly_Scores') 
         ]);
         
         if (!scheduleData || !teamsData || !weeklyAveragesData || !weeklyScoresData) { 
           document.getElementById('games-content').innerHTML = 
-            '<div class="error">Error loading critical data (Schedule, Teams, Weekly Averages, or Weekly Scores)</div>';
+            '<div class="error">Error loading core data. Please check console.</div>';
           return;
         }
         
         allGames = scheduleData;
         allTeams = teamsData;
         allLineups = lineupsData || []; 
-        allWeeklyAverages = weeklyAveragesData || [];
+        // allWeeklyAverages is used for dateToWeekMap
+        const localWeeklyAverages = weeklyAveragesData || []; 
         allWeeklyScores = weeklyScoresData || [];
 
-        allWeeklyAverages.forEach(wa => {
+        dateToWeekMap = {}; // Reset map
+        localWeeklyAverages.forEach(wa => {
           if (wa.date && wa.week !== undefined && wa.week !== '') {
             dateToWeekMap[wa.date] = String(wa.week).trim();
           }
         });
 
+        dateToMedianTeamScoreMap = {}; // Reset map
         allWeeklyScores.forEach(ws => {
-          // Assuming 'date' and 'daily_median' are the exact header names in Weekly_Scores sheet
+          // Ensure 'date' and 'daily_median' are the exact header names in your Weekly_Scores sheet
           if (ws.date && ws.daily_median !== undefined && ws.daily_median !== '') {
             dateToMedianTeamScoreMap[ws.date] = parseNumber(ws.daily_median);
           }
         });
         
-        currentWeek = determineCurrentWeek(allGames); // Pass allGames
-        setupWeekSelector(); // Uses allGames
-        displayWeek(currentWeek); // Uses allGames
+        currentWeek = determineCurrentWeek(allGames); 
+        setupWeekSelector(); 
+        displayWeek(currentWeek); 
       }
       
       function determineCurrentWeek(schedule) { /* ... (existing) ... */
@@ -824,24 +833,24 @@
               
               return `
                 <div class="game-card ${isCompleted ? 'completed' : 'upcoming'}" 
-                     ${isCompleted && game.game_id ? `onclick="showGameDetails('${game.game_id}')"` : ''}> {/* Ensure game_id exists */}
+                     ${isCompleted && game.game_id ? `onclick="showGameDetails('${escapeHTML(game.game_id)}')" ` : ''}>
                   <div class="game-teams">
                     <div class="team ${winner === game.team1_id ? 'winner' : ''}">
                       <div class="team-left">
-                        <img src="icons/${game.team1_id}.webp" alt="${getTeamName(game.team1_id)}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
+                        <img src="icons/${escapeHTML(game.team1_id)}.webp" alt="${escapeHTML(getTeamName(game.team1_id))}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
                         <div class="team-info">
-                          <div class="team-name">${getTeamName(game.team1_id)}</div>
-                          <div class="team-record">${team1Record}</div>
+                          <div class="team-name">${escapeHTML(getTeamName(game.team1_id))}</div>
+                          <div class="team-record">${escapeHTML(team1Record)}</div>
                         </div>
                       </div>
                       ${isCompleted ? `<div class="team-score ${winner === game.team1_id ? 'winner' : ''}">${formatInThousands(team1Score)}</div>` : ''}
                     </div>
                     <div class="team ${winner === game.team2_id ? 'winner' : ''}">
                       <div class="team-left">
-                        <img src="icons/${game.team2_id}.webp" alt="${getTeamName(game.team2_id)}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
+                        <img src="icons/${escapeHTML(game.team2_id)}.webp" alt="${escapeHTML(getTeamName(game.team2_id))}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
                         <div class="team-info">
-                          <div class="team-name">${getTeamName(game.team2_id)}</div>
-                          <div class="team-record">${team2Record}</div>
+                          <div class="team-name">${escapeHTML(getTeamName(game.team2_id))}</div>
+                          <div class="team-record">${escapeHTML(team2Record)}</div>
                         </div>
                       </div>
                       ${isCompleted ? `<div class="team-score ${winner === game.team2_id ? 'winner' : ''}">${formatInThousands(team2Score)}</div>` : ''}
@@ -857,14 +866,17 @@
         document.getElementById('games-content').innerHTML = datesHTML;
       }
 
-      // ***** MODIFIED calculateAndDisplayStandouts *****
+      // ***** MODIFIED calculateAndDisplayStandouts for new requirements *****
       function calculateAndDisplayStandouts(week, completedGamesThisWeek) {
         let bestTeam = { team_id: null, team_name: 'N/A', percentage_diff: -Infinity, game_id: null };
         let worstTeam = { team_id: null, team_name: 'N/A', percentage_diff: Infinity, game_id: null };
         
         completedGamesThisWeek.forEach(game => {
-          const dailyMedianTeamScore = dateToMedianTeamScoreMap[game.date];
-          if (dailyMedianTeamScore === undefined || dailyMedianTeamScore === 0) return; 
+          const dailyMedianTeamScore = dateToMedianTeamScoreMap[game.date]; 
+          if (dailyMedianTeamScore === undefined || dailyMedianTeamScore === 0) {
+            console.warn(`Median team score not found or is zero for date: ${game.date} in week ${week}. Game ID: ${game.game_id}`);
+            return; 
+          }
 
           const teamsInGame = [
             { id: game.team1_id, name: getTeamName(game.team1_id), score: parseNumber(game.team1_score) },
@@ -877,15 +889,14 @@
             if (percentageDiff > bestTeam.percentage_diff) {
               bestTeam = { team_id: team.id, team_name: team.name, percentage_diff: percentageDiff, game_id: game.game_id };
             }
-            // For worst team, we want the most negative percentage, but it must be < 0
             if (percentageDiff < 0 && percentageDiff < worstTeam.percentage_diff) {
               worstTeam = { team_id: team.id, team_name: team.name, percentage_diff: percentageDiff, game_id: game.game_id };
             }
           });
         });
 
-        let bestPlayer = { players: [], rank: Infinity, game_id: null }; // Store one game_id for the best rank
-        let worstPlayer = { players: [], rank: -Infinity, game_id: null }; // Store one game_id for the worst rank
+        let bestPlayer = { players: [], rank: Infinity, game_id: null };
+        let worstPlayer = { players: [], rank: -Infinity, game_id: null };
         
         const gameDatesInWeek = [...new Set(completedGamesThisWeek.map(g => g.date))];
         const relevantLineups = allLineups.filter(l => 
@@ -906,7 +917,6 @@
             } else if (rank === bestPlayer.rank) {
               if (!bestPlayer.players.find(p=>p.handle === lineup.player_handle)) { 
                 bestPlayer.players.push(playerDisplay);
-                // game_id for ties could be the first one found, or you might list all - for simplicity, keep first.
               }
             }
 
@@ -919,28 +929,37 @@
             }
           }
         });
-
+        
+        // Populate Best Team
         document.getElementById('best-team-perf').innerHTML = bestTeam.game_id ? 
-          `<a href="team.html?id=${bestTeam.team_id}" class="team-link">${escapeHTML(bestTeam.team_name)}</a>: <a href="#" onclick="showGameDetails('${bestTeam.game_id}'); return false;" class="standout-metric-link detail-positive">+${bestTeam.percentage_diff.toFixed(1)}% vs median</a>` : 
+          `<a href="team.html?id=${escapeHTML(bestTeam.team_id)}" class="team-link">${escapeHTML(bestTeam.team_name)}</a>: <a href="#" onclick="showGameDetails('${escapeHTML(bestTeam.game_id)}'); return false;" class="standout-metric-link detail-positive">+${bestTeam.percentage_diff.toFixed(1)}% vs median</a>` : 
           'Not enough data.';
         
+        // Populate Worst Team
         document.getElementById('worst-team-perf').innerHTML = (worstTeam.game_id && worstTeam.percentage_diff !== Infinity && worstTeam.percentage_diff < 0) ?
-          `<a href="team.html?id=${worstTeam.team_id}" class="team-link">${escapeHTML(worstTeam.team_name)}</a>: <a href="#" onclick="showGameDetails('${worstTeam.game_id}'); return false;" class="standout-metric-link detail-negative">${worstTeam.percentage_diff.toFixed(1)}% vs median</a>` :
-          'Not enough data or no team significantly below median.';
+          `<a href="team.html?id=${escapeHTML(worstTeam.team_id)}" class="team-link">${escapeHTML(worstTeam.team_name)}</a>: <a href="#" onclick="showGameDetails('${escapeHTML(worstTeam.game_id)}'); return false;" class="standout-metric-link detail-negative">${worstTeam.percentage_diff.toFixed(1)}% vs median</a>` :
+          'No team significantly below median.'; // Modified message
 
+        // Populate Best Player
         document.getElementById('best-player-perf').innerHTML = (bestPlayer.players.length > 0 && bestPlayer.game_id) ?
-          `${bestPlayer.players.map(p => `<a href="player.html?player=${encodeURIComponent(p.handle)}" class="player-link">${escapeHTML(p.handle)}</a> (${escapeHTML(p.team_name)})`).join(', ')}; <a href="#" onclick="showGameDetails('${bestPlayer.game_id}'); return false;" class="standout-metric-link detail-positive">Rank ${bestPlayer.rank}</a>` :
+          `${bestPlayer.players.map(p => `<a href="player.html?player=${encodeURIComponent(p.handle)}" class="player-link">${escapeHTML(p.handle)}</a> (${escapeHTML(p.team_name)})`).join(', ')}; <a href="#" onclick="showGameDetails('${escapeHTML(bestPlayer.game_id)}'); return false;" class="standout-metric-link detail-positive">Rank ${bestPlayer.rank}</a>` :
           'No ranked player data.';
         
+        // Populate Worst Player (with comma formatting for rank)
         document.getElementById('worst-player-perf').innerHTML = (worstPlayer.players.length > 0 && worstPlayer.game_id) ?
-          `${worstPlayer.players.map(p => `<a href="player.html?player=${encodeURIComponent(p.handle)}" class="player-link">${escapeHTML(p.handle)}</a> (${escapeHTML(p.team_name)})`).join(', ')}; <a href="#" onclick="showGameDetails('${worstPlayer.game_id}'); return false;" class="standout-metric-link detail-negative">Rank ${worstPlayer.rank.toLocaleString()}</a>` :
+          `${worstPlayer.players.map(p => `<a href="player.html?player=${encodeURIComponent(p.handle)}" class="player-link">${escapeHTML(p.handle)}</a> (${escapeHTML(p.team_name)})`).join(', ')}; <a href="#" onclick="showGameDetails('${escapeHTML(worstPlayer.game_id)}'); return false;" class="standout-metric-link detail-negative">Rank ${worstPlayer.rank.toLocaleString()}</a>` :
           'No ranked player data.';
       }
       
-      async function showGameDetails(gameId) { /* ... (existing) ... */ 
+      async function showGameDetails(gameId) { 
         const modal = document.getElementById('game-modal');
         const modalTitle = document.getElementById('modal-title');
         const modalContent = document.getElementById('modal-content');
+        
+        if (!gameId) {
+            console.error("showGameDetails called with no gameId");
+            return;
+        }
         
         modal.style.display = 'block';
         modalContent.innerHTML = '<div class="loading">Loading game details...</div>';
@@ -991,7 +1010,6 @@
           const lineupRows = lineups.map(player => {
             const isCaptain = String(player.captain).toUpperCase() === 'TRUE';
             const pointsRaw = parseNumber(player.points_raw);
-            // const pointsFinal = parseNumber(player.points_final); // Not used directly in row display
             const globalRank = parseNumber(player.global_rank);
             const captainBonus = isCaptain ? Math.round(pointsRaw * 0.5) : 0;
             
@@ -1035,10 +1053,10 @@
         `;
        }
       
-      function closeGameModal() { /* ... (existing) ... */
+      function closeGameModal() { 
         document.getElementById('game-modal').style.display = 'none';
        }
-      window.onclick = function(event) { /* ... (existing) ... */
+      window.onclick = function(event) { 
         const modal = document.getElementById('game-modal');
         if (event.target === modal) {
           closeGameModal();
