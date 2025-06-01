@@ -307,7 +307,10 @@
       .game-info-table {
         display: grid;
         grid-template-rows: 1fr 1fr;
-        width: 60px;
+        width: 80px;
+        min-width: 80px;
+        max-width: 80px;
+        flex-shrink: 0;
         border-right: 1px solid #ddd;
         background-color: #f8f9fa;
       }
@@ -768,9 +771,8 @@
         }
 
         /* Hide desktop layout elements on mobile */
-        .game-week-row,
-        .game-date-row,
-        .game-content-row {
+        .game-info-table,
+        .game-content-table {
           display: none;
         }
 
