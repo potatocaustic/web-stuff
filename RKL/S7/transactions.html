@@ -216,7 +216,7 @@
           font-weight: 500;
       }
 
-      .player-stats-inline { font-size: 0.85em; color: #555; }
+      .player-stats-inline { font-size: 0.85em; color: #555; } /* Kept for renderMultiTransaction */
       .gm-name { font-weight: bold; color: #17a2b8; } 
 
 
@@ -365,17 +365,13 @@
       
       let allTransactions = [];
       let allTeams = [];
-      let allDraftPicks = []; // Keep for renderMultiTransaction if it uses it
-      // Removed unused player/lineup/weekly average data for this page
-      // let allPlayers = [];
-      // let allLineupsData = [];
-      // let allWeeklyAverages = [];
-      // let playerStatsCache = {}; 
+      let allDraftPicks = [];
+      // Removed unused player data variables and playerStatsCache
       
       let urlDateFilter = null;
       let urlTeamFilters = []; 
       let urlTransactionType = null;
-      let urlTransactionIdFilter = null; // Added for specific transaction ID linking
+      let urlTransactionIdFilter = null; // For filtering by specific transaction ID
 
       async function fetchSheetData(sheetName) {
         try {
@@ -450,10 +446,8 @@
         return `<a href="team.html?id=${encodeURIComponent(String(team.team_id || ''))}" class="team-name-link">${team.team_name}</a>`;
       }
       
-      // Player specific functions not needed if not displaying player stats on this page
       function getPlayerNameLink(playerHandle) {
           if (!playerHandle) return 'N/A';
-          // Link to player page, but no stats calculation needed here
           return `<a href="player.html?player=${encodeURIComponent(String(playerHandle || ''))}" class="player-name-link">${playerHandle}</a>`;
       }
 
@@ -462,12 +456,11 @@
         const team = getTeamData(teamId); 
         return `<img src="icons/${encodeURIComponent(String(team.team_id || ''))}.webp" alt="${team.team_name}" class="team-logo-inline" onerror="this.style.display='none'">`;
       }
-      
-      // Dummy getPlayerStatsString if precalculateAllPlayerStats is removed, or keep it if needed by renderMultiTransaction
-      function getPlayerStatsString(playerHandle) {
-          return ''; // No player stats displayed directly on transaction log for now
-      }
 
+      // Dummy getPlayerStatsString as it's used in renderMultiTransaction, but no complex stats needed on this page
+      function getPlayerStatsString(playerHandle) {
+          return ''; // No detailed player stats here
+      }
 
       function getVerb(teamName, baseVerb) {
         if (typeof teamName === 'string' && teamName.toLowerCase().endsWith('s')) {
@@ -500,14 +493,13 @@
         const transactionsListEl = document.getElementById('transactions-list');
         transactionsListEl.innerHTML = '<div class="loading">Loading core data...</div>';
 
-        // Reduced fetches if player stats not needed
         const [transactions, teams, draftPicksData] = await Promise.all([
           fetchSheetData('Transaction_Log'),
           fetchSheetData('Teams'),
-          fetchSheetData('Draft_Capital') // Still needed for renderMultiTransaction
+          fetchSheetData('Draft_Capital')
         ]);
         
-        if (!transactions || !teams || !draftPicksData) { // Adjusted check
+        if (!transactions || !teams || !draftPicksData) {
           transactionsListEl.innerHTML = '<div class="error">Critical error loading data. Please check console.</div>';
           return;
         }
@@ -525,7 +517,7 @@
         });
         
         allTeams = teams;
-        allDraftPicks = draftPicksData; // Assign draft picks
+        allDraftPicks = draftPicksData;
         
         setupFilters(); 
         displayTransactions(); 
@@ -547,12 +539,11 @@
           .join('');
         teamFilterEl.innerHTML = '<option value="all">All Teams</option>' + teamOptions;
 
-        // If a specific transaction_id is provided, disable all dropdowns
         if (urlTransactionIdFilter) {
             weekFilterEl.value = 'all'; weekFilterEl.disabled = true;
-            typeFilterEl.value = 'all'; typeFilterEl.disabled = true; // Type will be inherent to the transaction
+            typeFilterEl.value = 'all'; typeFilterEl.disabled = true; 
             teamFilterEl.value = 'all'; teamFilterEl.disabled = true;
-        } else { // Otherwise, set up based on other URL params
+        } else {
             if (urlTransactionType) { typeFilterEl.value = urlTransactionType; typeFilterEl.disabled = true; }
             if (urlDateFilter) { weekFilterEl.value = 'all'; weekFilterEl.disabled = true; }
             if (urlTeamFilters.length > 0) {
@@ -581,20 +572,21 @@
       }
       
       function getFilteredTransactions() {
+        // This function is called when urlTransactionIdFilter is NOT set.
+        // It applies filters from URL (date, type) if they haven't been cleared,
+        // OR from dropdowns if URL filters are cleared/absent.
         const weekFilterValue = document.getElementById('week-filter').value;
         const typeFilterValue = document.getElementById('type-filter').value;
         
-        // This function is now simpler if urlTransactionIdFilter takes precedence early
-        // Or, it remains as is if urlTransactionIdFilter is applied after grouping
         return allTransactions.filter(transaction => {
-          if (urlDateFilter) { // Only apply if urlTransactionIdFilter is not set
+          if (urlDateFilter) { 
             const transactionDateComparable = getComparableDate(transaction.date);
             if (transactionDateComparable !== urlDateFilter) return false;
           } else if (weekFilterValue !== 'all' && parseInt(transaction.week) !== parseInt(weekFilterValue)) {
             return false; 
           }
           
-          if (urlTransactionType) { // Only apply if urlTransactionIdFilter is not set
+          if (urlTransactionType) { 
             if (transaction.transaction_type !== urlTransactionType) return false;
           } else if (typeFilterValue !== 'all' && transaction.transaction_type !== typeFilterValue) {
             return false; 
@@ -617,18 +609,16 @@
         let transactionGroupsToConsider;
 
         if (urlTransactionIdFilter) {
-            // If a specific transaction_id is requested, filter all transactions for this ID first, then group.
             const specificTransactionLines = allTransactions.filter(t => t.transaction_id === urlTransactionIdFilter);
             transactionGroupsToConsider = groupTransactions(specificTransactionLines);
         } else {
-            // General case: apply date/type filters from URL/dropdowns, then group
             const initiallyFiltered = getFilteredTransactions(); 
             transactionGroupsToConsider = groupTransactions(initiallyFiltered);
         }
         
         let finalGroupsToShow = transactionGroupsToConsider;
         
-        // Apply team filters ONLY IF NOT using urlTransactionIdFilter
+        // Apply team filters ONLY IF NOT viewing by a specific transaction_id
         if (!urlTransactionIdFilter) {
             const teamFilterDropdownValue = document.getElementById('team-filter').value;
             if (urlTeamFilters.length > 0) {
@@ -654,19 +644,19 @@
             }
         }
 
-
         if (finalGroupsToShow.length === 0) {
           document.getElementById('transactions-list').innerHTML = '<div class="no-transactions">No transactions match your filters.</div>';
           const titleText = urlTransactionIdFilter ? `Transaction ${urlTransactionIdFilter}` : 'No Transactions Found';
           document.getElementById('transactions-title').textContent = titleText;
           if (urlTransactionIdFilter && finalGroupsToShow.length === 0) {
-             document.getElementById('transactions-list').innerHTML = `<div class="no-transactions">Transaction ID "${urlTransactionIdFilter}" not found.</div>`;
+             document.getElementById('transactions-list').innerHTML = `<div class="no-transactions">Transaction ID "${urlTransactionIdFilter}" not found or did not pass other initial filters.</div>`;
           }
           return;
         }
         
-        const titleBase = urlTransactionIdFilter ? `Details for Transaction ${urlTransactionIdFilter}` : 
-                         `${finalGroupsToShow.length} Transaction${finalGroupsToShow.length === 1 ? '' : 's'}`;
+        const titleBase = urlTransactionIdFilter ? 
+                          (finalGroupsToShow.length === 1 ? `Details for Transaction ${urlTransactionIdFilter}` : `Transactions Matching ID ${urlTransactionIdFilter}`) : 
+                          `${finalGroupsToShow.length} Transaction${finalGroupsToShow.length === 1 ? '' : 's'}`;
         document.getElementById('transactions-title').textContent = titleBase;
         
         const transactionsHTML = finalGroupsToShow.map(group => {
@@ -685,7 +675,7 @@
       function renderSingleTransaction(transaction) {
         const typeClass = transaction.transaction_type.toLowerCase().replace(/_/g, '-');
         let details = '';
-        const playerNameLinked = getPlayerNameLink(transaction.player_handle); // Simpler, no stats
+        const playerNameLinked = getPlayerNameLink(transaction.player_handle);
 
         switch (transaction.transaction_type) {
           case 'RETIREMENT':
@@ -788,7 +778,7 @@
                 <div class="trade-side">
                     <div class="trade-team">${getTeamLogo(teamId)}${getTeamNameLink(teamId)}&nbsp;${getVerb(teamNameForVerb, 'receive')}:</div>
                     <ul class="trade-assets">
-                        ${assets.received_players.map(player => `<li>📝 ${getPlayerNameLink(player)}</li>`).join('')}
+                        ${assets.received_players.map(player => `<li>📝 ${getPlayerNameLink(player)}${getPlayerStatsString(player)}</li>`).join('')}
                         ${assets.received_picks.map(pick => `<li>🎯 <span class="draft-pick">${pick}</span></li>`).join('')}
                         ${assets.received_players.length === 0 && assets.received_picks.length === 0 ? '<li><em>Nothing</em></li>' : ''}
                     </ul>
