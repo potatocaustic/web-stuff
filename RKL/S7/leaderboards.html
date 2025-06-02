@@ -153,6 +153,7 @@
         width: 100%;
         border-collapse: collapse;
         border-spacing: 0; 
+        table-layout: fixed; /* MODIFIED: Added table-layout: fixed */
       }
 
       .leaderboard-table th {
@@ -281,6 +282,7 @@
         text-align: center; 
       }
 
+
       .first-place { background-color: gold; color: black; border-radius: 4px; padding: 2px 5px; display: inline-block; width: 30px; height: 30px; line-height: 26px;}
       .second-place { background-color: silver; color: black; border-radius: 4px; padding: 2px 5px; display: inline-block; width: 30px; height: 30px; line-height: 26px;}
       .third-place { background-color: #cd7f32; color: white; border-radius: 4px; padding: 2px 5px; display: inline-block; width: 30px; height: 30px; line-height: 26px;}
@@ -319,6 +321,7 @@
         .leaderboard-table th:nth-child(1), .leaderboard-table td:nth-child(1) { width: 15%; min-width: 40px; }
         .leaderboard-table th:nth-child(2), .leaderboard-table td:nth-child(2) { 
             width: 45%; min-width: 100px; 
+            /* max-width calculation is fine for mobile to constrain the column */
             max-width: calc(100% - 40px - 50px - 50px - 1rem); 
         }
         /* Ellipsis on player/team names is handled by their individual styles and parent flex constraints */
@@ -439,12 +442,11 @@
           return `${(parseFloat(value || 0) * 100).toFixed(1)}%`;
       }
 
-      // MODIFIED categories object: Made Rank column sortable and point to 'leaderboardDisplayRank'
       const categories = {
         total_points: {
           title: 'Total Karma Leaders',
           cols: [
-            { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, // MODIFIED dataField
+            { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, 
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
             { header: 'Karma', dataField: 'total_points', sortable: true, type: 'number', formatFn: formatKarma },
             { header: 'Games', dataField: 'games_played', sortable: true, type: 'number', formatFn: (v) => parseInt(v || 0) }
@@ -456,7 +458,7 @@
         rel_mean: {
           title: 'REL Mean Leaders',
           cols: [
-            { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, // MODIFIED dataField
+            { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, 
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
             { header: 'REL Mean', dataField: 'calculated_rel_mean', sortable: true, type: 'number', formatFn: (v) => parseFloat(v || 0).toFixed(3) },
             { header: 'Games', dataField: 'games_played', sortable: true, type: 'number', formatFn: (v) => parseInt(v || 0) }
@@ -469,7 +471,7 @@
         rel_median: {
           title: 'REL Median Leaders', 
           cols: [
-            { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, // MODIFIED dataField
+            { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, 
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
             { header: 'REL Median', dataField: 'calculated_rel_median', sortable: true, type: 'number', formatFn: (v) => parseFloat(v || 0).toFixed(3) },
             { header: 'Games', dataField: 'games_played', sortable: true, type: 'number', formatFn: (v) => parseInt(v || 0) }
@@ -482,7 +484,7 @@
         median_gameday_rank: { 
           title: 'Median Gameday Rank Leaders',
           cols: [
-            { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, // MODIFIED dataField
+            { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, 
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
             { header: 'Median Rank', dataField: 'calculated_median_rank', sortable: true, type: 'number', formatFn: formatRank },
             { header: 'Games', dataField: 'games_played', sortable: true, type: 'number', formatFn: (v) => parseInt(v || 0) }
@@ -496,7 +498,7 @@
           title: 'Games Above Mean Leaders',
           subtitle: 'Ties broken by REL Median',
           cols: [
-            { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, // MODIFIED dataField
+            { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, 
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
             { header: 'Above Mean', dataField: 'aag_mean', sortable: true, type: 'number', formatFn: (v) => parseInt(v || 0).toString() },
             { header: '% of Games', dataField: 'aag_mean_pct', sortable: true, type: 'number', formatFn: formatPercentage }
@@ -509,7 +511,7 @@
           title: 'Games Above Median Leaders',
           subtitle: 'Ties broken by REL Median',
           cols: [
-            { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, // MODIFIED dataField
+            { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, 
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
             { header: 'Above Median', dataField: 'aag_median', sortable: true, type: 'number', formatFn: (v) => parseInt(v || 0).toString() },
             { header: '% of Games', dataField: 'aag_median_pct', sortable: true, type: 'number', formatFn: formatPercentage }
@@ -521,7 +523,7 @@
         single_game_karma: {
           title: 'Single Game Karma Leaders',
           cols: [
-            { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, // MODIFIED dataField
+            { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, 
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
             { header: 'Karma', dataField: 'karma', sortable: true, type: 'number', formatFn: formatKarma },
             { header: 'Week', dataField: 'week', sortable: true, type: 'number', formatFn: (v) => v }
@@ -533,7 +535,7 @@
         single_game_rank: {
           title: 'Single Game Rank Leaders',
           cols: [
-            { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, // MODIFIED dataField
+            { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, 
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
             { header: 'Daily Rank', dataField: 'daily_rank', sortable: true, type: 'number', formatFn: formatRank },
             { header: 'Week', dataField: 'week', sortable: true, type: 'number', formatFn: (v) => v }
@@ -546,7 +548,7 @@
           title: 'T100 Finishes Leaders',
           subtitle: 'Ties broken by REL Median',
           cols: [
-            { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, // MODIFIED dataField
+            { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, 
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
             { header: 'T100 Finishes', dataField: 't100_finishes', sortable: true, type: 'number', formatFn: (v) => parseInt(v || 0).toString() },
             { header: '% of Games', dataField: 't100_finishes_pct', sortable: true, type: 'number', formatFn: formatPercentage }
@@ -558,31 +560,31 @@
       };
       
       let currentCategory = 'total_points';
-      let allPlayersData = []; // Renamed from allPlayers to avoid confusion with global allPlayers if any
-      let allTeamsData = []; // Renamed from allTeams
-      let allGamePerformancesData = []; // Renamed from allGamePerformances
+      let allPlayersData = []; 
+      let allTeamsData = []; 
+      let allGamePerformancesData = []; 
       
       let leaderboardSortState = {
         columnField: null, 
         direction: 'desc'    
       };
       
-      async function fetchSheetDataOriginal(sheetName) { // Renamed to avoid conflict if a global fetchSheetData exists
+      async function fetchSheetDataOriginal(sheetName) { 
         try {
           const response = await fetch(BASE_URL + encodeURIComponent(sheetName));
           const csvText = await response.text();
-          return parseCSVOriginal(csvText); // Renamed
+          return parseCSVOriginal(csvText); 
         } catch (error) {
           console.error(`Error fetching ${sheetName}:`, error);
           return null;
         }
       }
-      function parseCSVOriginal(csvText) { // Renamed
+      function parseCSVOriginal(csvText) { 
         const lines = csvText.trim().split('\n');
-        const headers = parseCSVLineOriginal(lines[0]); // Renamed
+        const headers = parseCSVLineOriginal(lines[0]); 
         const data = [];
         for (let i = 1; i < lines.length; i++) {
-          const values = parseCSVLineOriginal(lines[i]); // Renamed
+          const values = parseCSVLineOriginal(lines[i]); 
           if (values.length === headers.length) { 
             const row = {};
             headers.forEach((header, index) => {
@@ -593,7 +595,7 @@
         }
         return data;
       }
-      function parseCSVLineOriginal(line) { // Renamed
+      function parseCSVLineOriginal(line) { 
         const result = []; let current = ''; let inQuotes = false;
         for (let i = 0; i < line.length; i++) {
           const char = line[i];
@@ -683,7 +685,7 @@
             ...player, 
             calculated_rel_mean: calculated_rel_mean,
             calculated_rel_median: calculated_rel_median,
-            calculated_median_rank: calculated_median_rank > 0 ? calculated_median_rank : Infinity, // Use Infinity for sorting if rank is 0
+            calculated_median_rank: calculated_median_rank > 0 ? calculated_median_rank : Infinity, 
             aag_mean: gamesAboveMean,
             aag_mean_pct: games_played_count > 0 ? gamesAboveMean / games_played_count : 0,
             aag_median: gamesAboveMedian,
@@ -720,12 +722,12 @@
             const weekStr = dateToWeekMap[game.date];
             
             if (weekStr && weekStr !== 'N/A' && String(weekStr).match(/^\d+$/)) {
-              if (karma > 0 || (dailyRank > 0 && dailyRank !== Infinity) ) { // Ensure rank is valid
+              if (karma > 0 || (dailyRank > 0 && dailyRank !== Infinity) ) { 
                 gamePerformances.push({
                   player_handle: game.player_handle,
                   team_id: game.team_id || playerTeamMap[game.player_handle] || 'FA', 
                   karma: karma,
-                  daily_rank: dailyRank > 0 ? dailyRank : Infinity, // Use Infinity for sorting if rank is 0
+                  daily_rank: dailyRank > 0 ? dailyRank : Infinity, 
                   week: parseInt(weekStr), 
                   date: game.date 
                 });
@@ -741,7 +743,7 @@
         leaderboardBody.innerHTML = '<tr><td colspan="4" class="loading">Loading data from sheets...</td></tr>';
 
         const [playersRaw, teamsRaw, weeklyAveragesRaw, lineupsRaw] = await Promise.all([
-          fetchSheetDataOriginal('Players'), // Use renamed original functions
+          fetchSheetDataOriginal('Players'), 
           fetchSheetDataOriginal('Teams'),
           fetchSheetDataOriginal('Weekly_Averages'),
           fetchSheetDataOriginal('Lineups')
@@ -754,7 +756,6 @@
         }
         
         allTeamsData = teamsRaw; 
-        // Pass raw data to calculation functions
         const playersWithCalculatedStats = calculateRELForAllPlayers(playersRaw, weeklyAveragesRaw, lineupsRaw); 
         allPlayersData = playersWithCalculatedStats.filter(player => 
           player.player_status === 'ACTIVE' 
@@ -782,7 +783,7 @@
       
       function getTeamName(teamId) { 
         if (!teamId || String(teamId).toLowerCase() === 'undefined' || String(teamId).trim() === '' || teamId === 'N/A') return 'N/A';
-        const team = allTeamsData.find(t => t.team_id === teamId); // Use allTeamsData
+        const team = allTeamsData.find(t => t.team_id === teamId); 
         return team ? team.team_name : (teamId === 'FA' ? 'Free Agent' : teamId ); 
       }
       function getRankIndicator(rank) { 
@@ -797,27 +798,19 @@
           leaderboardSortState.direction = leaderboardSortState.direction === 'asc' ? 'desc' : 'asc';
         } else {
           leaderboardSortState.columnField = columnField;
-          // Determine default sort direction for the new column
           const categoryConfig = categories[currentCategory];
-          const colConfig = categoryConfig.cols.find(c => c.dataField === columnField);
-
-          if (columnField === 'leaderboardDisplayRank') { // Rank column default
+          // Use category's default sort for its primary metric, otherwise asc for strings, desc for numbers
+          if (columnField === categoryConfig.defaultSortField) {
+              leaderboardSortState.direction = categoryConfig.defaultSortDescending ? 'desc' : 'asc';
+          } else if (columnField === 'leaderboardDisplayRank' || columnType === 'string') {
               leaderboardSortState.direction = 'asc';
-          } else if (colConfig && colConfig.type === 'string') {
-              leaderboardSortState.direction = 'asc';
-          } else { // Default for numbers or unspecified, often descending for stats
-              // Check if category default sort matches this field and is ascending
-              if (categoryConfig.defaultSortField === columnField && !categoryConfig.defaultSortDescending) {
-                 leaderboardSortState.direction = 'asc';
-              } else {
-                 leaderboardSortState.direction = 'desc';
-              }
+          } else {
+              leaderboardSortState.direction = 'desc';
           }
         }
         displayLeaderboard();
       }
       
-      // START MODIFIED displayLeaderboard for Sticky Ranks
       function displayLeaderboard() {
         const categoryConfig = categories[currentCategory];
         if (!categoryConfig) {
@@ -880,32 +873,35 @@
         }).join('');
         document.getElementById('table-header').innerHTML = `<tr>${headerCellsHTML}</tr>`;
 
-        let sourceDataForRanking; // Data used to determine ranks
+        let sourceDataForProcessing; 
         let isGameLeaderboard = categoryConfig.dataSourceType === 'games';
 
         if (isGameLeaderboard) {
-          sourceDataForRanking = [...allGamePerformancesData];
-          if (currentCategory === 'single_game_karma') sourceDataForRanking = sourceDataForRanking.filter(g => g.karma > 0);
-          else if (currentCategory === 'single_game_rank') sourceDataForRanking = sourceDataForRanking.filter(g => g.daily_rank > 0 && g.daily_rank !== Infinity);
+          sourceDataForProcessing = [...allGamePerformancesData];
+          if (currentCategory === 'single_game_karma') sourceDataForProcessing = sourceDataForProcessing.filter(g => g.karma > 0);
+          else if (currentCategory === 'single_game_rank') sourceDataForProcessing = sourceDataForProcessing.filter(g => g.daily_rank > 0 && g.daily_rank !== Infinity);
         } else {
-          sourceDataForRanking = [...allPlayersData];
+          sourceDataForProcessing = [...allPlayersData];
           if (categoryConfig.hasMinGamesFilter) {
             const minGames = parseInt(minGamesInput.value) || 0;
-            if (minGames > 0) sourceDataForRanking = sourceDataForRanking.filter(player => (parseNumber(player.games_played) || 0) >= minGames);
+            if (minGames > 0) sourceDataForProcessing = sourceDataForProcessing.filter(player => (parseNumber(player.games_played) || 0) >= minGames);
           }
-          // Team filter is applied *after* global ranking for player leaderboards
+          // Team filter for players is applied *after* global ranking
         }
         
-        // --- START: Assign Sticky Ranks ---
+        // --- START: Assign Sticky Ranks to sourceDataForProcessing (before team filtering for players) ---
         const rankSortField = categoryConfig.defaultSortField;
         const rankSortDesc = categoryConfig.defaultSortDescending;
-        const rankColConfig = categoryConfig.cols.find(c => c.dataField === rankSortField) || {};
-        const rankColType = rankColConfig.type || 'number';
+        const rankColConfigForSort = categoryConfig.cols.find(c => c.dataField === rankSortField) || {};
+        const rankColTypeForSort = rankColConfigForSort.type || 'number';
 
-        sourceDataForRanking.sort((a, b) => {
+        // Create a temporary array for rank calculation to avoid modifying the order of sourceDataForProcessing yet
+        let dataSortedForRank = [...sourceDataForProcessing];
+
+        dataSortedForRank.sort((a, b) => {
           let valA = a[rankSortField];
           let valB = b[rankSortField];
-          if (rankColType === 'number') {
+          if (rankColTypeForSort === 'number') {
             valA = parseFloat(valA === Infinity ? (rankSortDesc ? -Infinity : Infinity) : (valA || (rankSortDesc ? -Infinity : Infinity)));
             valB = parseFloat(valB === Infinity ? (rankSortDesc ? -Infinity : Infinity) : (valB || (rankSortDesc ? -Infinity : Infinity)));
              if(isNaN(valA)) valA = (rankSortDesc ? -Infinity : Infinity);
@@ -920,8 +916,8 @@
           
           let primarySortResult = rankSortDesc ? -comparison : comparison;
 
-           if (primarySortResult === 0) { // Tie-breaking for rank stability (optional but good)
-                if (!isGameLeaderboard && (categoryConfig.defaultSortField === 'aag_mean' || categoryConfig.defaultSortField === 'aag_median' || categoryConfig.defaultSortField === 't100_finishes')) {
+           if (primarySortResult === 0) { 
+                if (!isGameLeaderboard && (rankSortField === 'aag_mean' || rankSortField === 'aag_median' || rankSortField === 't100_finishes')) {
                     const aREL = parseFloat(a.calculated_rel_median || 0);
                     const bREL = parseFloat(b.calculated_rel_median || 0);
                     return bREL - aREL; 
@@ -939,17 +935,19 @@
           return primarySortResult;
         });
 
-        if (sourceDataForRanking.length > 0) {
-            sourceDataForRanking[0].leaderboardDisplayRank = 1;
-            for (let i = 1; i < sourceDataForRanking.length; i++) {
-                const currentItem = sourceDataForRanking[i];
-                const prevItem = sourceDataForRanking[i-1];
+        if (dataSortedForRank.length > 0) {
+            dataSortedForRank[0].leaderboardDisplayRank = 1;
+            for (let i = 1; i < dataSortedForRank.length; i++) {
+                const currentItem = dataSortedForRank[i];
+                const prevItem = dataSortedForRank[i-1];
                 let currentValue = currentItem[rankSortField];
                 let prevValue = prevItem[rankSortField];
 
-                if (rankColType === 'number') { // Ensure consistent comparison for numbers
-                    currentValue = parseFloat(currentValue === Infinity ? (rankSortDesc ? -Infinity : Infinity) : (currentValue || 0));
-                    prevValue = parseFloat(prevValue === Infinity ? (rankSortDesc ? -Infinity : Infinity) : (prevValue || 0));
+                if (rankColTypeForSort === 'number') { 
+                    currentValue = parseFloat(currentValue === Infinity ? (rankSortDesc ? -Infinity : Infinity) : (currentValue || (rankSortDesc ? -Infinity : Infinity)));
+                    prevValue = parseFloat(prevValue === Infinity ? (rankSortDesc ? -Infinity : Infinity) : (prevValue || (rankSortDesc ? -Infinity : Infinity)));
+                    if(isNaN(currentValue)) currentValue = (rankSortDesc ? -Infinity : Infinity);
+                    if(isNaN(prevValue)) prevValue = (rankSortDesc ? -Infinity : Infinity);
                 } else {
                     currentValue = String(currentValue || '').toLowerCase();
                     prevValue = String(prevValue || '').toLowerCase();
@@ -962,24 +960,32 @@
                 }
             }
         }
+        // Ranks are now assigned to items in dataSortedForRank.
+        // We need these ranks on the items in sourceDataForProcessing.
+        // Since they are objects, if dataSortedForRank contains references, sourceDataForProcessing is updated.
         // --- END: Assign Sticky Ranks ---
 
-        // Now filter by team if it's a player leaderboard, using the already ranked data
-        let dataToDisplaySorted = [...sourceDataForRanking]; // Start with globally ranked data
+        // Now apply team filter if it's a player leaderboard
+        let dataForDisplaySort = [...sourceDataForProcessing]; // Data with ranks, before team filter for players
         if (!isGameLeaderboard && selectedTeamId !== 'all') {
-            dataToDisplaySorted = dataToDisplaySorted.filter(player => player.current_team_id === selectedTeamId);
+            dataForDisplaySort = dataForDisplaySort.filter(player => player.current_team_id === selectedTeamId);
         }
         
         // Sort for final display based on user's selected column sort state
         const displaySortField = leaderboardSortState.columnField || categoryConfig.defaultSortField;
+        // Important: if sorting by rank, use 'leaderboardDisplayRank' as the field
+        const actualDisplaySortField = (displaySortField === 'leaderboardDisplayRank' || categoryConfig.cols.find(c=>c.header==='Rank' && c.dataField === displaySortField)) 
+                                        ? 'leaderboardDisplayRank' 
+                                        : displaySortField;
+
         const displaySortDirection = leaderboardSortState.columnField ? leaderboardSortState.direction : (categoryConfig.defaultSortDescending ? 'desc' : 'asc');
-        const displayColConfig = categoryConfig.cols.find(c => c.dataField === displaySortField) || 
-                                 categoryConfig.cols.find(c => c.dataField === categoryConfig.defaultSortField) || {};
+        const displayColConfig = categoryConfig.cols.find(c => c.dataField === actualDisplaySortField) || {};
         const displayColumnType = displayColConfig.type || 'number';
 
-        dataToDisplaySorted.sort((a, b) => {
-          let valA = a[displaySortField];
-          let valB = b[displaySortField];
+
+        dataForDisplaySort.sort((a, b) => {
+          let valA = a[actualDisplaySortField];
+          let valB = b[actualDisplaySortField];
 
           if (displayColumnType === 'number') {
             valA = parseFloat(valA === Infinity ? (displaySortDirection === 'desc' ? -Infinity : Infinity) : (valA || (displaySortDirection === 'desc' ? -Infinity : Infinity)));
@@ -998,27 +1004,20 @@
           let primarySortResult = displaySortDirection === 'asc' ? comparison : -comparison;
 
           if (primarySortResult === 0) { 
-            // Apply original tie-breaking logic for display sort stability if needed
-            if (!isGameLeaderboard && (categoryConfig.defaultSortField === 'aag_mean' || categoryConfig.defaultSortField === 'aag_median' || categoryConfig.defaultSortField === 't100_finishes')) {
-              const aREL = parseFloat(a.calculated_rel_median || 0);
-              const bREL = parseFloat(b.calculated_rel_median || 0);
-              return bREL - aREL; 
-            } else if (isGameLeaderboard) {
-                // ... (original tie-breakers for game leaderboards) ...
-                 if (displaySortField === 'karma') return new Date(a.date) - new Date(b.date);
-                 else if (displaySortField === 'daily_rank') {
-                     const aKarma = parseFloat(a.karma || 0); const bKarma = parseFloat(b.karma || 0);
-                     if (bKarma !== aKarma) return bKarma - aKarma;
-                     return new Date(a.date) - new Date(b.date);
-                 }
-            } else if (a.player_handle && b.player_handle && displaySortField !== 'leaderboardDisplayRank') { // Don't tie-break rank by name
+            // Tie-breaking for display sort stability (uses category's primary rank sort as final tie-breaker)
+            let rankA = a.leaderboardDisplayRank;
+            let rankB = b.leaderboardDisplayRank;
+            if (rankA < rankB) return -1;
+            if (rankA > rankB) return 1;
+            // Final fallback to player handle for player lists if ranks are also tied
+            if (a.player_handle && b.player_handle) { 
                  return String(a.player_handle).localeCompare(String(b.player_handle));
             }
           }
           return primarySortResult;
         });
         
-        const itemsToShow = showCount === 'all' ? dataToDisplaySorted : dataToDisplaySorted.slice(0, parseInt(showCount));
+        const itemsToShow = showCount === 'all' ? dataForDisplaySort : dataForDisplaySort.slice(0, parseInt(showCount));
         
         if (itemsToShow.length === 0) {
             leaderboardBody.innerHTML = `<tr><td colspan="${categoryConfig.cols.length || 4}" style="text-align:center; padding: 2rem;">No data available for this category or filter.</td></tr>`;
@@ -1026,7 +1025,7 @@
             return;
         }
 
-        const tableHTML = itemsToShow.map((item) => { // Removed index, rank comes from item
+        const tableHTML = itemsToShow.map((item) => {
           let playerHandle, teamIdForLogo;
 
           if (isGameLeaderboard) {
@@ -1041,9 +1040,8 @@
                               ? `icons/${encodeURIComponent(teamIdForLogo)}.webp` 
                               : 'icons/FA.webp'; 
           
-          // Use item.leaderboardDisplayRank for the rank cell
           let rowCells = `
-            <td class="rank-cell">${getRankIndicator(item.leaderboardDisplayRank)}</td> 
+            <td class="rank-cell">${getRankIndicator(item.leaderboardDisplayRank)}</td>
             <td class="player-cell">
               <img src="${teamLogoSrc}" alt="${getTeamName(teamIdForLogo)}" class="team-logo" onerror="this.style.display='none'; this.src='icons/FA.webp';">
               <div>
@@ -1072,7 +1070,6 @@
         leaderboardBody.innerHTML = tableHTML;
         leaderboardTable.dataset.activeColumns = categoryConfig.cols.length;
       }
-      // END MODIFIED displayLeaderboard
       
       document.addEventListener('DOMContentLoaded', () => { 
         const urlParams = new URLSearchParams(window.location.search);
@@ -1104,7 +1101,7 @@
             btn.classList.add('active');
             currentCategory = btn.dataset.category;
             sessionStorage.setItem('selectedLeaderboardCategory', currentCategory); 
-            leaderboardSortState.columnField = null; // Reset sort when category changes
+            leaderboardSortState.columnField = null; 
             document.getElementById('min-games').dataset.userInteracted = "false"; 
             displayLeaderboard();
           });
@@ -1125,15 +1122,9 @@
         });
         minGamesInputElement.addEventListener('input', () => { 
             minGamesInputElement.dataset.userInteracted = "true"; 
-            // Debounce or call displayLeaderboard less frequently on input if performance is an issue
-            // For now, direct call for simplicity as in original
             displayLeaderboard(); 
         });
         
-        // Rename global data arrays to avoid conflicts and use a more specific prefix for this page's data
-        // For example, rename allPlayers to allPlayersPageData or similar if it was global.
-        // Here, I've used allPlayersData, allTeamsData, allGamePerformancesData for this script's scope.
-        // And renamed fetch/parse CSV functions to avoid global scope issues if this were part of a larger system.
         loadData();
       });
     </script>
