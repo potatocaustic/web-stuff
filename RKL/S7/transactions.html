@@ -790,9 +790,9 @@
       }
       
       function renderMultiTransaction(transactions) {
-        const firstTransaction = transactions[0]; 
+        const firstTransaction = transactions[0];
         const typeClass = firstTransaction.transaction_type.toLowerCase().replace(/_/g, '-');
-        
+
         const teamsInvolved = new Set();
         transactions.forEach(t => {
             if(t.from_team) teamsInvolved.add(t.from_team);
@@ -813,17 +813,17 @@
                 if(toTeam && teamAssetsMap[toTeam]) teamAssetsMap[toTeam].received_players.push(transaction.player_handle);
             } else if (transaction.draft_pick_id) {
                 const pickInfo = allDraftPicks.find(p => p.pick_id === transaction.draft_pick_id);
-                let formattedPickDesc = transaction.draft_pick_id; 
+                let formattedPickDesc = transaction.draft_pick_id;
                 if (pickInfo && pickInfo.pick_description) {
                     formattedPickDesc = pickInfo.pick_description;
                     if (pickInfo.original_team && pickInfo.original_team !== 'N/A' && pickInfo.original_team !== '') {
                         const originalOwnerData = getTeamData(pickInfo.original_team);
-                        const originalOwnerAbbreviation = originalOwnerData.team_id; 
+                        const originalOwnerAbbreviation = originalOwnerData.team_id;
                         const originalOwnerFullName = originalOwnerData.team_name;
-                        
+
                         if (originalOwnerAbbreviation && originalOwnerFullName && originalOwnerFullName !== originalOwnerAbbreviation) {
-                            const abbreviationPattern = new RegExp(`\\b${escapeRegExp(originalOwnerAbbreviation)}\\b`, 'gi'); 
-                            
+                            const abbreviationPattern = new RegExp(`\\b${escapeRegExp(originalOwnerAbbreviation)}\\b`, 'gi');
+
                             if (formattedPickDesc.match(abbreviationPattern)) {
                                 formattedPickDesc = formattedPickDesc.replace(abbreviationPattern, originalOwnerFullName);
                             } else if (!formattedPickDesc.toLowerCase().includes(`(from ${originalOwnerFullName.toLowerCase()}`)) {
@@ -836,7 +836,7 @@
                 if(toTeam && teamAssetsMap[toTeam]) teamAssetsMap[toTeam].received_picks.push(formattedPickDesc);
             }
         });
-        
+
         let tradeSummaryHtml = '<div class="trade-parts">';
         const teamIdsArray = Array.from(teamsInvolved);
 
@@ -849,25 +849,25 @@
                 <div class="trade-side">
                     <div class="trade-team">${getTeamLogo(teamId)}${getTeamNameLink(teamId)}&nbsp;${getVerb(teamNameForVerb, 'receive')}:</div>
                     <ul class="trade-assets">
-                        ${assets.received_players.map(player => `<li>統 ${getPlayerNameLink(player)}${getPlayerStatsString(player)}</li>`).join('')}
-                        ${assets.received_picks.map(pick => `<li>識 <span class="draft-pick">${pick}</span></li>`).join('')}
+                        ${assets.received_players.map(player => `<li>📝 ${getPlayerNameLink(player)}${getPlayerStatsString(player)}</li>`).join('')}
+                        ${assets.received_picks.map(pick => `<li>🎯 <span class="draft-pick">${pick}</span></li>`).join('')}
                         ${assets.received_players.length === 0 && assets.received_picks.length === 0 ? '<li><em>Nothing</em></li>' : ''}
                     </ul>`;
             if (assets.sent_players.length > 0 || assets.sent_picks.length > 0) {
                  tradeSummaryHtml += `
                     <div class="trade-team" style="margin-top:0.5em;">${getTeamLogo(teamId)}${getTeamNameLink(teamId)}&nbsp;${getVerb(teamNameForVerb, 'send')}:</div>
                      <ul class="trade-assets">
-                        ${assets.sent_players.map(player => `<li>統 ${getPlayerNameLink(player)}${getPlayerStatsString(player)}</li>`).join('')}
-                        ${assets.sent_picks.map(pick => `<li>識 <span class="draft-pick">${pick}</span></li>`).join('')}
+                        ${assets.sent_players.map(player => `<li>📝 ${getPlayerNameLink(player)}${getPlayerStatsString(player)}</li>`).join('')}
+                        ${assets.sent_picks.map(pick => `<li>🎯 <span class="draft-pick">${pick}</span></li>`).join('')}
                     </ul>`;
             }
             tradeSummaryHtml += `</div>`;
 
-            // --- MODIFIED: Replaced "筺ｷ" with "⇄" ---
-            if (index < teamIdsArray.length - 1 && teamIdsArray.length === 2) { 
+            // --- MODIFIED: Replaced "筺ｷ" with "⇄" --- (This was existing, retained)
+            if (index < teamIdsArray.length - 1 && teamIdsArray.length === 2) {
                 tradeSummaryHtml += `<div class="trade-arrow">⇄</div>`;
             } else if (index < teamIdsArray.length - 1 && teamIdsArray.length > 2) {
-                tradeSummaryHtml += `<div class="trade-arrow" style="font-size:1em; color:#666;">then</div>`; 
+                tradeSummaryHtml += `<div class="trade-arrow" style="font-size:1em; color:#666;">then</div>`;
             }
             // --- END MODIFICATION ---
         });
