@@ -156,7 +156,6 @@
         color: #dc3545;
       }
 
-      /* START OF ADDED CSS for clickable stat cards */
       .stat-card-link {
           text-decoration: none;
           color: inherit;
@@ -172,7 +171,6 @@
           transform: translateY(-4px);
           box-shadow: 0 8px 16px rgba(0,0,0,0.12);
       }
-      /* END OF ADDED CSS for clickable stat cards */
 
       /* Content grid */
       .content-grid {
@@ -211,8 +209,9 @@
 
       .roster-header {
         display: grid;
-        grid-template-columns: 1fr 80px;
-        gap: 0;
+        /* MODIFIED: Desktop grid for roster header */
+        grid-template-columns: 40px 1fr 80px; /* Logo, Player, REL */
+        gap: 0.5rem; /* Added gap for consistency */
         align-items: center;
         padding: 1rem 1rem;
         background-color: #f8f9fa;
@@ -221,6 +220,7 @@
         font-size: 0.9rem;
         color: #666;
       }
+      .roster-logo-header-col { /* For spacing */ }
 
       .roster-header .header-player {
         text-align: left;
@@ -238,13 +238,25 @@
 
       .player-item {
         display: grid;
-        grid-template-columns: 1fr 80px;
-        gap: 0;
+        /* MODIFIED: Desktop grid for player item */
+        grid-template-columns: 40px 1fr 80px; /* Logo, Player Info, REL */
+        gap: 0.5rem; /* Added gap */
         align-items: center;
         padding: 1rem 1rem;
         border-bottom: 1px solid #eee;
         transition: background-color 0.2s;
       }
+      .roster-player-logo-col {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .roster-team-logo-inline {
+        width: 24px;
+        height: 24px;
+        border-radius: 3px;
+      }
+
 
       .player-item:hover {
         background-color: #f8f9fa;
@@ -473,621 +485,133 @@
         margin-top: 0.2rem;
       }
 
-      .win {
-        color: #28a745;
-      }
-
-      .loss {
-        color: #333; 
-      }
-
-      .upcoming {
-        color: #333;
-        font-weight: 500;
-      }
-
-      .team-matchup, 
-      .team,
-      .team-info,
-      .vs {
-        display: none;
-      }
-
-      .game-matchup .week-badge { 
-        display: none;
-      }
-
-      .team-logo { 
-        width: 20px;
-        height: 20px;
-        vertical-align: middle;
-      }
+      .win { color: #28a745; }
+      .loss { color: #333; } 
+      .upcoming { color: #333; font-weight: 500; }
+      .team-matchup, .team, .team-info, .vs { display: none; }
+      .game-matchup .week-badge { display: none; }
+      .team-logo { width: 20px; height: 20px; vertical-align: middle; } /* Used by modal team header */
 
       .week-badge {
-        background-color: #007bff;
-        color: white;
-        border-radius: 50%;
-        width: 18px; 
-        height: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.7rem;
-        font-weight: bold;
-        border: 1px solid white;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        background-color: #007bff; color: white; border-radius: 50%;
+        width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;
+        font-size: 0.7rem; font-weight: bold; border: 1px solid white; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
       }
-
-      .date-badge {
-        font-size: 0.65rem;
-        color: #666;
-        font-weight: 500;
-      }
+      .date-badge { font-size: 0.65rem; color: #666; font-weight: 500; }
 
       /* Draft capital section */
-      .draft-capital {
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        margin-top: 2rem;
-      }
-
-      .picks-list {
-        padding: 1.5rem;
-        max-height: 400px;
-        overflow-y: auto;
-      }
-
-      .pick-item { 
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.8rem;
-        border-bottom: 1px solid #eee;
-        font-family: monospace;
-        font-size: 0.9rem;
-      }
-
-      .pick-item:last-child {
-        border-bottom: none;
-      }
-
-      .pick-description { 
-        font-weight: 500;
-      }
-
-      .pick-origin {
-        color: #666;
-        font-size: 0.8rem;
-      }
-      .pick-origin a { 
-        color: #007bff; 
-        text-decoration: none;
-      }
-      .pick-origin a:hover {
-        text-decoration: underline;
-      }
-      .pick-origin .pick-origin-stats { 
-         color: inherit; 
-      }
-
-
-      .pick-origin-stats {
-        font-size: 0.75rem;
-        color: #007bff; 
-        margin-left: 0.5rem;
-      }
-
-
-      .game-item[onclick] {
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-
-      .game-item[onclick]:hover {
-        background-color: #e8f5e8 !important; 
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
+      .draft-capital { background-color: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); overflow: hidden; margin-top: 2rem; }
+      .picks-list { padding: 1.5rem; max-height: 400px; overflow-y: auto; }
+      .pick-item { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; border-bottom: 1px solid #eee; font-family: monospace; font-size: 0.9rem; }
+      .pick-item:last-child { border-bottom: none; }
+      .pick-description { font-weight: 500; }
+      .pick-origin { color: #666; font-size: 0.8rem; }
+      .pick-origin a { color: #007bff; text-decoration: none; }
+      .pick-origin a:hover { text-decoration: underline; }
+      .pick-origin .pick-origin-stats { color: inherit; }
+      .pick-origin-stats { font-size: 0.75rem; color: #007bff; margin-left: 0.5rem; }
+      .game-item[onclick] { cursor: pointer; transition: all 0.3s ease; }
+      .game-item[onclick]:hover { background-color: #e8f5e8 !important; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
 
       /* Modal styles */
-      .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        overflow-y: auto;
-      }
+      .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow-y: auto; }
+      .modal-content { background-color: #fff; margin: 2rem auto; border-radius: 8px; width: 95%; max-width: 900px; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+      .modal-header { background-color: #333; color: white; padding: 1.5rem; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; }
+      .modal-header h3 { color: white; margin: 0; font-size: 1.4rem; }
+      .close-btn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 0.5rem; border-radius: 4px; transition: background-color 0.3s; }
+      .close-btn:hover { background-color: rgba(255,255,255,0.1); }
+      .modal-body { padding: 2rem; }
+      .game-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+      .team-breakdown { background-color: #f8f9fa; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; }
+      .team-breakdown.winner { border-color: #28a745; border-width: 2px; }
+      .modal-team-header { background-color: #333; color: white; padding: 1.5rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 1rem; flex-direction: column; }
+      .modal-team-header.winner { background-color: #28a745; }
+      .modal-team-header h4 { color: white; margin: 0; font-size: 1.2rem; }
+      .modal-team-header .team-logo { width: 48px; height: 48px; border-radius: 4px; }
+      .team-total { background-color: #e9ecef; padding: 1rem; text-align: center; font-weight: bold; font-size: 1.1rem; border-bottom: 2px solid #ddd; }
+      .lineup-table { width: 100%; border-collapse: collapse; }
+      .lineup-table th { background-color: #f8f9fa; padding: 0.8rem 0.5rem; text-align: center; font-weight: bold; border-bottom: 2px solid #ddd; font-size: 0.9rem; }
+      .lineup-table th:first-child { text-align: left; width: 50%; }
+      .lineup-table th:nth-child(2), .lineup-table th:nth-child(3) { width: 25%; }
+      .lineup-table td { padding: 0.8rem 0.5rem; border-bottom: 1px solid #eee; font-size: 0.9rem; text-align: center; }
+      .lineup-table td:first-child { text-align: left; }
+      .lineup-table tr:hover { background-color: white; }
+      .captain-row { background-color: #fff3cd !important; font-weight: bold; }
+      .captain-badge { background-color: #ffc107; color: #333; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.7rem; font-weight: bold; margin-left: 0.5rem; }
+      .captain-bonus { font-size: 0.75rem; color: #ffc107; font-weight: 500; margin-top: 0.2rem; }
+      .player-name-cell { font-weight: 500; }
+      .player-link { color: #007bff; text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
+      .player-link:hover { color: #0056b3; text-decoration: underline; }
+      .points-cell { text-align: center; font-weight: bold; }
+      .rank-cell { text-align: center; color: #666; } /* Used by modal ranks */
 
-      .modal-content {
-        background-color: #fff;
-        margin: 2rem auto;
-        border-radius: 8px;
-        width: 95%;
-        max-width: 900px;
-        max-height: 90vh;
-        overflow-y: auto;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      }
+      .pick-item-enhanced { transition: background-color 0.2s ease; display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; border-bottom: 1px solid #eee; }
+      .pick-item-enhanced > div:first-child { text-align: left; }
+      .pick-item-enhanced:hover { background-color: #f8f9fa !important; }
+      .pick-item-enhanced:last-child { border-bottom: none; }
+      .pick-status { font-size: 0.8rem; color: #666; }
+      .season-group { box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-radius: 6px; overflow: hidden; }
+      .season-header { font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.5px; }
+      .draft-capital .season-group .season-header .season-pick-count-badge { font-size: 0.9rem; white-space: nowrap; flex-shrink: 0; }
 
-      .modal-header {
-        background-color: #333;
-        color: white;
-        padding: 1.5rem;
-        border-radius: 8px 8px 0 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
+      .loading { text-align: center; padding: 3rem; color: #666; font-size: 1.1rem; }
+      .error { text-align: center; padding: 2rem; color: #dc3545; background-color: #f8d7da; border-radius: 4px; margin: 1rem; }
+      .back-button { background-color: #007bff; color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 4px; text-decoration: none; font-size: 1rem; display: inline-block; margin-bottom: 2rem; transition: background-color 0.3s;}
+      .back-button:hover { background-color: #0056b3; text-decoration: none; color: white; }
 
-      .modal-header h3 { 
-        color: white;
-        margin: 0;
-        font-size: 1.4rem;
-      }
-
-      .close-btn {
-        background: none;
-        border: none;
-        color: white;
-        font-size: 1.5rem;
-        cursor: pointer;
-        padding: 0.5rem;
-        border-radius: 4px;
-        transition: background-color 0.3s;
-      }
-
-      .close-btn:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-      }
-
-      .modal-body {
-        padding: 2rem;
-      }
-
-      .game-details-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-      }
-
-      .team-breakdown {
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        overflow: hidden;
-        border: 1px solid #ddd;
-      }
-
-      .team-breakdown.winner {
-        border-color: #28a745;
-        border-width: 2px;
-      }
-
-      .modal-team-header { 
-        background-color: #333;
-        color: white;
-        padding: 1.5rem;
-        text-align: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 1rem;
-        flex-direction: column;
-      }
-
-      .modal-team-header.winner {
-        background-color: #28a745;
-      }
-
-      .modal-team-header h4 {
-        color: white;
-        margin: 0;
-        font-size: 1.2rem;
-      }
-
-      .modal-team-header .team-logo { 
-        width: 48px;
-        height: 48px;
-        border-radius: 4px;
-      }
-
-      .team-total {
-        background-color: #e9ecef;
-        padding: 1rem;
-        text-align: center;
-        font-weight: bold;
-        font-size: 1.1rem;
-        border-bottom: 2px solid #ddd;
-      }
-
-      .lineup-table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      .lineup-table th {
-        background-color: #f8f9fa;
-        padding: 0.8rem 0.5rem;
-        text-align: center;
-        font-weight: bold;
-        border-bottom: 2px solid #ddd;
-        font-size: 0.9rem;
-      }
-
-      .lineup-table th:first-child {
-        text-align: left;
-        width: 50%;
-      }
-
-      .lineup-table th:nth-child(2),
-      .lineup-table th:nth-child(3) {
-        width: 25%;
-      }
-
-      .lineup-table td {
-        padding: 0.8rem 0.5rem;
-        border-bottom: 1px solid #eee;
-        font-size: 0.9rem;
-        text-align: center;
-      }
-
-      .lineup-table td:first-child {
-        text-align: left;
-      }
-
-      .lineup-table tr:hover {
-        background-color: white;
-      }
-
-      .captain-row {
-        background-color: #fff3cd !important;
-        font-weight: bold;
-      }
-
-      .captain-badge {
-        background-color: #ffc107;
-        color: #333;
-        padding: 0.2rem 0.5rem;
-        border-radius: 12px;
-        font-size: 0.7rem;
-        font-weight: bold;
-        margin-left: 0.5rem;
-      }
-
-      .captain-bonus {
-        font-size: 0.75rem;
-        color: #ffc107;
-        font-weight: 500;
-        margin-top: 0.2rem;
-      }
-
-      .player-name-cell {
-        font-weight: 500;
-      }
-
-      .player-link { 
-        color: #007bff;
-        text-decoration: none;
-        font-weight: 500;
-        transition: color 0.3s ease;
-      }
-
-      .player-link:hover {
-        color: #0056b3;
-        text-decoration: underline;
-      }
-
-      .points-cell {
-        text-align: center;
-        font-weight: bold;
-      }
-
-      .rank-cell {
-        text-align: center;
-        color: #666;
-      }
-
-      .pick-item-enhanced {
-        transition: background-color 0.2s ease;
-        display: flex; 
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.8rem;
-        border-bottom: 1px solid #eee;
-      }
-      .pick-item-enhanced > div:first-child { 
-        text-align: left; 
-      }
-
-
-      .pick-item-enhanced:hover {
-        background-color: #f8f9fa !important;
-      }
-
-      .pick-item-enhanced:last-child {
-        border-bottom: none;
-      }
-      .pick-status { 
-          font-size: 0.8rem;
-          color: #666;
-      }
-
-
-      .season-group {
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        border-radius: 6px;
-        overflow: hidden;
-      }
-
-      .season-header { 
-        font-size: 1.1rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-      
-      .draft-capital .season-group .season-header .season-pick-count-badge {
-        font-size: 0.9rem; 
-        white-space: nowrap; 
-        flex-shrink: 0; 
-      }
-
-
-      .loading {
-        text-align: center;
-        padding: 3rem;
-        color: #666;
-        font-size: 1.1rem;
-      }
-
-      .error {
-        text-align: center;
-        padding: 2rem;
-        color: #dc3545;
-        background-color: #f8d7da;
-        border-radius: 4px;
-        margin: 1rem;
-      }
-
-      .back-button {
-        background-color: #007bff;
-        color: white;
-        padding: 0.8rem 1.5rem;
-        border: none;
-        border-radius: 4px;
-        text-decoration: none;
-        font-size: 1rem;
-        display: inline-block;
-        margin-bottom: 2rem;
-        transition: background-color 0.3s;
-      }
-
-      .back-button:hover {
-        background-color: #0056b3;
-        text-decoration: none;
-        color: white;
+      .desktop-only-roster-logo { /* For roster logos on desktop */
+        /* display: flex; /* Default state - visible on desktop */
+        /* align-items: center; */
+        /* justify-content: center; */
+        width: 30px; /* Adjust as needed */
+        height: 30px;
+        flex-shrink: 0;
       }
 
       @media (max-width: 768px) {
-        .content-grid {
-          grid-template-columns: 1fr;
-        }
+        .content-grid { grid-template-columns: 1fr; }
+        .team-main-info { flex-direction: column; gap: 1rem; }
+        .team-logo-large { width: 80px; height: 80px; }
+        .team-stats-grid { grid-template-columns: repeat(2, 1fr); }
+        .player-item { padding: 0.75rem; grid-template-columns: 1fr 80px !important; /* Mobile: Player Info | REL */ }
+        .roster-header { grid-template-columns: 1fr 80px !important; /* Mobile: Player | REL */ }
+        .desktop-only-roster-logo { display: none; } /* Hide logo column on mobile */
         
-        .team-main-info {
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .team-logo-large {
-          width: 80px;
-          height: 80px;
-        }
-        
-        .team-stats-grid {
-          grid-template-columns: repeat(2, 1fr);
-        }
-        
-        .player-item { 
-          padding: 0.75rem;
-        }
-
-        .game-item { 
-          padding: 0.75rem;
-          margin-left: 0;
-          position: relative;
-          display: block; 
-        }
-
-        .game-matchup .week-badge { 
-          display: flex !important;
-          position: absolute;
-          top: 0.75rem;
-          right: 0.75rem;
-          left: auto;
-          transform: none;
-          width: 28px;
-          height: 28px;
-          font-size: 0.8rem;
-          z-index: 2;
-          background-color: #007bff;
-          color: white;
-          border-radius: 50%;
-          align-items: center;
-          justify-content: center;
-          font-weight: bold;
-          border: 2px solid white;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .game-matchup { 
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-          align-items: stretch;
-          margin-top: 0;
-          padding-right: 35px; 
-        }
-
-        .team { 
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          min-width: auto;
-          width: 100%;
-        }
-
-        .team-info { 
-          display: flex;
-          flex-direction: column;
-          min-width: 0;
-          flex: 1;
-        }
-
-        .team-name { 
-          font-weight: 500;
-          font-size: 0.9rem; 
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .team-name.win { color: #28a745; }
-        .team-name.loss { color: #dc3545; } 
-        .team-name.upcoming { color: #333; }
-
-
-        .team-record { 
-          font-size: 0.8rem;
-          color: #666;
-        }
-
-        .team-score { 
-          font-weight: bold;
-          color: #333;
-          margin-left: auto;
-          min-width: 35px;
-          text-align: right;
-          flex-shrink: 0;
-        }
-        .team-score.win { color: #28a745; }
-        .team-score.loss { color: #dc3545; } 
-        .team-score.upcoming { color: #333; }
-
-
-        .vs { 
-          display: none;
-        }
-
-        .team-logo { 
-          width: 32px;
-          height: 32px;
-          vertical-align: middle;
-        }
-
-        .game-info-table,
-        .game-content-table {
-          display: none;
-        }
-
-        .modal-content {
-          margin: 1rem;
-          width: calc(100% - 2rem);
-        }
-        
-        .modal-body {
-          padding: 1rem;
-        }
-        
-        .modal-header h3 {
-          font-size: 1.1rem; 
-          line-height: 1.3;  
-          white-space: nowrap; 
-          overflow: hidden;    
-          text-overflow: ellipsis; 
-          flex-grow: 1; 
-          min-width: 0; 
-        }
-
-        .game-details-grid {
-          grid-template-columns: 1fr !important;
-          gap: 1rem !important;
-        }
-        
-        .pick-item-enhanced {
-          flex-direction: column;
-          align-items: center; 
-          gap: 0.5rem;
-          text-align: center; 
-        }
-        .pick-item-enhanced > div:first-child { 
-            text-align: center; 
-        }
-        .pick-description { 
-            display: block; 
-            margin: 0 auto; 
-        }
-        .pick-origin {
-            margin-top: 0.25rem; 
-        }
-        
-        .pick-status {
-          align-self: center; 
-          margin-top: 0.5rem;
-        }
-
-        .draft-capital .season-group .season-header {
-          padding: 0.75rem 1rem; 
-        }
-
-        .draft-capital .season-group .season-header > span:first-child { 
-          font-size: 0.9rem; 
-          margin-right: 8px; 
-          flex-grow: 1;    
-          flex-shrink: 1;  
-          min-width: 0;    
-          white-space: nowrap;     
-          overflow: hidden;        
-          text-overflow: ellipsis; 
-        }
-
-        .draft-capital .season-group .season-header .season-pick-count-badge { 
-          font-size: 0.8rem; 
-          padding: 0.2rem 0.5rem; 
-        }
+        .game-item { padding: 0.75rem; margin-left: 0; position: relative; display: block; }
+        .game-matchup .week-badge { display: flex !important; position: absolute; top: 0.75rem; right: 0.75rem; left: auto; transform: none; width: 28px; height: 28px; font-size: 0.8rem; z-index: 2; background-color: #007bff; color: white; border-radius: 50%; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .game-matchup { display: flex; flex-direction: column; gap: 0.75rem; align-items: stretch; margin-top: 0; padding-right: 35px; }
+        .team { display: flex; align-items: center; gap: 0.5rem; min-width: auto; width: 100%; }
+        .team-info { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+        .team-name { font-weight: 500; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .team-name.win { color: #28a745; } .team-name.loss { color: #dc3545; } .team-name.upcoming { color: #333; }
+        .team-record { font-size: 0.8rem; color: #666; }
+        .team-score { font-weight: bold; color: #333; margin-left: auto; min-width: 35px; text-align: right; flex-shrink: 0; }
+        .team-score.win { color: #28a745; } .team-score.loss { color: #dc3545; } .team-score.upcoming { color: #333; }
+        .vs { display: none; }
+        .team-logo { width: 32px; height: 32px; vertical-align: middle; } /* For schedule team items */
+        .game-info-table, .game-content-table { display: none; }
+        .modal-content { margin: 1rem; width: calc(100% - 2rem); }
+        .modal-body { padding: 1rem; }
+        .modal-header h3 { font-size: 1.1rem; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-grow: 1; min-width: 0; }
+        .game-details-grid { grid-template-columns: 1fr !important; gap: 1rem !important; }
+        .pick-item-enhanced { flex-direction: column; align-items: center; gap: 0.5rem; text-align: center; }
+        .pick-item-enhanced > div:first-child { text-align: center; }
+        .pick-description { display: block; margin: 0 auto; }
+        .pick-origin { margin-top: 0.25rem; }
+        .pick-status { align-self: center; margin-top: 0.5rem; }
+        .draft-capital .season-group .season-header { padding: 0.75rem 1rem; }
+        .draft-capital .season-group .season-header > span:first-child { font-size: 0.9rem; margin-right: 8px; flex-grow: 1; flex-shrink: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .draft-capital .season-group .season-header .season-pick-count-badge { font-size: 0.8rem; padding: 0.2rem 0.5rem; }
       }
 
       @media (max-width: 480px) {
-        .team-stats-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .player-item { 
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 0.5rem;
-        }
-
-        .player-rel { 
-          align-self: flex-end;
-        }
-        
-        .modal-header h3 {
-          font-size: 1.0rem; 
-        }
+        .team-stats-grid { grid-template-columns: 1fr; }
+        .player-item { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+        .player-rel { align-self: flex-end; }
+        .modal-header h3 { font-size: 1.0rem; }
       }
 
-      /* Footer */
-      footer {
-        text-align: center;
-        margin-top: 3rem;
-        padding: 1rem;
-        background-color: #333;
-        color: #fff;
-      }
+      footer { text-align: center; margin-top: 3rem; padding: 1rem; background-color: #333; color: #fff; }
     </style>
   </head>
   <body>
@@ -1173,6 +697,7 @@
       let allTeams = [];
       let allWeeklyAverages = [];
       let allTransactionsLogData = []; 
+      let allLineups = []; // Added to store lineups globally for roster REL calculation
 
       function formatInThousands(value) {
         const num = parseFloat(value);
@@ -1363,15 +888,15 @@
           });
         rankings.record = conferenceTeams.findIndex(t => t.team_id === currentTeamData.team_id) + 1;
         
-        const pamTeams = allTeamsData // Use allTeamsData directly for overall PAM ranking
+        const pamTeams = allTeamsData 
           .sort((a, b) => parseFloat(b.pam || 0) - parseFloat(a.pam || 0));
         rankings.pam = pamTeams.findIndex(t => t.team_id === currentTeamData.team_id) + 1;
         
-        const medRankTeams = allTeamsData // Use allTeamsData for overall Med Rank
-          .filter(t => parseFloat(t.med_starter_rank || 0) > 0) // Ensure med_starter_rank is valid for ranking
+        const medRankTeams = allTeamsData 
+          .filter(t => parseFloat(t.med_starter_rank || 0) > 0) 
           .sort((a, b) => parseFloat(a.med_starter_rank || 999) - parseFloat(b.med_starter_rank || 999));
         const medRankIndex = medRankTeams.findIndex(t => t.team_id === currentTeamData.team_id);
-        rankings.medRank = medRankIndex !== -1 ? medRankIndex + 1 : 0; // Handle not found or 0 rank
+        rankings.medRank = medRankIndex !== -1 ? medRankIndex + 1 : 0; 
         
         return rankings;
       }
@@ -1384,10 +909,11 @@
           return;
         }
         
-        const [teamsResult, weeklyAveragesResult, transactionsLogResult] = await Promise.all([
+        const [teamsResult, weeklyAveragesResult, transactionsLogResult, lineupsResult] = await Promise.all([
           fetchSheetData('Teams'),
           fetchSheetData('Weekly_Averages'),
-          fetchSheetData('Transaction_Log') 
+          fetchSheetData('Transaction_Log'),
+          fetchSheetData('Lineups') // Fetch lineups here
         ]);
         
         if (!teamsResult) { 
@@ -1399,6 +925,7 @@
         allTeams = teamsResult;
         allWeeklyAverages = weeklyAveragesResult || [];
         allTransactionsLogData = transactionsLogResult || [];
+        allLineups = lineupsResult || []; // Store globally
 
         teamData = allTeams.find(team => team.team_id === teamId);
         if (!teamData) {
@@ -1407,16 +934,15 @@
           return;
         }
         
-        // Filter for active teams *before* calculating rankings
         const activeTeamsForRanking = allTeams.filter(t => 
           t.team_id && 
           t.team_id.toUpperCase() !== 'RETIRED' && 
           t.team_id.toUpperCase() !== 'FREE_AGENT' &&
-          t.conference // Ensure team has a conference to be considered active for conference rankings
+          t.conference 
         );
         const rankings = calculateTeamRankings(teamData, activeTeamsForRanking);
         
-        displayTeamHeader(rankings); // Pass activeTeamsForRanking if needed for more context in display
+        displayTeamHeader(rankings); 
         
         await Promise.all([
           loadRoster(),
@@ -1425,7 +951,6 @@
         ]);
       }
       
-      // --- MODIFIED displayTeamHeader function ---
       function displayTeamHeader(rankings) {
         document.getElementById('page-title').textContent = `${escapeHTML(teamData.team_name)} - RKL Season 7`;
         document.getElementById('header-title').textContent = escapeHTML(teamData.team_name);
@@ -1447,11 +972,10 @@
         
         const medRank = parseFloat(teamData.med_starter_rank || 0);
         const teamStatsContainer = document.getElementById('team-stats');
-        teamStatsContainer.innerHTML = ''; // Clear previous content
+        teamStatsContainer.innerHTML = ''; 
 
-        // 1. Record Card
         const recordLink = document.createElement('a');
-        recordLink.href = 'standings.html'; // Defaults to conference standings
+        recordLink.href = 'standings.html'; 
         recordLink.className = 'stat-card-link';
         recordLink.innerHTML = `
           <div class="stat-card">
@@ -1462,7 +986,6 @@
         `;
         teamStatsContainer.appendChild(recordLink);
 
-        // 2. PAM Card
         const pamLink = document.createElement('a');
         pamLink.href = `standings.html?view=fullLeague&sortBy=pam&sortDirection=desc`;
         pamLink.className = 'stat-card-link';
@@ -1475,7 +998,6 @@
         `;
         teamStatsContainer.appendChild(pamLink);
 
-        // 3. Median Starter Rank Card
         const medRankLink = document.createElement('a');
         medRankLink.href = `standings.html?view=fullLeague&sortBy=med_starter_rank&sortDirection=asc`;
         medRankLink.className = 'stat-card-link';
@@ -1488,7 +1010,6 @@
         `;
         teamStatsContainer.appendChild(medRankLink);
 
-        // 4. Transactions Card
         const transactionsLink = document.createElement('a');
         transactionsLink.href = `transactions.html?teamFilter=${teamData.team_id}`;
         transactionsLink.className = 'stat-card-link';
@@ -1503,15 +1024,12 @@
         
         teamStatsContainer.style.display = 'grid';
       }
-      // --- END OF MODIFIED displayTeamHeader function ---
       
       async function loadRoster() {
-        const [players, lineups] = await Promise.all([
-          fetchSheetData('Players'),
-          fetchSheetData('Lineups')
-        ]);
+        const players = await fetchSheetData('Players'); 
+        // allLineups is already fetched in loadTeamData
         
-        if (!players) {
+        if (!players || !allLineups) {
           document.getElementById('roster-list').innerHTML = 
             '<div class="error">Error loading roster data</div>';
           return;
@@ -1527,7 +1045,7 @@
         }
         
         const playersWithREL = teamPlayers.map(player => {
-          const relMedian = calculatePlayerRELMedian(player.player_handle, allWeeklyAverages, lineups || []);
+          const relMedian = calculatePlayerRELMedian(player.player_handle, allWeeklyAverages, allLineups);
           return {
             ...player,
             calculated_rel_median: relMedian
@@ -1539,22 +1057,24 @@
           const gamesPlayed = parseInt(player.games_played || 0);
           
           let avgGlobalRank = 0;
-          if (lineups) {
-            const playerLineups = lineups.filter(lineup => 
+          const playerLineups = allLineups.filter(lineup => 
               lineup.player_handle === player.player_handle && 
               lineup.global_rank && 
-              parseFloat(lineup.global_rank) > 0
+              parseFloat(lineup.global_rank) > 0 &&
+              (lineup.started === 'TRUE' || lineup.started === true || lineup.started === 'true') // Count only started games for avg rank
             );
             
-            if (playerLineups.length > 0) {
-              const totalRank = playerLineups.reduce((sum, lineup) => 
-                sum + parseFloat(lineup.global_rank), 0);
-              avgGlobalRank = Math.round(totalRank / playerLineups.length);
-            }
+          if (playerLineups.length > 0) {
+            const totalRank = playerLineups.reduce((sum, lineup) => 
+              sum + parseFloat(lineup.global_rank), 0);
+            avgGlobalRank = Math.round(totalRank / playerLineups.length);
           }
           
           return `
             <div class="player-item">
+              <div class="roster-player-logo-col desktop-only-roster-logo">
+                <img src="icons/${teamData.team_id}.webp" alt="${escapeHTML(teamData.team_name)}" class="roster-team-logo-inline" onerror="this.style.display='none'">
+              </div>
               <div class="player-info">
                 <a href="player.html?player=${encodeURIComponent(player.player_handle)}" class="player-name">${escapeHTML(player.player_handle)}</a>
                 <div class="player-stats">
@@ -1569,6 +1089,7 @@
         
         const finalHTML = `
           <div class="roster-header">
+            <span class="roster-logo-header-col desktop-only-roster-logo"></span>
             <span class="header-player">Player</span>
             <span class="header-rel">REL Median</span>
           </div>
@@ -1783,34 +1304,65 @@
             const seasonColor = getSeasonColor(parseInt(season));
             
             const picksHTML = picks.map(pick => {
-              const isOriginal = pick.original_team === teamId;
+              const isOriginalOwnerOfPick = pick.original_team === teamId;
+              const isCurrentOwnerTheOriginalOwner = pick.original_team === pick.current_owner; // This is same as isOriginalOwnerOfPick here
               const isPendingForfeiture = pick.notes && pick.notes.toUpperCase() === 'PENDING FORFEITURE';
               
               let originDisplayHTML = '';
               let pickDescriptionText = escapeHTML(pick.pick_description);
+              let transactionForLink = null;
+              let fromTeamForVerbiage = null;
+
+              if (!isOriginalOwnerOfPick) { // Pick was acquired
+                // Try to find the transaction that brought this pick to the current team (teamId)
+                // This relies on allTransactionsLogData being populated
+                const relevantTrade = (allTransactionsLogData || []).find(t => 
+                    t.draft_pick_id === pick.pick_id && 
+                    t.to_team === teamId &&
+                    t.transaction_type === 'TRADE' // Ensure it's a trade
+                );
+
+                if (relevantTrade) {
+                    fromTeamForVerbiage = relevantTrade.from_team;
+                    transactionForLink = relevantTrade; // Use this specific transaction for the link
+                }
+              }
+
 
               if (isPendingForfeiture) {
                 originDisplayHTML = `<div class="pick-origin" style="font-size: 0.8rem; color: #dc3545; font-weight: bold;">PENDING FORFEITURE</div>`;
-              } else if (!isOriginal) { 
-                const originalTeamName = getTeamName(pick.original_team);
-                let originTextContent = `from ${escapeHTML(originalTeamName)}`;
+              } else if (!isOriginalOwnerOfPick) { 
+                let viaOrFromText = "from";
+                let sourceTeamIdForDisplay = pick.original_team; // Default to original owner
+
+                if (fromTeamForVerbiage && fromTeamForVerbiage !== pick.original_team) {
+                    viaOrFromText = "via";
+                    sourceTeamIdForDisplay = fromTeamForVerbiage;
+                }
                 
-                const originalTeamDataStats = allTeams.find(t => t.team_id === pick.original_team);
-                if (originalTeamDataStats) {
-                  const originalWins = parseInt(originalTeamDataStats.wins || 0);
-                  const originalLosses = parseInt(originalTeamDataStats.losses || 0);
-                  const originalPAM = parseFloat(originalTeamDataStats.pam || 0);
+                const sourceTeamName = getTeamName(sourceTeamIdForDisplay);
+                let sourceTeamStatsStr = "";
+                const sourceTeamDataStats = allTeams.find(t => t.team_id === sourceTeamIdForDisplay);
+                if (sourceTeamDataStats) {
+                  const originalWins = parseInt(sourceTeamDataStats.wins || 0);
+                  const originalLosses = parseInt(sourceTeamDataStats.losses || 0);
+                  const originalPAM = parseFloat(sourceTeamDataStats.pam || 0);
                   const pamFormatted = Math.abs(originalPAM) >= 1000 ? 
                     (originalPAM / 1000).toFixed(1) + 'k' : 
                     Math.round(originalPAM).toString();
-                  originTextContent += ` <span class="pick-origin-stats">(${originalWins}-${originalLosses}, ${pamFormatted} PAM)</span>`;
+                  sourceTeamStatsStr = ` (${originalWins}-${originalLosses}, ${pamFormatted} PAM)`;
                 }
+                let originTextContent = `${viaOrFromText} ${escapeHTML(sourceTeamName)}${sourceTeamStatsStr}`;
 
                 let linkCreated = false;
-                if (pick.notes) { 
+                if (transactionForLink) { // If we found a specific transaction for "via"
+                    const linkDate = new Date(transactionForLink.date).toISOString().split('T')[0];
+                    const transactionsLink = `transactions.html?type=TRADE&date=${linkDate}&teamFilters=${transactionForLink.from_team},${transactionForLink.to_team}&pick_id=${encodeURIComponent(pick.pick_id || '')}`;
+                    originDisplayHTML = `<div class="pick-origin"><a href="${transactionsLink}" title="View transaction">${originTextContent}</a></div>`;
+                    linkCreated = true;
+                } else if (pick.notes) { // Fallback to generic note parsing if specific transaction not found for "via"
                   const citationRegex = /\b([A-Z]{2,4})\s*\/\s*([A-Z]{2,4})\s+(\d{1,2}\/\d{1,2}\/\d{4})\b/i;
                   const noteMatch = pick.notes.match(citationRegex);
-
                   if (noteMatch) {
                     const notedTeam1ID = noteMatch[1].toUpperCase();
                     const notedTeam2ID = noteMatch[2].toUpperCase();
@@ -1820,26 +1372,22 @@
                     const month = String(dateParts[0]).padStart(2, '0');
                     const day = String(dateParts[1]).padStart(2, '0');
                     const formattedDateForLink = `${year}-${month}-${day}`;
-                    
                     const transactionsLink = `transactions.html?type=TRADE&date=${formattedDateForLink}&teamFilters=${notedTeam1ID},${notedTeam2ID}&pick_id=${encodeURIComponent(pick.pick_id || '')}`;
-                    
-                    originDisplayHTML = `<div class="pick-origin">
-                                             <a href="${transactionsLink}" title="View transaction: ${escapeHTML(pick.notes)}">
-                                                 ${originTextContent}
-                                             </a>
-                                         </div>`;
+                    originDisplayHTML = `<div class="pick-origin"><a href="${transactionsLink}" title="View transaction: ${escapeHTML(pick.notes)}">${originTextContent}</a></div>`;
                     linkCreated = true;
                   }
                 }
                 if (!linkCreated) { 
                   originDisplayHTML = `<div class="pick-origin" style="color: #666;">${originTextContent}</div>`;
                 }
+              } else if (!isPendingForfeiture) { // Is Original Pick and not pending forfeiture
+                  originDisplayHTML = `<div class="pick-origin" style="color: #666;">Original Pick</div>`;
               }
               
               let pickBackgroundColor = '#e8f5e8'; 
               if (isPendingForfeiture) {
                 pickBackgroundColor = '#f8d7da'; 
-              } else if (!isOriginal) {
+              } else if (!isOriginalOwnerOfPick) { // Acquired pick color
                 pickBackgroundColor = '#fff3cd'; 
               }
 
@@ -1850,7 +1398,7 @@
                     ${originDisplayHTML}
                   </div>
                   <div class="pick-status">
-                    ${isPendingForfeiture ? 'Pending Forfeiture' : (isOriginal ? 'Own Pick' : 'Acquired')}
+                    ${isPendingForfeiture ? 'Pending Forfeiture' : (isOriginalOwnerOfPick ? 'Own Pick' : 'Acquired')}
                   </div>
                 </div>
               `;
@@ -1924,7 +1472,7 @@
         
         const scheduleData = await fetchSheetData('Schedule');
         if (!scheduleData) {
-          modalContentEl.innerHTML = '<div class="error">Error loading game details</div>';
+          modalContentEl.innerHTML = '<div class="error">Error loading game details (schedule)</div>';
           return;
         }
         
@@ -1988,10 +1536,7 @@
               <div class="team-breakdown ${isWinner ? 'winner' : ''}">
                 <div class="modal-team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${idOfTeam}'" style="cursor: pointer;">
                   <img src="icons/${idOfTeam}.webp" alt="${escapeHTML(getTeamName(idOfTeam))}" class="team-logo" onerror="this.style.display='none'">
-                  <div>
-                    <h4>${escapeHTML(getTeamName(idOfTeam))}</h4>
-                    <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
-                  </div>
+                  <div><h4>${escapeHTML(getTeamName(idOfTeam))}</h4><div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div></div>
                 </div>
                 <div class="team-total">Total: ${Math.round(total).toLocaleString()}</div>
                 <div style="padding: 2rem; text-align: center; color: #666;">No lineup data available</div>
@@ -2026,10 +1571,7 @@
             <div class="team-breakdown ${isWinner ? 'winner' : ''}">
               <div class="modal-team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${idOfTeam}'" style="cursor: pointer;">
                 <img src="icons/${idOfTeam}.webp" alt="${escapeHTML(getTeamName(idOfTeam))}" class="team-logo" onerror="this.style.display='none'">
-                <div>
-                  <h4>${escapeHTML(getTeamName(idOfTeam))}</h4>
-                  <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
-                </div>
+                <div><h4>${escapeHTML(getTeamName(idOfTeam))}</h4><div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div></div>
               </div>
               <div class="team-total">Total: ${isNaN(total) ? '-' : Math.round(total).toLocaleString()}</div>
               <table class="lineup-table">
