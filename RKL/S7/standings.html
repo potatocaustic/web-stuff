@@ -492,7 +492,7 @@
       const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4'; 
       const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
       
-      let allTeamsData = []; // This will store the filtered list of actual teams
+      let allTeamsData = [];
       let easternTeamsData = []; 
       let westernTeamsData = []; 
       let fullLeagueTeamsData = []; 
@@ -504,6 +504,13 @@
         Western: { column: 'record', direction: 'asc' },
         FullLeague: { column: 'record', direction: 'asc'}
       };
+
+      // --- START OF ADDED/MODIFIED SCRIPT: getUrlParameter function ---
+      function getUrlParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+      }
+      // --- END OF ADDED/MODIFIED SCRIPT: getUrlParameter function ---
 
       async function fetchSheetData(sheetName) {
         try {
@@ -689,23 +696,42 @@
         }
       }
 
+      // --- MODIFIED loadStandings function to handle URL parameters ---
       async function loadStandings() {
-        // --- START OF MODIFICATION: Fetch to a temporary variable before filtering ---
-        let fetchedTeamsData = await fetchSheetData('Teams'); 
-        // --- END OF MODIFICATION ---
+        const viewParam = getUrlParameter('view');
+        const sortByParam = getUrlParameter('sortBy');
+        let sortDirectionParam = getUrlParameter('sortDirection'); // Use let for reassignment
 
+        // Apply URL parameters to sortState for FullLeague if specified
+        if (viewParam === 'fullLeague' && sortByParam) {
+            let effectiveSortDirection = sortDirectionParam;
+            if (!effectiveSortDirection) { // Default directions if not specified by URL
+                if (sortByParam === 'med_starter_rank') effectiveSortDirection = 'asc_rank'; // asc_rank for lower is better
+                else if (sortByParam === 'pam') effectiveSortDirection = 'desc'; // desc for higher is better
+                else effectiveSortDirection = 'asc'; // Default for 'record' (rank)
+            } else {
+                // Ensure 'asc_rank'/'desc_rank' for med_starter_rank if 'asc'/'desc' is passed from URL
+                if (sortByParam === 'med_starter_rank') {
+                    if (sortDirectionParam.toLowerCase() === 'asc') effectiveSortDirection = 'asc_rank';
+                    else if (sortDirectionParam.toLowerCase() === 'desc') effectiveSortDirection = 'desc_rank';
+                    // If sortDirectionParam is already 'asc_rank' or 'desc_rank', it will be used as is.
+                }
+            }
+            sortState.FullLeague = { column: sortByParam, direction: effectiveSortDirection };
+        }
+        // Default sortStates for Eastern, Western are already set in the sortState object.
+        // Default for FullLeague is also set, which will be used if not overridden by URL params.
+
+        let fetchedTeamsData = await fetchSheetData('Teams'); 
         if (!fetchedTeamsData) {
           return;
         }
         
-        // --- START OF MODIFICATION: Filter out RETIRED and FREE_AGENT teams by team_id ---
         allTeamsData = fetchedTeamsData.filter(team => {
-            const id = team.team_id ? team.team_id.trim().toUpperCase() : ''; // Normalize for comparison
+            const id = team.team_id ? team.team_id.trim().toUpperCase() : ''; 
             return id !== 'RETIRED' && id !== 'FREE_AGENT';
         });
-        // --- END OF MODIFICATION ---
 
-        // --- START OF MODIFICATION: Check if allTeamsData is empty after filtering ---
         if (!allTeamsData || allTeamsData.length === 0) {
             const errorMsg = '<tr><td colspan="5" class="error">No valid team data available after filtering.</td></tr>';
             const tableIds = ['eastern-standings', 'western-standings', 'full-league-standings'];
@@ -713,14 +739,12 @@
                 const tableBody = document.getElementById(id);
                 if (tableBody) tableBody.innerHTML = errorMsg;
             });
-            // Hide both view containers if there's no data to show
             document.getElementById('conferenceViewContainer').classList.add('hidden');
             document.getElementById('fullLeagueViewContainer').classList.add('hidden');
-            document.getElementById('toggleViewButton').classList.add('hidden'); // Hide button too
+            document.getElementById('toggleViewButton').classList.add('hidden'); 
             document.getElementById('standingsPageTitle').textContent = 'Standings Data Unavailable';
             return;
         }
-        // --- END OF MODIFICATION ---
         
         let rawEasternTeams = allTeamsData.filter(team => team.conference === 'Eastern');
         let rawWesternTeams = allTeamsData.filter(team => team.conference === 'Western');
@@ -741,7 +765,6 @@
           })
           .map((team, index) => ({ ...team, officialRecordRank: index + 1 }));
 
-        // fullLeagueTeamsData is derived from the already filtered allTeamsData
         fullLeagueTeamsData = [...allTeamsData] 
           .sort((a, b) => {
             const winsA = parseInt(a.wins || 0); const winsB = parseInt(b.wins || 0);
@@ -750,23 +773,29 @@
           })
           .map((team, index) => ({ ...team, officialFullLeagueRank: index + 1 }));
         
-        sortState.Eastern.direction = 'asc'; 
-        sortState.Western.direction = 'asc'; 
-        sortState.FullLeague.direction = 'asc';
+        // Initial sort directions are set in the sortState object definition.
+        // URL parameters might have overridden sortState.FullLeague above.
 
         renderStandings('Eastern', easternTeamsData);
         renderStandings('Western', westernTeamsData);
         renderStandings('FullLeague', fullLeagueTeamsData); 
         
+        // UI setup for view toggle
         document.getElementById('fullLeagueViewContainer').classList.add('hidden');
         document.getElementById('conferenceViewContainer').classList.remove('hidden');
         document.getElementById('standingsPageTitle').textContent = 'Conference Standings';
-        document.getElementById('toggleViewButton').textContent = 'Show Full League Standings';
-        document.getElementById('toggleViewButton').classList.remove('hidden'); // Ensure button is visible if data loaded
-        currentView = 'conferences'; 
+        const toggleButton = document.getElementById('toggleViewButton');
+        toggleButton.textContent = 'Show Full League Standings';
+        toggleButton.classList.remove('hidden'); 
+        currentView = 'conferences';
+
+        if (viewParam === 'fullLeague') {
+            toggleStandingsView(); // Switch to full league view if param is set
+        }
 
         document.getElementById('toggleViewButton').addEventListener('click', toggleStandingsView);
       }
+      // --- END OF MODIFIED loadStandings function ---
       
       document.addEventListener('DOMContentLoaded', loadStandings);
     </script>
