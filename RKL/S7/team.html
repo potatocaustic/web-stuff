@@ -363,7 +363,7 @@
         flex-direction: row-reverse;
       }
 
-      .team-details { /* This is for team details within game items, not the main page header */
+      .team-details { 
         display: flex;
         flex-direction: column;
         min-width: 0;
@@ -460,7 +460,7 @@
       }
 
       .loss {
-        color: #333; /* Default color for losing score, not red unless specifically styled */
+        color: #333; 
       }
 
       .upcoming {
@@ -468,31 +468,28 @@
         font-weight: 500;
       }
 
-      /* Hide mobile layout on desktop */
-      .team-matchup, /* These are for the mobile version of game items */
+      .team-matchup, 
       .team,
       .team-info,
       .vs {
         display: none;
       }
 
-      /* Hide mobile week badge on desktop specifically */
-      .game-matchup .week-badge { /* This ensures only mobile badge is hidden on desktop if structure is shared */
+      .game-matchup .week-badge { 
         display: none;
       }
 
-      .team-logo { /* General team logo, used in modal too */
+      .team-logo { 
         width: 20px;
         height: 20px;
         vertical-align: middle;
       }
 
-      /* Week badge styling - now in table cell */
       .week-badge {
         background-color: #007bff;
         color: white;
         border-radius: 50%;
-        width: 18px; /* Small badge for desktop table cell */
+        width: 18px; 
         height: 18px;
         display: flex;
         align-items: center;
@@ -524,7 +521,7 @@
         overflow-y: auto;
       }
 
-      .pick-item { /* This seems to be a generic class name, maybe for old draft capital style? */
+      .pick-item { 
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -538,7 +535,7 @@
         border-bottom: none;
       }
 
-      .pick-description { /* Also potentially generic or for the enhanced view */
+      .pick-description { 
         font-weight: 500;
       }
 
@@ -546,33 +543,32 @@
         color: #666;
         font-size: 0.8rem;
       }
-      .pick-origin a { /* Style for linked pick origins */
-        color: #007bff; /* Standard link color */
+      .pick-origin a { 
+        color: #007bff; 
         text-decoration: none;
       }
       .pick-origin a:hover {
         text-decoration: underline;
       }
-      .pick-origin .pick-origin-stats { /* Ensure stats within a link also look like part of the link */
-         color: inherit; /* Inherit color from the <a> tag if nested */
+      .pick-origin .pick-origin-stats { 
+         color: inherit; 
       }
 
 
       .pick-origin-stats {
         font-size: 0.75rem;
-        color: #007bff; /* Default color if not part of a link, or if link color is set to inherit */
+        color: #007bff; 
         margin-left: 0.5rem;
       }
 
 
-      /* Game item hover effects for completed games */
       .game-item[onclick] {
         cursor: pointer;
         transition: all 0.3s ease;
       }
 
       .game-item[onclick]:hover {
-        background-color: #e8f5e8 !important; /* Ensure hover is distinct */
+        background-color: #e8f5e8 !important; 
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
@@ -654,7 +650,7 @@
         border-width: 2px;
       }
 
-      .modal-team-header { /* Renamed to avoid conflict with .team-header on main page */
+      .modal-team-header { 
         background-color: #333;
         color: white;
         padding: 1.5rem;
@@ -676,7 +672,7 @@
         font-size: 1.2rem;
       }
 
-      .modal-team-header .team-logo { /* Uses general .team-logo */
+      .modal-team-header .team-logo { 
         width: 48px;
         height: 48px;
         border-radius: 4px;
@@ -756,7 +752,7 @@
         font-weight: 500;
       }
 
-      .player-link { /* Link style for player names in modal */
+      .player-link { 
         color: #007bff;
         text-decoration: none;
         font-weight: 500;
@@ -778,18 +774,16 @@
         color: #666;
       }
 
-      /* Enhanced pick items for draft capital section */
       .pick-item-enhanced {
         transition: background-color 0.2s ease;
-        /* Base style, flex direction will be row by default */
         display: flex; 
         justify-content: space-between;
         align-items: center;
         padding: 0.8rem;
         border-bottom: 1px solid #eee;
       }
-      .pick-item-enhanced > div:first-child { /* Container for description and origin */
-        text-align: left; /* Default for desktop */
+      .pick-item-enhanced > div:first-child { 
+        text-align: left; 
       }
 
 
@@ -800,26 +794,24 @@
       .pick-item-enhanced:last-child {
         border-bottom: none;
       }
-      .pick-status { /* For "Own Pick" / "Acquired" text */
+      .pick-status { 
           font-size: 0.8rem;
           color: #666;
       }
 
 
-      /* Season group styling */
       .season-group {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         border-radius: 6px;
         overflow: hidden;
       }
 
-      .season-header { /* This is for the Draft Capital section's season headers */
+      .season-header { 
         font-size: 1.1rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
       }
 
-      /* Loading states */
       .loading {
         text-align: center;
         padding: 3rem;
@@ -836,7 +828,6 @@
         margin: 1rem;
       }
 
-      /* Back button */
       .back-button {
         background-color: #007bff;
         color: white;
@@ -856,7 +847,6 @@
         color: white;
       }
 
-      /* Mobile responsive */
       @media (max-width: 768px) {
         .content-grid {
           grid-template-columns: 1fr;
@@ -876,20 +866,18 @@
           grid-template-columns: repeat(2, 1fr);
         }
         
-        .player-item { /* For roster */
+        .player-item { 
           padding: 0.75rem;
         }
 
-        /* Mobile game styling with optimized week badge positioning */
-        .game-item { /* For schedule */
+        .game-item { 
           padding: 0.75rem;
           margin-left: 0;
           position: relative;
-          display: block; /* Override desktop grid */
+          display: block; 
         }
 
-        /* Show mobile week badge only on mobile */
-        .game-matchup .week-badge { /* For schedule mobile view */
+        .game-matchup .week-badge { 
           display: flex !important;
           position: absolute;
           top: 0.75rem;
@@ -910,16 +898,16 @@
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .game-matchup { /* For schedule mobile view */
+        .game-matchup { 
           display: flex;
           flex-direction: column;
           gap: 0.75rem;
           align-items: stretch;
           margin-top: 0;
-          padding-right: 35px; /* Space for week badge */
+          padding-right: 35px; 
         }
 
-        .team { /* For schedule mobile view */
+        .team { 
           display: flex;
           align-items: center;
           gap: 0.5rem;
@@ -927,33 +915,32 @@
           width: 100%;
         }
 
-        .team-info { /* For schedule mobile view */
+        .team-info { 
           display: flex;
           flex-direction: column;
           min-width: 0;
           flex: 1;
         }
 
-        .team-name { /* General team name styling, used in schedule mobile view too */
+        .team-name { 
           font-weight: 500;
-          font-size: 0.9rem; /* Base size for team names in compact views */
+          font-size: 0.9rem; 
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
 
-        /* Colors for win/loss/upcoming in schedule mobile view */
         .team-name.win { color: #28a745; }
-        .team-name.loss { color: #dc3545; } /* If you want red for loss */
+        .team-name.loss { color: #dc3545; } 
         .team-name.upcoming { color: #333; }
 
 
-        .team-record { /* For schedule mobile view */
+        .team-record { 
           font-size: 0.8rem;
           color: #666;
         }
 
-        .team-score { /* For schedule mobile view */
+        .team-score { 
           font-weight: bold;
           color: #333;
           margin-left: auto;
@@ -962,21 +949,20 @@
           flex-shrink: 0;
         }
         .team-score.win { color: #28a745; }
-        .team-score.loss { color: #dc3545; } /* If you want red for loss score */
+        .team-score.loss { color: #dc3545; } 
         .team-score.upcoming { color: #333; }
 
 
-        .vs { /* For schedule mobile view */
+        .vs { 
           display: none;
         }
 
-        .team-logo { /* Used in schedule mobile view also */
+        .team-logo { 
           width: 32px;
           height: 32px;
           vertical-align: middle;
         }
 
-        /* Hide desktop layout elements on mobile for schedule */
         .game-info-table,
         .game-content-table {
           display: none;
@@ -996,26 +982,25 @@
           gap: 1rem !important;
         }
         
-        /* MODIFIED: Draft Capital Mobile Alignment */
         .pick-item-enhanced {
           flex-direction: column;
-          align-items: center; /* Center items for mobile */
+          align-items: center; 
           gap: 0.5rem;
-          text-align: center; /* Center text within pick description and origin */
+          text-align: center; 
         }
-        .pick-item-enhanced > div:first-child { /* Container for description and origin */
-            text-align: center; /* Ensure text inside is centered */
+        .pick-item-enhanced > div:first-child { 
+            text-align: center; 
         }
-        .pick-description { /* Specifically for the pick name itself */
-            display: block; /* Make it block to allow centering if it's inline by default */
-            margin: 0 auto; /* Center block if it has a width */
+        .pick-description { 
+            display: block; 
+            margin: 0 auto; 
         }
         .pick-origin {
-            margin-top: 0.25rem; /* Add some space if needed */
+            margin-top: 0.25rem; 
         }
         
         .pick-status {
-          align-self: center; /* Center the "Own Pick / Acquired" text too */
+          align-self: center; 
           margin-top: 0.5rem;
         }
       }
@@ -1025,25 +1010,16 @@
           grid-template-columns: 1fr;
         }
 
-        .mobile-team-name { /* This class isn't used in the current HTML structure provided for team names */
-          font-size: 0.85rem;
-        }
-
-        .mobile-team-record { /* This class isn't used */
-          font-size: 0.75rem;
-        }
-
-        .player-item { /* Roster items */
+        .player-item { 
           flex-direction: column;
           align-items: flex-start;
           gap: 0.5rem;
         }
 
-        .player-rel { /* Roster REL value */
+        .player-rel { 
           align-self: flex-end;
         }
 
-        /* Game details modal grid already handled by 768px query */
       }
 
       /* Footer */
@@ -1131,17 +1107,15 @@
     </footer>
 
     <script>
-      // Configuration - REPLACE WITH YOUR ACTUAL GOOGLE SHEET ID
-      const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4'; // Replace this with your actual sheet ID
+      const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4'; 
       const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
       
       let teamId = null;
       let teamData = null;
       let allTeams = [];
       let allWeeklyAverages = [];
-      let allTransactionsLogData = []; // Added to store transaction log
+      let allTransactionsLogData = []; 
 
-      // Helper function to format numbers in thousands (e.g., 36552 -> 36.6k)
       function formatInThousands(value) {
         const num = parseFloat(value);
         if (num >= 1000) {
@@ -1150,7 +1124,6 @@
         return Math.round(num).toLocaleString();
       }
 
-      // Helper function to format date as MM-DD
       function formatDateMMDD(dateString) {
         const date = new Date(dateString);
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -1158,7 +1131,6 @@
         return `${month}-${day}`;
       }
 
-      // Function to format date for modal titles (MM/DD/YY format)
       function formatDateShort(dateString) {
         const date = new Date(dateString);
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -1167,7 +1139,6 @@
         return `${month}/${day}/${year}`;
       }
       
-      // Function to fetch data from Google Sheets
       async function fetchSheetData(sheetName) {
         try {
           const response = await fetch(BASE_URL + encodeURIComponent(sheetName));
@@ -1179,7 +1150,6 @@
         }
       }
       
-      // Simple CSV parser that properly handles quoted fields and commas within values
       function parseCSV(csvText) {
         const lines = csvText.trim().split('\n');
         const headers = parseCSVLine(lines[0]);
@@ -1197,7 +1167,6 @@
         return data;
       }
       
-      // Parse a single CSV line, handling quoted fields properly
       function parseCSVLine(line) {
         const result = [];
         let current = '';
@@ -1215,18 +1184,12 @@
             current += char;
           }
         }
-        
-        // Add the last field
         result.push(current.trim());
-        
-        // Clean up quotes from fields
         return result.map(field => field.replace(/^"(.*)"$/, '$1'));
       }
 
-      // Helper function to parse numbers that might have comma formatting
       function parseNumber(value) {
         if (!value) return 0;
-        // Remove commas and parse as float
         const cleaned = value.toString().replace(/,/g, '');
         const parsed = parseFloat(cleaned);
         return isNaN(parsed) ? 0 : parsed;
@@ -1241,26 +1204,22 @@
                   .replace(/'/g, '&#039;');
       }
       
-      // Get URL parameter
       function getUrlParameter(name) {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get(name);
       }
       
-      // Format date
       function formatDate(dateString) {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       }
       
-      // Get team name from ID
-      function getTeamName(teamIdToFind) { // Renamed param to avoid conflict
+      function getTeamName(teamIdToFind) { 
         const team = allTeams.find(t => t.team_id === teamIdToFind);
         return team ? team.team_name : teamIdToFind;
       }
       
-      // Get team record at specific date (useful for historical records)
-      function getTeamRecordAtDate(teamIdForRecord, targetDate, schedule) { // Renamed param
+      function getTeamRecordAtDate(teamIdForRecord, targetDate, schedule) { 
         const completedGames = schedule.filter(game => {
           const gameDate = new Date(game.date);
           const target = new Date(targetDate);
@@ -1333,7 +1292,7 @@
         return n + (suffix[(v - 20) % 10] || suffix[v] || suffix[0]);
       }
       
-      function calculateTeamRankings(currentTeamData, allTeamsData) { // Renamed param
+      function calculateTeamRankings(currentTeamData, allTeamsData) { 
         const rankings = {};
         
         const conferenceTeams = allTeamsData
@@ -1358,7 +1317,6 @@
         return rankings;
       }
       
-      // MODIFIED: Added Transaction_Log to initial fetch
       async function loadTeamData() {
         teamId = getUrlParameter('id');
         if (!teamId) {
@@ -1370,10 +1328,10 @@
         const [teamsResult, weeklyAveragesResult, transactionsLogResult] = await Promise.all([
           fetchSheetData('Teams'),
           fetchSheetData('Weekly_Averages'),
-          fetchSheetData('Transaction_Log') // Fetch transaction log
+          fetchSheetData('Transaction_Log') 
         ]);
         
-        if (!teamsResult) { // Check critical data (Teams)
+        if (!teamsResult) { 
           document.getElementById('team-main-info').innerHTML = 
             '<div class="error">Error loading team data (Teams sheet).</div>';
           return;
@@ -1381,7 +1339,7 @@
         
         allTeams = teamsResult;
         allWeeklyAverages = weeklyAveragesResult || [];
-        allTransactionsLogData = transactionsLogResult || []; // Store globally
+        allTransactionsLogData = transactionsLogResult || [];
 
         teamData = allTeams.find(team => team.team_id === teamId);
         if (!teamData) {
@@ -1400,8 +1358,6 @@
         
         displayTeamHeader(rankings);
         
-        // Load other data in parallel
-        // These functions can now use the global allTransactionsLogData if needed
         await Promise.all([
           loadRoster(),
           loadSchedule(),
@@ -1410,8 +1366,8 @@
       }
       
       function displayTeamHeader(rankings) {
-        document.getElementById('page-title').textContent = `${teamData.team_name} - RKL Season 7`;
-        document.getElementById('header-title').textContent = teamData.team_name;
+        document.getElementById('page-title').textContent = `${escapeHTML(teamData.team_name)} - RKL Season 7`;
+        document.getElementById('header-title').textContent = escapeHTML(teamData.team_name);
         
         const wins = parseInt(teamData.wins || 0);
         const losses = parseInt(teamData.losses || 0);
@@ -1531,7 +1487,7 @@
       }
       
       async function loadSchedule() {
-        const scheduleData = await fetchSheetData('Schedule'); // Use specific var name
+        const scheduleData = await fetchSheetData('Schedule'); 
         
         if (!scheduleData) {
           document.getElementById('team-schedule').innerHTML = 
@@ -1555,7 +1511,7 @@
           const opponentName = getTeamName(opponentId);
           const isCompleted = game.completed === 'TRUE';
           const gameWeek = game.week || 'TBD';
-          const gameDateFormatted = formatDateMMDD(game.date); // Formatted for display
+          const gameDateFormatted = formatDateMMDD(game.date); 
           
           let opponentRecord = '';
           if (isCompleted) {
@@ -1576,8 +1532,8 @@
           }
           
           let clickHandler = '';
-          let teamScoreText = ''; // Renamed to avoid confusion
-          let oppScoreText = '';  // Renamed
+          let teamScoreText = ''; 
+          let oppScoreText = '';  
           let teamScoreClass = '';
           let oppScoreClass = '';
           let teamWon = false;
@@ -1642,8 +1598,8 @@
                 </div>
               </div>
 
-              <div class="game-matchup"> {/* Mobile specific structure */}
-                <div class="week-badge">${gameWeek}</div> {/* Mobile week badge */}
+              <div class="game-matchup"> 
+                <div class="week-badge">${gameWeek}</div> 
                 
                 <div class="team ${teamWon ? 'winner' : oppWon ? 'loser' : 'upcoming'}">
                   <img src="icons/${teamId}.webp" alt="${escapeHTML(teamData.team_name)}" class="team-logo" onerror="this.style.display='none'">
@@ -1670,11 +1626,11 @@
         document.getElementById('team-schedule').innerHTML = gamesHTML;
         
         if (window.innerWidth <= 768) {
-          const gameItems = document.querySelectorAll('#team-schedule .game-item'); // Target schedule game items
+          const gameItems = document.querySelectorAll('#team-schedule .game-item'); 
           teamGames.forEach((game, index) => {
             if (gameItems[index]) {
               const mobileDateContainer = gameItems[index].querySelector('.game-matchup');
-              if (mobileDateContainer) { // Check if mobile structure exists
+              if (mobileDateContainer) { 
                 const mobileDate = document.createElement('div');
                 mobileDate.className = 'mobile-date-under-badge';
                 mobileDate.style.position = 'absolute';
@@ -1687,9 +1643,6 @@
                 mobileDate.style.width = '28px'; 
                 mobileDate.style.zIndex = '1';
                 mobileDate.textContent = formatDateMMDD(game.date);
-                // Prepend to game-matchup so it's within the relative positioning context
-                // but ensure it doesn't disrupt flex flow too much, or append to game-item directly.
-                // Appending to game-item is safer for absolute positioning relative to the whole item.
                 gameItems[index].appendChild(mobileDate);
               }
             }
@@ -1697,7 +1650,6 @@
         }
       }
       
-      // MODIFIED: loadDraftCapital for clickable pick details and linking
       async function loadDraftCapital() {
         const draftPicksData = await fetchSheetData('Draft_Capital');
         if (!draftPicksData) {
@@ -1745,7 +1697,7 @@
 
               if (!isOriginal && !isForfeited) {
                 const originalTeamName = getTeamName(pick.original_team);
-                let originTextContent = `from ${escapeHTML(originalTeamName)}`; // Text without stats first
+                let originTextContent = `from ${escapeHTML(originalTeamName)}`;
                 
                 const originalTeamDataStats = allTeams.find(t => t.team_id === pick.original_team);
                 if (originalTeamDataStats) {
@@ -1755,7 +1707,6 @@
                   const pamFormatted = Math.abs(originalPAM) >= 1000 ? 
                     (originalPAM / 1000).toFixed(1) + 'k' : 
                     Math.round(originalPAM).toString();
-                  // Append stats with its own span for styling, will be included in link if created
                   originTextContent += ` <span class="pick-origin-stats">(${originalWins}-${originalLosses}, ${pamFormatted} PAM)</span>`;
                 }
 
@@ -1776,7 +1727,6 @@
                     
                     const transactionsLink = `transactions.html?type=TRADE&date=${formattedDateForLink}&teamFilters=${notedTeam1ID},${notedTeam2ID}&pick_id=${encodeURIComponent(pick.pick_id || '')}`;
                     
-                    // The link wraps the entire originTextContent
                     originDisplayHTML = `<div class="pick-origin">
                                              <a href="${transactionsLink}" title="View transaction: ${escapeHTML(pick.notes)}">
                                                  ${originTextContent}
@@ -1786,7 +1736,6 @@
                   }
                 }
                 if (!linkCreated) {
-                  // If no link, wrap in div with default styling (color: #666 for "from Team", stats part is blue via its class)
                   originDisplayHTML = `<div class="pick-origin" style="color: #666;">${originTextContent}</div>`;
                 }
 
@@ -1796,7 +1745,7 @@
               
               return `
                 <div class="pick-item-enhanced" style="background-color: ${isOriginal && !isForfeited ? '#e8f5e8' : (isForfeited ? '#f8d7da' : '#fff3cd')};">
-                  <div> {/* This div wraps description and origin for flex layout */}
+                  <div>
                     <span class="pick-description">${pickDescriptionText}</span>
                     ${originDisplayHTML}
                   </div>
@@ -1867,10 +1816,10 @@
       async function showGameDetails(team1Id, team2Id, date) {
         const modal = document.getElementById('game-modal');
         const modalTitle = document.getElementById('modal-title');
-        const modalContentEl = document.getElementById('modal-content'); // Renamed
+        const modalContentEl = document.getElementById('modal-content'); 
         
         modal.style.display = 'block';
-        modalTitle.textContent = `${getTeamName(team1Id)} vs ${getTeamName(team2Id)} - ${formatDateShort(date)}`;
+        modalTitle.textContent = `${escapeHTML(getTeamName(team1Id))} vs ${escapeHTML(getTeamName(team2Id))} - ${formatDateShort(date)}`;
         modalContentEl.innerHTML = '<div class="loading">Loading game details...</div>';
         
         const scheduleData = await fetchSheetData('Schedule');
@@ -1890,7 +1839,7 @@
           return;
         }
         
-        const lineupsData = await fetchSheetData('Lineups'); // Renamed
+        const lineupsData = await fetchSheetData('Lineups'); 
         if (!lineupsData) {
           modalContentEl.innerHTML = '<div class="error">Error loading lineup data</div>';
           return;
@@ -1930,8 +1879,8 @@
         
         const winner = game.winner;
         
-        const generateLineupTable = (lineupsForTable, idOfTeam, total, isWinner) => { // Renamed params
-          const teamDetailsForModal = allTeams.find(t => t.team_id === idOfTeam); // Renamed
+        const generateLineupTable = (lineupsForTable, idOfTeam, total, isWinner) => { 
+          const teamDetailsForModal = allTeams.find(t => t.team_id === idOfTeam); 
           const teamRecord = teamDetailsForModal ? `${teamDetailsForModal.wins || 0}-${teamDetailsForModal.losses || 0}` : '';
           
           if (lineupsForTable.length === 0) {
