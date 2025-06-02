@@ -607,7 +607,7 @@
         align-items: center;
       }
 
-      .modal-header h3 { /* Default style for modal title */
+      .modal-header h3 { 
         color: white;
         margin: 0;
         font-size: 1.4rem;
@@ -983,8 +983,7 @@
         .modal-body {
           padding: 1rem;
         }
-
-        /* ADDED: Mobile responsive modal title */
+        
         .modal-header h3 {
           font-size: 1.1rem; 
           line-height: 1.3;  
@@ -1057,8 +1056,7 @@
         .player-rel { 
           align-self: flex-end;
         }
-
-        /* ADDED: Further responsive modal title for very small screens */
+        
         .modal-header h3 {
           font-size: 1.0rem; 
         }
@@ -1732,12 +1730,16 @@
             
             const picksHTML = picks.map(pick => {
               const isOriginal = pick.original_team === teamId;
-              const isForfeited = pick.notes && pick.notes.toUpperCase().includes('FORFEITED');
+              // MODIFIED: Consistent check for pending forfeiture
+              const isPendingForfeiture = pick.notes && pick.notes.toUpperCase() === 'PENDING FORFEITURE';
               
               let originDisplayHTML = '';
               let pickDescriptionText = escapeHTML(pick.pick_description);
 
-              if (!isOriginal && !isForfeited) {
+              // MODIFIED: Logic for pending forfeiture takes precedence for origin display
+              if (isPendingForfeiture) {
+                originDisplayHTML = `<div class="pick-origin" style="font-size: 0.8rem; color: #dc3545; font-weight: bold;">PENDING FORFEITURE</div>`;
+              } else if (!isOriginal) { // Only show "from" if not original AND not pending forfeiture
                 const originalTeamName = getTeamName(pick.original_team);
                 let originTextContent = `from ${escapeHTML(originalTeamName)}`;
                 
@@ -1753,7 +1755,7 @@
                 }
 
                 let linkCreated = false;
-                if (pick.notes) {
+                if (pick.notes) { // Check notes for linking only if not pending forfeiture
                   const citationRegex = /\b([A-Z]{2,4})\s*\/\s*([A-Z]{2,4})\s+(\d{1,2}\/\d{1,2}\/\d{4})\b/i;
                   const noteMatch = pick.notes.match(citationRegex);
 
@@ -1777,22 +1779,28 @@
                     linkCreated = true;
                   }
                 }
-                if (!linkCreated) {
+                if (!linkCreated) { // If not linkable but acquired
                   originDisplayHTML = `<div class="pick-origin" style="color: #666;">${originTextContent}</div>`;
                 }
-
-              } else if (isForfeited) {
-                originDisplayHTML = `<div class="pick-origin" style="font-size: 0.8rem; color: #dc3545; font-weight: bold;">FORFEITED</div>`;
               }
+              // No originDisplayHTML will be set if it's original and not pending_forfeiture
               
+              // Determine background color
+              let pickBackgroundColor = '#e8f5e8'; // Default for original
+              if (isPendingForfeiture) {
+                pickBackgroundColor = '#f8d7da'; // Reddish for pending forfeiture
+              } else if (!isOriginal) {
+                pickBackgroundColor = '#fff3cd'; // Yellowish for acquired
+              }
+
               return `
-                <div class="pick-item-enhanced" style="background-color: ${isOriginal && !isForfeited ? '#e8f5e8' : (isForfeited ? '#f8d7da' : '#fff3cd')};">
+                <div class="pick-item-enhanced" style="background-color: ${pickBackgroundColor};">
                   <div>
                     <span class="pick-description">${pickDescriptionText}</span>
                     ${originDisplayHTML}
                   </div>
                   <div class="pick-status">
-                    ${isForfeited ? 'Forfeited' : (isOriginal ? 'Own Pick' : 'Acquired')}
+                    ${isPendingForfeiture ? 'Pending Forfeiture' : (isOriginal ? 'Own Pick' : 'Acquired')}
                   </div>
                 </div>
               `;
@@ -1811,10 +1819,11 @@
             `;
           }).join('');
         
+        // MODIFIED: Summary counts to correctly reflect pending forfeiture
         const totalPicks = teamPicks.length;
-        const ownPicks = teamPicks.filter(p => p.original_team === teamId && !(p.notes && p.notes.toUpperCase().includes('FORFEITED'))).length;
-        const acquiredPicks = teamPicks.filter(p => p.original_team !== teamId && !(p.notes && p.notes.toUpperCase().includes('FORFEITED'))).length;
-        const forfeitedPicksCount = teamPicks.filter(p => p.notes && p.notes.toUpperCase().includes('FORFEITED')).length;
+        const summaryPendingForfeitureCount = teamPicks.filter(p => p.notes && p.notes.toUpperCase() === 'PENDING FORFEITURE').length;
+        const summaryOwnPicks = teamPicks.filter(p => p.original_team === teamId && !(p.notes && p.notes.toUpperCase() === 'PENDING FORFEITURE')).length;
+        const summaryAcquiredPicks = teamPicks.filter(p => p.original_team !== teamId && !(p.notes && p.notes.toUpperCase() === 'PENDING FORFEITURE')).length;
         
         const summaryHTML = `
           <div class="draft-summary" style="background-color: #f8f9fa; padding: 1.5rem; border-radius: 6px; margin-bottom: 1.5rem; border: 1px solid #ddd;">
@@ -1824,17 +1833,17 @@
                 <div style="font-size: 0.9rem; color: #666;">Total Picks</div>
               </div>
               <div>
-                <div style="font-size: 1.5rem; font-weight: bold; color: #28a745;">${ownPicks}</div>
+                <div style="font-size: 1.5rem; font-weight: bold; color: #28a745;">${summaryOwnPicks}</div>
                 <div style="font-size: 0.9rem; color: #666;">Own Picks</div>
               </div>
               <div>
-                <div style="font-size: 1.5rem; font-weight: bold; color: #007bff;">${acquiredPicks}</div>
+                <div style="font-size: 1.5rem; font-weight: bold; color: #007bff;">${summaryAcquiredPicks}</div>
                 <div style="font-size: 0.9rem; color: #666;">Acquired</div>
               </div>
-              ${forfeitedPicksCount > 0 ? `
+              ${summaryPendingForfeitureCount > 0 ? `
                 <div>
-                  <div style="font-size: 1.5rem; font-weight: bold; color: #dc3545;">${forfeitedPicksCount}</div>
-                  <div style="font-size: 0.9rem; color: #666;">Forfeited</div>
+                  <div style="font-size: 1.5rem; font-weight: bold; color: #dc3545;">${summaryPendingForfeitureCount}</div>
+                  <div style="font-size: 0.9rem; color: #666;">Pending Forfeiture</div>
                 </div>
               ` : ''}
             </div>
