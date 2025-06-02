@@ -363,7 +363,7 @@
         flex-direction: row-reverse;
       }
 
-      .team-details {
+      .team-details { /* This is for team details within game items, not the main page header */
         display: flex;
         flex-direction: column;
         min-width: 0;
@@ -460,7 +460,7 @@
       }
 
       .loss {
-        color: #333;
+        color: #333; /* Default color for losing score, not red unless specifically styled */
       }
 
       .upcoming {
@@ -469,7 +469,7 @@
       }
 
       /* Hide mobile layout on desktop */
-      .team-matchup,
+      .team-matchup, /* These are for the mobile version of game items */
       .team,
       .team-info,
       .vs {
@@ -477,11 +477,11 @@
       }
 
       /* Hide mobile week badge on desktop specifically */
-      .game-matchup .week-badge {
+      .game-matchup .week-badge { /* This ensures only mobile badge is hidden on desktop if structure is shared */
         display: none;
       }
 
-      .team-logo {
+      .team-logo { /* General team logo, used in modal too */
         width: 20px;
         height: 20px;
         vertical-align: middle;
@@ -492,7 +492,7 @@
         background-color: #007bff;
         color: white;
         border-radius: 50%;
-        width: 18px;
+        width: 18px; /* Small badge for desktop table cell */
         height: 18px;
         display: flex;
         align-items: center;
@@ -524,7 +524,7 @@
         overflow-y: auto;
       }
 
-      .pick-item {
+      .pick-item { /* This seems to be a generic class name, maybe for old draft capital style? */
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -538,7 +538,7 @@
         border-bottom: none;
       }
 
-      .pick-description {
+      .pick-description { /* Also potentially generic or for the enhanced view */
         font-weight: 500;
       }
 
@@ -546,12 +546,24 @@
         color: #666;
         font-size: 0.8rem;
       }
+      .pick-origin a { /* Style for linked pick origins */
+        color: #007bff; /* Standard link color */
+        text-decoration: none;
+      }
+      .pick-origin a:hover {
+        text-decoration: underline;
+      }
+      .pick-origin .pick-origin-stats { /* Ensure stats within a link also look like part of the link */
+         color: inherit; /* Inherit color from the <a> tag if nested */
+      }
+
 
       .pick-origin-stats {
         font-size: 0.75rem;
-        color: #007bff;
+        color: #007bff; /* Default color if not part of a link, or if link color is set to inherit */
         margin-left: 0.5rem;
       }
+
 
       /* Game item hover effects for completed games */
       .game-item[onclick] {
@@ -560,7 +572,7 @@
       }
 
       .game-item[onclick]:hover {
-        background-color: #e8f5e8 !important;
+        background-color: #e8f5e8 !important; /* Ensure hover is distinct */
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       }
@@ -642,7 +654,7 @@
         border-width: 2px;
       }
 
-      .modal-team-header {
+      .modal-team-header { /* Renamed to avoid conflict with .team-header on main page */
         background-color: #333;
         color: white;
         padding: 1.5rem;
@@ -664,7 +676,7 @@
         font-size: 1.2rem;
       }
 
-      .modal-team-header .team-logo {
+      .modal-team-header .team-logo { /* Uses general .team-logo */
         width: 48px;
         height: 48px;
         border-radius: 4px;
@@ -744,7 +756,7 @@
         font-weight: 500;
       }
 
-      .player-link {
+      .player-link { /* Link style for player names in modal */
         color: #007bff;
         text-decoration: none;
         font-weight: 500;
@@ -766,10 +778,20 @@
         color: #666;
       }
 
-      /* Enhanced pick items */
+      /* Enhanced pick items for draft capital section */
       .pick-item-enhanced {
         transition: background-color 0.2s ease;
+        /* Base style, flex direction will be row by default */
+        display: flex; 
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8rem;
+        border-bottom: 1px solid #eee;
       }
+      .pick-item-enhanced > div:first-child { /* Container for description and origin */
+        text-align: left; /* Default for desktop */
+      }
+
 
       .pick-item-enhanced:hover {
         background-color: #f8f9fa !important;
@@ -778,6 +800,11 @@
       .pick-item-enhanced:last-child {
         border-bottom: none;
       }
+      .pick-status { /* For "Own Pick" / "Acquired" text */
+          font-size: 0.8rem;
+          color: #666;
+      }
+
 
       /* Season group styling */
       .season-group {
@@ -786,7 +813,7 @@
         overflow: hidden;
       }
 
-      .season-header {
+      .season-header { /* This is for the Draft Capital section's season headers */
         font-size: 1.1rem;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -849,12 +876,12 @@
           grid-template-columns: repeat(2, 1fr);
         }
         
-        .player-item {
+        .player-item { /* For roster */
           padding: 0.75rem;
         }
 
         /* Mobile game styling with optimized week badge positioning */
-        .game-item {
+        .game-item { /* For schedule */
           padding: 0.75rem;
           margin-left: 0;
           position: relative;
@@ -862,7 +889,7 @@
         }
 
         /* Show mobile week badge only on mobile */
-        .game-matchup .week-badge {
+        .game-matchup .week-badge { /* For schedule mobile view */
           display: flex !important;
           position: absolute;
           top: 0.75rem;
@@ -883,7 +910,7 @@
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .game-matchup {
+        .game-matchup { /* For schedule mobile view */
           display: flex;
           flex-direction: column;
           gap: 0.75rem;
@@ -892,7 +919,7 @@
           padding-right: 35px; /* Space for week badge */
         }
 
-        .team {
+        .team { /* For schedule mobile view */
           display: flex;
           align-items: center;
           gap: 0.5rem;
@@ -900,39 +927,33 @@
           width: 100%;
         }
 
-        .team-info {
+        .team-info { /* For schedule mobile view */
           display: flex;
           flex-direction: column;
           min-width: 0;
           flex: 1;
         }
 
-        .team-name {
+        .team-name { /* General team name styling, used in schedule mobile view too */
           font-weight: 500;
-          font-size: 0.9rem;
+          font-size: 0.9rem; /* Base size for team names in compact views */
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
 
-        .team-name.win {
-          color: #28a745;
-        }
+        /* Colors for win/loss/upcoming in schedule mobile view */
+        .team-name.win { color: #28a745; }
+        .team-name.loss { color: #dc3545; } /* If you want red for loss */
+        .team-name.upcoming { color: #333; }
 
-        .team-name.loss {
-          color: #dc3545;
-        }
 
-        .team-name.upcoming {
-          color: #333;
-        }
-
-        .team-record {
+        .team-record { /* For schedule mobile view */
           font-size: 0.8rem;
           color: #666;
         }
 
-        .team-score {
+        .team-score { /* For schedule mobile view */
           font-weight: bold;
           color: #333;
           margin-left: auto;
@@ -940,30 +961,22 @@
           text-align: right;
           flex-shrink: 0;
         }
+        .team-score.win { color: #28a745; }
+        .team-score.loss { color: #dc3545; } /* If you want red for loss score */
+        .team-score.upcoming { color: #333; }
 
-        .team-score.win {
-          color: #28a745;
-        }
 
-        .team-score.loss {
-          color: #dc3545;
-        }
-
-        .team-score.upcoming {
-          color: #333;
-        }
-
-        .vs {
+        .vs { /* For schedule mobile view */
           display: none;
         }
 
-        .team-logo {
+        .team-logo { /* Used in schedule mobile view also */
           width: 32px;
           height: 32px;
           vertical-align: middle;
         }
 
-        /* Hide desktop layout elements on mobile */
+        /* Hide desktop layout elements on mobile for schedule */
         .game-info-table,
         .game-content-table {
           display: none;
@@ -983,14 +996,27 @@
           gap: 1rem !important;
         }
         
+        /* MODIFIED: Draft Capital Mobile Alignment */
         .pick-item-enhanced {
           flex-direction: column;
-          align-items: flex-start;
+          align-items: center; /* Center items for mobile */
           gap: 0.5rem;
+          text-align: center; /* Center text within pick description and origin */
+        }
+        .pick-item-enhanced > div:first-child { /* Container for description and origin */
+            text-align: center; /* Ensure text inside is centered */
+        }
+        .pick-description { /* Specifically for the pick name itself */
+            display: block; /* Make it block to allow centering if it's inline by default */
+            margin: 0 auto; /* Center block if it has a width */
+        }
+        .pick-origin {
+            margin-top: 0.25rem; /* Add some space if needed */
         }
         
         .pick-status {
-          align-self: flex-end;
+          align-self: center; /* Center the "Own Pick / Acquired" text too */
+          margin-top: 0.5rem;
         }
       }
 
@@ -999,28 +1025,25 @@
           grid-template-columns: 1fr;
         }
 
-        .mobile-team-name {
+        .mobile-team-name { /* This class isn't used in the current HTML structure provided for team names */
           font-size: 0.85rem;
         }
 
-        .mobile-team-record {
+        .mobile-team-record { /* This class isn't used */
           font-size: 0.75rem;
         }
 
-        .player-item {
+        .player-item { /* Roster items */
           flex-direction: column;
           align-items: flex-start;
           gap: 0.5rem;
         }
 
-        .player-rel {
+        .player-rel { /* Roster REL value */
           align-self: flex-end;
         }
 
-        .game-details-grid {
-          grid-template-columns: 1fr !important;
-          gap: 1rem !important;
-        }
+        /* Game details modal grid already handled by 768px query */
       }
 
       /* Footer */
@@ -1116,7 +1139,8 @@
       let teamData = null;
       let allTeams = [];
       let allWeeklyAverages = [];
-      
+      let allTransactionsLogData = []; // Added to store transaction log
+
       // Helper function to format numbers in thousands (e.g., 36552 -> 36.6k)
       function formatInThousands(value) {
         const num = parseFloat(value);
@@ -1207,6 +1231,15 @@
         const parsed = parseFloat(cleaned);
         return isNaN(parsed) ? 0 : parsed;
       }
+
+      function escapeHTML(str) {
+        if (typeof str !== 'string') return str; 
+        return str.replace(/&/g, '&amp;')
+                  .replace(/</g, '&lt;')
+                  .replace(/>/g, '&gt;')
+                  .replace(/"/g, '&quot;')
+                  .replace(/'/g, '&#039;');
+      }
       
       // Get URL parameter
       function getUrlParameter(name) {
@@ -1221,20 +1254,19 @@
       }
       
       // Get team name from ID
-      function getTeamName(teamId) {
-        const team = allTeams.find(t => t.team_id === teamId);
-        return team ? team.team_name : teamId;
+      function getTeamName(teamIdToFind) { // Renamed param to avoid conflict
+        const team = allTeams.find(t => t.team_id === teamIdToFind);
+        return team ? team.team_name : teamIdToFind;
       }
       
       // Get team record at specific date (useful for historical records)
-      function getTeamRecordAtDate(teamId, targetDate, schedule) {
-        // Get all completed games for this team up to the target date
+      function getTeamRecordAtDate(teamIdForRecord, targetDate, schedule) { // Renamed param
         const completedGames = schedule.filter(game => {
           const gameDate = new Date(game.date);
           const target = new Date(targetDate);
           return gameDate <= target && 
                  game.completed === 'TRUE' && 
-                 (game.team1_id === teamId || game.team2_id === teamId);
+                 (game.team1_id === teamIdForRecord || game.team2_id === teamIdForRecord);
         });
         
         let wins = 0;
@@ -1242,9 +1274,9 @@
         
         completedGames.forEach(game => {
           const winner = game.winner;
-          if (winner === teamId) {
+          if (winner === teamIdForRecord) {
             wins++;
-          } else if (winner && (game.team1_id === teamId || game.team2_id === teamId)) {
+          } else if (winner && (game.team1_id === teamIdForRecord || game.team2_id === teamIdForRecord)) {
             losses++;
           }
         });
@@ -1252,9 +1284,7 @@
         return `${wins}-${losses}`;
       }
 
-      // Calculate REL Median for a specific player (matches leaderboards.html)
       function calculatePlayerRELMedian(playerHandle, weeklyAverages, lineups) {
-        // Get all games where this player started
         const playerGames = lineups.filter(lineup => 
           lineup.player_handle === playerHandle && 
           (lineup.started === 'TRUE' || lineup.started === true || lineup.started === 'true')
@@ -1264,7 +1294,6 @@
           return 0;
         }
         
-        // Create lookup map for weekly averages by date
         const weeklyAveragesMap = {};
         weeklyAverages.forEach(week => {
           if (week.date) {
@@ -1274,7 +1303,6 @@
           }
         });
         
-        // Calculate average REL
         let totalPlayerKarma = 0;
         let totalMedianKarma = 0;
         let validGames = 0;
@@ -1290,14 +1318,12 @@
           }
         });
         
-        // Calculate average-based REL
         const avgPlayerKarma = validGames > 0 ? totalPlayerKarma / validGames : 0;
         const avgMedianKarma = validGames > 0 ? totalMedianKarma / validGames : 0;
         
         return avgMedianKarma > 0 ? (avgPlayerKarma / avgMedianKarma) : 0;
       }
 
-            // Helper function to convert number to ordinal (1st, 2nd, 3rd, 4th, etc.)
       function getOrdinal(num) {
         const n = parseInt(num);
         if (n <= 0) return 'Unranked';
@@ -1307,36 +1333,32 @@
         return n + (suffix[(v - 20) % 10] || suffix[v] || suffix[0]);
       }
       
-      // Calculate team rankings for each stat
-      function calculateTeamRankings(teamData, allTeamsData) {
+      function calculateTeamRankings(currentTeamData, allTeamsData) { // Renamed param
         const rankings = {};
         
-        // Record ranking within conference
         const conferenceTeams = allTeamsData
-          .filter(t => t.conference === teamData.conference)
+          .filter(t => t.conference === currentTeamData.conference)
           .sort((a, b) => {
             const winsA = parseInt(a.wins || 0);
             const winsB = parseInt(b.wins || 0);
             if (winsB !== winsA) return winsB - winsA;
             return parseFloat(b.pam || 0) - parseFloat(a.pam || 0);
           });
-        rankings.record = conferenceTeams.findIndex(t => t.team_id === teamData.team_id) + 1;
+        rankings.record = conferenceTeams.findIndex(t => t.team_id === currentTeamData.team_id) + 1;
         
-        // PAM ranking overall
         const pamTeams = allTeamsData
           .sort((a, b) => parseFloat(b.pam || 0) - parseFloat(a.pam || 0));
-        rankings.pam = pamTeams.findIndex(t => t.team_id === teamData.team_id) + 1;
+        rankings.pam = pamTeams.findIndex(t => t.team_id === currentTeamData.team_id) + 1;
         
-        // Med Rank ranking overall (lower median rank is better)
         const medRankTeams = allTeamsData
           .filter(t => parseFloat(t.med_starter_rank || 0) > 0)
           .sort((a, b) => parseFloat(a.med_starter_rank || 999) - parseFloat(b.med_starter_rank || 999));
-        rankings.medRank = medRankTeams.findIndex(t => t.team_id === teamData.team_id) + 1;
+        rankings.medRank = medRankTeams.findIndex(t => t.team_id === currentTeamData.team_id) + 1;
         
         return rankings;
       }
       
-      // Load team data
+      // MODIFIED: Added Transaction_Log to initial fetch
       async function loadTeamData() {
         teamId = getUrlParameter('id');
         if (!teamId) {
@@ -1345,38 +1367,41 @@
           return;
         }
         
-        const [teams, weeklyAverages] = await Promise.all([
+        const [teamsResult, weeklyAveragesResult, transactionsLogResult] = await Promise.all([
           fetchSheetData('Teams'),
-          fetchSheetData('Weekly_Averages')
+          fetchSheetData('Weekly_Averages'),
+          fetchSheetData('Transaction_Log') // Fetch transaction log
         ]);
         
-        if (!teams) {
+        if (!teamsResult) { // Check critical data (Teams)
           document.getElementById('team-main-info').innerHTML = 
-            '<div class="error">Error loading team data</div>';
+            '<div class="error">Error loading team data (Teams sheet).</div>';
           return;
         }
         
-        allTeams = teams;
-        allWeeklyAverages = weeklyAverages || [];
-        teamData = teams.find(team => team.team_id === teamId);
+        allTeams = teamsResult;
+        allWeeklyAverages = weeklyAveragesResult || [];
+        allTransactionsLogData = transactionsLogResult || []; // Store globally
+
+        teamData = allTeams.find(team => team.team_id === teamId);
         if (!teamData) {
           document.getElementById('team-main-info').innerHTML = 
             '<div class="error">Team not found</div>';
           return;
         }
         
-        // Calculate rankings for team stats
-        const activeTeams = teams.filter(t => 
+        const activeTeamsForRanking = allTeams.filter(t => 
           t.team_id && 
           t.team_id !== 'RETIRED' && 
           t.team_id !== 'FREE_AGENT' &&
           t.conference
         );
-        const rankings = calculateTeamRankings(teamData, activeTeams);
+        const rankings = calculateTeamRankings(teamData, activeTeamsForRanking);
         
-        displayTeamHeader(rankings); // Pass rankings here
+        displayTeamHeader(rankings);
         
         // Load other data in parallel
+        // These functions can now use the global allTransactionsLogData if needed
         await Promise.all([
           loadRoster(),
           loadSchedule(),
@@ -1384,39 +1409,32 @@
         ]);
       }
       
-      // Display team header
-      // Note: The original code had a nested function also named displayTeamHeader.
-      // I've corrected this by making the outer function accept 'rankings'
-      // and removed the unnecessary nesting.
-      function displayTeamHeader(rankings) { // Outer function definition starts here
-        // Update page title
+      function displayTeamHeader(rankings) {
         document.getElementById('page-title').textContent = `${teamData.team_name} - RKL Season 7`;
         document.getElementById('header-title').textContent = teamData.team_name;
         
-        // Team main info
         const wins = parseInt(teamData.wins || 0);
         const losses = parseInt(teamData.losses || 0);
         const pam = parseFloat(teamData.pam || 0);
         
         document.getElementById('team-main-info').innerHTML = `
           <div style="display: flex; align-items: center; gap: 1.5rem;">
-            <img src="icons/${teamData.team_id}.webp" alt="${teamData.team_name}" class="team-logo-large" onerror="this.style.display='none'">
+            <img src="icons/${teamData.team_id}.webp" alt="${escapeHTML(teamData.team_name)}" class="team-logo-large" onerror="this.style.display='none'">
             <div class="team-details">
-              <h2>${teamData.team_name}</h2>
-              <div class="team-subtitle">${teamData.team_id} • ${teamData.conference} Conference</div>
-              <div class="gm-info">General Manager: ${teamData.gm_handle}</div>
+              <h2>${escapeHTML(teamData.team_name)}</h2>
+              <div class="team-subtitle">${escapeHTML(teamData.team_id)} • ${escapeHTML(teamData.conference)} Conference</div>
+              <div class="gm-info">General Manager: ${escapeHTML(teamData.gm_handle)}</div>
             </div>
           </div>
         `;
         
-        // This was the inner function, now integrated into the main displayTeamHeader
         const medRank = parseFloat(teamData.med_starter_rank || 0);
         
         document.getElementById('team-stats').innerHTML = `
           <div class="stat-card">
             <div class="stat-value ${wins > losses ? 'positive' : losses > wins ? 'negative' : ''}">${wins}-${losses}</div>
             <div class="stat-label">Record</div>
-            <div class="stat-rank">${getOrdinal(rankings.record)} in ${teamData.conference} Conference</div>
+            <div class="stat-rank">${getOrdinal(rankings.record)} in ${escapeHTML(teamData.conference)} Conference</div>
           </div>
           <div class="stat-card">
             <div class="stat-value ${pam > 0 ? 'positive' : pam < 0 ? 'negative' : ''}">${Math.round(pam).toLocaleString()}</div>
@@ -1435,9 +1453,8 @@
         `;
         
         document.getElementById('team-stats').style.display = 'grid';
-      } // <<< THIS IS THE CORRECTED CLOSING BRACE for the main displayTeamHeader function
+      }
       
-      // Load roster with proper REL calculation and clickable player names
       async function loadRoster() {
         const [players, lineups] = await Promise.all([
           fetchSheetData('Players'),
@@ -1459,7 +1476,6 @@
           return;
         }
         
-        // Calculate REL Median for each player and sort by it
         const playersWithREL = teamPlayers.map(player => {
           const relMedian = calculatePlayerRELMedian(player.player_handle, allWeeklyAverages, lineups || []);
           return {
@@ -1472,7 +1488,6 @@
           const relMedian = player.calculated_rel_median;
           const gamesPlayed = parseInt(player.games_played || 0);
           
-          // Calculate average global rank from lineups data
           let avgGlobalRank = 0;
           if (lineups) {
             const playerLineups = lineups.filter(lineup => 
@@ -1491,7 +1506,7 @@
           return `
             <div class="player-item">
               <div class="player-info">
-                <a href="player.html?player=${encodeURIComponent(player.player_handle)}" class="player-name">${player.player_handle}</a>
+                <a href="player.html?player=${encodeURIComponent(player.player_handle)}" class="player-name">${escapeHTML(player.player_handle)}</a>
                 <div class="player-stats">
                   ${gamesPlayed} games • 
                   ${avgGlobalRank > 0 ? avgGlobalRank : '-'} avg rank
@@ -1515,19 +1530,18 @@
         document.getElementById('roster-list').innerHTML = finalHTML;
       }
       
-      // Load complete schedule with historical opponent records and dates
       async function loadSchedule() {
-        const schedule = await fetchSheetData('Schedule');
+        const scheduleData = await fetchSheetData('Schedule'); // Use specific var name
         
-        if (!schedule) {
+        if (!scheduleData) {
           document.getElementById('team-schedule').innerHTML = 
             '<div class="error">Error loading schedule data</div>';
           return;
         }
         
-        const teamGames = schedule
+        const teamGames = scheduleData
           .filter(game => game.team1_id === teamId || game.team2_id === teamId)
-          .sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort by date ascending
+          .sort((a, b) => new Date(a.date) - new Date(b.date)); 
         
         if (teamGames.length === 0) {
           document.getElementById('team-schedule').innerHTML = 
@@ -1541,33 +1555,29 @@
           const opponentName = getTeamName(opponentId);
           const isCompleted = game.completed === 'TRUE';
           const gameWeek = game.week || 'TBD';
-          const gameDate = formatDateMMDD(game.date);
+          const gameDateFormatted = formatDateMMDD(game.date); // Formatted for display
           
-          // Calculate opponent's record immediately following this game
           let opponentRecord = '';
           if (isCompleted) {
-            opponentRecord = getTeamRecordAtDate(opponentId, game.date, schedule);
+            opponentRecord = getTeamRecordAtDate(opponentId, game.date, scheduleData);
           } else {
-            // For upcoming games, show record up to the previous game
             const previousDate = new Date(game.date);
             previousDate.setDate(previousDate.getDate() - 1);
-            opponentRecord = getTeamRecordAtDate(opponentId, previousDate.toISOString().split('T')[0], schedule);
+            opponentRecord = getTeamRecordAtDate(opponentId, previousDate.toISOString().split('T')[0], scheduleData);
           }
 
-          // Calculate team's record immediately following this game
           let teamRecord = '';
           if (isCompleted) {
-            teamRecord = getTeamRecordAtDate(teamId, game.date, schedule);
+            teamRecord = getTeamRecordAtDate(teamId, game.date, scheduleData);
           } else {
-            // For upcoming games, show current record up to previous game
             const previousDate = new Date(game.date);
             previousDate.setDate(previousDate.getDate() - 1);
-            teamRecord = getTeamRecordAtDate(teamId, previousDate.toISOString().split('T')[0], schedule);
+            teamRecord = getTeamRecordAtDate(teamId, previousDate.toISOString().split('T')[0], scheduleData);
           }
           
           let clickHandler = '';
-          let teamScore = '';
-          let oppScore = '';
+          let teamScoreText = ''; // Renamed to avoid confusion
+          let oppScoreText = '';  // Renamed
           let teamScoreClass = '';
           let oppScoreClass = '';
           let teamWon = false;
@@ -1581,22 +1591,19 @@
             teamWon = teamScoreValue > oppScoreValue;
             oppWon = oppScoreValue > teamScoreValue;
             
-            teamScore = formatInThousands(teamScoreValue);
-            oppScore = formatInThousands(oppScoreValue);
+            teamScoreText = formatInThousands(teamScoreValue);
+            oppScoreText = formatInThousands(oppScoreValue);
             
-            // Only color scores green if they are the winning score
             teamScoreClass = teamWon ? 'win' : 'loss';
             oppScoreClass = oppWon ? 'win' : 'loss';
             
-            // Add click handler for completed games to show game details modal
             clickHandler = `onclick="showGameDetails('${game.team1_id}', '${game.team2_id}', '${game.date}')" style="cursor: pointer;"`;
           } else {
-            teamScore = '-';
-            oppScore = '-';
+            teamScoreText = '-';
+            oppScoreText = '-';
             teamScoreClass = 'upcoming';
             oppScoreClass = 'upcoming';
             
-            // For upcoming games, make team logos clickable
             logoClickHandlers = `onclick="window.location.href='team.html?id=${opponentId}'" style="cursor: pointer;"`;
           }
           
@@ -1607,53 +1614,53 @@
                   <div class="week-badge">${gameWeek}</div>
                 </div>
                 <div class="date-cell">
-                  <div class="date-badge">${gameDate}</div>
+                  <div class="date-badge">${gameDateFormatted}</div>
                 </div>
               </div>
               
               <div class="game-content-table">
                 <div class="team-section left">
-                  <img src="icons/${teamId}.webp" alt="${teamData.team_name}" class="team-logo-game" onerror="this.style.display='none'">
+                  <img src="icons/${teamId}.webp" alt="${escapeHTML(teamData.team_name)}" class="team-logo-game" onerror="this.style.display='none'">
                   <div class="team-details">
-                    <div class="team-name-game">${teamData.team_name}</div>
+                    <div class="team-name-game">${escapeHTML(teamData.team_name)}</div>
                     <div class="team-record-game">${teamRecord}</div>
                   </div>
                 </div>
                 
                 <div class="scores-section">
-                  <div class="score ${teamScoreClass}">${teamScore}</div>
+                  <div class="score ${teamScoreClass}">${teamScoreText}</div>
                   <div class="vs-text">vs</div>
-                  <div class="score ${oppScoreClass}">${oppScore}</div>
+                  <div class="score ${oppScoreClass}">${oppScoreText}</div>
                 </div>
                 
                 <div class="team-section right">
-                  <img src="icons/${opponentId}.webp" alt="${opponentName}" class="team-logo-game" ${logoClickHandlers} onerror="this.style.display='none'">
+                  <img src="icons/${opponentId}.webp" alt="${escapeHTML(opponentName)}" class="team-logo-game" ${logoClickHandlers} onerror="this.style.display='none'">
                   <div class="team-details right">
-                    <div class="team-name-game">${opponentName}</div>
+                    <div class="team-name-game">${escapeHTML(opponentName)}</div>
                     <div class="team-record-game">${opponentRecord}</div>
                   </div>
                 </div>
               </div>
 
-              <div class="game-matchup">
-                <div class="week-badge">${gameWeek}</div>
+              <div class="game-matchup"> {/* Mobile specific structure */}
+                <div class="week-badge">${gameWeek}</div> {/* Mobile week badge */}
                 
                 <div class="team ${teamWon ? 'winner' : oppWon ? 'loser' : 'upcoming'}">
-                  <img src="icons/${teamId}.webp" alt="${teamData.team_name}" class="team-logo" onerror="this.style.display='none'">
+                  <img src="icons/${teamId}.webp" alt="${escapeHTML(teamData.team_name)}" class="team-logo" onerror="this.style.display='none'">
                   <div class="team-info">
-                    <span class="team-name ${teamWon ? 'win' : oppWon ? 'loss' : 'upcoming'}">${teamData.team_name}</span>
+                    <span class="team-name ${teamWon ? 'win' : oppWon ? 'loss' : 'upcoming'}">${escapeHTML(teamData.team_name)}</span>
                     <span class="team-record">${teamRecord}</span>
                   </div>
-                  <span class="team-score ${teamScoreClass}">${teamScore}</span>
+                  <span class="team-score ${teamScoreClass}">${teamScoreText}</span>
                 </div>
                 <span class="vs">vs</span>
                 <div class="team ${oppWon ? 'winner' : teamWon ? 'loser' : 'upcoming'}">
-                  <img src="icons/${opponentId}.webp" alt="${opponentName}" class="team-logo" ${logoClickHandlers} onerror="this.style.display='none'">
+                  <img src="icons/${opponentId}.webp" alt="${escapeHTML(opponentName)}" class="team-logo" ${logoClickHandlers} onerror="this.style.display='none'">
                   <div class="team-info">
-                    <span class="team-name ${oppWon ? 'win' : teamWon ? 'loss' : 'upcoming'}">${opponentName}</span>
+                    <span class="team-name ${oppWon ? 'win' : teamWon ? 'loss' : 'upcoming'}">${escapeHTML(opponentName)}</span>
                     <span class="team-record">${opponentRecord}</span>
                   </div>
-                  <span class="team-score ${oppScoreClass}">${oppScore}</span>
+                  <span class="team-score ${oppScoreClass}">${oppScoreText}</span>
                 </div>
               </div>
             </div>
@@ -1662,39 +1669,44 @@
         
         document.getElementById('team-schedule').innerHTML = gamesHTML;
         
-        // Add mobile dates dynamically for mobile screens only
         if (window.innerWidth <= 768) {
-          const gameItems = document.querySelectorAll('.game-item');
+          const gameItems = document.querySelectorAll('#team-schedule .game-item'); // Target schedule game items
           teamGames.forEach((game, index) => {
             if (gameItems[index]) {
-              const mobileDate = document.createElement('div');
-              mobileDate.className = 'mobile-date-under-badge';
-              mobileDate.style.position = 'absolute';
-              mobileDate.style.top = '2.75rem'; // Position under the week badge
-              mobileDate.style.right = '0.75rem';
-              mobileDate.style.fontSize = '0.65rem';
-              mobileDate.style.color = '#666';
-              mobileDate.style.fontWeight = '500';
-              mobileDate.style.textAlign = 'center';
-              mobileDate.style.width = '28px'; // Same width as week badge
-              mobileDate.style.zIndex = '1';
-              mobileDate.textContent = formatDateMMDD(game.date);
-              gameItems[index].appendChild(mobileDate);
+              const mobileDateContainer = gameItems[index].querySelector('.game-matchup');
+              if (mobileDateContainer) { // Check if mobile structure exists
+                const mobileDate = document.createElement('div');
+                mobileDate.className = 'mobile-date-under-badge';
+                mobileDate.style.position = 'absolute';
+                mobileDate.style.top = '2.75rem'; 
+                mobileDate.style.right = '0.75rem';
+                mobileDate.style.fontSize = '0.65rem';
+                mobileDate.style.color = '#666';
+                mobileDate.style.fontWeight = '500';
+                mobileDate.style.textAlign = 'center';
+                mobileDate.style.width = '28px'; 
+                mobileDate.style.zIndex = '1';
+                mobileDate.textContent = formatDateMMDD(game.date);
+                // Prepend to game-matchup so it's within the relative positioning context
+                // but ensure it doesn't disrupt flex flow too much, or append to game-item directly.
+                // Appending to game-item is safer for absolute positioning relative to the whole item.
+                gameItems[index].appendChild(mobileDate);
+              }
             }
           });
         }
       }
       
-      // Load draft capital with original team stats for acquired picks
+      // MODIFIED: loadDraftCapital for clickable pick details and linking
       async function loadDraftCapital() {
-        const draftPicks = await fetchSheetData('Draft_Capital');
-        if (!draftPicks) {
+        const draftPicksData = await fetchSheetData('Draft_Capital');
+        if (!draftPicksData) {
           document.getElementById('draft-picks').innerHTML = 
             '<div class="error">Error loading draft capital data</div>';
           return;
         }
         
-        const teamPicks = draftPicks
+        const teamPicks = draftPicksData
           .filter(pick => pick.current_owner === teamId)
           .sort((a, b) => {
             const seasonA = parseInt(a.season || 0);
@@ -1709,7 +1721,6 @@
           return;
         }
         
-        // Group picks by season
         const picksBySeason = {};
         teamPicks.forEach(pick => {
           const season = pick.season;
@@ -1719,7 +1730,6 @@
           picksBySeason[season].push(pick);
         });
         
-        // Generate HTML grouped by season with color coding
         const seasonsHTML = Object.keys(picksBySeason)
           .sort((a, b) => parseInt(a) - parseInt(b))
           .map(season => {
@@ -1728,35 +1738,70 @@
             
             const picksHTML = picks.map(pick => {
               const isOriginal = pick.original_team === teamId;
-              const isForfeited = pick.notes && pick.notes.includes('FORFEITED');
+              const isForfeited = pick.notes && pick.notes.toUpperCase().includes('FORFEITED');
               
-              let originInfo = '';
+              let originDisplayHTML = '';
+              let pickDescriptionText = escapeHTML(pick.pick_description);
+
               if (!isOriginal && !isForfeited) {
-                // Get original team's current record and PAM
-                const originalTeamData = allTeams.find(t => t.team_id === pick.original_team);
-                if (originalTeamData) {
-                  const originalWins = parseInt(originalTeamData.wins || 0);
-                  const originalLosses = parseInt(originalTeamData.losses || 0);
-                  const originalPAM = parseFloat(originalTeamData.pam || 0);
-                  // Format PAM in thousands for all seasons
+                const originalTeamName = getTeamName(pick.original_team);
+                let originTextContent = `from ${escapeHTML(originalTeamName)}`; // Text without stats first
+                
+                const originalTeamDataStats = allTeams.find(t => t.team_id === pick.original_team);
+                if (originalTeamDataStats) {
+                  const originalWins = parseInt(originalTeamDataStats.wins || 0);
+                  const originalLosses = parseInt(originalTeamDataStats.losses || 0);
+                  const originalPAM = parseFloat(originalTeamDataStats.pam || 0);
                   const pamFormatted = Math.abs(originalPAM) >= 1000 ? 
                     (originalPAM / 1000).toFixed(1) + 'k' : 
                     Math.round(originalPAM).toString();
-                  originInfo = `from ${getTeamName(pick.original_team)} <span class="pick-origin-stats">(${originalWins}-${originalLosses}, ${pamFormatted} PAM)</span>`;
-                } else {
-                  originInfo = `from ${getTeamName(pick.original_team)}`;
+                  // Append stats with its own span for styling, will be included in link if created
+                  originTextContent += ` <span class="pick-origin-stats">(${originalWins}-${originalLosses}, ${pamFormatted} PAM)</span>`;
                 }
+
+                let linkCreated = false;
+                if (pick.notes) {
+                  const citationRegex = /\b([A-Z]{2,4})\s*\/\s*([A-Z]{2,4})\s+(\d{1,2}\/\d{1,2}\/\d{4})\b/i;
+                  const noteMatch = pick.notes.match(citationRegex);
+
+                  if (noteMatch) {
+                    const notedTeam1ID = noteMatch[1].toUpperCase();
+                    const notedTeam2ID = noteMatch[2].toUpperCase();
+                    const dateStr = noteMatch[3];
+                    const dateParts = dateStr.split('/');
+                    const year = dateParts[2];
+                    const month = String(dateParts[0]).padStart(2, '0');
+                    const day = String(dateParts[1]).padStart(2, '0');
+                    const formattedDateForLink = `${year}-${month}-${day}`;
+                    
+                    const transactionsLink = `transactions.html?type=TRADE&date=${formattedDateForLink}&teamFilters=${notedTeam1ID},${notedTeam2ID}&pick_id=${encodeURIComponent(pick.pick_id || '')}`;
+                    
+                    // The link wraps the entire originTextContent
+                    originDisplayHTML = `<div class="pick-origin">
+                                             <a href="${transactionsLink}" title="View transaction: ${escapeHTML(pick.notes)}">
+                                                 ${originTextContent}
+                                             </a>
+                                         </div>`;
+                    linkCreated = true;
+                  }
+                }
+                if (!linkCreated) {
+                  // If no link, wrap in div with default styling (color: #666 for "from Team", stats part is blue via its class)
+                  originDisplayHTML = `<div class="pick-origin" style="color: #666;">${originTextContent}</div>`;
+                }
+
+              } else if (isForfeited) {
+                originDisplayHTML = `<div class="pick-origin" style="font-size: 0.8rem; color: #dc3545; font-weight: bold;">FORFEITED</div>`;
               }
               
               return `
-                <div class="pick-item-enhanced" style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; border-bottom: 1px solid #eee; background-color: ${isOriginal ? '#e8f5e8' : '#fff3cd'};">
-                  <div>
-                    <span class="pick-description" style="font-weight: 500; font-family: monospace;">${pick.pick_description}</span>
-                    ${!isOriginal && !isForfeited ? `<div class="pick-origin" style="font-size: 0.8rem; color: #666;">${originInfo}</div>` : ''}
-                    ${isForfeited ? '<div class="pick-origin" style="font-size: 0.8rem; color: #dc3545; font-weight: bold;">FORFEITED</div>' : ''}
+                <div class="pick-item-enhanced" style="background-color: ${isOriginal && !isForfeited ? '#e8f5e8' : (isForfeited ? '#f8d7da' : '#fff3cd')};">
+                  <div> {/* This div wraps description and origin for flex layout */}
+                    <span class="pick-description">${pickDescriptionText}</span>
+                    ${originDisplayHTML}
                   </div>
-                  <div class="pick-status" style="font-size: 0.8rem; color: #666;">
-                    ${isOriginal ? 'Own Pick' : 'Acquired'}
+                  <div class="pick-status">
+                    ${isForfeited ? 'Forfeited' : (isOriginal ? 'Own Pick' : 'Acquired')}
                   </div>
                 </div>
               `;
@@ -1775,11 +1820,10 @@
             `;
           }).join('');
         
-        // Add summary at the top
         const totalPicks = teamPicks.length;
-        const ownPicks = teamPicks.filter(p => p.original_team === teamId).length;
-        const acquiredPicks = teamPicks.filter(p => p.original_team !== teamId && !(p.notes && p.notes.includes('FORFEITED'))).length;
-        const forfeitedPicks = teamPicks.filter(p => p.notes && p.notes.includes('FORFEITED')).length;
+        const ownPicks = teamPicks.filter(p => p.original_team === teamId && !(p.notes && p.notes.toUpperCase().includes('FORFEITED'))).length;
+        const acquiredPicks = teamPicks.filter(p => p.original_team !== teamId && !(p.notes && p.notes.toUpperCase().includes('FORFEITED'))).length;
+        const forfeitedPicksCount = teamPicks.filter(p => p.notes && p.notes.toUpperCase().includes('FORFEITED')).length;
         
         const summaryHTML = `
           <div class="draft-summary" style="background-color: #f8f9fa; padding: 1.5rem; border-radius: 6px; margin-bottom: 1.5rem; border: 1px solid #ddd;">
@@ -1796,9 +1840,9 @@
                 <div style="font-size: 1.5rem; font-weight: bold; color: #007bff;">${acquiredPicks}</div>
                 <div style="font-size: 0.9rem; color: #666;">Acquired</div>
               </div>
-              ${forfeitedPicks > 0 ? `
+              ${forfeitedPicksCount > 0 ? `
                 <div>
-                  <div style="font-size: 1.5rem; font-weight: bold; color: #dc3545;">${forfeitedPicks}</div>
+                  <div style="font-size: 1.5rem; font-weight: bold; color: #dc3545;">${forfeitedPicksCount}</div>
                   <div style="font-size: 0.9rem; color: #666;">Forfeited</div>
                 </div>
               ` : ''}
@@ -1809,121 +1853,94 @@
         document.getElementById('draft-picks').innerHTML = summaryHTML + seasonsHTML;
       }
 
-      // Helper function to get season-specific colors
       function getSeasonColor(season) {
         const colors = {
-          8: '#007bff',   // Blue
-          9: '#28a745',   // Green
-          10: '#ffc107',  // Yellow
-          11: '#dc3545',  // Red
-          12: '#6c757d'   // Gray
+          8: '#007bff', 
+          9: '#28a745',  
+          10: '#ffc107', 
+          11: '#dc3545', 
+          12: '#6c757d'  
         };
         return colors[season] || '#6c757d';
       }
 
-      // Add game details modal functionality with date in title and clickable player names
       async function showGameDetails(team1Id, team2Id, date) {
         const modal = document.getElementById('game-modal');
         const modalTitle = document.getElementById('modal-title');
-        const modalContent = document.getElementById('modal-content');
+        const modalContentEl = document.getElementById('modal-content'); // Renamed
         
-        // Show modal and loading state with date in title
         modal.style.display = 'block';
         modalTitle.textContent = `${getTeamName(team1Id)} vs ${getTeamName(team2Id)} - ${formatDateShort(date)}`;
-        modalContent.innerHTML = '<div class="loading">Loading game details...</div>';
+        modalContentEl.innerHTML = '<div class="loading">Loading game details...</div>';
         
-        // Get game details from the schedule data
-        const schedule = await fetchSheetData('Schedule');
-        if (!schedule) {
-          modalContent.innerHTML = '<div class="error">Error loading game details</div>';
+        const scheduleData = await fetchSheetData('Schedule');
+        if (!scheduleData) {
+          modalContentEl.innerHTML = '<div class="error">Error loading game details</div>';
           return;
         }
         
-        const game = schedule.find(g => 
+        const game = scheduleData.find(g => 
           g.team1_id === team1Id && 
           g.team2_id === team2Id && 
           g.date === date
         );
         
         if (!game) {
-          modalContent.innerHTML = '<div class="error">Game not found</div>';
+          modalContentEl.innerHTML = '<div class="error">Game not found</div>';
           return;
         }
         
-        // Get lineups for both teams on this date
-        const lineups = await fetchSheetData('Lineups');
-        if (!lineups) {
-          modalContent.innerHTML = '<div class="error">Error loading lineup data</div>';
+        const lineupsData = await fetchSheetData('Lineups'); // Renamed
+        if (!lineupsData) {
+          modalContentEl.innerHTML = '<div class="error">Error loading lineup data</div>';
           return;
         }
         
-        const team1AllLineups = lineups.filter(lineup => 
+        const team1AllLineups = lineupsData.filter(lineup => 
           lineup.team_id === team1Id && lineup.date === date
         );
-        const team2AllLineups = lineups.filter(lineup => 
+        const team2AllLineups = lineupsData.filter(lineup => 
           lineup.team_id === team2Id && lineup.date === date
         );
         
-        // Filter for started players and sort properly
         const team1Lineups = team1AllLineups.filter(lineup => {
-          const isStarted = lineup.started === 'TRUE' || 
-                           lineup.started === true || 
-                           lineup.started === 'true' || 
-                           lineup.started === 1 || 
-                           lineup.started === '1';
+          const isStarted = lineup.started === 'TRUE' || lineup.started === true || lineup.started === 'true' || lineup.started === 1 || lineup.started === '1';
           return isStarted;
         }).sort((a, b) => {
           const aCaptain = a.captain === 'TRUE' || a.captain === true || a.captain === 'true';
           const bCaptain = b.captain === 'TRUE' || b.captain === true || b.captain === 'true';
-          
           if (aCaptain && !bCaptain) return -1;
           if (!aCaptain && bCaptain) return 1;
-          
           return parseNumber(b.points_final) - parseNumber(a.points_final);
         });
         
         const team2Lineups = team2AllLineups.filter(lineup => {
-          const isStarted = lineup.started === 'TRUE' || 
-                           lineup.started === true || 
-                           lineup.started === 'true' || 
-                           lineup.started === 1 || 
-                           lineup.started === '1';
+          const isStarted = lineup.started === 'TRUE' || lineup.started === true || lineup.started === 'true' || lineup.started === 1 || lineup.started === '1';
           return isStarted;
         }).sort((a, b) => {
           const aCaptain = a.captain === 'TRUE' || a.captain === true || a.captain === 'true';
           const bCaptain = b.captain === 'TRUE' || b.captain === true || b.captain === 'true';
-          
           if (aCaptain && !bCaptain) return -1;
           if (!aCaptain && bCaptain) return 1;
-          
           return parseNumber(b.points_final) - parseNumber(a.points_final);
         });
         
-        // Calculate team totals
-        const team1Total = team1Lineups.reduce((sum, player) => {
-          const points = parseNumber(player.points_final);
-          return sum + points;
-        }, 0);
-        
-        const team2Total = team2Lineups.reduce((sum, player) => {
-          const points = parseNumber(player.points_final);
-          return sum + points;
-        }, 0);
+        const team1Total = team1Lineups.reduce((sum, player) => sum + parseNumber(player.points_final), 0);
+        const team2Total = team2Lineups.reduce((sum, player) => sum + parseNumber(player.points_final), 0);
         
         const winner = game.winner;
         
-        // Generate lineup tables with clickable player names
-        const generateLineupTable = (lineups, teamId, total, isWinner) => {
-          const teamData = allTeams.find(t => t.team_id === teamId);
-          const teamRecord = teamData ? `${teamData.wins || 0}-${teamData.losses || 0}` : '';
+        const generateLineupTable = (lineupsForTable, idOfTeam, total, isWinner) => { // Renamed params
+          const teamDetailsForModal = allTeams.find(t => t.team_id === idOfTeam); // Renamed
+          const teamRecord = teamDetailsForModal ? `${teamDetailsForModal.wins || 0}-${teamDetailsForModal.losses || 0}` : '';
           
-          if (lineups.length === 0) {
+          if (lineupsForTable.length === 0) {
             return `
               <div class="team-breakdown ${isWinner ? 'winner' : ''}">
-                <div class="modal-team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamId}'" style="cursor: pointer;">
-                  <img src="icons/${teamId}.webp" alt="${getTeamName(teamId)}" class="team-logo" onerror="this.style.display='none'">
+                <div class="modal-team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${idOfTeam}'" style="cursor: pointer;">
+                  <img src="icons/${idOfTeam}.webp" alt="${escapeHTML(getTeamName(idOfTeam))}" class="team-logo" onerror="this.style.display='none'">
                   <div>
-                    <h4>${getTeamName(teamId)}</h4>
+                    <h4>${escapeHTML(getTeamName(idOfTeam))}</h4>
                     <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
                   </div>
                 </div>
@@ -1933,19 +1950,17 @@
             `;
           }
           
-          const lineupRows = lineups.map(player => {
+          const lineupRows = lineupsForTable.map(player => {
             const isCaptain = player.captain === 'TRUE' || player.captain === true || player.captain === 'true';
             const pointsRaw = parseNumber(player.points_raw);
-            const pointsFinal = parseNumber(player.points_final);
             const globalRank = parseNumber(player.global_rank);
-            
             const captainBonus = isCaptain ? Math.round(pointsRaw * 0.5) : 0;
             
             return `
               <tr class="${isCaptain ? 'captain-row' : ''}">
                 <td class="player-name-cell">
                   <a href="player.html?player=${encodeURIComponent(player.player_handle || 'Unknown')}" class="player-link">
-                    ${player.player_handle || 'Unknown'}
+                    ${escapeHTML(player.player_handle || 'Unknown')}
                   </a>
                   ${isCaptain ? '<span class="captain-badge">C</span>' : ''}
                 </td>
@@ -1960,32 +1975,23 @@
           
           return `
             <div class="team-breakdown ${isWinner ? 'winner' : ''}">
-              <div class="modal-team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamId}'" style="cursor: pointer;">
-                <img src="icons/${teamId}.webp" alt="${getTeamName(teamId)}" class="team-logo" onerror="this.style.display='none'">
+              <div class="modal-team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${idOfTeam}'" style="cursor: pointer;">
+                <img src="icons/${idOfTeam}.webp" alt="${escapeHTML(getTeamName(idOfTeam))}" class="team-logo" onerror="this.style.display='none'">
                 <div>
-                  <h4>${getTeamName(teamId)}</h4>
+                  <h4>${escapeHTML(getTeamName(idOfTeam))}</h4>
                   <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
                 </div>
               </div>
               <div class="team-total">Total: ${isNaN(total) ? '-' : Math.round(total).toLocaleString()}</div>
               <table class="lineup-table">
-                <thead>
-                  <tr>
-                    <th>Player</th>
-                    <th>Points</th>
-                    <th>Rank</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${lineupRows}
-                </tbody>
+                <thead> <tr> <th>Player</th> <th>Points</th> <th>Rank</th> </tr> </thead>
+                <tbody> ${lineupRows} </tbody>
               </table>
             </div>
           `;
         };
         
-        // Generate the modal content
-        modalContent.innerHTML = `
+        modalContentEl.innerHTML = `
           <div class="game-details-grid">
             ${generateLineupTable(team1Lineups, team1Id, team1Total, winner === team1Id)}
             ${generateLineupTable(team2Lineups, team2Id, team2Total, winner === team2Id)}
@@ -1993,7 +1999,6 @@
         `;
       }
       
-      // Close modal function
       function closeGameModal() {
         const modal = document.getElementById('game-modal');
         if (modal) {
@@ -2001,7 +2006,6 @@
         }
       }
       
-      // Close modal when clicking outside
       window.onclick = function(event) {
         const modal = document.getElementById('game-modal');
         if (event.target === modal) {
@@ -2009,7 +2013,6 @@
         }
       }
       
-      // Initialize page
       document.addEventListener('DOMContentLoaded', loadTeamData);
     </script>
   </body>
