@@ -251,28 +251,54 @@
       .rank-bronze { background-color: #cd7f32; } 
       .rank-skyblue { background-color: #87CEEB; color: black; } 
 
+      /* Rank Legend for Weekly Performance */
+      .rank-legend {
+        padding: 0.75rem 1rem;
+        text-align: center;
+        font-size: 0.8rem;
+        color: #666;
+        background-color: #f8f9fa; 
+        border-top: 1px solid #eee; 
+      }
+      .rank-legend .rank-badge { 
+          margin-right: 0.15rem; /* Small space before text label */
+          margin-left: 0.5rem;  /* Space between badge groups */
+          font-size: 0.8em; 
+      }
+
 
       /* Game history section */
       .game-history { max-height: 600px; overflow-y: auto; padding: 1.5rem; }
       .game-item {
-        display: flex; justify-content: space-between; align-items: center;
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center;
         padding: 1rem; border-bottom: 1px solid #eee;
         transition: background-color 0.2s; cursor: pointer;
       }
       .game-item:hover { background-color: #f8f9fa; }
       .game-item:last-child { border-bottom: none; }
 
-      .game-history-matchup { 
+      .game-history-main-content { /* New wrapper for matchup and date */
+          display: flex;
+          flex-direction: column;
+          flex-grow: 1;
+          min-width: 0; /* For ellipsis in children */
+      }
+      .game-history-matchup-teams { 
         display: flex;
-        flex-direction: column; 
-        gap: 0.3rem; 
-        flex: 1; 
-        min-width: 0; 
+        flex-direction: row; /* Horizontal on desktop */
+        align-items: center;
+        justify-content: flex-start; /* Align teams to the start */
+        gap: 0.5rem; /* Gap between Team A, vs, Team B */
       }
       .game-history-team-entry {
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        overflow: hidden; /* For ellipsis on name */
+        flex-shrink: 1; /* Allow shrinking if needed */
+        min-width: 0; /* For ellipsis */
       }
       .game-history-team-logo {
         width: 20px; height: 20px; border-radius: 3px; flex-shrink: 0;
@@ -282,6 +308,7 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        flex-shrink: 1; /* Allow name to shrink and ellipsis to activate */
       }
       .game-result-indicator {
         font-weight: bold;
@@ -290,23 +317,23 @@
       }
       .game-result-win { color: #28a745; }
       .game-result-loss { color: #dc3545; }
-      .game-history-vs {
-        text-align: center;
-        font-size: 0.8rem;
+      .game-history-vs-separator { /* Separator text */
+        font-size: 0.9rem;
         color: #6c757d;
         font-weight: bold;
-        padding: 0.1rem 0;
+        padding: 0 0.25rem; /* Less horizontal padding than game-history-vs */
       }
       .game-history-date { 
         font-size: 0.8rem; color: #666; margin-top: 0.3rem;
+        text-align: left; /* Align date under the matchup */
       }
       
-      .game-performance { text-align: right; min-width: 100px; }
+      .game-performance { text-align: right; min-width: 100px; flex-shrink: 0; }
       .performance-score { font-weight: bold; font-size: 1.1rem; }
       .performance-rank { font-size: 0.8rem; color: #666; margin-top: 0.2rem; }
       .captain-performance { color: #ffc107; font-weight: bold; }
 
-      /* Modal styles */
+      /* Modal styles ... (remains unchanged) ... */
       .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow-y: auto; }
       .modal-content { background-color: #fff; margin: 2rem auto; border-radius: 8px; width: 95%; max-width: 900px; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
       .modal-header { background-color: #333; color: white; padding: 1.5rem; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; }
@@ -349,10 +376,28 @@
         .team-logo-large { width: 80px; height: 80px; }
         .player-stats-grid { grid-template-columns: repeat(2, 1fr); }
         .performance-table th, .performance-table td { padding: 0.5rem 0.3rem; font-size: 0.8rem; }
-        .game-item { padding: 0.75rem; flex-direction: column; align-items: stretch; gap: 0.5rem;} 
-        .game-history-matchup { width: 100%; } 
+        
+        /* Game History Mobile Layout */
+        .game-item { 
+          flex-direction: column; /* Stack main content and player perf */
+          align-items: stretch; 
+          gap: 0.5rem;
+        }
+        .game-history-main-content {
+          width: 100%;
+        }
+        .game-history-matchup-teams {
+            flex-direction: column; /* Stack Team A vs Team B */
+            align-items: stretch; /* Make team entries take full width */
+            gap: 0.2rem; 
+        }
+        .game-history-vs-separator {
+            text-align: center; /* Center 'vs' text */
+            padding: 0.2rem 0;
+        }
         .game-history-date { text-align: left; width: 100%;} 
         .game-performance { text-align: left; width: 100%; } 
+
 
         .opponent-logo { width: 28px; height: 28px; } 
         .modal-content { margin: 1rem; width: calc(100% - 2rem); }
@@ -366,7 +411,7 @@
         .performance-table th:nth-child(4), .performance-table td:nth-child(4) { display: none; }
         .game-item { padding: 0.75rem; gap: 0.5rem; }
         .opponent-logo { width: 24px; height: 24px; }
-        .opponent-name { font-size: 0.85rem; }
+        .game-history-team-name { font-size: 0.85rem; }
         .game-history-date { font-size: 0.75rem; }
         .performance-score { font-size: 0.9rem; }
         .performance-rank { font-size: 0.75rem; }
@@ -407,6 +452,12 @@
               <thead><tr><th>Week</th><th>Points</th><th>Rank</th><th>Role</th></tr></thead>
               <tbody id="performance-table"><tr><td colspan="4" class="loading">Loading performance data...</td></tr></tbody>
             </table>
+          </div>
+          <div class="rank-legend">
+            <span class="rank-badge rank-gold">1</span> Gold (1st)
+            <span class="rank-badge rank-silver">2</span> Silver (2nd)
+            <span class="rank-badge rank-bronze">3</span> Bronze (3rd)
+            <span class="rank-badge rank-skyblue">4-100</span> Sky Blue (4-100)
           </div>
         </div>
 
@@ -715,11 +766,11 @@
 
           const gameForLineup = allScheduleData.find(g => g.date === lineup.date && (g.team1_id === lineup.team_id || g.team2_id === lineup.team_id));
           let onclickAttr = '';
-          if (gameForLineup) {
+          if (gameForLineup && gameForLineup.completed === 'TRUE') { // Only make completed games clickable
             onclickAttr = `onclick="showGameDetails('${gameForLineup.team1_id}', '${gameForLineup.team2_id}', '${gameForLineup.date}')"`;
           }
 
-          return `<tr class="${isCaptain ? 'captain-row' : ''} ${gameForLineup ? 'clickable-row' : ''}" ${onclickAttr}>
+          return `<tr class="${isCaptain ? 'captain-row' : ''} ${gameForLineup && gameForLineup.completed === 'TRUE' ? 'clickable-row' : ''}" ${onclickAttr}>
                     <td>Week ${lineup.week}${isCaptain ? '<span class="captain-badge-small">C</span>' : ''}</td>
                     <td>${Math.round(pointsRaw).toLocaleString()}${isCaptain ? ` (+${Math.round(pointsRaw * 0.5).toLocaleString()})` : ''}</td>
                     <td>${formatWeeklyPerformanceRank(globalRank)}</td>
@@ -772,25 +823,35 @@
 
           let playerTeamResultIndicator = '';
           let opponentTeamResultIndicator = '';
+          let playerTeamNameClass = ''; // For potential styling of team name based on result
+          let opponentTeamNameClass = '';
+
+
           if (game.winner === game.playerTeamId) {
             playerTeamResultIndicator = '<span class="game-result-indicator game-result-win">(W)</span>';
             opponentTeamResultIndicator = '<span class="game-result-indicator game-result-loss">(L)</span>';
+            playerTeamNameClass = 'game-result-win';
+            opponentTeamNameClass = 'game-result-loss';
           } else if (game.winner === game.opponentId) {
             playerTeamResultIndicator = '<span class="game-result-indicator game-result-loss">(L)</span>';
             opponentTeamResultIndicator = '<span class="game-result-indicator game-result-win">(W)</span>';
+            playerTeamNameClass = 'game-result-loss';
+            opponentTeamNameClass = 'game-result-win';
           }
 
           return `
             <div class="game-item" onclick="showGameDetails('${game.team1_id}', '${game.team2_id}', '${game.date}')">
-              <div class="game-history-matchup">
-                <div class="game-history-team-entry">
-                  <img src="${playerTeamLogo}" alt="${playerTeamName}" class="game-history-team-logo" onerror="this.style.display='none'">
-                  <span class="game-history-team-name">${playerTeamName} ${playerTeamResultIndicator}</span>
-                </div>
-                <div class="game-history-vs">vs</div>
-                <div class="game-history-team-entry">
-                  <img src="${opponentLogoSrc}" alt="${opponentTeamName}" class="game-history-team-logo" onerror="this.style.display='none'">
-                  <span class="game-history-team-name">${opponentTeamName} ${opponentTeamResultIndicator}</span>
+              <div class="game-history-main-content">
+                <div class="game-history-matchup-teams">
+                    <span class="game-history-team-entry">
+                    <img src="${playerTeamLogo}" alt="${playerTeamName}" class="game-history-team-logo" onerror="this.style.display='none'">
+                    <span class="game-history-team-name ${playerTeamNameClass}">${playerTeamName} ${playerTeamResultIndicator}</span>
+                    </span>
+                    <span class="game-history-vs-separator">vs</span>
+                    <span class="game-history-team-entry">
+                    <img src="${opponentLogoSrc}" alt="${opponentTeamName}" class="game-history-team-logo" onerror="this.style.display='none'">
+                    <span class="game-history-team-name ${opponentTeamNameClass}">${opponentTeamName} ${opponentTeamResultIndicator}</span>
+                    </span>
                 </div>
                 <div class="game-history-date">${formatDate(game.date)} (Week ${game.lineup.week})</div>
               </div>
@@ -837,7 +898,6 @@
           const teamDetails = allTeams.find(t => t.team_id === teamIdForTable);
           const teamRecord = teamDetails ? `${teamDetails.wins || 0}-${teamDetails.losses || 0}` : '';
           const modalTeamLogoSrc = `icons/${teamIdForTable}.webp`;
-          // Ensure team-logo class is used for styling if it exists in modal context
           const teamLogoTagInModal = (teamIdForTable && teamIdForTable !== 'FREE_AGENT') ? `<img src="${modalTeamLogoSrc}" alt="${getTeamName(teamIdForTable)}" class="team-logo" onerror="this.style.display='none'">` : ''; 
           
           if (lineups.length === 0) return `<div class="team-breakdown ${isWinner ? 'winner' : ''}"><div class="modal-team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamIdForTable}'" style="cursor: pointer;">${teamLogoTagInModal}<div><h4>${getTeamName(teamIdForTable)}</h4><div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div></div></div><div class="team-total">Total: ${Math.round(total).toLocaleString()}</div><div style="padding: 2rem; text-align: center; color: #666;">No lineup data available for this game.</div></div>`;
