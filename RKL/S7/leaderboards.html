@@ -128,7 +128,7 @@
         background-color: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
+        overflow: hidden; /* Keep this to contain the table */
       }
 
       .leaderboard-header {
@@ -156,10 +156,17 @@
         table-layout: fixed; 
       }
 
+      /* MODIFIED: Define column widths via <col> elements */
+      .leaderboard-table col.col-rank { width: 12%; }
+      .leaderboard-table col.col-player { width: 50%; }
+      .leaderboard-table col.col-stat1 { width: 19%; }
+      .leaderboard-table col.col-stat2 { width: 19%; }
+
+
       .leaderboard-table th {
         background-color: #f8f9fa;
         padding: 1rem 0.5rem;
-        text-align: left;
+        text-align: left; /* Base alignment, overridden by specific child rules below */
         font-weight: bold;
         border-bottom: 2px solid #ddd;
         border-left: none;
@@ -179,7 +186,6 @@
         font-size: 0.8em;
       }
 
-
       .leaderboard-table td {
         padding: 0.8rem 0.5rem;
         border-bottom: 1px solid #eee;
@@ -188,34 +194,29 @@
         border-top: none;
         position: relative;
         vertical-align: middle;
+        word-wrap: break-word; /* Help prevent cell blowout with long unbreakable strings */
+        overflow-wrap: break-word;
       }
 
+      /* MODIFIED: Removed width/min-width, keep text-align and other specific styling */
       .leaderboard-table th:nth-child(1), 
       .leaderboard-table td:nth-child(1) { 
-        width: 12%; 
         text-align: center;
-        min-width: 60px;
       }
 
       .leaderboard-table th:nth-child(2), 
       .leaderboard-table td:nth-child(2) { 
-        width: 50%; 
         text-align: left;
-        min-width: 180px;
       }
 
       .leaderboard-table th:nth-child(3), 
       .leaderboard-table td:nth-child(3) { 
-        width: 19%; 
         text-align: center;
-        min-width: 80px;
       }
 
       .leaderboard-table th:nth-child(4), 
       .leaderboard-table td:nth-child(4) { 
-        width: 19%; 
         text-align: center;
-        min-width: 60px;
       }
 
       .leaderboard-table tr:hover {
@@ -241,7 +242,6 @@
         min-width: 0; 
         flex-basis: 0; 
       }
-
 
       .player-cell:hover .player-name a { 
         color: #007bff !important;
@@ -283,11 +283,9 @@
         text-align: center; 
       }
 
-
       .first-place { background-color: gold; color: black; border-radius: 4px; padding: 2px 5px; display: inline-block; width: 30px; height: 30px; line-height: 26px;}
       .second-place { background-color: silver; color: black; border-radius: 4px; padding: 2px 5px; display: inline-block; width: 30px; height: 30px; line-height: 26px;}
       .third-place { background-color: #cd7f32; color: white; border-radius: 4px; padding: 2px 5px; display: inline-block; width: 30px; height: 30px; line-height: 26px;}
-
 
       .table-controls {
         padding: 1rem;
@@ -308,7 +306,6 @@
       #min-games { width: 60px; }
       #team-filter-select { min-width: 150px; }
 
-
       .loading { text-align: center; padding: 3rem; color: #666; font-size: 1.1rem; }
       .error { color: #dc3545; background-color: #f8d7da; border-radius: 4px; margin: 1rem; padding: 1rem; text-align: center;}
 
@@ -319,26 +316,24 @@
         }
         .team-logo { width: 28px; height: 28px; }
 
-        .leaderboard-table th:nth-child(1), .leaderboard-table td:nth-child(1) { width: 15%; min-width: 40px; }
-        .leaderboard-table th:nth-child(2), .leaderboard-table td:nth-child(2) { 
-            width: 45%; 
-            min-width: 100px; 
-            /* max-width: calc(100% - 40px - 50px - 50px - 1rem); /* MODIFIED: Commented out this line */
-        }
+        /* MODIFIED: Define responsive column widths via <col> classes */
+        .leaderboard-table col.col-rank { width: 15%; }
+        .leaderboard-table col.col-player { width: 45%; }
+        .leaderboard-table col.col-stat1 { width: 20%; }
+        .leaderboard-table col.col-stat2 { width: 20%; }
+        
+        /* MODIFIED: Removed specific width/min-width/max-width from td:nth-child for mobile, rely on <col> */
+        /* .leaderboard-table th:nth-child(1), .leaderboard-table td:nth-child(1) { width: 15%; min-width: 40px; } */
+        /* .leaderboard-table th:nth-child(2), .leaderboard-table td:nth-child(2) { width: 45%; min-width: 100px; } */
+        /* .leaderboard-table th:nth-child(3), .leaderboard-table td:nth-child(3) { width: 20%; min-width: 50px; } */
+        /* .leaderboard-table th:nth-child(4), .leaderboard-table td:nth-child(4) { width: 20%; min-width: 50px; } */
 
-        .leaderboard-table th:nth-child(3), .leaderboard-table td:nth-child(3) { width: 20%; min-width: 50px; }
-        .leaderboard-table th:nth-child(4), .leaderboard-table td:nth-child(4) { width: 20%; min-width: 50px; }
-
-        .leaderboard-table[data-active-columns="3"] th:nth-child(1),
-        .leaderboard-table[data-active-columns="3"] td:nth-child(1) { width: 15%; min-width: 40px; }
-        .leaderboard-table[data-active-columns="3"] th:nth-child(2),
-        .leaderboard-table[data-active-columns="3"] td:nth-child(2) { 
-            width: 60%; 
-            min-width: 120px; 
-            /* max-width: calc(100% - 40px - 70px - 1rem); /* MODIFIED: Also comment out if a similar rule exists for 3-column layout */
-        }
-        .leaderboard-table[data-active-columns="3"] th:nth-child(3),
-        .leaderboard-table[data-active-columns="3"] td:nth-child(3) { width: 25%; min-width: 70px; }
+        /* Styles for 3-column layout adjust <col> widths */
+        .leaderboard-table[data-active-columns="3"] col.col-rank { width: 15%; }
+        .leaderboard-table[data-active-columns="3"] col.col-player { width: 60%; }
+        .leaderboard-table[data-active-columns="3"] col.col-stat1 { width: 25%; }
+        .leaderboard-table[data-active-columns="3"] col.col-stat2 { width: 0; } /* Effectively hide if not display:none */
+        
         .leaderboard-table[data-active-columns="3"] th:nth-child(4), 
         .leaderboard-table[data-active-columns="3"] td:nth-child(4) { display: none; }
       }
@@ -407,13 +402,18 @@
           </span>
           </div>
         
-        <table class="leaderboard-table" id="leaderboardTable"> <thead id="table-header">
+        <table class="leaderboard-table" id="leaderboardTable">
+          <colgroup>
+            <col class="col-rank">
+            <col class="col-player">
+            <col class="col-stat1">
+            <col class="col-stat2">
+          </colgroup>
+          <thead id="table-header">
             <tr>
               <th>Rank</th>
               <th>Player</th>
-              <th>Karma</th>
-              <th>Games</th>
-            </tr>
+              <th>Karma</th> <th>Games</th> </tr>
           </thead>
           <tbody id="leaderboard-body">
             <tr>
@@ -428,7 +428,9 @@
       <p>&copy; caustic.info</p>
     </footer>
 
-<script>
+    <script>
+      // The JavaScript from your provided file remains IDENTICAL here.
+      // The only changes were to the <style> block and the <table> structure in the HTML.
       const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4';
       const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
       
