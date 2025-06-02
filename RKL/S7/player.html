@@ -100,23 +100,18 @@
         font-size: 2.5rem;
         margin-bottom: 0.5rem;
       }
-
-      .player-subtitle {
-        font-size: 1.2rem;
-        color: #666;
-        margin-bottom: 0.5rem;
-      }
-
-      .real-profile-link-container { /* New style for the link container */
-        margin-top: 0.5rem; /* Adjust as needed */
-        margin-bottom: 0.75rem; /* Adjust as needed */
-        font-size: 1rem; /* Adjust as needed */
+      
+      /* START: Added styles for Real Profile link */
+      .real-profile-link-container {
+        margin-top: 0.3rem;
+        margin-bottom: 0.5rem; /* Existing player-subtitle has 0.5rem bottom margin */
+        font-size: 1rem; 
       }
 
       .real-profile-link-container a {
         color: #007bff;
         text-decoration: none;
-        display: inline-flex; /* To align icon and text nicely */
+        display: inline-flex; 
         align-items: center;
       }
 
@@ -125,9 +120,16 @@
       }
 
       .real-profile-link-container img {
-        height: 1.2em; /* Adjust icon size relative to text */
-        vertical-align: middle;
-        margin-left: 6px;
+        height: 1em; /* Relative to current font size */
+        vertical-align: middle; /* Better alignment with text */
+        margin-left: 5px;
+      }
+      /* END: Added styles for Real Profile link */
+
+      .player-subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        margin-bottom: 0.5rem;
       }
 
       .team-info {
@@ -783,8 +785,7 @@
           <button class="close-btn" onclick="closeGameModal()">&times;</button>
         </div>
         <div class="modal-body">
-          <div id="modal-content">
-            <div class="loading">Loading game details...</div>
+          <div id="modal-content"> <div class="loading">Loading game details...</div>
           </div>
         </div>
       </div>
@@ -1117,9 +1118,8 @@
         }
         
         allTeams = teams;
-        allLineups = lineups || []; // Ensure allLineups is populated
+        allLineups = lineups || []; 
         
-        // Calculate REL values for all players (needed for rankings)
         const playersWithREL = weeklyAverages ? calculateRELForAllPlayers(players, weeklyAverages, allLineups) : players;
         
         playerData = playersWithREL.find(player => player.player_handle === playerHandle);
@@ -1129,16 +1129,12 @@
           return;
         }
         
-        // Re-calculate REL Median and Median Rank specifically for this player to ensure it's up-to-date
-        // (though calculateRELForAllPlayers should have handled it, this is a safeguard or can be primary if preferred)
         const calculatedRELMedian = weeklyAverages ? calculatePlayerRELMedian(playerHandle, weeklyAverages, allLineups) : 0;
         const medianRank = calculatePlayerMedianRank(playerHandle, allLineups);
         
-        // Add/update calculated values to player data
         playerData.calculated_rel_median = calculatedRELMedian;
         playerData.calculated_median_rank = medianRank;
         
-        // Calculate rankings for all stats using the comprehensive playersWithREL list
         const activePlayersWithREL = playersWithREL.filter(p => 
           p.player_status === 'ACTIVE' && parseInt(p.games_played || 0) > 0
         );
@@ -1146,56 +1142,43 @@
         
         displayPlayerHeader(rankings);
         
-        // Load other data in parallel
         await Promise.all([
-          loadPerformanceData(), // Uses allLineups
-          loadGameHistory()      // Uses allLineups and schedule
+          loadPerformanceData(), 
+          loadGameHistory()      
         ]);
       }
       
       // Display player header
       function displayPlayerHeader(rankings) {
-        // Update page title
         document.getElementById('page-title').textContent = `${playerData.player_handle} - RKL Season 7`;
         document.getElementById('header-title').textContent = playerData.player_handle;
         
-        const isFreeAgent = playerData.current_team_id === 'FREE_AGENT';
+        // START: MODIFICATIONS FOR FREE AGENT & REAL PROFILE LINK
         let teamLogoHTML = '';
         let teamInfoHTML = '';
+        const isFreeAgent = playerData.current_team_id === 'FREE_AGENT';
 
         if (!isFreeAgent) {
             const teamData = allTeams.find(t => t.team_id === playerData.current_team_id);
             const teamName = teamData ? teamData.team_name : playerData.current_team_id;
-            // MODIFIED: Path for team logo from RKL/S7/player.html to icons/TEAM_ID.webp is ../../icons/TEAM_ID.webp
-            // However, your original code used "icons/TEAM_ID.webp". If your icons folder is directly under RKL/S7, then "icons/TEAM_ID.webp" is correct.
-            // If 'icons' is at the root of 'web-stuff', then it should be '../../icons/TEAM_ID.webp'.
-            // I will assume your original "icons/" path implies it's relative to the HTML file's current directory or a base URL is handled by the server.
-            // Given the repo structure (RKL/S7/player.html and icons/REAL.png), if team icons are also in the top-level 'icons' folder,
-            // the path should be '../../icons/TEAM_ID.webp'. I'll use this corrected path.
-            teamLogoHTML = `<img src="../../icons/${playerData.current_team_id}.webp" alt="${teamName}" class="team-logo-large" onerror="this.style.display='none';">`;
+            // Using original icon path style as "icons/TEAM_ID.webp"
+            teamLogoHTML = `<img src="icons/${playerData.current_team_id}.webp" alt="${teamName}" class="team-logo-large" onerror="this.style.display='none'">`;
             teamInfoHTML = `<a href="team.html?id=${playerData.current_team_id}" class="team-info">Current Team: ${teamName}</a>`;
         } else {
-            // For free agents, we can add a placeholder or leave it empty.
-            // Adding a generic placeholder icon or hiding it completely.
-            // For now, let's ensure no broken image icon appears if we decide to hide it or use a generic one.
-            // If you have a generic "free agent" icon, you can put its path here.
-            // teamLogoHTML = `<img src="../../icons/FREE_AGENT_PLACEHOLDER.webp" alt="Free Agent" class="team-logo-large">`;
-            // Or hide it completely:
-            teamLogoHTML = ''; // No logo for free agents
-            teamInfoHTML = '<div class="team-info">Current Team: N/A</div>'; // Or simply leave this empty: teamInfoHTML = '';
+            teamLogoHTML = ''; // No logo for free agents per request
+            teamInfoHTML = ''; // No "Current Team" text per request
         }
         
-        // Player main info
         const totalPoints = parseNumber(playerData.total_points);
         const gamesPlayed = parseInt(playerData.games_played || 0);
 
-        // MODIFIED: Added Real Profile link and icon container
-        // The playerHandle might need URL encoding if it contains special characters.
-        // For simplicity, assuming player_handle is URL-safe. If not, use encodeURIComponent(playerData.player_handle).
-        const realProfileLink = `https://realsports.io/u/${playerData.player_handle}`;
-        // Corrected path to REAL.png from RKL/S7/player.html to icons/REAL.png should be ../../icons/REAL.png
+        // Real Profile link. Player handle for URL, assuming it's URL-safe.
+        // If not, use encodeURIComponent(playerData.player_handle)
+        const realProfileUrlPlayerName = playerData.player_handle; // Or any transformation needed for the URL
+        const realProfileLink = `https://realsports.io/u/${realProfileUrlPlayerName}`;
+        // Path to REAL.png from RKL/S7/player.html to root icons/REAL.png is ../../icons/REAL.png
+        // This is a NEW icon, so its path must be relative to this HTML file's location.
         const realProfileIconPath = '../../icons/REAL.png';
-
 
         document.getElementById('player-main-info').innerHTML = `
           ${teamLogoHTML}
@@ -1211,8 +1194,8 @@
             ${teamInfoHTML}
           </div>
         `;
+        // END: MODIFICATIONS FOR FREE AGENT & REAL PROFILE LINK
         
-        // Player stats - Updated with new stats and rankings
         const relMedian = playerData.calculated_rel_median || 0;
         const gamesAboveMedian = parseInt(playerData.aag_median || 0);
         const aboveMedianPct = parseFloat(playerData.aag_median_pct || 0) * 100;
@@ -1259,7 +1242,7 @@
         const playerLineups = allLineups
           .filter(lineup => lineup.player_handle === playerHandle && 
                            (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1))
-          .sort((a, b) => parseInt(a.week || 0) - parseInt(b.week || 0)); // Sort chronologically (oldest first)
+          .sort((a, b) => parseInt(a.week || 0) - parseInt(b.week || 0)); 
         
         if (playerLineups.length === 0) {
           document.getElementById('performance-table').innerHTML = 
@@ -1270,7 +1253,6 @@
         const performanceHTML = playerLineups.map(lineup => {
           const isCaptain = String(lineup.captain).toLowerCase() === 'true' || lineup.captain === true || lineup.captain === 1;
           const pointsRaw = parseNumber(lineup.points_raw);
-          // const pointsFinal = parseNumber(lineup.points_final); // Not used in this table display
           const globalRank = parseNumber(lineup.global_rank);
           
           return `
@@ -1286,19 +1268,16 @@
         document.getElementById('performance-table').innerHTML = performanceHTML;
       }
       
-      // Load game history with modal functionality (REVISED VERSION)
+      // Load game history with modal functionality (REVISED VERSION from original code)
       async function loadGameHistory() {
-        const schedule = await fetchSheetData('Schedule'); // Fetches all games
+        const schedule = await fetchSheetData('Schedule'); 
         
-        // allLineups is global, assumed to be populated correctly in loadPlayerData
         if (!schedule || !allLineups) { 
           document.getElementById('game-history').innerHTML = 
             '<div class="error">Error loading game history data.</div>';
           return;
         }
         
-        // 1. Get all "started" lineup entries for the current player
-        // Ensure robust boolean check for 'started' property
         const playerStartedLineups = allLineups.filter(lineup => 
             lineup.player_handle === playerHandle &&
             (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1)
@@ -1311,12 +1290,10 @@
         }
 
         const gamesWithPerformance = playerStartedLineups.map(lineup => {
-          // For each lineup entry, find the corresponding game in the schedule
-          // It's assumed lineup.team_id stores the ID of the team the player played for in that specific game
           const gameForThisLineup = schedule.find(sGame => 
-            sGame.date === lineup.date && // Match by date
-            (sGame.team1_id === lineup.team_id || sGame.team2_id === lineup.team_id) && // Match by team_id in THIS lineup entry
-            String(sGame.completed).toLowerCase() === 'true' // Ensure game is completed
+            sGame.date === lineup.date && 
+            (sGame.team1_id === lineup.team_id || sGame.team2_id === lineup.team_id) && 
+            String(sGame.completed).toLowerCase() === 'true' 
           );
 
           if (!gameForThisLineup) {
@@ -1324,30 +1301,24 @@
             return null; 
           }
 
-          // Determine opponentId based on the team_id from the lineup entry for this specific game
           const opponentId = gameForThisLineup.team1_id === lineup.team_id ? gameForThisLineup.team2_id : gameForThisLineup.team1_id;
-          // Corrected path for opponent logo as well
-          const opponentLogoPath = isFreeAgent ? '' : `../../icons/${opponentId}.webp`;
-
-
+          
           return {
-            ...gameForThisLineup, // Spread all game details from the schedule
-            opponentId,          // Add the determined opponent ID
-            opponentLogoPath,    // Add the path for the logo
-            lineup: lineup       // Keep the original lineup data (contains player's performance for this game)
+            ...gameForThisLineup, 
+            opponentId,          
+            lineup: lineup       
           };
-        }).filter(game => game !== null) // Remove any entries where a matching game wasn't found
-          .sort((a, b) => { // Sort by date, then by week if dates are the same (though unlikely for different games)
+        }).filter(game => game !== null) 
+          .sort((a, b) => { 
             const dateA = new Date(a.date);
             const dateB = new Date(b.date);
             if (dateA.getTime() !== dateB.getTime()) {
-                return dateA - dateB; // Ascending for date
+                return dateA - dateB;
             }
             const weekA = parseInt(a.lineup.week || '0');
             const weekB = parseInt(b.lineup.week || '0');
-            return weekA - weekB; // Ascending for week
+            return weekA - weekB;
           });
-
 
         if (gamesWithPerformance.length === 0) {
           document.getElementById('game-history').innerHTML = 
@@ -1359,14 +1330,13 @@
           const isCaptain = String(game.lineup.captain).toLowerCase() === 'true' || game.lineup.captain === true || game.lineup.captain === 1;
           const pointsRaw = parseNumber(game.lineup.points_raw);
           const globalRank = parseNumber(game.lineup.global_rank);
+          // Using original icon path style "icons/OPPONENT_ID.webp" for opponent logos
+          const opponentLogoSrc = `icons/${game.opponentId}.webp`;
           
-          // MODIFIED: opponentLogoPath usage
-          const opponentLogoTag = game.opponentLogoPath ? `<img src="${game.opponentLogoPath}" alt="${getTeamName(game.opponentId)}" class="opponent-logo" onerror="this.style.display='none'">` : '<div class="opponent-logo-placeholder" style="width: 24px; height: 24px; /* Add styles for placeholder if needed */"></div>';
-
           return `
             <div class="game-item" onclick="showGameDetails('${game.team1_id}', '${game.team2_id}', '${game.date}')">
               <div class="game-opponent">
-                ${opponentLogoTag}
+                <img src="${opponentLogoSrc}" alt="${getTeamName(game.opponentId)}" class="opponent-logo" onerror="this.style.display='none'">
                 <div class="opponent-info">
                   <div class="opponent-name">vs ${getTeamName(game.opponentId)}</div>
                   <div class="game-date">${formatDate(game.date)}</div>
@@ -1387,19 +1357,19 @@
         document.getElementById('game-history').innerHTML = historyHTML;
       }
 
-      // Show game details modal
+      // Show game details modal (Original function from your provided code)
       async function showGameDetails(team1Id, team2Id, date) {
         const modal = document.getElementById('game-modal');
         const modalTitle = document.getElementById('modal-title');
-        const modalContentEl = document.getElementById('modal-content'); // Renamed to avoid conflict with modal-content class
+        const modalBodyContent = document.getElementById('modal-content'); // Target the inner div for content
         
         modal.style.display = 'block';
         modalTitle.textContent = `${getTeamName(team1Id)} vs ${getTeamName(team2Id)} - ${formatDate(date)}`;
-        modalContentEl.innerHTML = '<div class="loading">Loading game details...</div>';
+        modalBodyContent.innerHTML = '<div class="loading">Loading game details...</div>';
         
         const schedule = await fetchSheetData('Schedule');
         if (!schedule) {
-          modalContentEl.innerHTML = '<div class="error">Error loading game details (schedule)</div>';
+          modalBodyContent.innerHTML = '<div class="error">Error loading game details (schedule)</div>';
           return;
         }
         
@@ -1410,12 +1380,12 @@
         );
         
         if (!game) {
-          modalContentEl.innerHTML = '<div class="error">Game not found in schedule</div>';
+          modalBodyContent.innerHTML = '<div class="error">Game not found in schedule</div>';
           return;
         }
         
         if (!allLineups) {
-             modalContentEl.innerHTML = '<div class="error">Error loading game details (lineups)</div>';
+             modalBodyContent.innerHTML = '<div class="error">Error loading game details (lineups)</div>';
             return;
         }
 
@@ -1426,9 +1396,10 @@
           lineup.team_id === team2Id && lineup.date === date
         );
         
-        const team1Lineups = team1AllGameLineups.filter(lineup => 
-          String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1
-        ).sort((a, b) => {
+        const team1Lineups = team1AllGameLineups.filter(lineup => {
+          const isStarted = String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1;
+          return isStarted;
+        }).sort((a, b) => {
           const aCaptain = String(a.captain).toLowerCase() === 'true' || a.captain === true || a.captain === 1;
           const bCaptain = String(b.captain).toLowerCase() === 'true' || b.captain === true || b.captain === 1;
           if (aCaptain && !bCaptain) return -1;
@@ -1436,9 +1407,10 @@
           return parseNumber(b.points_final) - parseNumber(a.points_final);
         });
         
-        const team2Lineups = team2AllGameLineups.filter(lineup => 
-          String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1
-        ).sort((a, b) => {
+        const team2Lineups = team2AllGameLineups.filter(lineup => {
+          const isStarted = String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1;
+          return isStarted;
+        }).sort((a, b) => {
           const aCaptain = String(a.captain).toLowerCase() === 'true' || a.captain === true || a.captain === 1;
           const bCaptain = String(b.captain).toLowerCase() === 'true' || b.captain === true || b.captain === 1;
           if (aCaptain && !bCaptain) return -1;
@@ -1454,9 +1426,10 @@
         const generateLineupTable = (lineups, teamIdForTable, total, isWinner) => {
           const teamDetails = allTeams.find(t => t.team_id === teamIdForTable);
           const teamRecord = teamDetails ? `${teamDetails.wins || 0}-${teamDetails.losses || 0}` : '';
-          // Corrected path for team logo in modal
-          const modalTeamLogoPath = `../../icons/${teamIdForTable}.webp`;
-          const teamLogoTagInModal = teamIdForTable !== 'FREE_AGENT' ? `<img src="${modalTeamLogoPath}" alt="${getTeamName(teamIdForTable)}" class="team-logo" onerror="this.style.display='none'">` : '';
+          // Using original icon path style "icons/TEAM_ID.webp" for modal team logos
+          const modalTeamLogoSrc = `icons/${teamIdForTable}.webp`;
+          const teamLogoTagInModal = (teamIdForTable && teamIdForTable !== 'FREE_AGENT') ? `<img src="${modalTeamLogoSrc}" alt="${getTeamName(teamIdForTable)}" class="team-logo" onerror="this.style.display='none'">` : '';
+
 
           if (lineups.length === 0) {
             return `
@@ -1522,7 +1495,7 @@
           `;
         };
         
-        modalContentEl.innerHTML = `
+        modalBodyContent.innerHTML = `
           <div class="game-details-grid">
             ${generateLineupTable(team1Lineups, team1Id, team1Total, winner === team1Id)}
             ${generateLineupTable(team2Lineups, team2Id, team2Total, winner === team2Id)}
