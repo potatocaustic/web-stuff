@@ -727,7 +727,7 @@
         }
         
         document.getElementById('transactions-title').textContent = 
-          `${finalGroupsToShow.length} Transaction Group${finalGroupsToShow.length !== 1 ? 's' : ''}`;
+          `${finalGroupsToShow.length} Transaction${finalGroupsToShow.length === 1 ? '' : 's'}`;
         
         const transactionsHTML = finalGroupsToShow.map(group => {
           const isTradeGroup = group.some(t => t.transaction_type === "TRADE");
