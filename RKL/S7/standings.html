@@ -334,6 +334,14 @@
       .eliminated-color {
         background-color: #dc3545;
       }
+      
+      /* MODIFIED: Added style for full league view container */
+      #fullLeagueViewContainer .conference-section {
+        max-width: 700px; 
+        margin-left: auto;  
+        margin-right: auto; 
+      }
+      /* END MODIFIED */
 
       .loading {
         text-align: center;
@@ -355,6 +363,10 @@
         .standings-container {
           grid-template-columns: 1fr; 
           gap: 1.5rem;
+        }
+        /* MODIFIED: Ensure full league table is responsive on mobile */
+        #fullLeagueViewContainer .conference-section {
+            max-width: 100%; /* Takes full width on smaller screens */
         }
         /* ... other mobile styles ... */
       }
@@ -505,12 +517,10 @@
         FullLeague: { column: 'record', direction: 'asc'}
       };
 
-      // --- START OF ADDED/MODIFIED SCRIPT: getUrlParameter function ---
       function getUrlParameter(name) {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get(name);
       }
-      // --- END OF ADDED/MODIFIED SCRIPT: getUrlParameter function ---
 
       async function fetchSheetData(sheetName) {
         try {
@@ -696,32 +706,26 @@
         }
       }
 
-      // --- MODIFIED loadStandings function to handle URL parameters ---
       async function loadStandings() {
         const viewParam = getUrlParameter('view');
         const sortByParam = getUrlParameter('sortBy');
-        let sortDirectionParam = getUrlParameter('sortDirection'); // Use let for reassignment
+        let sortDirectionParam = getUrlParameter('sortDirection'); 
 
-        // Apply URL parameters to sortState for FullLeague if specified
         if (viewParam === 'fullLeague' && sortByParam) {
             let effectiveSortDirection = sortDirectionParam;
-            if (!effectiveSortDirection) { // Default directions if not specified by URL
-                if (sortByParam === 'med_starter_rank') effectiveSortDirection = 'asc_rank'; // asc_rank for lower is better
-                else if (sortByParam === 'pam') effectiveSortDirection = 'desc'; // desc for higher is better
-                else effectiveSortDirection = 'asc'; // Default for 'record' (rank)
+            if (!effectiveSortDirection) { 
+                if (sortByParam === 'med_starter_rank') effectiveSortDirection = 'asc_rank'; 
+                else if (sortByParam === 'pam') effectiveSortDirection = 'desc'; 
+                else effectiveSortDirection = 'asc'; 
             } else {
-                // Ensure 'asc_rank'/'desc_rank' for med_starter_rank if 'asc'/'desc' is passed from URL
                 if (sortByParam === 'med_starter_rank') {
                     if (sortDirectionParam.toLowerCase() === 'asc') effectiveSortDirection = 'asc_rank';
                     else if (sortDirectionParam.toLowerCase() === 'desc') effectiveSortDirection = 'desc_rank';
-                    // If sortDirectionParam is already 'asc_rank' or 'desc_rank', it will be used as is.
                 }
             }
             sortState.FullLeague = { column: sortByParam, direction: effectiveSortDirection };
         }
-        // Default sortStates for Eastern, Western are already set in the sortState object.
-        // Default for FullLeague is also set, which will be used if not overridden by URL params.
-
+        
         let fetchedTeamsData = await fetchSheetData('Teams'); 
         if (!fetchedTeamsData) {
           return;
@@ -773,14 +777,10 @@
           })
           .map((team, index) => ({ ...team, officialFullLeagueRank: index + 1 }));
         
-        // Initial sort directions are set in the sortState object definition.
-        // URL parameters might have overridden sortState.FullLeague above.
-
         renderStandings('Eastern', easternTeamsData);
         renderStandings('Western', westernTeamsData);
         renderStandings('FullLeague', fullLeagueTeamsData); 
         
-        // UI setup for view toggle
         document.getElementById('fullLeagueViewContainer').classList.add('hidden');
         document.getElementById('conferenceViewContainer').classList.remove('hidden');
         document.getElementById('standingsPageTitle').textContent = 'Conference Standings';
@@ -790,12 +790,11 @@
         currentView = 'conferences';
 
         if (viewParam === 'fullLeague') {
-            toggleStandingsView(); // Switch to full league view if param is set
+            toggleStandingsView(); 
         }
 
         document.getElementById('toggleViewButton').addEventListener('click', toggleStandingsView);
       }
-      // --- END OF MODIFIED loadStandings function ---
       
       document.addEventListener('DOMContentLoaded', loadStandings);
     </script>
