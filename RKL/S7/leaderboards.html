@@ -166,7 +166,6 @@
         border-top: none;
         position: relative;
       }
-      /* START MOD: Styles for sortable headers */
       .leaderboard-table th.sortable {
         cursor: pointer;
       }
@@ -178,7 +177,6 @@
         margin-left: 5px;
         font-size: 0.8em;
       }
-      /* END MOD */
 
 
       .leaderboard-table td {
@@ -231,15 +229,15 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        overflow: hidden; /* For ellipsis on children */
+        overflow: hidden; 
       }
       
-      .player-cell > div { /* Container for player name and team name */
+      .player-cell > div { 
         display: flex;
         flex-direction: column;
-        overflow: hidden; /* Helps with ellipsis if children are inline-block */
-        flex-grow: 1; /* Allow it to take available space */
-        min-width: 0; /* Crucial for flex items with ellipsis */
+        overflow: hidden; 
+        flex-grow: 1; 
+        min-width: 0; 
       }
 
 
@@ -252,7 +250,7 @@
         width: 32px;
         height: 32px;
         border-radius: 2px;
-        flex-shrink: 0; /* Prevent logo from shrinking */
+        flex-shrink: 0; 
       }
 
       .player-name {
@@ -263,35 +261,42 @@
       .player-name a {
         color: #2c5aa0; 
         text-decoration: none;
-        /* START MOD: Ellipsis for player name */
-        display: block; /* Changed from inline-block for better control with flex parent */
+        display: block; 
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        /* max-width can be set here or dynamically via JS if needed, or rely on parent flex constraints */
-        /* END MOD */
       }
       
       .team-name {
         color: #666;
         font-size: 0.9rem;
-        /* START MOD: Ellipsis for team name */
         display: block;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        /* END MOD */
       }
 
       .stat-cell {
         font-weight: 500;
-        text-align: center; /* Ensure stat cells are centered */
+        text-align: center; 
       }
 
 
-      .first-place { /* ... (no changes) ... */ }
-      .second-place { /* ... (no changes) ... */ }
-      .third-place { /* ... (no changes) ... */ }
+      .first-place {
+        background-color: #ffd700; color: #333; border-radius: 50%;
+        width: 25px; height: 25px; display: flex; align-items: center;
+        justify-content: center; font-size: 0.8rem; font-weight: bold; margin: 0 auto;
+      }
+      .second-place {
+        background-color: #c0c0c0; color: #333; border-radius: 50%;
+        width: 25px; height: 25px; display: flex; align-items: center;
+        justify-content: center; font-size: 0.8rem; font-weight: bold; margin: 0 auto;
+      }
+      .third-place {
+        background-color: #cd7f32; color: white; border-radius: 50%;
+        width: 25px; height: 25px; display: flex; align-items: center;
+        justify-content: center; font-size: 0.8rem; font-weight: bold; margin: 0 auto;
+      }
 
       .table-controls {
         padding: 1rem;
@@ -314,7 +319,10 @@
 
 
       .loading { text-align: center; padding: 3rem; color: #666; font-size: 1.1rem; }
-      .error { /* ... (no changes) ... */ }
+      .error {
+        text-align: center; padding: 2rem; color: #dc3545;
+        background-color: #f8d7da; border-radius: 4px; margin: 1rem;
+      }
 
       @media (max-width: 768px) {
         .category-buttons { grid-template-columns: 1fr; }
@@ -326,13 +334,7 @@
         .leaderboard-table th:nth-child(1), .leaderboard-table td:nth-child(1) { width: 15%; min-width: 40px; }
         .leaderboard-table th:nth-child(2), .leaderboard-table td:nth-child(2) { 
             width: 45%; min-width: 100px; 
-            /* Ensure player cell itself has constraints for ellipsis to work effectively on children */
-            max-width: calc(100% - 40px - 50px - 50px - 1rem); /* approx (total - rank - stat1 - stat2 - paddings) */
-        }
-        .leaderboard-table .player-name a,
-        .leaderboard-table .team-name {
-            /* max-width: 120px; /* More aggressive max-width for names on mobile */
-            /* The flex container setup should handle this better now */
+            max-width: calc(100% - 40px - 50px - 50px - 1rem); 
         }
 
         .leaderboard-table th:nth-child(3), .leaderboard-table td:nth-child(3) { width: 20%; min-width: 50px; }
@@ -351,7 +353,10 @@
         .leaderboard-table[data-active-columns="3"] td:nth-child(4) { display: none; }
       }
 
-      footer { /* ... (no changes) ... */ }
+      footer {
+        text-align: center; margin-top: 3rem; padding: 1rem;
+        background-color: #333; color: #fff;
+      }
     </style>
   </head>
   <body>
@@ -413,7 +418,7 @@
               <option value="all">All Teams</option>
             </select>
           </span>
-          </div>
+        </div>
         
         <table class="leaderboard-table" id="leaderboardTable"> <thead id="table-header">
             <tr>
@@ -436,11 +441,10 @@
       <p>&copy; caustic.info</p>
     </footer>
 
-<script>
+    <script>
       const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4';
       const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
       
-      // Helper functions (formatKarma, formatRank, formatPercentage) - no changes
       function formatKarma(value) {
         return Math.round(parseFloat(value || 0)).toLocaleString();
       }
@@ -455,8 +459,8 @@
       const categories = {
         total_points: {
           title: 'Total Karma Leaders',
-          cols: [
-            { header: 'Rank', dataField: null, sortable: false },
+          cols: [ 
+            { header: 'Rank', dataField: 'initialCategoryRank', sortable: false, type: 'number', formatFn: getRankIndicator }, // Will display initialCategoryRank
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
             { header: 'Karma', dataField: 'total_points', sortable: true, type: 'number', formatFn: formatKarma },
             { header: 'Games', dataField: 'games_played', sortable: true, type: 'number', formatFn: (v) => parseInt(v || 0) }
@@ -468,7 +472,7 @@
         rel_mean: {
           title: 'REL Mean Leaders',
           cols: [
-            { header: 'Rank', dataField: null, sortable: false },
+            { header: 'Rank', dataField: 'initialCategoryRank', sortable: false, type: 'number', formatFn: getRankIndicator },
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
             { header: 'REL Mean', dataField: 'calculated_rel_mean', sortable: true, type: 'number', formatFn: (v) => parseFloat(v || 0).toFixed(3) },
             { header: 'Games', dataField: 'games_played', sortable: true, type: 'number', formatFn: (v) => parseInt(v || 0) }
@@ -481,7 +485,7 @@
         rel_median: {
           title: 'REL Median Leaders', 
           cols: [
-            { header: 'Rank', dataField: null, sortable: false },
+            { header: 'Rank', dataField: 'initialCategoryRank', sortable: false, type: 'number', formatFn: getRankIndicator },
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
             { header: 'REL Median', dataField: 'calculated_rel_median', sortable: true, type: 'number', formatFn: (v) => parseFloat(v || 0).toFixed(3) },
             { header: 'Games', dataField: 'games_played', sortable: true, type: 'number', formatFn: (v) => parseInt(v || 0) }
@@ -494,7 +498,7 @@
         median_gameday_rank: { 
           title: 'Median Gameday Rank Leaders',
           cols: [
-            { header: 'Rank', dataField: null, sortable: false },
+            { header: 'Rank', dataField: 'initialCategoryRank', sortable: false, type: 'number', formatFn: getRankIndicator },
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
             { header: 'Median Rank', dataField: 'calculated_median_rank', sortable: true, type: 'number', formatFn: formatRank },
             { header: 'Games', dataField: 'games_played', sortable: true, type: 'number', formatFn: (v) => parseInt(v || 0) }
@@ -508,7 +512,7 @@
           title: 'Games Above Mean Leaders',
           subtitle: 'Ties broken by REL Median',
           cols: [
-            { header: 'Rank', dataField: null, sortable: false },
+            { header: 'Rank', dataField: 'initialCategoryRank', sortable: false, type: 'number', formatFn: getRankIndicator },
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
             { header: 'Above Mean', dataField: 'aag_mean', sortable: true, type: 'number', formatFn: (v) => parseInt(v || 0).toString() },
             { header: '% of Games', dataField: 'aag_mean_pct', sortable: true, type: 'number', formatFn: formatPercentage }
@@ -521,7 +525,7 @@
           title: 'Games Above Median Leaders',
           subtitle: 'Ties broken by REL Median',
           cols: [
-            { header: 'Rank', dataField: null, sortable: false },
+            { header: 'Rank', dataField: 'initialCategoryRank', sortable: false, type: 'number', formatFn: getRankIndicator },
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
             { header: 'Above Median', dataField: 'aag_median', sortable: true, type: 'number', formatFn: (v) => parseInt(v || 0).toString() },
             { header: '% of Games', dataField: 'aag_median_pct', sortable: true, type: 'number', formatFn: formatPercentage }
@@ -533,7 +537,7 @@
         single_game_karma: {
           title: 'Single Game Karma Leaders',
           cols: [
-            { header: 'Rank', dataField: null, sortable: false },
+            { header: 'Rank', dataField: 'initialCategoryRank', sortable: false, type: 'number', formatFn: getRankIndicator },
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
             { header: 'Karma', dataField: 'karma', sortable: true, type: 'number', formatFn: formatKarma },
             { header: 'Week', dataField: 'week', sortable: true, type: 'number', formatFn: (v) => v }
@@ -545,7 +549,7 @@
         single_game_rank: {
           title: 'Single Game Rank Leaders',
           cols: [
-            { header: 'Rank', dataField: null, sortable: false },
+            { header: 'Rank', dataField: 'initialCategoryRank', sortable: false, type: 'number', formatFn: getRankIndicator },
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
             { header: 'Daily Rank', dataField: 'daily_rank', sortable: true, type: 'number', formatFn: formatRank },
             { header: 'Week', dataField: 'week', sortable: true, type: 'number', formatFn: (v) => v }
@@ -558,7 +562,7 @@
           title: 'T100 Finishes Leaders',
           subtitle: 'Ties broken by REL Median',
           cols: [
-            { header: 'Rank', dataField: null, sortable: false },
+            { header: 'Rank', dataField: 'initialCategoryRank', sortable: false, type: 'number', formatFn: getRankIndicator },
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
             { header: 'T100 Finishes', dataField: 't100_finishes', sortable: true, type: 'number', formatFn: (v) => parseInt(v || 0).toString() },
             { header: '% of Games', dataField: 't100_finishes_pct', sortable: true, type: 'number', formatFn: formatPercentage }
@@ -578,7 +582,7 @@
         direction: 'desc'    
       };
       
-      async function fetchSheetData(sheetName) { 
+      async function fetchSheetData(sheetName) { /* ... (no changes from provided) ... */ 
         try {
           const response = await fetch(BASE_URL + encodeURIComponent(sheetName));
           const csvText = await response.text();
@@ -588,7 +592,7 @@
           return null;
         }
       }
-      function parseCSV(csvText) { 
+      function parseCSV(csvText) { /* ... (no changes from provided) ... */ 
         const lines = csvText.trim().split('\n');
         const headers = parseCSVLine(lines[0]);
         const data = [];
@@ -600,13 +604,11 @@
               row[header] = values[index] || '';
             });
             data.push(row);
-          } else {
-            // console.warn("Skipping mismatched CSV line:", lines[i], "Expected", headers.length, "got", values.length);
           }
         }
         return data;
       }
-      function parseCSVLine(line) { 
+      function parseCSVLine(line) { /* ... (no changes from provided) ... */
         const result = []; let current = ''; let inQuotes = false;
         for (let i = 0; i < line.length; i++) {
           const char = line[i];
@@ -619,19 +621,15 @@
         result.push(current.trim());
         return result.map(field => field.replace(/^"(.*)"$/, '$1').replace(/\\"/g, '"'));
        }
-      function parseNumber(value) { 
+      function parseNumber(value) { /* ... (no changes from provided) ... */ 
         if (value === null || typeof value === 'undefined' || String(value).trim() === '') return 0;
         const cleaned = String(value).replace(/,/g, '');
         const parsed = parseFloat(cleaned);
         return isNaN(parsed) ? 0 : parsed;
       }
 
-      function calculateRELForAllPlayers(players, weeklyAverages, lineups) {
-        console.log('Attempting to calculate REL, Median Rank, and T100 Finishes for all players...'); // LOG
-        if (!players || !weeklyAverages || !lineups) {
-            console.error("Missing data for REL calculation: players, weeklyAverages, or lineups");
-            return players || []; // Return original players array or empty if players is null
-        }
+      function calculateRELForAllPlayers(players, weeklyAverages, lineups) { /* ... (no changes from provided) ... */
+        if (!players || !weeklyAverages || !lineups) return players || [];
         const weeklyAveragesMap = {};
         weeklyAverages.forEach(week => {
           if (week.date) {
@@ -641,27 +639,18 @@
             };
           }
         });
-
         return players.map(player => {
           const playerGames = lineups.filter(lineup => 
             lineup.player_handle === player.player_handle && 
             (String(lineup.started).toUpperCase() === 'TRUE')
           );
-          
-          let totalPlayerKarmaFinal = 0;
-          let totalMeanKarma = 0;
-          let totalMedianKarma = 0;
-          let validGamesForREL = 0;
+          let totalPlayerKarmaFinal = 0, totalMeanKarma = 0, totalMedianKarma = 0, validGamesForREL = 0;
           const ranks = [];
-          let gamesAboveMean = 0;
-          let gamesAboveMedian = 0;
-          let t100_finishes = 0; 
-
-          playerGames.forEach(game => {
+          let gamesAboveMean = 0, gamesAboveMedian = 0, t100_finishes = 0; 
+          playerGames.forEach(game => { /* calculations */ 
             const gameDate = game.date;
             const playerKarmaFinal = parseNumber(game.points_final);
             const globalRank = parseNumber(game.global_rank);
-            
             if (weeklyAveragesMap[gameDate]) {
               totalPlayerKarmaFinal += playerKarmaFinal;
               totalMeanKarma += weeklyAveragesMap[gameDate].mean_score;
@@ -672,137 +661,79 @@
             }
             if (globalRank > 0) {
               ranks.push(globalRank);
-              if (globalRank <= 100) { 
-                t100_finishes++;
-              }
+              if (globalRank <= 100) t100_finishes++;
             }
           });
-          
           const avgPlayerKarmaFinal = validGamesForREL > 0 ? totalPlayerKarmaFinal / validGamesForREL : 0;
           const avgMeanKarma = validGamesForREL > 0 ? totalMeanKarma / validGamesForREL : 0;
           const avgMedianKarma = validGamesForREL > 0 ? totalMedianKarma / validGamesForREL : 0;
-          
           const calculated_rel_mean = avgMeanKarma > 0 ? (avgPlayerKarmaFinal / avgMeanKarma) : 0;
           const calculated_rel_median = avgMedianKarma > 0 ? (avgPlayerKarmaFinal / avgMedianKarma) : 0;
-          
           let calculated_median_rank = 0;
           if (ranks.length > 0) {
             ranks.sort((a, b) => a - b);
             const mid = Math.floor(ranks.length / 2);
             calculated_median_rank = ranks.length % 2 === 0 ? (ranks[mid - 1] + ranks[mid]) / 2 : ranks[mid];
           }
-          
           const games_played_count = parseInt(player.games_played || 0);
-
-          return {
-            ...player, 
-            calculated_rel_mean: calculated_rel_mean,
-            calculated_rel_median: calculated_rel_median,
-            calculated_median_rank: calculated_median_rank,
-            aag_mean: gamesAboveMean,
-            aag_mean_pct: games_played_count > 0 ? gamesAboveMean / games_played_count : 0,
-            aag_median: gamesAboveMedian,
-            aag_median_pct: games_played_count > 0 ? gamesAboveMedian / games_played_count : 0,
-            t100_finishes: t100_finishes, 
-            t100_finishes_pct: games_played_count > 0 ? (t100_finishes / games_played_count) : 0,
-            total_points: parseNumber(player.total_points), // Ensure this is a number
-            games_played: games_played_count 
-          };
+          return { ...player, calculated_rel_mean, calculated_rel_median, calculated_median_rank, aag_mean, 
+                     aag_mean_pct: games_played_count > 0 ? gamesAboveMean / games_played_count : 0,
+                     aag_median, aag_median_pct: games_played_count > 0 ? gamesAboveMedian / games_played_count : 0,
+                     t100_finishes, t100_finishes_pct: games_played_count > 0 ? (t100_finishes / games_played_count) : 0,
+                     total_points: parseNumber(player.total_points), games_played: games_played_count };
         });
       }
       
-      function processGamePerformances(lineups, weeklyAverages, playersFullData) { 
-        console.log('Attempting to process game performances...'); // LOG
-        if (!lineups || !weeklyAverages || !playersFullData) {
-            console.error("Missing data for game performance processing: lineups, weeklyAverages, or playersFullData");
-            return [];
-        }
+      function processGamePerformances(lineups, weeklyAverages, playersFullData) { /* ... (no changes from provided) ... */ 
+        if (!lineups || !weeklyAverages || !playersFullData) return [];
         const gamePerformances = [];
         const dateToWeekMap = {};
-        weeklyAverages.forEach(wa => {
-          if (wa.date && wa.week) { 
-            dateToWeekMap[wa.date] = String(wa.week).trim(); 
-          }
-        });
-
+        weeklyAverages.forEach(wa => { if (wa.date && wa.week) dateToWeekMap[wa.date] = String(wa.week).trim(); });
         const playerTeamMap = {}; 
-        playersFullData.forEach(p => {
-            if(p.player_handle) playerTeamMap[p.player_handle] = p.current_team_id;
-        });
-
+        playersFullData.forEach(p => { if(p.player_handle) playerTeamMap[p.player_handle] = p.current_team_id; });
         lineups.forEach(game => {
           if (game.started && (String(game.started).toUpperCase() === 'TRUE')) {
             const karma = parseNumber(game.points_final);
             const dailyRank = parseNumber(game.global_rank);
             const weekStr = dateToWeekMap[game.date];
-            
             if (weekStr && weekStr !== 'N/A' && String(weekStr).match(/^\d+$/)) {
               if (karma > 0 || dailyRank > 0) { 
-                gamePerformances.push({
-                  player_handle: game.player_handle,
-                  team_id: game.team_id || playerTeamMap[game.player_handle] || 'FA', 
-                  karma: karma,
-                  daily_rank: dailyRank,
-                  week: parseInt(weekStr), 
-                  date: game.date 
-                });
+                gamePerformances.push({ player_handle: game.player_handle, team_id: game.team_id || playerTeamMap[game.player_handle] || 'FA', 
+                                         karma, daily_rank, week: parseInt(weekStr), date: game.date });
               }
             }
           }
         });
-        console.log(`Processed ${gamePerformances.length} game performances.`); // LOG
         return gamePerformances;
       }
 
       async function loadData() { 
-        console.log("loadData started"); // LOG
         const leaderboardBody = document.getElementById('leaderboard-body');
         leaderboardBody.innerHTML = '<tr><td colspan="4" class="loading">Loading data from sheets...</td></tr>';
-
         const [playersData, teamsData, weeklyAveragesData, lineupsData] = await Promise.all([
-          fetchSheetData('Players'),
-          fetchSheetData('Teams'),
-          fetchSheetData('Weekly_Averages'),
-          fetchSheetData('Lineups')
+          fetchSheetData('Players'), fetchSheetData('Teams'),
+          fetchSheetData('Weekly_Averages'), fetchSheetData('Lineups')
         ]);
-        
-        console.log("Data fetched:", { playersData, teamsData, weeklyAveragesData, lineupsData }); // LOG
-
         if (!playersData || !teamsData || !weeklyAveragesData || !lineupsData) {
-          leaderboardBody.innerHTML = 
-            '<tr><td colspan="4" class="error">Error loading critical sheet data. Please check console.</td></tr>';
-          console.error("Critical data loading error."); // LOG
+          leaderboardBody.innerHTML = '<tr><td colspan="4" class="error">Error loading critical sheet data.</td></tr>';
           return;
         }
-        
         allTeams = teamsData; 
         const playersWithCalculatedStats = calculateRELForAllPlayers(playersData, weeklyAveragesData, lineupsData); 
-        allPlayers = playersWithCalculatedStats.filter(player => 
-          player.player_status === 'ACTIVE' 
-        );
-        console.log("Processed allPlayers count:", allPlayers.length); // LOG
-        if(allPlayers.length > 0) console.log("First processed player:", allPlayers[0]); // LOG
-        
+        allPlayers = playersWithCalculatedStats.filter(player => player.player_status === 'ACTIVE');
         allGamePerformances = processGamePerformances(lineupsData, weeklyAveragesData, playersData);
-        console.log("Processed allGamePerformances count:", allGamePerformances.length); // LOG
-         if(allGamePerformances.length > 0) console.log("First game performance:", allGamePerformances[0]); // LOG
         
         const teamFilterSelect = document.getElementById('team-filter-select');
-        const activeTeams = allTeams.filter(team => team.team_id && team.team_name && team.team_id.toUpperCase() !== 'FA' && team.team_id.toUpperCase() !== 'RETIRED' && team.team_id.toUpperCase() !== 'FREE_AGENT');
+        const activeTeams = allTeams.filter(team => team.team_id && team.team_name && !['FA', 'RETIRED', 'FREE_AGENT'].includes(team.team_id.toUpperCase()));
         activeTeams.sort((a, b) => a.team_name.localeCompare(b.team_name));
         teamFilterSelect.innerHTML = '<option value="all">All Teams</option>' + activeTeams.map(team => `<option value="${team.team_id}">${team.team_name}</option>`).join('');
-        
         const storedTeamFilter = sessionStorage.getItem('selectedLeaderboardTeamFilter');
-        if (storedTeamFilter) {
-            teamFilterSelect.value = storedTeamFilter;
-        }
+        if (storedTeamFilter) teamFilterSelect.value = storedTeamFilter;
         teamFilterSelect.addEventListener('change', () => {
             sessionStorage.setItem('selectedLeaderboardTeamFilter', teamFilterSelect.value);
             leaderboardSortState.columnField = null; 
             displayLeaderboard();
         });
-        
-        console.log("loadData finished, calling displayLeaderboard"); // LOG
         displayLeaderboard(); 
       }
       
@@ -811,22 +742,25 @@
         const team = allTeams.find(t => t.team_id === teamId);
         return team ? team.team_name : (teamId === 'FA' ? 'Free Agent' : teamId ); 
       }
-      function getRankIndicator(rank) { 
+      // --- MODIFIED: getRankIndicator takes the actual rank value ---
+      function getRankIndicator(rankValue) { 
+        const rank = parseInt(rankValue); // Ensure it's a number
+        if (isNaN(rank) || rank <=0) return `<span>-</span>`; // Handle invalid or non-positive ranks
+
         if (rank === 1) { return `<div class="first-place">${rank}</div>`; }
         else if (rank === 2) { return `<div class="second-place">${rank}</div>`; }
         else if (rank === 3) { return `<div class="third-place">${rank}</div>`; }
-        else { return `<span>${ (typeof rank === 'number' && !isNaN(rank) && rank > 0) ? rank : '-'}</span>`; } // Ensure rank > 0 for display
+        else { return `<span>${rank}</span>`; }
       }
 
       function handleLeaderboardSort(columnField, columnType = 'number') { 
-        console.log("handleLeaderboardSort called with:", columnField, columnType); // LOG
         if (leaderboardSortState.columnField === columnField) {
           leaderboardSortState.direction = leaderboardSortState.direction === 'asc' ? 'desc' : 'asc';
         } else {
           leaderboardSortState.columnField = columnField;
           const categoryConfig = categories[currentCategory];
           const colConfig = categoryConfig.cols.find(c => c.dataField === columnField);
-          
+          // Default to 'desc' unless it's a rank-like field or default sort for category is asc
           if (colConfig && (colConfig.header.toLowerCase().includes('rank') || (categoryConfig.defaultSortField === columnField && !categoryConfig.defaultSortDescending))) {
              leaderboardSortState.direction = 'asc';
           } else {
@@ -836,11 +770,10 @@
         displayLeaderboard();
       }
       
+      // --- MODIFIED: displayLeaderboard for sticky ranks and new logic ---
       function displayLeaderboard() {
-        console.log("displayLeaderboard called. Current category:", currentCategory); // LOG
         const categoryConfig = categories[currentCategory];
         if (!categoryConfig) {
-            console.error("Invalid categoryConfig for currentCategory:", currentCategory); // LOG
             document.getElementById('leaderboard-body').innerHTML = `<tr><td colspan="4" class="error">Invalid category selected.</td></tr>`;
             return;
         }
@@ -848,33 +781,24 @@
         const showCount = document.getElementById('show-count').value;
         const leaderboardTable = document.getElementById('leaderboardTable');
         const leaderboardBody = document.getElementById('leaderboard-body');
-        
-        const minGamesContainer = document.getElementById('min-games-filter-container');
         const minGamesInput = document.getElementById('min-games');
-        const teamFilterContainer = document.getElementById('team-filter-container');
         const selectedTeamId = document.getElementById('team-filter-select').value;
-        
-        if (categoryConfig.hasMinGamesFilter) {
-            minGamesContainer.style.display = 'inline-block';
-            if (minGamesInput.dataset.lastCategory !== currentCategory || minGamesInput.dataset.userInteracted === "false") {
-                const playersMeeting3Games = allPlayers.filter(p => (p.games_played || 0) >= 3).length;
-                minGamesInput.value = (playersMeeting3Games < 120 && allPlayers.length > 20) ? "1" : "3";
-                minGamesInput.dataset.userInteracted = "false";
-            }
-            minGamesInput.dataset.lastCategory = currentCategory;
-        } else {
-            minGamesContainer.style.display = 'none';
-        }
+        const minGamesContainer = document.getElementById('min-games-filter-container');
+        const teamFilterContainer = document.getElementById('team-filter-container');
 
-        if (categoryConfig.dataSourceType === 'players') {
-            teamFilterContainer.style.display = 'inline-block';
-        } else {
-            teamFilterContainer.style.display = 'none';
+        // UI for filters
+        minGamesContainer.style.display = categoryConfig.hasMinGamesFilter ? 'inline-block' : 'none';
+        if (categoryConfig.hasMinGamesFilter && (minGamesInput.dataset.lastCategory !== currentCategory || minGamesInput.dataset.userInteracted === "false")) {
+            const playersMeeting3Games = allPlayers.filter(p => (p.games_played || 0) >= 3).length;
+            minGamesInput.value = (playersMeeting3Games < 120 && allPlayers.length > 20) ? "1" : "3";
+            minGamesInput.dataset.userInteracted = "false";
         }
+        minGamesInput.dataset.lastCategory = currentCategory;
+        teamFilterContainer.style.display = categoryConfig.dataSourceType === 'players' ? 'inline-block' : 'none';
         
         leaderboardBody.innerHTML = `<tr><td colspan="${categoryConfig.cols.length || 4}" class="loading">Processing leaderboard...</td></tr>`;
-
         document.getElementById('leaderboard-title').textContent = categoryConfig.title;
+        // ... (subtitle handling - no change) ...
         const headerElement = document.querySelector('.leaderboard-header h3');
         const existingSubtitle = document.querySelector('.leaderboard-subtitle');
         if (existingSubtitle) existingSubtitle.remove();
@@ -885,10 +809,9 @@
           headerElement.parentNode.appendChild(subtitleElement);
         }
 
+
         const headerCellsHTML = categoryConfig.cols.map(colConfig => {
-            let indicator = '';
-            let thClass = '';
-            let onClickAttr = '';
+            let indicator = ''; let thClass = ''; let onClickAttr = '';
             if (colConfig.sortable) {
                 thClass = 'sortable';
                 onClickAttr = `onclick="handleLeaderboardSort('${colConfig.dataField}', '${colConfig.type}')"`;
@@ -900,78 +823,93 @@
         }).join('');
         document.getElementById('table-header').innerHTML = `<tr>${headerCellsHTML}</tr>`;
 
-        let sourceData;
-        let isGameLeaderboard = categoryConfig.dataSourceType === 'games';
+        let baseDataForRanking;
+        const isGameLeaderboard = categoryConfig.dataSourceType === 'games';
 
         if (isGameLeaderboard) {
-          sourceData = [...allGamePerformances];
-          if (currentCategory === 'single_game_karma') sourceData = sourceData.filter(g => g.karma > 0);
-          else if (currentCategory === 'single_game_rank') sourceData = sourceData.filter(g => g.daily_rank > 0);
+          baseDataForRanking = [...allGamePerformances];
+          if (currentCategory === 'single_game_karma') baseDataForRanking = baseDataForRanking.filter(g => g.karma > 0);
+          else if (currentCategory === 'single_game_rank') baseDataForRanking = baseDataForRanking.filter(g => g.daily_rank > 0);
         } else {
-          sourceData = [...allPlayers];
+          baseDataForRanking = [...allPlayers];
           if (categoryConfig.hasMinGamesFilter) {
             const minGames = parseInt(minGamesInput.value) || 0;
-            if (minGames > 0) sourceData = sourceData.filter(player => (parseNumber(player.games_played) || 0) >= minGames);
-          }
-          if (selectedTeamId !== 'all') {
-            sourceData = sourceData.filter(player => player.current_team_id === selectedTeamId);
+            if (minGames > 0) baseDataForRanking = baseDataForRanking.filter(player => (parseNumber(player.games_played) || 0) >= minGames);
           }
         }
-        console.log("Source data for display (after initial filter, before sort), count:", sourceData.length); // LOG
-        if(sourceData.length > 0) console.log("First item of sourceData:", sourceData[0]); //LOG
-        
-        const sortFieldToUse = leaderboardSortState.columnField || categoryConfig.defaultSortField;
-        const sortDirection = leaderboardSortState.columnField ? leaderboardSortState.direction : (categoryConfig.defaultSortDescending ? 'desc' : 'asc');
-        const activeColConfig = categoryConfig.cols.find(c => c.dataField === sortFieldToUse) || 
-                                categoryConfig.cols.find(c => c.dataField === categoryConfig.defaultSortField) || {}; // Fallback to default column for type
-        const columnType = activeColConfig.type || 'number';
 
-        console.log(`Sorting by: ${sortFieldToUse}, direction: ${sortDirection}, type: ${columnType}`); // LOG
+        // Assign initialCategoryRank based on default sort of this (potentially min-games filtered) data
+        let dataWithInitialRanks = [...baseDataForRanking];
+        dataWithInitialRanks.sort((a, b) => {
+            let valA = a[categoryConfig.defaultSortField];
+            let valB = b[categoryConfig.defaultSortField];
+            const defaultColConfig = categoryConfig.cols.find(c => c.dataField === categoryConfig.defaultSortField) || {};
+            const defaultColType = defaultColConfig.type || 'number';
 
-        sourceData.sort((a, b) => {
-          let valA = a[sortFieldToUse];
-          let valB = b[sortFieldToUse];
-
-          if (columnType === 'number') {
-            valA = parseFloat(valA || (sortDirection === 'desc' ? -Infinity : Infinity));
-            valB = parseFloat(valB || (sortDirection === 'desc' ? -Infinity : Infinity));
-             if(isNaN(valA)) valA = (sortDirection === 'desc' ? -Infinity : Infinity); // Handle NaN
-             if(isNaN(valB)) valB = (sortDirection === 'desc' ? -Infinity : Infinity); // Handle NaN
-          } else { 
-            valA = String(valA || '').toLowerCase();
-            valB = String(valB || '').toLowerCase();
-          }
-
-          let comparison = 0;
-          if (valA < valB) comparison = -1;
-          if (valA > valB) comparison = 1;
-          
-          let primarySortResult = sortDirection === 'asc' ? comparison : -comparison;
-
-          if (primarySortResult === 0) { 
-            if (!isGameLeaderboard && (categoryConfig.defaultSortField === 'aag_mean' || categoryConfig.defaultSortField === 'aag_median' || categoryConfig.defaultSortField === 't100_finishes')) {
-              const aREL = parseFloat(a.calculated_rel_median || 0);
-              const bREL = parseFloat(b.calculated_rel_median || 0);
-              return bREL - aREL; 
-            } else if (isGameLeaderboard) {
-                if (sortFieldToUse === 'karma') { 
-                    return new Date(a.date) - new Date(b.date);
-                } else if (sortFieldToUse === 'daily_rank') { 
-                    const aKarma = parseFloat(a.karma || 0); const bKarma = parseFloat(b.karma || 0);
-                    if (bKarma !== aKarma) return bKarma - aKarma;
-                    return new Date(a.date) - new Date(b.date);
-                }
-            } else if (a.player_handle && b.player_handle) { 
-                 return String(a.player_handle).localeCompare(String(b.player_handle));
+            if (defaultColType === 'number') {
+                valA = parseFloat(valA || (categoryConfig.defaultSortDescending ? -Infinity : Infinity));
+                valB = parseFloat(valB || (categoryConfig.defaultSortDescending ? -Infinity : Infinity));
+                if(isNaN(valA)) valA = (categoryConfig.defaultSortDescending ? -Infinity : Infinity);
+                if(isNaN(valB)) valB = (categoryConfig.defaultSortDescending ? -Infinity : Infinity);
+            } else {
+                valA = String(valA || '').toLowerCase();
+                valB = String(valB || '').toLowerCase();
             }
-          }
-          return primarySortResult;
+            let comparison = 0;
+            if (valA < valB) comparison = -1;
+            if (valA > valB) comparison = 1;
+            
+            // Default Tie-breaking for initial ranking (important)
+            if (comparison === 0) {
+                 if (!isGameLeaderboard && (categoryConfig.defaultSortField === 'aag_mean' || categoryConfig.defaultSortField === 'aag_median' || categoryConfig.defaultSortField === 't100_finishes')) {
+                    const aREL = parseFloat(a.calculated_rel_median || 0); const bREL = parseFloat(b.calculated_rel_median || 0);
+                    return bREL - aREL; 
+                } else if (a.player_handle && b.player_handle) {
+                     return String(a.player_handle).localeCompare(String(b.player_handle));
+                }
+            }
+            return categoryConfig.defaultSortDescending ? -comparison : comparison;
         });
-        console.log("Source data after sort, count:", sourceData.length); // LOG
-        if(sourceData.length > 0) console.log("First item after sort:", sourceData[0]); //LOG
+        dataWithInitialRanks.forEach((item, index) => { item.initialCategoryRank = index + 1; });
         
-        const itemsToShow = showCount === 'all' ? sourceData : sourceData.slice(0, parseInt(showCount));
-        console.log("Items to show, count:", itemsToShow.length); // LOG
+        // Now dataWithInitialRanks has the sticky rank. Continue processing from this.
+        let dataForDisplay = [...dataWithInitialRanks]; // Start with data that has initial ranks
+
+        if (categoryConfig.dataSourceType === 'players' && selectedTeamId !== 'all') {
+          dataForDisplay = dataForDisplay.filter(player => player.current_team_id === selectedTeamId);
+        }
+        
+        // Apply Secondary Sort (user-clicked column header) if one is active
+        if (leaderboardSortState.columnField) {
+            const { columnField: secondarySortField, direction: secondarySortDirection } = leaderboardSortState;
+            const secondaryColConfig = categoryConfig.cols.find(c => c.dataField === secondarySortField) || {};
+            const secondaryColumnType = secondaryColConfig.type || 'number';
+
+            dataForDisplay.sort((a, b) => {
+                let valA = a[secondarySortField];
+                let valB = b[secondarySortField];
+                if (secondaryColumnType === 'number') {
+                    valA = parseFloat(valA || (secondarySortDirection === 'desc' ? -Infinity : Infinity));
+                    valB = parseFloat(valB || (secondarySortDirection === 'desc' ? -Infinity : Infinity));
+                    if(isNaN(valA)) valA = (secondarySortDirection === 'desc' ? -Infinity : Infinity);
+                    if(isNaN(valB)) valB = (secondarySortDirection === 'desc' ? -Infinity : Infinity);
+                } else { 
+                    valA = String(valA || '').toLowerCase();
+                    valB = String(valB || '').toLowerCase();
+                }
+                let comparison = 0;
+                if (valA < valB) comparison = -1;
+                if (valA > valB) comparison = 1;
+                let sortResult = secondarySortDirection === 'asc' ? comparison : -comparison;
+                if (sortResult === 0) { // Tie-breaking for secondary sort uses initialCategoryRank
+                    return (a.initialCategoryRank || Infinity) - (b.initialCategoryRank || Infinity);
+                }
+                return sortResult;
+            });
+        }
+        // If no secondary sort, dataForDisplay is already sorted by initialCategoryRank due to the earlier sort.
+        
+        const itemsToShow = showCount === 'all' ? dataForDisplay : dataForDisplay.slice(0, parseInt(showCount));
         
         if (itemsToShow.length === 0) {
             leaderboardBody.innerHTML = `<tr><td colspan="${categoryConfig.cols.length || 4}" style="text-align:center; padding: 2rem;">No data available for this category or filter.</td></tr>`;
@@ -979,8 +917,8 @@
             return;
         }
 
-        const tableHTML = itemsToShow.map((item, index) => {
-          const rank = index + 1; 
+        const tableHTML = itemsToShow.map((item) => { // Removed visualIndex, use item.initialCategoryRank
+          const rankToDisplay = item.initialCategoryRank; // Use the stored initial rank
           let playerHandle, teamIdForLogo;
 
           if (isGameLeaderboard) {
@@ -995,64 +933,52 @@
                               ? `icons/${encodeURIComponent(teamIdForLogo)}.webp` 
                               : 'icons/FA.webp'; 
           
-          let rowCells = `
-            <td class="rank-cell">${getRankIndicator(rank)}</td>
-            <td class="player-cell">
-              <img src="${teamLogoSrc}" alt="${getTeamName(teamIdForLogo)}" class="team-logo" onerror="this.style.display='none'; this.src='icons/FA.webp';">
-              <div>
-                <div class="player-name">
-                  <a href="player.html?player=${encodeURIComponent(playerHandle || '')}">
-                    ${playerHandle || 'N/A'}
-                  </a>
-                </div>
-                <div class="team-name">${getTeamName(teamIdForLogo)}</div>
-              </div>
-            </td>`;
-          
-          for(let i = 2; i < categoryConfig.cols.length; i++) {
-              const colDef = categoryConfig.cols[i];
-              if (!colDef || !colDef.dataField) { // Added check for colDef and dataField
-                  console.warn("Missing colDef or dataField for column index", i, "in category", currentCategory);
-                  rowCells += `<td class="stat-cell">-</td>`;
-                  continue;
-              }
-              const value = item[colDef.dataField];
-              const formattedValue = colDef.formatFn ? colDef.formatFn(value) : (value !== undefined && value !== null ? value : '-');
-              rowCells += `<td class="stat-cell">${formattedValue}</td>`;
-          }
-
+          let rowCells = '';
+          categoryConfig.cols.forEach(colDef => {
+            if (colDef.dataField === 'initialCategoryRank') { // Specifically for the rank column
+                 rowCells += `<td class="rank-cell">${getRankIndicator(rankToDisplay)}</td>`;
+            } else if (colDef.dataField === 'player_handle') { // Player cell
+                 rowCells += `
+                    <td class="player-cell">
+                      <img src="${teamLogoSrc}" alt="${getTeamName(teamIdForLogo)}" class="team-logo" onerror="this.style.display='none'; this.src='icons/FA.webp';">
+                      <div>
+                        <div class="player-name">
+                          <a href="player.html?player=${encodeURIComponent(playerHandle || '')}">
+                            ${playerHandle || 'N/A'}
+                          </a>
+                        </div>
+                        <div class="team-name">${getTeamName(teamIdForLogo)}</div>
+                      </div>
+                    </td>`;
+            } else if (colDef.dataField) { // Other data cells
+                const value = item[colDef.dataField];
+                const formattedValue = colDef.formatFn ? colDef.formatFn(value) : (value !== undefined && value !== null ? String(value) : '-');
+                rowCells += `<td class="stat-cell">${formattedValue}</td>`;
+            } else { // Fallback for columns without dataField (like the first 'Rank' if not handled by initialCategoryRank)
+                 rowCells += `<td>-</td>`;
+            }
+          });
           return `<tr>${rowCells}</tr>`;
         }).join('');
         
         leaderboardBody.innerHTML = tableHTML;
         leaderboardTable.dataset.activeColumns = categoryConfig.cols.length;
-        console.log("displayLeaderboard finished rendering."); // LOG
       }
       
       document.addEventListener('DOMContentLoaded', () => { 
-        console.log("DOMContentLoaded event"); // LOG
         const urlParams = new URLSearchParams(window.location.search);
         const categoryParam = urlParams.get('category');
         const storedCategory = sessionStorage.getItem('selectedLeaderboardCategory');
         currentCategory = categoryParam || storedCategory || 'total_points'; 
+        if (!categories[currentCategory]) currentCategory = 'total_points';
         
-        if (categories[currentCategory]) {
-          document.querySelectorAll('.category-btn').forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.dataset.category === currentCategory) btn.classList.add('active');
-          });
-          if (categoryParam) { 
-            sessionStorage.setItem('selectedLeaderboardCategory', currentCategory); 
-            window.history.replaceState({}, document.title, window.location.pathname); 
-          }
-        } else { 
-            console.warn("Initial category from URL/sessionStorage is invalid, defaulting to total_points"); //LOG
-            currentCategory = 'total_points'; 
-            document.querySelectorAll('.category-btn').forEach(btn => { 
-                btn.classList.remove('active');
-                if (btn.dataset.category === currentCategory) btn.classList.add('active');
-            });
-            sessionStorage.setItem('selectedLeaderboardCategory', currentCategory);
+        document.querySelectorAll('.category-btn').forEach(btn => {
+          btn.classList.remove('active');
+          if (btn.dataset.category === currentCategory) btn.classList.add('active');
+        });
+        if (categoryParam) { 
+          sessionStorage.setItem('selectedLeaderboardCategory', currentCategory); 
+          window.history.replaceState({}, document.title, window.location.pathname); 
         }
         
         document.querySelectorAll('.category-btn').forEach(btn => {
@@ -1063,6 +989,8 @@
             sessionStorage.setItem('selectedLeaderboardCategory', currentCategory); 
             leaderboardSortState.columnField = null; 
             document.getElementById('min-games').dataset.userInteracted = "false"; 
+            document.getElementById('team-filter-select').value = 'all'; // Reset team filter on category change
+            sessionStorage.removeItem('selectedLeaderboardTeamFilter');
             displayLeaderboard();
           });
         });
@@ -1078,17 +1006,23 @@
         const minGamesInputElement = document.getElementById('min-games');
         minGamesInputElement.addEventListener('change', () => {
             minGamesInputElement.dataset.userInteracted = "true"; 
+            leaderboardSortState.columnField = null; // Reset sort on min games change
             displayLeaderboard();
         });
         minGamesInputElement.addEventListener('input', () => { 
             minGamesInputElement.dataset.userInteracted = "true"; 
+             // Debounce or directly call:
+            // clearTimeout(minGamesInputElement.debounceTimer);
+            // minGamesInputElement.debounceTimer = setTimeout(() => {
+            //    leaderboardSortState.columnField = null; 
+            //    displayLeaderboard();
+            // }, 300);
+            leaderboardSortState.columnField = null; // For simplicity, immediate update
             displayLeaderboard();
         });
         
         loadData();
       });
     </script>
-  </body>
-</html>
   </body>
 </html>
