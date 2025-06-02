@@ -753,7 +753,7 @@
             details = `${getTeamLogo(transaction.from_team)}${playerNameLinked}${playerStats} retired from ${getTeamNameLink(transaction.from_team)}.`;
             break;
           case 'UNRETIREMENT':
-            details = `${getTeamLogo(transaction.to_team)}${playerNameLinked}${playerStats} signed with ${getTeamNameLink(transaction.to_team)}.`;
+            details = `${getTeamLogo(transaction.to_team)}${playerNameLinked}${playerStats} unretired and signed with ${getTeamNameLink(transaction.to_team)}.`;
             break;
           case 'SIGNING':
              details = `${getTeamLogo(transaction.to_team)}${playerNameLinked}${playerStats} signed with ${getTeamNameLink(transaction.to_team)} as a free agent.`;
