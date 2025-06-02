@@ -83,7 +83,7 @@
         align-items: center;
         justify-content: center;
         gap: 2rem;
-        margin-bottom: 1rem; /* Reduced bottom margin */
+        margin-bottom: 1rem; 
       }
 
       .team-logo-large {
@@ -107,14 +107,14 @@
         margin-bottom: 0.5rem;
       }
 
-      .team-info { /* For Current Team */
+      .team-info { 
         font-size: 1.1rem;
         color: #007bff;
         font-weight: 500;
         cursor: pointer;
         text-decoration: none;
         transition: color 0.3s ease;
-        margin-bottom: 0.3rem; /* Space before previous teams */
+        margin-bottom: 0.3rem; 
       }
 
       .team-info:hover {
@@ -122,7 +122,7 @@
         text-decoration: underline;
       }
 
-      .player-previous-teams { /* For Previous Team(s) */
+      .player-previous-teams { 
         font-size: 0.95rem;
         color: #777;
         margin-top: 0.3rem;
@@ -264,7 +264,7 @@
       .game-item {
         display: flex; 
         justify-content: space-between; 
-        align-items: center;
+        align-items: center; /* Vertically align items in the row */
         padding: 1rem; border-bottom: 1px solid #eee;
         transition: background-color 0.2s; cursor: pointer;
       }
@@ -274,22 +274,21 @@
       .game-history-main-content {
           display: flex;
           flex-direction: column;
-          flex-grow: 1;
-          min-width: 0;
+          flex-grow: 1; /* Allows this section to take up space */
+          min-width: 0; 
       }
       .game-history-matchup-teams { 
         display: flex;
         flex-direction: row; /* Horizontal on desktop */
         align-items: center;
-        /* justify-content: space-between; /* Distribute Team A, vs, Team B */
         gap: 0.5rem; 
       }
       .game-history-team-entry {
         display: flex;
         align-items: center;
-        gap: 0.4rem; /* Slightly reduced gap */
-        flex: 1; /* Allow team entries to take space */
-        min-width: 0; /* For ellipsis */
+        gap: 0.4rem; 
+        flex: 1; /* Allows team entries to share space */
+        min-width: 0; 
       }
       .game-history-team-logo {
         width: 20px; height: 20px; border-radius: 3px; flex-shrink: 0;
@@ -312,7 +311,7 @@
         color: #6c757d;
         font-weight: bold;
         padding: 0 0.25rem; 
-        flex-shrink: 0; /* Prevent vs from shrinking too much */
+        flex-shrink: 0; 
       }
       .game-history-date { 
         font-size: 0.8rem; color: #666; margin-top: 0.3rem;
@@ -324,7 +323,7 @@
       .performance-rank { font-size: 0.8rem; color: #666; margin-top: 0.2rem; }
       .captain-performance { color: #ffc107; font-weight: bold; }
 
-      /* Modal styles */
+      /* Modal styles ... (remains unchanged) ... */
       .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow-y: auto; }
       .modal-content { background-color: #fff; margin: 2rem auto; border-radius: 8px; width: 95%; max-width: 900px; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
       .modal-header { background-color: #333; color: white; padding: 1.5rem; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; }
@@ -368,26 +367,37 @@
         .player-stats-grid { grid-template-columns: repeat(2, 1fr); }
         .performance-table th, .performance-table td { padding: 0.5rem 0.3rem; font-size: 0.8rem; }
         
+        /* Game History Mobile Layout MODIFICATIONS */
         .game-item { 
-          flex-direction: column; 
-          align-items: stretch; 
-          gap: 0.5rem;
+          /* Keep as flex row to allow performance on right */
+          /* flex-direction: column; /* REMOVE this to keep it row-like */
+          /* align-items: stretch; /* REMOVE this or change to center/flex-start for row */
+          /* gap: 0.5rem; /* Original gap might be too large if row */
+          padding: 0.75rem;
         }
-        .game-history-main-content {
-          width: 100%;
+        .game-history-main-content { /* This will be the left part */
+          width: auto; /* Allow it to size based on content, flex-grow handles expansion */
+          flex-grow: 1;
         }
         .game-history-matchup-teams {
             flex-direction: column; 
-            align-items: stretch; 
+            align-items: flex-start; /* Align stacked teams to the left */
             gap: 0.2rem; 
         }
         .game-history-vs-separator {
-            text-align: center; 
-            padding: 0.2rem 0;
+            display: none; /* Hide "vs" on mobile */
+        }
+        .game-history-team-entry {
+            width: 100%; /* Make each team entry take full width of its container */
         }
         .game-history-date { text-align: left; width: 100%;} 
-        .game-performance { text-align: left; width: 100%; } 
-
+        .game-performance { 
+            text-align: right; 
+            /* width: auto; /* Let it size by content */
+            /* min-width: 80px; /* Adjust if needed */
+            flex-shrink: 0; /* Prevent from shrinking too much */
+        } 
+        /* END Game History Mobile Layout MODIFICATIONS */
 
         .opponent-logo { width: 28px; height: 28px; } 
         .modal-content { margin: 1rem; width: calc(100% - 2rem); }
@@ -399,7 +409,7 @@
       @media (max-width: 480px) {
         .player-stats-grid { grid-template-columns: 1fr; }
         .performance-table th:nth-child(4), .performance-table td:nth-child(4) { display: none; }
-        .game-item { padding: 0.75rem; gap: 0.5rem; }
+        /* .game-item { padding: 0.75rem; gap: 0.5rem; } /* Already handled above */
         .opponent-logo { width: 24px; height: 24px; }
         .game-history-team-name { font-size: 0.85rem; }
         .game-history-date { font-size: 0.75rem; }
@@ -472,7 +482,7 @@
       let allTeams = [];
       let allLineups = [];
       let allScheduleData = []; 
-      let allTransactionsLogData = []; // Added for previous team info
+      let allTransactionsLogData = []; 
 
       function parseNumber(value) { 
         if (!value) return 0;
@@ -655,7 +665,7 @@
           fetchSheetData('Players'), fetchSheetData('Teams'),
           fetchSheetData('Weekly_Averages'), fetchSheetData('Lineups'),
           fetchSheetData('Schedule'),
-          fetchSheetData('Transaction_Log') // Fetch transaction log
+          fetchSheetData('Transaction_Log') 
         ]);
 
         if (!players || !teams) {
@@ -708,9 +718,8 @@
             teamInfoHTML = `<a href="team.html?id=${playerData.current_team_id}" class="team-info">Current Team: ${teamName}</a>`;
         }
         
-        // Previous Teams Logic
         const playedForTeamsSet = new Set();
-        allLineups.forEach(l => {
+        (allLineups || []).forEach(l => { // Ensure allLineups is not null
             if (l.player_handle === playerHandle && (String(l.started).toLowerCase() === 'true' || l.started === true || l.started === 1) && l.team_id) {
                 playedForTeamsSet.add(l.team_id);
             }
@@ -847,8 +856,6 @@
 
           let playerTeamResultIndicator = '';
           let opponentTeamResultIndicator = '';
-          let playerTeamNameClass = ''; 
-          let opponentTeamNameClass = '';
 
           if (game.winner === game.playerTeamId) {
             playerTeamResultIndicator = '<span class="game-result-indicator game-result-win">(W)</span>';
