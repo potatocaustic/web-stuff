@@ -153,7 +153,7 @@
         width: 100%;
         border-collapse: collapse;
         border-spacing: 0; 
-        table-layout: fixed; /* MODIFIED: Added table-layout: fixed */
+        table-layout: fixed; 
       }
 
       .leaderboard-table th {
@@ -239,6 +239,7 @@
         overflow: hidden; 
         flex-grow: 1; 
         min-width: 0; 
+        flex-basis: 0; /* MODIFIED: Added flex-basis: 0 */
       }
 
 
@@ -321,10 +322,8 @@
         .leaderboard-table th:nth-child(1), .leaderboard-table td:nth-child(1) { width: 15%; min-width: 40px; }
         .leaderboard-table th:nth-child(2), .leaderboard-table td:nth-child(2) { 
             width: 45%; min-width: 100px; 
-            /* max-width calculation is fine for mobile to constrain the column */
             max-width: calc(100% - 40px - 50px - 50px - 1rem); 
         }
-        /* Ellipsis on player/team names is handled by their individual styles and parent flex constraints */
 
         .leaderboard-table th:nth-child(3), .leaderboard-table td:nth-child(3) { width: 20%; min-width: 50px; }
         .leaderboard-table th:nth-child(4), .leaderboard-table td:nth-child(4) { width: 20%; min-width: 50px; }
@@ -799,7 +798,6 @@
         } else {
           leaderboardSortState.columnField = columnField;
           const categoryConfig = categories[currentCategory];
-          // Use category's default sort for its primary metric, otherwise asc for strings, desc for numbers
           if (columnField === categoryConfig.defaultSortField) {
               leaderboardSortState.direction = categoryConfig.defaultSortDescending ? 'desc' : 'asc';
           } else if (columnField === 'leaderboardDisplayRank' || columnType === 'string') {
@@ -886,16 +884,13 @@
             const minGames = parseInt(minGamesInput.value) || 0;
             if (minGames > 0) sourceDataForProcessing = sourceDataForProcessing.filter(player => (parseNumber(player.games_played) || 0) >= minGames);
           }
-          // Team filter for players is applied *after* global ranking
         }
         
-        // --- START: Assign Sticky Ranks to sourceDataForProcessing (before team filtering for players) ---
         const rankSortField = categoryConfig.defaultSortField;
         const rankSortDesc = categoryConfig.defaultSortDescending;
         const rankColConfigForSort = categoryConfig.cols.find(c => c.dataField === rankSortField) || {};
         const rankColTypeForSort = rankColConfigForSort.type || 'number';
 
-        // Create a temporary array for rank calculation to avoid modifying the order of sourceDataForProcessing yet
         let dataSortedForRank = [...sourceDataForProcessing];
 
         dataSortedForRank.sort((a, b) => {
@@ -960,20 +955,13 @@
                 }
             }
         }
-        // Ranks are now assigned to items in dataSortedForRank.
-        // We need these ranks on the items in sourceDataForProcessing.
-        // Since they are objects, if dataSortedForRank contains references, sourceDataForProcessing is updated.
-        // --- END: Assign Sticky Ranks ---
-
-        // Now apply team filter if it's a player leaderboard
-        let dataForDisplaySort = [...sourceDataForProcessing]; // Data with ranks, before team filter for players
+        
+        let dataForDisplaySort = [...sourceDataForProcessing]; 
         if (!isGameLeaderboard && selectedTeamId !== 'all') {
             dataForDisplaySort = dataForDisplaySort.filter(player => player.current_team_id === selectedTeamId);
         }
         
-        // Sort for final display based on user's selected column sort state
         const displaySortField = leaderboardSortState.columnField || categoryConfig.defaultSortField;
-        // Important: if sorting by rank, use 'leaderboardDisplayRank' as the field
         const actualDisplaySortField = (displaySortField === 'leaderboardDisplayRank' || categoryConfig.cols.find(c=>c.header==='Rank' && c.dataField === displaySortField)) 
                                         ? 'leaderboardDisplayRank' 
                                         : displaySortField;
@@ -1004,12 +992,10 @@
           let primarySortResult = displaySortDirection === 'asc' ? comparison : -comparison;
 
           if (primarySortResult === 0) { 
-            // Tie-breaking for display sort stability (uses category's primary rank sort as final tie-breaker)
             let rankA = a.leaderboardDisplayRank;
             let rankB = b.leaderboardDisplayRank;
             if (rankA < rankB) return -1;
             if (rankA > rankB) return 1;
-            // Final fallback to player handle for player lists if ranks are also tied
             if (a.player_handle && b.player_handle) { 
                  return String(a.player_handle).localeCompare(String(b.player_handle));
             }
