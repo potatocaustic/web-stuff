@@ -607,7 +607,7 @@
         align-items: center;
       }
 
-      .modal-header h3 {
+      .modal-header h3 { /* Default style for modal title */
         color: white;
         margin: 0;
         font-size: 1.4rem;
@@ -812,7 +812,6 @@
         letter-spacing: 0.5px;
       }
       
-      /* ADDED: Base style for season pick count badge */
       .draft-capital .season-group .season-header .season-pick-count-badge {
         font-size: 0.9rem; 
         white-space: nowrap; 
@@ -985,6 +984,17 @@
           padding: 1rem;
         }
 
+        /* ADDED: Mobile responsive modal title */
+        .modal-header h3 {
+          font-size: 1.1rem; 
+          line-height: 1.3;  
+          white-space: nowrap; 
+          overflow: hidden;    
+          text-overflow: ellipsis; 
+          flex-grow: 1; 
+          min-width: 0; 
+        }
+
         .game-details-grid {
           grid-template-columns: 1fr !important;
           gap: 1rem !important;
@@ -1012,12 +1022,11 @@
           margin-top: 0.5rem;
         }
 
-        /* MODIFIED: Styles for draft capital season headers on mobile */
         .draft-capital .season-group .season-header {
           padding: 0.75rem 1rem; 
         }
 
-        .draft-capital .season-group .season-header > span:first-child { /* Season X Draft text */
+        .draft-capital .season-group .season-header > span:first-child { 
           font-size: 0.9rem; 
           margin-right: 8px; 
           flex-grow: 1;    
@@ -1028,7 +1037,7 @@
           text-overflow: ellipsis; 
         }
 
-        .draft-capital .season-group .season-header .season-pick-count-badge { /* Pick count badge */
+        .draft-capital .season-group .season-header .season-pick-count-badge { 
           font-size: 0.8rem; 
           padding: 0.2rem 0.5rem; 
         }
@@ -1047,6 +1056,11 @@
 
         .player-rel { 
           align-self: flex-end;
+        }
+
+        /* ADDED: Further responsive modal title for very small screens */
+        .modal-header h3 {
+          font-size: 1.0rem; 
         }
       }
 
