@@ -238,19 +238,18 @@
       }
       .performance-table td:first-child { text-align: left; }
       .performance-table tr:hover { background-color: #f8f9fa; }
-      .performance-table tr.clickable-row:hover { background-color: #e9ecef; cursor: pointer; } /* For clickable rows */
+      .performance-table tr.clickable-row:hover { background-color: #e9ecef; cursor: pointer; } 
 
       .captain-row { background-color: #fff3cd !important; font-weight: bold; }
       .captain-badge-small {
         background-color: #ffc107; color: #333; padding: 0.1rem 0.3rem;
         border-radius: 8px; font-size: 0.6rem; font-weight: bold; margin-left: 0.3rem;
       }
-      /* Styles for rank badges in weekly performance */
       .rank-badge { display: inline-block; padding: 0.2em 0.5em; border-radius: 0.25em; color: white; font-weight: bold; font-size: 0.85em; min-width: 20px; text-align: center;}
       .rank-gold { background-color: gold; color: black; }
       .rank-silver { background-color: silver; color: black; }
-      .rank-bronze { background-color: #cd7f32; } /* Bronze */
-      .rank-skyblue { background-color: #87CEEB; color: black; } /* Sky Blue */
+      .rank-bronze { background-color: #cd7f32; } 
+      .rank-skyblue { background-color: #87CEEB; color: black; } 
 
 
       /* Game history section */
@@ -263,13 +262,12 @@
       .game-item:hover { background-color: #f8f9fa; }
       .game-item:last-child { border-bottom: none; }
 
-      /* MODIFIED: Game History Team Display */
-      .game-history-matchup { /* Container for both teams and vs */
+      .game-history-matchup { 
         display: flex;
-        flex-direction: column; /* Stack team lines */
-        gap: 0.3rem; /* Small gap between team lines */
-        flex: 1; /* Take up available space */
-        min-width: 0; /* For ellipsis */
+        flex-direction: column; 
+        gap: 0.3rem; 
+        flex: 1; 
+        min-width: 0; 
       }
       .game-history-team-entry {
         display: flex;
@@ -299,17 +297,16 @@
         font-weight: bold;
         padding: 0.1rem 0;
       }
-      .game-history-date { /* Date below matchup */
+      .game-history-date { 
         font-size: 0.8rem; color: #666; margin-top: 0.3rem;
       }
-      /* END MODIFIED */
       
       .game-performance { text-align: right; min-width: 100px; }
       .performance-score { font-weight: bold; font-size: 1.1rem; }
       .performance-rank { font-size: 0.8rem; color: #666; margin-top: 0.2rem; }
       .captain-performance { color: #ffc107; font-weight: bold; }
 
-      /* Modal styles (Copied from team.html, assuming they are standard) */
+      /* Modal styles */
       .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow-y: auto; }
       .modal-content { background-color: #fff; margin: 2rem auto; border-radius: 8px; width: 95%; max-width: 900px; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
       .modal-header { background-color: #333; color: white; padding: 1.5rem; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; }
@@ -320,11 +317,10 @@
       .game-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
       .team-breakdown { background-color: #f8f9fa; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; }
       .team-breakdown.winner { border-color: #28a745; border-width: 2px; }
-      /* Using .modal-team-header to avoid conflict with .team-header on player page */
       .modal-team-header { background-color: #333; color: white; padding: 1.5rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 1rem; flex-direction: column;}
       .modal-team-header.winner { background-color: #28a745; }
       .modal-team-header h4 { color: white; margin: 0; font-size: 1.2rem; }
-      .modal-team-header .team-logo { width: 48px; height: 48px; border-radius: 4px; } /* Uses global .team-logo here if specific size not set */
+      .modal-team-header .team-logo { width: 48px; height: 48px; border-radius: 4px; } 
       .team-total { background-color: #e9ecef; padding: 1rem; text-align: center; font-weight: bold; font-size: 1.1rem; border-bottom: 2px solid #ddd; }
       .lineup-table { width: 100%; border-collapse: collapse; }
       .lineup-table th { background-color: #f8f9fa; padding: 0.8rem 0.5rem; text-align: center; font-weight: bold; border-bottom: 2px solid #ddd; font-size: 0.9rem; }
@@ -340,7 +336,7 @@
       .player-link { color: #007bff; text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
       .player-link:hover { color: #0056b3; text-decoration: underline; }
       .points-cell { text-align: center; font-weight: bold; }
-      .rank-cell { text-align: center; color: #666; } /* Also used by weekly performance ranks */
+      .rank-cell { text-align: center; color: #666; } 
 
       .loading { text-align: center; padding: 2rem; color: #666; }
       .error { text-align: center; padding: 2rem; color: #dc3545; background-color: #f8d7da; border-radius: 4px; margin: 1rem 0; }
@@ -353,12 +349,12 @@
         .team-logo-large { width: 80px; height: 80px; }
         .player-stats-grid { grid-template-columns: repeat(2, 1fr); }
         .performance-table th, .performance-table td { padding: 0.5rem 0.3rem; font-size: 0.8rem; }
-        .game-item { padding: 0.75rem; flex-direction: column; align-items: stretch; gap: 0.5rem;} /* MODIFIED for game history mobile */
-        .game-history-matchup { width: 100%; } /* MODIFIED */
-        .game-history-date { text-align: left; width: 100%;} /* MODIFIED */
-        .game-performance { text-align: left; width: 100%; } /* MODIFIED */
+        .game-item { padding: 0.75rem; flex-direction: column; align-items: stretch; gap: 0.5rem;} 
+        .game-history-matchup { width: 100%; } 
+        .game-history-date { text-align: left; width: 100%;} 
+        .game-performance { text-align: left; width: 100%; } 
 
-        .opponent-logo { width: 28px; height: 28px; } /* Game history opponent logo */
+        .opponent-logo { width: 28px; height: 28px; } 
         .modal-content { margin: 1rem; width: calc(100% - 2rem); }
         .game-details-grid { grid-template-columns: 1fr; gap: 1rem; }
         .modal-body { padding: 1rem; }
@@ -440,15 +436,15 @@
       let playerData = null;
       let allTeams = [];
       let allLineups = [];
-      let allScheduleData = []; // Added to store schedule data globally
+      let allScheduleData = []; 
 
-      function parseNumber(value) { /* ... (no changes) ... */
+      function parseNumber(value) { 
         if (!value) return 0;
         const cleaned = value.toString().replace(/,/g, '');
         const parsed = parseFloat(cleaned);
         return isNaN(parsed) ? 0 : parsed;
        }
-      async function fetchSheetData(sheetName) { /* ... (no changes) ... */ 
+      async function fetchSheetData(sheetName) { 
         try {
           const response = await fetch(BASE_URL + encodeURIComponent(sheetName));
           const csvText = await response.text();
@@ -458,7 +454,7 @@
           return null;
         }
       }
-      function parseCSV(csvText) { /* ... (no changes) ... */ 
+      function parseCSV(csvText) { 
         const lines = csvText.trim().split('\n');
         const headers = parseCSVLine(lines[0]);
         const data = [];
@@ -470,7 +466,7 @@
         }
         return data;
       }
-      function parseCSVLine(line) { /* ... (no changes) ... */ 
+      function parseCSVLine(line) { 
         const result = [];
         let current = '';
         let inQuotes = false;
@@ -483,26 +479,26 @@
         result.push(current.trim());
         return result.map(field => field.replace(/^"(.*)"$/, '$1'));
       }
-      function getUrlParameter(name) { /* ... (no changes) ... */ 
+      function getUrlParameter(name) { 
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get(name);
       }
-      function formatDate(dateString) { /* ... (no changes) ... */ 
+      function formatDate(dateString) { 
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       }
-       function getTeamName(teamId) { /* ... (no changes, uses global allTeams) ... */
+       function getTeamName(teamId) { 
         const team = allTeams.find(t => t.team_id === teamId);
         return team ? team.team_name : teamId;
        }
-      function getOrdinal(num) { /* ... (no changes) ... */
+      function getOrdinal(num) { 
         const n = parseInt(num);
         if (n <= 0) return 'Unranked';
         const suffix = ['th', 'st', 'nd', 'rd'];
         const v = n % 100;
         return n + (suffix[(v - 20) % 10] || suffix[v] || suffix[0]);
        }
-      function calculatePlayerRankings(playerData, allPlayersData) { /* ... (no changes) ... */
+      function calculatePlayerRankings(playerData, allPlayersData) { 
         const rankings = {};
         const totalKarmaPlayers = allPlayersData
           .filter(p => p.player_status === 'ACTIVE' && parseInt(p.games_played || 0) > 0)
@@ -531,9 +527,9 @@
         rankings.medianRank = medianRankPlayers.findIndex(p => p.player_handle === playerData.player_handle) + 1;
         return rankings;
        }
-      function calculateRELForAllPlayers(players, weeklyAverages, lineups) { /* ... (no changes) ... */
+      function calculateRELForAllPlayers(players, weeklyAverages, lineups) { 
         const weeklyAveragesMap = {};
-        (weeklyAverages || []).forEach(week => { // Added null check for weeklyAverages
+        (weeklyAverages || []).forEach(week => { 
           if (week.date) {
             weeklyAveragesMap[week.date] = {
               mean_score: parseNumber(week.mean_score),
@@ -541,17 +537,17 @@
             };
           }
         });
-        return (players || []).map(player => { // Added null check for players
+        return (players || []).map(player => { 
           const playerGames = (lineups || []).filter(lineup => 
             lineup.player_handle === player.player_handle && 
             (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1)
           );
           if (playerGames.length === 0) {
-            return { ...player, calculated_rel_mean: 0, calculated_rel_median: 0, calculated_median_rank: 0, aag_median: 0, aag_median_pct: 0 }; // Added aag for consistency
+            return { ...player, calculated_rel_mean: 0, calculated_rel_median: 0, calculated_median_rank: 0, aag_median: 0, aag_median_pct: 0 }; 
           }
           let totalPlayerKarmaRaw = 0, totalMeanKarma = 0, totalMedianKarma = 0, validGames = 0;
           const ranks = [];
-          let gamesAboveMedian = 0; // For aag_median
+          let gamesAboveMedian = 0; 
           playerGames.forEach(game => {
             const playerKarmaRaw = parseNumber(game.points_raw);
             const globalRank = parseNumber(game.global_rank);
@@ -560,7 +556,7 @@
               totalMeanKarma += weeklyAveragesMap[game.date].mean_score;
               totalMedianKarma += weeklyAveragesMap[game.date].median_score;
               validGames++;
-              if (playerKarmaRaw > weeklyAveragesMap[game.date].median_score) gamesAboveMedian++; // Calculate for aag_median
+              if (playerKarmaRaw > weeklyAveragesMap[game.date].median_score) gamesAboveMedian++; 
             }
             if (globalRank > 0) ranks.push(globalRank);
           });
@@ -575,11 +571,11 @@
             const mid = Math.floor(ranks.length / 2);
             medianRank = ranks.length % 2 === 0 ? (ranks[mid - 1] + ranks[mid]) / 2 : ranks[mid];
           }
-          const gamesPlayedCount = parseInt(player.games_played || 0); // Use existing games_played if available
+          const gamesPlayedCount = parseInt(player.games_played || 0); 
           return { ...player, calculated_rel_mean: relMeanAvgRaw, calculated_rel_median: relMedianAvgRaw, calculated_median_rank: medianRank, aag_median: gamesAboveMedian, aag_median_pct: gamesPlayedCount > 0 ? gamesAboveMedian / gamesPlayedCount : 0 };
         });
        }
-      function calculatePlayerRELMedian(playerHandle, weeklyAverages, lineups) { /* ... (no changes, already robust) ... */ 
+      function calculatePlayerRELMedian(playerHandle, weeklyAverages, lineups) { 
         const playerGames = (lineups || []).filter(lineup => 
           lineup.player_handle === playerHandle && 
           (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1)
@@ -601,7 +597,7 @@
         const avgMedianKarma = validGames > 0 ? totalMedianKarma / validGames : 0;
         return avgMedianKarma > 0 ? (avgPlayerKarma / avgMedianKarma) : 0;
       }
-      function calculatePlayerMedianRank(playerHandle, lineups) { /* ... (no changes, already robust) ... */ 
+      function calculatePlayerMedianRank(playerHandle, lineups) { 
         const playerGames = (lineups || []).filter(lineup => 
           lineup.player_handle === playerHandle && 
           (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1) &&
@@ -619,11 +615,10 @@
           document.getElementById('player-main-info').innerHTML = '<div class="error">No player specified</div>';
           return;
         }
-        // MODIFIED: Fetch schedule data here and store globally
         const [players, teams, weeklyAverages, lineups, schedule] = await Promise.all([
           fetchSheetData('Players'), fetchSheetData('Teams'),
           fetchSheetData('Weekly_Averages'), fetchSheetData('Lineups'),
-          fetchSheetData('Schedule') // Fetch schedule
+          fetchSheetData('Schedule') 
         ]);
 
         if (!players || !teams) {
@@ -632,7 +627,7 @@
         }
         allTeams = teams;
         allLineups = lineups || []; 
-        allScheduleData = schedule || []; // Store schedule globally
+        allScheduleData = schedule || []; 
 
         const playersWithREL = calculateRELForAllPlayers(players, weeklyAverages || [], allLineups);
         playerData = playersWithREL.find(player => player.player_handle === playerHandle);
@@ -641,10 +636,6 @@
           document.getElementById('player-main-info').innerHTML = '<div class="error">Player not found</div>';
           return;
         }
-        // Recalculate specific REL Median and Median Rank for the single player for display in header if needed
-        // Note: calculateRELForAllPlayers already adds calculated_rel_median and calculated_median_rank
-        // So these next two lines might be redundant if the values from calculateRELForAllPlayers are sufficient and accurate
-        // Forcing a re-calc for the specific player to be sure for display:
         playerData.calculated_rel_median = calculatePlayerRELMedian(playerHandle, weeklyAverages || [], allLineups);
         playerData.calculated_median_rank = calculatePlayerMedianRank(playerHandle, allLineups);
         
@@ -655,13 +646,13 @@
         await Promise.all([loadPerformanceData(), loadGameHistory()]);
       }
       
-      function displayPlayerHeader(rankings) { /* ... (no changes to this function's internal HTML generation) ... */
+      function displayPlayerHeader(rankings) { 
         document.getElementById('page-title').textContent = `${playerData.player_handle} - RKL Season 7`;
         document.getElementById('header-title').textContent = playerData.player_handle;
         let teamLogoHTML = '';
         let teamInfoHTML = '';
         const isFreeAgent = playerData.current_team_id === 'FREE_AGENT';
-        if (!isFreeAgent && playerData.current_team_id) { // Added check for playerData.current_team_id
+        if (!isFreeAgent && playerData.current_team_id) { 
             const teamData = allTeams.find(t => t.team_id === playerData.current_team_id);
             const teamName = teamData ? teamData.team_name : playerData.current_team_id;
             teamLogoHTML = `<img src="icons/${playerData.current_team_id}.webp" alt="${teamName}" class="team-logo-large" onerror="this.style.display='none';">`;
@@ -677,8 +668,8 @@
             ${teamInfoHTML}
           </div>`;
         const relMedian = playerData.calculated_rel_median || 0;
-        const gamesAboveMedian = parseInt(playerData.aag_median || 0); // Ensure this field exists from calculateRELForAllPlayers
-        const aboveMedianPct = parseFloat(playerData.aag_median_pct || 0) * 100; // Ensure this field exists
+        const gamesAboveMedian = parseInt(playerData.aag_median || 0); 
+        const aboveMedianPct = parseFloat(playerData.aag_median_pct || 0) * 100; 
         const medianRank = playerData.calculated_median_rank || 0;
         document.getElementById('player-stats').innerHTML = `
           <a href="leaderboards.html?category=total_points" class="stat-card">
@@ -688,12 +679,11 @@
           <a href="leaderboards.html?category=aag_median" class="stat-card">
             <div class="stat-value">${gamesAboveMedian}</div><div class="stat-label">Games Above Median</div><div class="stat-rank">${getOrdinal(rankings.gamesAboveMedian)} Overall</div></a>
           <a href="leaderboards.html?category=aag_median_pct" class="stat-card"> <div class="stat-value">${Math.round(aboveMedianPct)}%</div><div class="stat-label">Above Median %</div><div class="stat-rank">${getOrdinal(rankings.aboveMedianPct)} Overall</div></a>
-          <a href="leaderboards.html?category=median_gameday_rank" class="stat-card"> {/* Corrected category key if needed */}
+          <a href="leaderboards.html?category=median_gameday_rank" class="stat-card"> 
             <div class="stat-value">${medianRank > 0 ? Math.round(medianRank) : '-'}</div><div class="stat-label">Median Rank</div><div class="stat-rank">${rankings.medianRank > 0 ? `${getOrdinal(rankings.medianRank)} Overall` : 'Not ranked'}</div></a>`;
         document.getElementById('player-stats').style.display = 'grid';
        }
 
-      // MODIFIED: Helper function for formatting ranks in Weekly Performance
       function formatWeeklyPerformanceRank(globalRankStr) {
         const rank = parseInt(globalRankStr);
         if (isNaN(rank) || rank <= 0) return '-';
@@ -704,10 +694,9 @@
         return rank; 
       }
 
-      // MODIFIED: loadPerformanceData to make rows clickable and format ranks
       async function loadPerformanceData() {
-        if (!allLineups || !allScheduleData) { // Ensure allScheduleData is available
-          document.getElementById('performance-table').innerHTML = '<tr><td colspan="4" class="error">Error loading performance data (missing lineups or schedule)</td></tr>';
+        if (!allLineups || !allScheduleData) { 
+          document.getElementById('performance-table').innerHTML = '<tr><td colspan="4" class="error">Error loading performance data</td></tr>';
           return;
         }
         const playerLineups = allLineups
@@ -724,7 +713,6 @@
           const pointsRaw = parseNumber(lineup.points_raw);
           const globalRank = parseNumber(lineup.global_rank);
 
-          // Find the corresponding game in allScheduleData to get team1_id and team2_id
           const gameForLineup = allScheduleData.find(g => g.date === lineup.date && (g.team1_id === lineup.team_id || g.team2_id === lineup.team_id));
           let onclickAttr = '';
           if (gameForLineup) {
@@ -734,16 +722,14 @@
           return `<tr class="${isCaptain ? 'captain-row' : ''} ${gameForLineup ? 'clickable-row' : ''}" ${onclickAttr}>
                     <td>Week ${lineup.week}${isCaptain ? '<span class="captain-badge-small">C</span>' : ''}</td>
                     <td>${Math.round(pointsRaw).toLocaleString()}${isCaptain ? ` (+${Math.round(pointsRaw * 0.5).toLocaleString()})` : ''}</td>
-                    <td>${formatWeeklyPerformanceRank(globalRank)}</td> {/* MODIFIED: Use new rank formatter */}
+                    <td>${formatWeeklyPerformanceRank(globalRank)}</td>
                     <td>${isCaptain ? 'Captain' : 'Starter'}</td>
                   </tr>`;
         }).join('');
         document.getElementById('performance-table').innerHTML = performanceHTML;
       }
       
-      // MODIFIED: loadGameHistory to show both teams and W/L indicators
       async function loadGameHistory() {
-        // const schedule = await fetchSheetData('Schedule'); // Already fetched in loadPlayerData and stored in allScheduleData
         if (!allScheduleData || !allLineups || !allTeams) { 
           document.getElementById('game-history').innerHTML = '<div class="error">Error loading game history data.</div>';
           return;
@@ -764,9 +750,9 @@
           return { ...gameForThisLineup, playerTeamId, opponentId, lineup: lineup };
         }).filter(game => game !== null).sort((a, b) => { 
             const dateA = new Date(a.date); const dateB = new Date(b.date);
-            if (dateA.getTime() !== dateB.getTime()) return dateA - dateB; // Sort by date first
+            if (dateA.getTime() !== dateB.getTime()) return dateA - dateB; 
             const weekA = parseInt(a.lineup.week || '0'); const weekB = parseInt(b.lineup.week || '0');
-            return weekA - weekB; // Then by week
+            return weekA - weekB;
           });
 
         if (gamesWithPerformance.length === 0) {
@@ -784,14 +770,14 @@
           const playerTeamLogo = `icons/${game.playerTeamId}.webp`;
           const opponentLogoSrc = `icons/${game.opponentId}.webp`;
 
-          let playerTeamResult = '';
-          let opponentTeamResult = '';
+          let playerTeamResultIndicator = '';
+          let opponentTeamResultIndicator = '';
           if (game.winner === game.playerTeamId) {
-            playerTeamResult = '<span class="game-result-indicator game-result-win">(W)</span>';
-            opponentTeamResult = '<span class="game-result-indicator game-result-loss">(L)</span>';
+            playerTeamResultIndicator = '<span class="game-result-indicator game-result-win">(W)</span>';
+            opponentTeamResultIndicator = '<span class="game-result-indicator game-result-loss">(L)</span>';
           } else if (game.winner === game.opponentId) {
-            playerTeamResult = '<span class="game-result-indicator game-result-loss">(L)</span>';
-            opponentTeamResult = '<span class="game-result-indicator game-result-win">(W)</span>';
+            playerTeamResultIndicator = '<span class="game-result-indicator game-result-loss">(L)</span>';
+            opponentTeamResultIndicator = '<span class="game-result-indicator game-result-win">(W)</span>';
           }
 
           return `
@@ -799,12 +785,12 @@
               <div class="game-history-matchup">
                 <div class="game-history-team-entry">
                   <img src="${playerTeamLogo}" alt="${playerTeamName}" class="game-history-team-logo" onerror="this.style.display='none'">
-                  <span class="game-history-team-name">${playerTeamName} ${playerTeamResult}</span>
+                  <span class="game-history-team-name">${playerTeamName} ${playerTeamResultIndicator}</span>
                 </div>
                 <div class="game-history-vs">vs</div>
                 <div class="game-history-team-entry">
                   <img src="${opponentLogoSrc}" alt="${opponentTeamName}" class="game-history-team-logo" onerror="this.style.display='none'">
-                  <span class="game-history-team-name">${opponentTeamName} ${opponentTeamResult}</span>
+                  <span class="game-history-team-name">${opponentTeamName} ${opponentTeamResultIndicator}</span>
                 </div>
                 <div class="game-history-date">${formatDate(game.date)} (Week ${game.lineup.week})</div>
               </div>
@@ -816,30 +802,29 @@
         }).join('');
         document.getElementById('game-history').innerHTML = historyHTML;
       }
-      // END MODIFIED loadGameHistory
-
-      async function showGameDetails(team1Id, team2Id, date) { /* ... (Copied from team.html, targets 'modal-content') ... */ 
+      
+      async function showGameDetails(team1Id, team2Id, date) { 
         const modal = document.getElementById('game-modal');
         const modalTitle = document.getElementById('modal-title');
         const modalBodyContent = document.getElementById('modal-content'); 
         
         modal.style.display = 'block';
-        modalTitle.textContent = `${getTeamName(team1Id)} vs ${getTeamName(team2Id)} - ${formatDate(date)}`; // Use formatDate as in team.html, or keep formatDateShort
+        modalTitle.textContent = `${getTeamName(team1Id)} vs ${getTeamName(team2Id)} - ${formatDate(date)}`; 
         modalBodyContent.innerHTML = '<div class="loading">Loading game details...</div>';
         
-        const schedule = await fetchSheetData('Schedule'); // Fetch fresh
+        const schedule = await fetchSheetData('Schedule'); 
         if (!schedule) { modalBodyContent.innerHTML = '<div class="error">Error loading game details (schedule)</div>'; return; }
         
         const game = schedule.find(g => g.team1_id === team1Id && g.team2_id === team2Id && g.date === date);
         if (!game) { modalBodyContent.innerHTML = '<div class="error">Game not found in schedule</div>'; return; }
         
-        const lineupsForModal = await fetchSheetData('Lineups'); // Fetch fresh
+        const lineupsForModal = await fetchSheetData('Lineups'); 
         if (!lineupsForModal) { modalBodyContent.innerHTML = '<div class="error">Error loading game details (lineups)</div>'; return; }
 
         const team1AllGameLineups = lineupsForModal.filter(lineup => lineup.team_id === team1Id && lineup.date === date);
         const team2AllGameLineups = lineupsForModal.filter(lineup => lineup.team_id === team2Id && lineup.date === date);
         
-        const sortLogic = (a,b) => (String(a.captain) === 'true' ? -1 : 1) - (String(b.captain) === 'true' ? -1 : 1) || parseNumber(b.points_final) - parseNumber(a.points_final);
+        const sortLogic = (a,b) => (String(a.captain).toLowerCase() === 'true' || a.captain === true || a.captain === 1 ? -1 : 1) - (String(b.captain).toLowerCase() === 'true' || b.captain === true || b.captain === 1 ? -1 : 1) || parseNumber(b.points_final) - parseNumber(a.points_final);
 
         const team1Lineups = team1AllGameLineups.filter(lineup => String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1).sort(sortLogic);
         const team2Lineups = team2AllGameLineups.filter(lineup => String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1).sort(sortLogic);
@@ -852,7 +837,8 @@
           const teamDetails = allTeams.find(t => t.team_id === teamIdForTable);
           const teamRecord = teamDetails ? `${teamDetails.wins || 0}-${teamDetails.losses || 0}` : '';
           const modalTeamLogoSrc = `icons/${teamIdForTable}.webp`;
-          const teamLogoTagInModal = (teamIdForTable && teamIdForTable !== 'FREE_AGENT') ? `<img src="${modalTeamLogoSrc}" alt="${getTeamName(teamIdForTable)}" class="team-logo" onerror="this.style.display='none'">` : ''; // Refers to .team-logo in modal CSS
+          // Ensure team-logo class is used for styling if it exists in modal context
+          const teamLogoTagInModal = (teamIdForTable && teamIdForTable !== 'FREE_AGENT') ? `<img src="${modalTeamLogoSrc}" alt="${getTeamName(teamIdForTable)}" class="team-logo" onerror="this.style.display='none'">` : ''; 
           
           if (lineups.length === 0) return `<div class="team-breakdown ${isWinner ? 'winner' : ''}"><div class="modal-team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamIdForTable}'" style="cursor: pointer;">${teamLogoTagInModal}<div><h4>${getTeamName(teamIdForTable)}</h4><div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div></div></div><div class="team-total">Total: ${Math.round(total).toLocaleString()}</div><div style="padding: 2rem; text-align: center; color: #666;">No lineup data available for this game.</div></div>`;
           
@@ -868,10 +854,10 @@
         modalBodyContent.innerHTML = `<div class="game-details-grid">${generateLineupTable(team1Lineups, team1Id, team1Total, winner === team1Id)}${generateLineupTable(team2Lineups, team2Id, team2Total, winner === team2Id)}</div>`;
       }
       
-      function closeGameModal() { /* ... (no changes) ... */ 
+      function closeGameModal() { 
         document.getElementById('game-modal').style.display = 'none';
       }
-      window.onclick = function(event) { /* ... (no changes) ... */ 
+      window.onclick = function(event) { 
         const modal = document.getElementById('game-modal');
         if (event.target === modal) closeGameModal();
       }
