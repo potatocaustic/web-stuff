@@ -209,9 +209,8 @@
 
       .roster-header {
         display: grid;
-        /* MODIFIED: Desktop grid for roster header */
-        grid-template-columns: 40px 1fr 80px; /* Logo, Player, REL */
-        gap: 0.5rem; /* Added gap for consistency */
+        grid-template-columns: 40px 1fr 80px; 
+        gap: 0.5rem; 
         align-items: center;
         padding: 1rem 1rem;
         background-color: #f8f9fa;
@@ -238,9 +237,8 @@
 
       .player-item {
         display: grid;
-        /* MODIFIED: Desktop grid for player item */
-        grid-template-columns: 40px 1fr 80px; /* Logo, Player Info, REL */
-        gap: 0.5rem; /* Added gap */
+        grid-template-columns: 40px 1fr 80px; 
+        gap: 0.5rem; 
         align-items: center;
         padding: 1rem 1rem;
         border-bottom: 1px solid #eee;
@@ -490,7 +488,7 @@
       .upcoming { color: #333; font-weight: 500; }
       .team-matchup, .team, .team-info, .vs { display: none; }
       .game-matchup .week-badge { display: none; }
-      .team-logo { width: 20px; height: 20px; vertical-align: middle; } /* Used by modal team header */
+      .team-logo { width: 20px; height: 20px; vertical-align: middle; } 
 
       .week-badge {
         background-color: #007bff; color: white; border-radius: 50%;
@@ -543,7 +541,7 @@
       .player-link { color: #007bff; text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
       .player-link:hover { color: #0056b3; text-decoration: underline; }
       .points-cell { text-align: center; font-weight: bold; }
-      .rank-cell { text-align: center; color: #666; } /* Used by modal ranks */
+      .rank-cell { text-align: center; color: #666; } 
 
       .pick-item-enhanced { transition: background-color 0.2s ease; display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; border-bottom: 1px solid #eee; }
       .pick-item-enhanced > div:first-child { text-align: left; }
@@ -560,12 +558,12 @@
       .back-button:hover { background-color: #0056b3; text-decoration: none; color: white; }
 
       .desktop-only-roster-logo { /* For roster logos on desktop */
-        /* display: flex; /* Default state - visible on desktop */
-        /* align-items: center; */
-        /* justify-content: center; */
-        width: 30px; /* Adjust as needed */
+        width: 30px; 
         height: 30px;
         flex-shrink: 0;
+        display: flex; /* Ensure it's visible on desktop by default */
+        align-items: center;
+        justify-content: center;
       }
 
       @media (max-width: 768px) {
@@ -573,9 +571,9 @@
         .team-main-info { flex-direction: column; gap: 1rem; }
         .team-logo-large { width: 80px; height: 80px; }
         .team-stats-grid { grid-template-columns: repeat(2, 1fr); }
-        .player-item { padding: 0.75rem; grid-template-columns: 1fr 80px !important; /* Mobile: Player Info | REL */ }
-        .roster-header { grid-template-columns: 1fr 80px !important; /* Mobile: Player | REL */ }
-        .desktop-only-roster-logo { display: none; } /* Hide logo column on mobile */
+        .player-item { padding: 0.75rem; grid-template-columns: 1fr 80px !important; }
+        .roster-header { grid-template-columns: 1fr 80px !important; }
+        .desktop-only-roster-logo { display: none; } 
         
         .game-item { padding: 0.75rem; margin-left: 0; position: relative; display: block; }
         .game-matchup .week-badge { display: flex !important; position: absolute; top: 0.75rem; right: 0.75rem; left: auto; transform: none; width: 28px; height: 28px; font-size: 0.8rem; z-index: 2; background-color: #007bff; color: white; border-radius: 50%; align-items: center; justify-content: center; font-weight: bold; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -588,7 +586,7 @@
         .team-score { font-weight: bold; color: #333; margin-left: auto; min-width: 35px; text-align: right; flex-shrink: 0; }
         .team-score.win { color: #28a745; } .team-score.loss { color: #dc3545; } .team-score.upcoming { color: #333; }
         .vs { display: none; }
-        .team-logo { width: 32px; height: 32px; vertical-align: middle; } /* For schedule team items */
+        .team-logo { width: 32px; height: 32px; vertical-align: middle; } 
         .game-info-table, .game-content-table { display: none; }
         .modal-content { margin: 1rem; width: calc(100% - 2rem); }
         .modal-body { padding: 1rem; }
@@ -697,7 +695,7 @@
       let allTeams = [];
       let allWeeklyAverages = [];
       let allTransactionsLogData = []; 
-      let allLineups = []; // Added to store lineups globally for roster REL calculation
+      let allLineups = []; 
 
       function formatInThousands(value) {
         const num = parseFloat(value);
@@ -913,7 +911,7 @@
           fetchSheetData('Teams'),
           fetchSheetData('Weekly_Averages'),
           fetchSheetData('Transaction_Log'),
-          fetchSheetData('Lineups') // Fetch lineups here
+          fetchSheetData('Lineups') 
         ]);
         
         if (!teamsResult) { 
@@ -925,7 +923,7 @@
         allTeams = teamsResult;
         allWeeklyAverages = weeklyAveragesResult || [];
         allTransactionsLogData = transactionsLogResult || [];
-        allLineups = lineupsResult || []; // Store globally
+        allLineups = lineupsResult || []; 
 
         teamData = allTeams.find(team => team.team_id === teamId);
         if (!teamData) {
@@ -1027,7 +1025,6 @@
       
       async function loadRoster() {
         const players = await fetchSheetData('Players'); 
-        // allLineups is already fetched in loadTeamData
         
         if (!players || !allLineups) {
           document.getElementById('roster-list').innerHTML = 
@@ -1046,29 +1043,30 @@
         
         const playersWithREL = teamPlayers.map(player => {
           const relMedian = calculatePlayerRELMedian(player.player_handle, allWeeklyAverages, allLineups);
+          // Calculate Median Global Rank for roster display
+          let medianGlobalRank = 0;
+          const playerStartedGamesWithRank = allLineups.filter(lineup =>
+              lineup.player_handle === player.player_handle &&
+              (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1) &&
+              lineup.global_rank && parseNumber(lineup.global_rank) > 0
+          );
+          if (playerStartedGamesWithRank.length > 0) {
+              const ranks = playerStartedGamesWithRank.map(game => parseNumber(game.global_rank)).sort((a, b) => a - b);
+              const mid = Math.floor(ranks.length / 2);
+              medianGlobalRank = ranks.length % 2 === 0 ? Math.round((ranks[mid - 1] + ranks[mid]) / 2) : Math.round(ranks[mid]);
+          }
+
           return {
             ...player,
-            calculated_rel_median: relMedian
+            calculated_rel_median: relMedian,
+            median_global_rank_for_roster: medianGlobalRank // Store calculated median rank
           };
         }).sort((a, b) => b.calculated_rel_median - a.calculated_rel_median);
         
         const rosterHTML = playersWithREL.map(player => {
           const relMedian = player.calculated_rel_median;
           const gamesPlayed = parseInt(player.games_played || 0);
-          
-          let avgGlobalRank = 0;
-          const playerLineups = allLineups.filter(lineup => 
-              lineup.player_handle === player.player_handle && 
-              lineup.global_rank && 
-              parseFloat(lineup.global_rank) > 0 &&
-              (lineup.started === 'TRUE' || lineup.started === true || lineup.started === 'true') // Count only started games for avg rank
-            );
-            
-          if (playerLineups.length > 0) {
-            const totalRank = playerLineups.reduce((sum, lineup) => 
-              sum + parseFloat(lineup.global_rank), 0);
-            avgGlobalRank = Math.round(totalRank / playerLineups.length);
-          }
+          const medianRankDisplay = player.median_global_rank_for_roster > 0 ? player.median_global_rank_for_roster : '-';
           
           return `
             <div class="player-item">
@@ -1079,7 +1077,7 @@
                 <a href="player.html?player=${encodeURIComponent(player.player_handle)}" class="player-name">${escapeHTML(player.player_handle)}</a>
                 <div class="player-stats">
                   ${gamesPlayed} games • 
-                  ${avgGlobalRank > 0 ? avgGlobalRank : '-'} avg rank
+                  ${medianRankDisplay} med rank 
                 </div>
               </div>
               <div class="player-rel">${relMedian.toFixed(3)}</div>
@@ -1305,89 +1303,110 @@
             
             const picksHTML = picks.map(pick => {
               const isOriginalOwnerOfPick = pick.original_team === teamId;
-              const isCurrentOwnerTheOriginalOwner = pick.original_team === pick.current_owner; // This is same as isOriginalOwnerOfPick here
               const isPendingForfeiture = pick.notes && pick.notes.toUpperCase() === 'PENDING FORFEITURE';
               
               let originDisplayHTML = '';
               let pickDescriptionText = escapeHTML(pick.pick_description);
-              let transactionForLink = null;
-              let fromTeamForVerbiage = null;
-
-              if (!isOriginalOwnerOfPick) { // Pick was acquired
-                // Try to find the transaction that brought this pick to the current team (teamId)
-                // This relies on allTransactionsLogData being populated
-                const relevantTrade = (allTransactionsLogData || []).find(t => 
-                    t.draft_pick_id === pick.pick_id && 
-                    t.to_team === teamId &&
-                    t.transaction_type === 'TRADE' // Ensure it's a trade
-                );
-
-                if (relevantTrade) {
-                    fromTeamForVerbiage = relevantTrade.from_team;
-                    transactionForLink = relevantTrade; // Use this specific transaction for the link
-                }
-              }
+              let transactionForLink = null; // To store the specific transaction for linking
+              let originTextContent = '';
 
 
               if (isPendingForfeiture) {
                 originDisplayHTML = `<div class="pick-origin" style="font-size: 0.8rem; color: #dc3545; font-weight: bold;">PENDING FORFEITURE</div>`;
-              } else if (!isOriginalOwnerOfPick) { 
-                let viaOrFromText = "from";
-                let sourceTeamIdForDisplay = pick.original_team; // Default to original owner
-
-                if (fromTeamForVerbiage && fromTeamForVerbiage !== pick.original_team) {
-                    viaOrFromText = "via";
-                    sourceTeamIdForDisplay = fromTeamForVerbiage;
+              } else if (!isOriginalOwnerOfPick) { // Pick was acquired
+                let viaTeamId = null;
+                let viaTeamName = '';
+                let originalTeamForDisplayId = pick.original_team;
+                let originalTeamForDisplayName = getTeamName(originalTeamForDisplayId);
+                
+                // Try to parse the 'via' team from notes if a specific trade is cited
+                if (pick.notes) {
+                    const citationRegex = /\b([A-Z]{2,4})\s*\/\s*([A-Z]{2,4})\s+(\d{1,2}\/\d{1,2}\/\d{4})\b/i;
+                    const noteMatch = pick.notes.match(citationRegex);
+                    if (noteMatch) {
+                        const teamA_in_note = noteMatch[1].toUpperCase();
+                        const teamB_in_note = noteMatch[2].toUpperCase();
+                        // Find the specific transaction to confirm roles and get from_team
+                        const specificTransaction = (allTransactionsLogData || []).find(t => 
+                            t.draft_pick_id === pick.pick_id &&
+                            t.to_team === teamId && // Current team received the pick
+                            ((t.from_team === teamA_in_note && t.to_team === teamB_in_note) || (t.from_team === teamB_in_note && t.to_team === teamA_in_note)) &&
+                            new Date(t.date).toLocaleDateString('en-US', {month:'numeric', day:'numeric', year:'numeric'}) === new Date(noteMatch[3]).toLocaleDateString('en-US', {month:'numeric', day:'numeric', year:'numeric'})
+                        );
+                        if (specificTransaction) {
+                            viaTeamId = specificTransaction.from_team;
+                            transactionForLink = specificTransaction; // Use this for link
+                        } else { // Fallback if note is present but transaction not found (should be rare)
+                           if (teamA_in_note === teamId) viaTeamId = teamB_in_note;
+                           else if (teamB_in_note === teamId) viaTeamId = teamA_in_note;
+                        }
+                    }
                 }
                 
-                const sourceTeamName = getTeamName(sourceTeamIdForDisplay);
-                let sourceTeamStatsStr = "";
-                const sourceTeamDataStats = allTeams.find(t => t.team_id === sourceTeamIdForDisplay);
-                if (sourceTeamDataStats) {
-                  const originalWins = parseInt(sourceTeamDataStats.wins || 0);
-                  const originalLosses = parseInt(sourceTeamDataStats.losses || 0);
-                  const originalPAM = parseFloat(sourceTeamDataStats.pam || 0);
-                  const pamFormatted = Math.abs(originalPAM) >= 1000 ? 
-                    (originalPAM / 1000).toFixed(1) + 'k' : 
-                    Math.round(originalPAM).toString();
-                  sourceTeamStatsStr = ` (${originalWins}-${originalLosses}, ${pamFormatted} PAM)`;
+                // If viaTeamId was not found through notes, try finding the last transaction for this pick to this team
+                if (!viaTeamId && (allTransactionsLogData || []).length > 0) {
+                    const relevantTransactions = allTransactionsLogData
+                        .filter(t => t.draft_pick_id === pick.pick_id && t.to_team === teamId && t.transaction_type === 'TRADE')
+                        .sort((a,b) => new Date(b.date) - new Date(a.date)); // Get most recent
+                    if (relevantTransactions.length > 0) {
+                        viaTeamId = relevantTransactions[0].from_team;
+                        if (!transactionForLink) transactionForLink = relevantTransactions[0];
+                    }
                 }
-                let originTextContent = `${viaOrFromText} ${escapeHTML(sourceTeamName)}${sourceTeamStatsStr}`;
 
-                let linkCreated = false;
-                if (transactionForLink) { // If we found a specific transaction for "via"
+
+                const originalOwnerStats = allTeams.find(t => t.team_id === originalTeamForDisplayId);
+                let originalOwnerStatsStr = "";
+                if (originalOwnerStats) {
+                    const ooWins = parseInt(originalOwnerStats.wins || 0);
+                    const ooLosses = parseInt(originalOwnerStats.losses || 0);
+                    const ooPAM = parseFloat(originalOwnerStats.pam || 0);
+                    const pamFormatted = Math.abs(ooPAM) >= 1000 ? (ooPAM / 1000).toFixed(1) + 'k' : Math.round(ooPAM).toString();
+                    originalOwnerStatsStr = ` (${ooWins}-${ooLosses}, ${pamFormatted} PAM)`;
+                }
+
+                if (viaTeamId && viaTeamId !== originalTeamForDisplayId) {
+                    viaTeamName = getTeamName(viaTeamId);
+                    originTextContent = `via ${escapeHTML(viaTeamName)}; (${escapeHTML(originalTeamForDisplayName)}: ${escapeHTML(originalOwnerStatsStr)})`;
+                } else { // Acquired directly from original owner, or viaTeamId could not be determined reliably
+                    originTextContent = `from ${escapeHTML(originalTeamForDisplayName)}${escapeHTML(originalOwnerStatsStr)}`;
+                    // If viaTeamId was null, try to find any transaction for linking if notes available
+                    if (!transactionForLink && pick.notes) {
+                         const citationRegex = /\b([A-Z]{2,4})\s*\/\s*([A-Z]{2,4})\s+(\d{1,2}\/\d{1,2}\/\d{4})\b/i;
+                         const noteMatch = pick.notes.match(citationRegex);
+                         if (noteMatch) { // Attempt to build a generic link based on note
+                             const teamA_in_note = noteMatch[1].toUpperCase();
+                             const teamB_in_note = noteMatch[2].toUpperCase();
+                             const dateStr = noteMatch[3];
+                             const dateParts = dateStr.split('/');
+                             const year = dateParts[2];
+                             const month = String(dateParts[0]).padStart(2, '0');
+                             const day = String(dateParts[1]).padStart(2, '0');
+                             const formattedDateForLink = `${year}-${month}-${day}`;
+                             transactionForLink = { date: formattedDateForLink, from_team: teamA_in_note, to_team: teamB_in_note }; // Mock transaction for link
+                         }
+                    }
+                }
+                
+                if (transactionForLink) {
                     const linkDate = new Date(transactionForLink.date).toISOString().split('T')[0];
-                    const transactionsLink = `transactions.html?type=TRADE&date=${linkDate}&teamFilters=${transactionForLink.from_team},${transactionForLink.to_team}&pick_id=${encodeURIComponent(pick.pick_id || '')}`;
+                    // Ensure from_team and to_team are valid for the link
+                    const linkFromTeam = transactionForLink.from_team || (viaTeamId || pick.original_team);
+                    const linkToTeam = transactionForLink.to_team || teamId;
+                    const transactionsLink = `transactions.html?type=TRADE&date=${linkDate}&teamFilters=${linkFromTeam},${linkToTeam}&pick_id=${encodeURIComponent(pick.pick_id || '')}`;
                     originDisplayHTML = `<div class="pick-origin"><a href="${transactionsLink}" title="View transaction">${originTextContent}</a></div>`;
-                    linkCreated = true;
-                } else if (pick.notes) { // Fallback to generic note parsing if specific transaction not found for "via"
-                  const citationRegex = /\b([A-Z]{2,4})\s*\/\s*([A-Z]{2,4})\s+(\d{1,2}\/\d{1,2}\/\d{4})\b/i;
-                  const noteMatch = pick.notes.match(citationRegex);
-                  if (noteMatch) {
-                    const notedTeam1ID = noteMatch[1].toUpperCase();
-                    const notedTeam2ID = noteMatch[2].toUpperCase();
-                    const dateStr = noteMatch[3];
-                    const dateParts = dateStr.split('/');
-                    const year = dateParts[2];
-                    const month = String(dateParts[0]).padStart(2, '0');
-                    const day = String(dateParts[1]).padStart(2, '0');
-                    const formattedDateForLink = `${year}-${month}-${day}`;
-                    const transactionsLink = `transactions.html?type=TRADE&date=${formattedDateForLink}&teamFilters=${notedTeam1ID},${notedTeam2ID}&pick_id=${encodeURIComponent(pick.pick_id || '')}`;
-                    originDisplayHTML = `<div class="pick-origin"><a href="${transactionsLink}" title="View transaction: ${escapeHTML(pick.notes)}">${originTextContent}</a></div>`;
-                    linkCreated = true;
-                  }
+                } else {
+                    originDisplayHTML = `<div class="pick-origin" style="color: #666;">${originTextContent}</div>`;
                 }
-                if (!linkCreated) { 
-                  originDisplayHTML = `<div class="pick-origin" style="color: #666;">${originTextContent}</div>`;
-                }
-              } else if (!isPendingForfeiture) { // Is Original Pick and not pending forfeiture
+
+              } else if (!isPendingForfeiture) { 
                   originDisplayHTML = `<div class="pick-origin" style="color: #666;">Original Pick</div>`;
               }
               
               let pickBackgroundColor = '#e8f5e8'; 
               if (isPendingForfeiture) {
                 pickBackgroundColor = '#f8d7da'; 
-              } else if (!isOriginalOwnerOfPick) { // Acquired pick color
+              } else if (!isOriginalOwnerOfPick) { 
                 pickBackgroundColor = '#fff3cd'; 
               }
 
