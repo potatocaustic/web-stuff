@@ -128,7 +128,7 @@
         background-color: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        overflow: hidden; /* Keep this to contain the table */
+        overflow: hidden;
       }
 
       .leaderboard-header {
@@ -156,7 +156,6 @@
         table-layout: fixed; 
       }
 
-      /* MODIFIED: Define column widths via <col> elements */
       .leaderboard-table col.col-rank { width: 12%; }
       .leaderboard-table col.col-player { width: 50%; }
       .leaderboard-table col.col-stat1 { width: 19%; }
@@ -166,7 +165,7 @@
       .leaderboard-table th {
         background-color: #f8f9fa;
         padding: 1rem 0.5rem;
-        text-align: left; /* Base alignment, overridden by specific child rules below */
+        text-align: left; 
         font-weight: bold;
         border-bottom: 2px solid #ddd;
         border-left: none;
@@ -186,6 +185,7 @@
         font-size: 0.8em;
       }
 
+
       .leaderboard-table td {
         padding: 0.8rem 0.5rem;
         border-bottom: 1px solid #eee;
@@ -194,11 +194,10 @@
         border-top: none;
         position: relative;
         vertical-align: middle;
-        word-wrap: break-word; /* Help prevent cell blowout with long unbreakable strings */
+        word-wrap: break-word; 
         overflow-wrap: break-word;
       }
 
-      /* MODIFIED: Removed width/min-width, keep text-align and other specific styling */
       .leaderboard-table th:nth-child(1), 
       .leaderboard-table td:nth-child(1) { 
         text-align: center;
@@ -243,6 +242,7 @@
         flex-basis: 0; 
       }
 
+
       .player-cell:hover .player-name a { 
         color: #007bff !important;
         text-decoration: underline !important;
@@ -283,10 +283,12 @@
         text-align: center; 
       }
 
+
       .first-place { background-color: gold; color: black; border-radius: 4px; padding: 2px 5px; display: inline-block; width: 30px; height: 30px; line-height: 26px;}
       .second-place { background-color: silver; color: black; border-radius: 4px; padding: 2px 5px; display: inline-block; width: 30px; height: 30px; line-height: 26px;}
       .third-place { background-color: #cd7f32; color: white; border-radius: 4px; padding: 2px 5px; display: inline-block; width: 30px; height: 30px; line-height: 26px;}
 
+      /* MODIFIED: Styles for table controls */
       .table-controls {
         padding: 1rem;
         background-color: #f8f9fa;
@@ -295,16 +297,30 @@
         display: flex; 
         justify-content: center;
         align-items: center;
-        gap: 1rem; 
+        gap: 0.5rem; /* Adjusted gap between control groups */
         flex-wrap: wrap;
       }
-      .show-count-selector, #min-games-filter-container, #team-filter-container { margin: 0 0.5rem; } 
-      .show-count-selector select, #min-games, #team-filter-select {
-        padding: 0.5rem; border: 1px solid #ddd;
-        border-radius: 4px; font-size: 1rem;
+      .table-controls .control-item {
+        margin: 0 0.5rem; /* Margin for each control group */
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem; /* Gap between label and select/input */
+      }
+      .table-controls .control-item label {
+        font-size: 0.95rem; /* Consistent label size */
+        margin-right: 0.25rem;
+      }
+      .table-controls .control-item select,
+      .table-controls .control-item input[type="number"] {
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
       }
       #min-games { width: 60px; }
       #team-filter-select { min-width: 150px; }
+      /* END MODIFIED */
+
 
       .loading { text-align: center; padding: 3rem; color: #666; font-size: 1.1rem; }
       .error { color: #dc3545; background-color: #f8d7da; border-radius: 4px; margin: 1rem; padding: 1rem; text-align: center;}
@@ -316,26 +332,37 @@
         }
         .team-logo { width: 28px; height: 28px; }
 
-        /* MODIFIED: Define responsive column widths via <col> classes */
         .leaderboard-table col.col-rank { width: 15%; }
         .leaderboard-table col.col-player { width: 45%; }
         .leaderboard-table col.col-stat1 { width: 20%; }
         .leaderboard-table col.col-stat2 { width: 20%; }
         
-        /* MODIFIED: Removed specific width/min-width/max-width from td:nth-child for mobile, rely on <col> */
-        /* .leaderboard-table th:nth-child(1), .leaderboard-table td:nth-child(1) { width: 15%; min-width: 40px; } */
-        /* .leaderboard-table th:nth-child(2), .leaderboard-table td:nth-child(2) { width: 45%; min-width: 100px; } */
-        /* .leaderboard-table th:nth-child(3), .leaderboard-table td:nth-child(3) { width: 20%; min-width: 50px; } */
-        /* .leaderboard-table th:nth-child(4), .leaderboard-table td:nth-child(4) { width: 20%; min-width: 50px; } */
-
-        /* Styles for 3-column layout adjust <col> widths */
         .leaderboard-table[data-active-columns="3"] col.col-rank { width: 15%; }
         .leaderboard-table[data-active-columns="3"] col.col-player { width: 60%; }
         .leaderboard-table[data-active-columns="3"] col.col-stat1 { width: 25%; }
-        .leaderboard-table[data-active-columns="3"] col.col-stat2 { width: 0; } /* Effectively hide if not display:none */
+        .leaderboard-table[data-active-columns="3"] col.col-stat2 { width: 0; } 
         
         .leaderboard-table[data-active-columns="3"] th:nth-child(4), 
         .leaderboard-table[data-active-columns="3"] td:nth-child(4) { display: none; }
+
+        .table-controls {
+            gap: 0.5rem; /* Reduce gap on mobile */
+        }
+        .table-controls .control-item {
+            margin: 0.25rem 0; /* Stack controls slightly better */
+            width: 100%;
+            justify-content: space-between;
+        }
+         .table-controls .control-item label {
+            flex-shrink: 0;
+         }
+         .table-controls .control-item select,
+         .table-controls .control-item input[type="number"] {
+            flex-grow: 1;
+            min-width: 100px; /* Ensure they don't get too small */
+         }
+         #team-filter-select { width: auto; } /* Allow team select to grow */
+
       }
 
       footer { text-align: center; margin-top: 3rem; padding: 1rem; background-color: #333; color: #fff; }
@@ -383,25 +410,26 @@
         </div>
         
         <div class="table-controls">
-          <span>Show: </span>
-          <select id="show-count" class="show-count-selector">
-            <option value="10">Top 10</option>
-            <option value="25" selected>Top 25</option>
-            <option value="50">Top 50</option>
-            <option value="all">All Players/Games</option>
-          </select>
-          <span id="min-games-filter-container" style="display:none;">
-            <label for="min-games">Min Games: </label>
-            <input type="number" id="min-games" value="3" min="0" step="1" style="width: 60px; padding: 0.4rem;">
+          <span class="control-item">
+            <label for="show-count">Show: </label>
+            <select id="show-count">
+              <option value="10">Top 10</option>
+              <option value="25" selected>Top 25</option>
+              <option value="50">Top 50</option>
+              <option value="all">All Players/Games</option>
+            </select>
           </span>
-          <span id="team-filter-container" style="display:none;">
+          <span class="control-item" id="min-games-filter-container" style="display:none;">
+            <label for="min-games">Min Games: </label>
+            <input type="number" id="min-games" value="3" min="0" step="1">
+          </span>
+          <span class="control-item" id="team-filter-container" style="display:none;">
             <label for="team-filter-select">Team: </label>
             <select id="team-filter-select">
               <option value="all">All Teams</option>
             </select>
           </span>
-          </div>
-        
+        </div>
         <table class="leaderboard-table" id="leaderboardTable">
           <colgroup>
             <col class="col-rank">
@@ -413,7 +441,9 @@
             <tr>
               <th>Rank</th>
               <th>Player</th>
-              <th>Karma</th> <th>Games</th> </tr>
+              <th>Karma</th> 
+              <th>Games</th> 
+            </tr>
           </thead>
           <tbody id="leaderboard-body">
             <tr>
@@ -428,9 +458,7 @@
       <p>&copy; caustic.info</p>
     </footer>
 
-    <script>
-      // The JavaScript from your provided file remains IDENTICAL here.
-      // The only changes were to the <style> block and the <table> structure in the HTML.
+<script>
       const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4';
       const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
       
@@ -446,7 +474,7 @@
       }
 
       const categories = {
-        total_points: {
+        total_points: { /* ... (no changes to individual category definitions other than subtitle below) ... */
           title: 'Total Karma Leaders',
           cols: [
             { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, 
@@ -458,7 +486,7 @@
           defaultSortDescending: true,
           dataSourceType: 'players' 
         },
-        rel_mean: {
+        rel_mean: { /* ... */ 
           title: 'REL Mean Leaders',
           cols: [
             { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, 
@@ -471,7 +499,7 @@
           dataSourceType: 'players',
           hasMinGamesFilter: true 
         },
-        rel_median: {
+        rel_median: { /* ... */ 
           title: 'REL Median Leaders', 
           cols: [
             { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, 
@@ -484,7 +512,7 @@
           dataSourceType: 'players',
           hasMinGamesFilter: true 
         },
-        median_gameday_rank: { 
+        median_gameday_rank: {  /* ... */
           title: 'Median Gameday Rank Leaders',
           cols: [
             { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, 
@@ -499,7 +527,7 @@
         },
         aag_mean: {
           title: 'Games Above Mean Leaders',
-          subtitle: 'Ties broken by REL Median',
+          subtitle: 'Ties broken by % of Games (Above Mean)', // MODIFIED subtitle
           cols: [
             { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, 
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
@@ -512,7 +540,7 @@
         },
         aag_median: {
           title: 'Games Above Median Leaders',
-          subtitle: 'Ties broken by REL Median',
+          subtitle: 'Ties broken by % of Games (Above Median)', // MODIFIED subtitle
           cols: [
             { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, 
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
@@ -523,7 +551,7 @@
           defaultSortDescending: true,
           dataSourceType: 'players'
         },
-        single_game_karma: {
+        single_game_karma: { /* ... */ 
           title: 'Single Game Karma Leaders',
           cols: [
             { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, 
@@ -535,7 +563,7 @@
           defaultSortDescending: true,
           dataSourceType: 'games' 
         },
-        single_game_rank: {
+        single_game_rank: { /* ... */ 
           title: 'Single Game Rank Leaders',
           cols: [
             { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, 
@@ -549,7 +577,7 @@
         },
         t100_finishes: { 
           title: 'T100 Finishes Leaders',
-          subtitle: 'Ties broken by REL Median',
+          subtitle: 'Ties broken by % of Games (T100)', // MODIFIED subtitle
           cols: [
             { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, 
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
@@ -830,7 +858,7 @@
         const selectedTeamId = document.getElementById('team-filter-select').value;
         
         if (categoryConfig.hasMinGamesFilter) {
-            minGamesContainer.style.display = 'inline-block';
+            minGamesContainer.style.display = 'inline-block'; // Changed from 'inline-block' in original CSS to match wrapper below
             if (minGamesInput.dataset.lastCategory !== currentCategory || minGamesInput.dataset.userInteracted === "false") {
                 const playersMeeting3Games = allPlayersData.filter(p => (p.games_played || 0) >= 3).length;
                 minGamesInput.value = (playersMeeting3Games < 120 && allPlayersData.length > 20) ? "1" : "3";
@@ -841,8 +869,11 @@
             minGamesContainer.style.display = 'none';
         }
 
-        if (categoryConfig.dataSourceType === 'players') {
-            teamFilterContainer.style.display = 'inline-block';
+        // MODIFIED: Show team filter for player and specified game leaderboards
+        if (categoryConfig.dataSourceType === 'players' || 
+            currentCategory === 'single_game_karma' || 
+            currentCategory === 'single_game_rank') {
+            teamFilterContainer.style.display = 'inline-flex'; // Using inline-flex to match .control-item
         } else {
             teamFilterContainer.style.display = 'none';
         }
@@ -882,12 +913,18 @@
           sourceDataForProcessing = [...allGamePerformancesData];
           if (currentCategory === 'single_game_karma') sourceDataForProcessing = sourceDataForProcessing.filter(g => g.karma > 0);
           else if (currentCategory === 'single_game_rank') sourceDataForProcessing = sourceDataForProcessing.filter(g => g.daily_rank > 0 && g.daily_rank !== Infinity);
-        } else {
+          
+          // MODIFIED: Apply team filter to game leaderboards if selected
+          if (selectedTeamId !== 'all' && (currentCategory === 'single_game_karma' || currentCategory === 'single_game_rank')) {
+              sourceDataForProcessing = sourceDataForProcessing.filter(game => game.team_id === selectedTeamId);
+          }
+        } else { // Player leaderboards
           sourceDataForProcessing = [...allPlayersData];
           if (categoryConfig.hasMinGamesFilter) {
             const minGames = parseInt(minGamesInput.value) || 0;
             if (minGames > 0) sourceDataForProcessing = sourceDataForProcessing.filter(player => (parseNumber(player.games_played) || 0) >= minGames);
           }
+          // Team filter for player leaderboards is applied AFTER global ranking (see dataForDisplaySort below)
         }
         
         const rankSortField = categoryConfig.defaultSortField;
@@ -895,7 +932,7 @@
         const rankColConfigForSort = categoryConfig.cols.find(c => c.dataField === rankSortField) || {};
         const rankColTypeForSort = rankColConfigForSort.type || 'number';
 
-        let dataSortedForRank = [...sourceDataForProcessing];
+        let dataSortedForRank = [...sourceDataForProcessing]; // This data is used to determine ranks
 
         dataSortedForRank.sort((a, b) => {
           let valA = a[rankSortField];
@@ -916,18 +953,28 @@
           let primarySortResult = rankSortDesc ? -comparison : comparison;
 
            if (primarySortResult === 0) { 
-                if (!isGameLeaderboard && (rankSortField === 'aag_mean' || rankSortField === 'aag_median' || rankSortField === 't100_finishes')) {
-                    const aREL = parseFloat(a.calculated_rel_median || 0);
-                    const bREL = parseFloat(b.calculated_rel_median || 0);
-                    return bREL - aREL; 
-                } else if (isGameLeaderboard) {
+                // MODIFIED: Tie-breaking logic
+                if (!isGameLeaderboard) {
+                    if (rankSortField === 'aag_mean') {
+                        const valAPct = parseFloat(a.aag_mean_pct || 0); const valBPct = parseFloat(b.aag_mean_pct || 0);
+                        if (valBPct !== valAPct) return valBPct - valAPct; // Descending on Pct
+                    } else if (rankSortField === 'aag_median') {
+                        const valAPct = parseFloat(a.aag_median_pct || 0); const valBPct = parseFloat(b.aag_median_pct || 0);
+                        if (valBPct !== valAPct) return valBPct - valAPct; // Descending on Pct
+                    } else if (rankSortField === 't100_finishes') {
+                        const valAPct = parseFloat(a.t100_finishes_pct || 0); const valBPct = parseFloat(b.t100_finishes_pct || 0);
+                        if (valBPct !== valAPct) return valBPct - valAPct; // Descending on Pct
+                    }
+                } else { // isGameLeaderboard specific tie-breakers
                     if (rankSortField === 'karma') return new Date(a.date) - new Date(b.date);
                     else if (rankSortField === 'daily_rank') {
                         const aKarma = parseFloat(a.karma || 0); const bKarma = parseFloat(b.karma || 0);
-                        if (bKarma !== aKarma) return bKarma - aKarma;
-                        return new Date(a.date) - new Date(b.date);
+                        if (bKarma !== aKarma) return bKarma - aKarma; // Higher karma first
+                        return new Date(a.date) - new Date(b.date); // Then older date
                     }
-                } else if (a.player_handle && b.player_handle) { 
+                }
+                // Final fallback tie-breaker for stability if all else is equal
+                if (a.player_handle && b.player_handle) { 
                     return String(a.player_handle).localeCompare(String(b.player_handle));
                 }
             }
@@ -942,6 +989,7 @@
                 let currentValue = currentItem[rankSortField];
                 let prevValue = prevItem[rankSortField];
 
+                // Apply same parseFloat logic for comparison to avoid issues with string numbers vs float
                 if (rankColTypeForSort === 'number') { 
                     currentValue = parseFloat(currentValue === Infinity ? (rankSortDesc ? -Infinity : Infinity) : (currentValue || (rankSortDesc ? -Infinity : Infinity)));
                     prevValue = parseFloat(prevValue === Infinity ? (rankSortDesc ? -Infinity : Infinity) : (prevValue || (rankSortDesc ? -Infinity : Infinity)));
@@ -951,8 +999,25 @@
                     currentValue = String(currentValue || '').toLowerCase();
                     prevValue = String(prevValue || '').toLowerCase();
                 }
-
+                // Check tie-breaker field if primary values are equal
+                let tieBroken = false;
                 if (currentValue === prevValue) {
+                    if (!isGameLeaderboard) {
+                        if (rankSortField === 'aag_mean') {
+                            const valAPct = parseFloat(currentItem.aag_mean_pct || 0); const valBPct = parseFloat(prevItem.aag_mean_pct || 0);
+                            if (valAPct !== valBPct) tieBroken = true;
+                        } else if (rankSortField === 'aag_median') {
+                            const valAPct = parseFloat(currentItem.aag_median_pct || 0); const valBPct = parseFloat(prevItem.aag_median_pct || 0);
+                            if (valAPct !== valBPct) tieBroken = true;
+                        } else if (rankSortField === 't100_finishes') {
+                            const valAPct = parseFloat(currentItem.t100_finishes_pct || 0); const valBPct = parseFloat(prevItem.t100_finishes_pct || 0);
+                            if (valAPct !== valBPct) tieBroken = true;
+                        }
+                    } // Add game leaderboard tie-breaker checks here if necessary for rank assignment
+                }
+
+
+                if (currentValue === prevValue && !tieBroken) { // Only if primary AND specified tie-breakers are same
                     currentItem.leaderboardDisplayRank = prevItem.leaderboardDisplayRank;
                 } else {
                     currentItem.leaderboardDisplayRank = i + 1;
@@ -960,6 +1025,8 @@
             }
         }
         
+        // sourceDataForProcessing items now have leaderboardDisplayRank.
+        // Apply team filter for player leaderboards now.
         let dataForDisplaySort = [...sourceDataForProcessing]; 
         if (!isGameLeaderboard && selectedTeamId !== 'all') {
             dataForDisplaySort = dataForDisplaySort.filter(player => player.current_team_id === selectedTeamId);
@@ -996,7 +1063,21 @@
           let primarySortResult = displaySortDirection === 'asc' ? comparison : -comparison;
 
           if (primarySortResult === 0) { 
-            let rankA = a.leaderboardDisplayRank;
+             // Apply new tie-breaking for specific categories during display sort as well
+            if (!isGameLeaderboard) {
+                if (actualDisplaySortField === 'aag_mean') {
+                    const valAPct = parseFloat(a.aag_mean_pct || 0); const valBPct = parseFloat(b.aag_mean_pct || 0);
+                    if (valBPct !== valAPct) return valBPct - valAPct;
+                } else if (actualDisplaySortField === 'aag_median') {
+                    const valAPct = parseFloat(a.aag_median_pct || 0); const valBPct = parseFloat(b.aag_median_pct || 0);
+                    if (valBPct !== valAPct) return valBPct - valAPct;
+                } else if (actualDisplaySortField === 't100_finishes') {
+                    const valAPct = parseFloat(a.t100_finishes_pct || 0); const valBPct = parseFloat(b.t100_finishes_pct || 0);
+                    if (valBPct !== valAPct) return valBPct - valAPct;
+                }
+            }
+            // Fallback tie-breakers
+            let rankA = a.leaderboardDisplayRank; // Use sticky rank as a consistent tie-breaker
             let rankB = b.leaderboardDisplayRank;
             if (rankA < rankB) return -1;
             if (rankA > rankB) return 1;
