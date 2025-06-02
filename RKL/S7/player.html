@@ -83,7 +83,7 @@
         align-items: center;
         justify-content: center;
         gap: 2rem;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem; /* Reduced bottom margin */
       }
 
       .team-logo-large {
@@ -107,19 +107,27 @@
         margin-bottom: 0.5rem;
       }
 
-      .team-info {
+      .team-info { /* For Current Team */
         font-size: 1.1rem;
         color: #007bff;
         font-weight: 500;
         cursor: pointer;
         text-decoration: none;
         transition: color 0.3s ease;
+        margin-bottom: 0.3rem; /* Space before previous teams */
       }
 
       .team-info:hover {
         color: #0056b3;
         text-decoration: underline;
       }
+
+      .player-previous-teams { /* For Previous Team(s) */
+        font-size: 0.95rem;
+        color: #777;
+        margin-top: 0.3rem;
+      }
+
 
       /* Player stats grid */
       .player-stats-grid {
@@ -251,22 +259,6 @@
       .rank-bronze { background-color: #cd7f32; } 
       .rank-skyblue { background-color: #87CEEB; color: black; } 
 
-      /* Rank Legend for Weekly Performance */
-      .rank-legend {
-        padding: 0.75rem 1rem;
-        text-align: center;
-        font-size: 0.8rem;
-        color: #666;
-        background-color: #f8f9fa; 
-        border-top: 1px solid #eee; 
-      }
-      .rank-legend .rank-badge { 
-          margin-right: 0.15rem; /* Small space before text label */
-          margin-left: 0.5rem;  /* Space between badge groups */
-          font-size: 0.8em; 
-      }
-
-
       /* Game history section */
       .game-history { max-height: 600px; overflow-y: auto; padding: 1.5rem; }
       .game-item {
@@ -279,25 +271,24 @@
       .game-item:hover { background-color: #f8f9fa; }
       .game-item:last-child { border-bottom: none; }
 
-      .game-history-main-content { /* New wrapper for matchup and date */
+      .game-history-main-content {
           display: flex;
           flex-direction: column;
           flex-grow: 1;
-          min-width: 0; /* For ellipsis in children */
+          min-width: 0;
       }
       .game-history-matchup-teams { 
         display: flex;
         flex-direction: row; /* Horizontal on desktop */
         align-items: center;
-        justify-content: flex-start; /* Align teams to the start */
-        gap: 0.5rem; /* Gap between Team A, vs, Team B */
+        /* justify-content: space-between; /* Distribute Team A, vs, Team B */
+        gap: 0.5rem; 
       }
       .game-history-team-entry {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        overflow: hidden; /* For ellipsis on name */
-        flex-shrink: 1; /* Allow shrinking if needed */
+        gap: 0.4rem; /* Slightly reduced gap */
+        flex: 1; /* Allow team entries to take space */
         min-width: 0; /* For ellipsis */
       }
       .game-history-team-logo {
@@ -308,7 +299,6 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        flex-shrink: 1; /* Allow name to shrink and ellipsis to activate */
       }
       .game-result-indicator {
         font-weight: bold;
@@ -317,15 +307,16 @@
       }
       .game-result-win { color: #28a745; }
       .game-result-loss { color: #dc3545; }
-      .game-history-vs-separator { /* Separator text */
+      .game-history-vs-separator { 
         font-size: 0.9rem;
         color: #6c757d;
         font-weight: bold;
-        padding: 0 0.25rem; /* Less horizontal padding than game-history-vs */
+        padding: 0 0.25rem; 
+        flex-shrink: 0; /* Prevent vs from shrinking too much */
       }
       .game-history-date { 
         font-size: 0.8rem; color: #666; margin-top: 0.3rem;
-        text-align: left; /* Align date under the matchup */
+        text-align: left; 
       }
       
       .game-performance { text-align: right; min-width: 100px; flex-shrink: 0; }
@@ -333,7 +324,7 @@
       .performance-rank { font-size: 0.8rem; color: #666; margin-top: 0.2rem; }
       .captain-performance { color: #ffc107; font-weight: bold; }
 
-      /* Modal styles ... (remains unchanged) ... */
+      /* Modal styles */
       .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow-y: auto; }
       .modal-content { background-color: #fff; margin: 2rem auto; border-radius: 8px; width: 95%; max-width: 900px; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
       .modal-header { background-color: #333; color: white; padding: 1.5rem; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; }
@@ -377,9 +368,8 @@
         .player-stats-grid { grid-template-columns: repeat(2, 1fr); }
         .performance-table th, .performance-table td { padding: 0.5rem 0.3rem; font-size: 0.8rem; }
         
-        /* Game History Mobile Layout */
         .game-item { 
-          flex-direction: column; /* Stack main content and player perf */
+          flex-direction: column; 
           align-items: stretch; 
           gap: 0.5rem;
         }
@@ -387,12 +377,12 @@
           width: 100%;
         }
         .game-history-matchup-teams {
-            flex-direction: column; /* Stack Team A vs Team B */
-            align-items: stretch; /* Make team entries take full width */
+            flex-direction: column; 
+            align-items: stretch; 
             gap: 0.2rem; 
         }
         .game-history-vs-separator {
-            text-align: center; /* Center 'vs' text */
+            text-align: center; 
             padding: 0.2rem 0;
         }
         .game-history-date { text-align: left; width: 100%;} 
@@ -453,13 +443,7 @@
               <tbody id="performance-table"><tr><td colspan="4" class="loading">Loading performance data...</td></tr></tbody>
             </table>
           </div>
-          <div class="rank-legend">
-            <span class="rank-badge rank-gold">1</span> Gold (1st)
-            <span class="rank-badge rank-silver">2</span> Silver (2nd)
-            <span class="rank-badge rank-bronze">3</span> Bronze (3rd)
-            <span class="rank-badge rank-skyblue">4-100</span> Sky Blue (4-100)
           </div>
-        </div>
 
         <div class="performance-section">
           <div class="section-header"><h3>Game History</h3></div>
@@ -488,6 +472,7 @@
       let allTeams = [];
       let allLineups = [];
       let allScheduleData = []; 
+      let allTransactionsLogData = []; // Added for previous team info
 
       function parseNumber(value) { 
         if (!value) return 0;
@@ -666,10 +651,11 @@
           document.getElementById('player-main-info').innerHTML = '<div class="error">No player specified</div>';
           return;
         }
-        const [players, teams, weeklyAverages, lineups, schedule] = await Promise.all([
+        const [players, teams, weeklyAverages, lineups, schedule, transactions] = await Promise.all([
           fetchSheetData('Players'), fetchSheetData('Teams'),
           fetchSheetData('Weekly_Averages'), fetchSheetData('Lineups'),
-          fetchSheetData('Schedule') 
+          fetchSheetData('Schedule'),
+          fetchSheetData('Transaction_Log') // Fetch transaction log
         ]);
 
         if (!players || !teams) {
@@ -679,6 +665,8 @@
         allTeams = teams;
         allLineups = lineups || []; 
         allScheduleData = schedule || []; 
+        allTransactionsLogData = transactions || [];
+
 
         const playersWithREL = calculateRELForAllPlayers(players, weeklyAverages || [], allLineups);
         playerData = playersWithREL.find(player => player.player_handle === playerHandle);
@@ -697,11 +685,21 @@
         await Promise.all([loadPerformanceData(), loadGameHistory()]);
       }
       
+      function getGamesPlayedForTeam(pHandle, tId, lineupsData) {
+          return lineupsData.filter(l =>
+              l.player_handle === pHandle &&
+              l.team_id === tId &&
+              (String(l.started).toLowerCase() === 'true' || l.started === true || l.started === 1)
+          ).length;
+      }
+
       function displayPlayerHeader(rankings) { 
         document.getElementById('page-title').textContent = `${playerData.player_handle} - RKL Season 7`;
         document.getElementById('header-title').textContent = playerData.player_handle;
         let teamLogoHTML = '';
         let teamInfoHTML = '';
+        let previousTeamsHTML = '';
+
         const isFreeAgent = playerData.current_team_id === 'FREE_AGENT';
         if (!isFreeAgent && playerData.current_team_id) { 
             const teamData = allTeams.find(t => t.team_id === playerData.current_team_id);
@@ -709,6 +707,31 @@
             teamLogoHTML = `<img src="icons/${playerData.current_team_id}.webp" alt="${teamName}" class="team-logo-large" onerror="this.style.display='none';">`;
             teamInfoHTML = `<a href="team.html?id=${playerData.current_team_id}" class="team-info">Current Team: ${teamName}</a>`;
         }
+        
+        // Previous Teams Logic
+        const playedForTeamsSet = new Set();
+        allLineups.forEach(l => {
+            if (l.player_handle === playerHandle && (String(l.started).toLowerCase() === 'true' || l.started === true || l.started === 1) && l.team_id) {
+                playedForTeamsSet.add(l.team_id);
+            }
+        });
+
+        const previousTeamInfoArray = [];
+        playedForTeamsSet.forEach(teamIdPlayedFor => {
+            if (teamIdPlayedFor !== playerData.current_team_id && teamIdPlayedFor && teamIdPlayedFor.toUpperCase() !== 'FA' && teamIdPlayedFor.toUpperCase() !== 'FREE_AGENT' && teamIdPlayedFor.toUpperCase() !== 'RETIRED') {
+                const gp = getGamesPlayedForTeam(playerHandle, teamIdPlayedFor, allLineups);
+                if (gp > 0) {
+                    previousTeamInfoArray.push({ teamName: getTeamName(teamIdPlayedFor), gp: gp });
+                }
+            }
+        });
+
+        if (previousTeamInfoArray.length > 0) {
+            const prefix = previousTeamInfoArray.length > 1 ? "Previous Teams: " : "Previous Team: ";
+            const teamsStr = previousTeamInfoArray.map(pt => `${pt.teamName} (${pt.gp} GP)`).join(", ");
+            previousTeamsHTML = `<div class="player-previous-teams">${prefix}${teamsStr}</div>`;
+        }
+
         const totalPoints = parseNumber(playerData.total_points);
         const gamesPlayed = parseInt(playerData.games_played || 0);
         document.getElementById('player-main-info').innerHTML = `
@@ -717,6 +740,7 @@
             <h2>${playerData.player_handle}</h2>
             <div class="player-subtitle">${playerData.player_status} • ${gamesPlayed} games played</div>
             ${teamInfoHTML}
+            ${previousTeamsHTML} 
           </div>`;
         const relMedian = playerData.calculated_rel_median || 0;
         const gamesAboveMedian = parseInt(playerData.aag_median || 0); 
@@ -766,7 +790,7 @@
 
           const gameForLineup = allScheduleData.find(g => g.date === lineup.date && (g.team1_id === lineup.team_id || g.team2_id === lineup.team_id));
           let onclickAttr = '';
-          if (gameForLineup && gameForLineup.completed === 'TRUE') { // Only make completed games clickable
+          if (gameForLineup && gameForLineup.completed === 'TRUE') { 
             onclickAttr = `onclick="showGameDetails('${gameForLineup.team1_id}', '${gameForLineup.team2_id}', '${gameForLineup.date}')"`;
           }
 
@@ -823,20 +847,15 @@
 
           let playerTeamResultIndicator = '';
           let opponentTeamResultIndicator = '';
-          let playerTeamNameClass = ''; // For potential styling of team name based on result
+          let playerTeamNameClass = ''; 
           let opponentTeamNameClass = '';
-
 
           if (game.winner === game.playerTeamId) {
             playerTeamResultIndicator = '<span class="game-result-indicator game-result-win">(W)</span>';
             opponentTeamResultIndicator = '<span class="game-result-indicator game-result-loss">(L)</span>';
-            playerTeamNameClass = 'game-result-win';
-            opponentTeamNameClass = 'game-result-loss';
           } else if (game.winner === game.opponentId) {
             playerTeamResultIndicator = '<span class="game-result-indicator game-result-loss">(L)</span>';
             opponentTeamResultIndicator = '<span class="game-result-indicator game-result-win">(W)</span>';
-            playerTeamNameClass = 'game-result-loss';
-            opponentTeamNameClass = 'game-result-win';
           }
 
           return `
@@ -845,12 +864,12 @@
                 <div class="game-history-matchup-teams">
                     <span class="game-history-team-entry">
                     <img src="${playerTeamLogo}" alt="${playerTeamName}" class="game-history-team-logo" onerror="this.style.display='none'">
-                    <span class="game-history-team-name ${playerTeamNameClass}">${playerTeamName} ${playerTeamResultIndicator}</span>
+                    <span class="game-history-team-name">${playerTeamName} ${playerTeamResultIndicator}</span>
                     </span>
                     <span class="game-history-vs-separator">vs</span>
                     <span class="game-history-team-entry">
                     <img src="${opponentLogoSrc}" alt="${opponentTeamName}" class="game-history-team-logo" onerror="this.style.display='none'">
-                    <span class="game-history-team-name ${opponentTeamNameClass}">${opponentTeamName} ${opponentTeamResultIndicator}</span>
+                    <span class="game-history-team-name">${opponentTeamName} ${opponentTeamResultIndicator}</span>
                     </span>
                 </div>
                 <div class="game-history-date">${formatDate(game.date)} (Week ${game.lineup.week})</div>
