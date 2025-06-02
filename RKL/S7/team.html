@@ -156,6 +156,24 @@
         color: #dc3545;
       }
 
+      /* START OF ADDED CSS for clickable stat cards */
+      .stat-card-link {
+          text-decoration: none;
+          color: inherit;
+          display: block; 
+          border-radius: 6px; 
+      }
+
+      .stat-card-link .stat-card {
+          transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+      }
+
+      .stat-card-link:hover .stat-card {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+      }
+      /* END OF ADDED CSS for clickable stat cards */
+
       /* Content grid */
       .content-grid {
         display: grid;
@@ -1345,14 +1363,15 @@
           });
         rankings.record = conferenceTeams.findIndex(t => t.team_id === currentTeamData.team_id) + 1;
         
-        const pamTeams = allTeamsData
+        const pamTeams = allTeamsData // Use allTeamsData directly for overall PAM ranking
           .sort((a, b) => parseFloat(b.pam || 0) - parseFloat(a.pam || 0));
         rankings.pam = pamTeams.findIndex(t => t.team_id === currentTeamData.team_id) + 1;
         
-        const medRankTeams = allTeamsData
-          .filter(t => parseFloat(t.med_starter_rank || 0) > 0)
+        const medRankTeams = allTeamsData // Use allTeamsData for overall Med Rank
+          .filter(t => parseFloat(t.med_starter_rank || 0) > 0) // Ensure med_starter_rank is valid for ranking
           .sort((a, b) => parseFloat(a.med_starter_rank || 999) - parseFloat(b.med_starter_rank || 999));
-        rankings.medRank = medRankTeams.findIndex(t => t.team_id === currentTeamData.team_id) + 1;
+        const medRankIndex = medRankTeams.findIndex(t => t.team_id === currentTeamData.team_id);
+        rankings.medRank = medRankIndex !== -1 ? medRankIndex + 1 : 0; // Handle not found or 0 rank
         
         return rankings;
       }
@@ -1388,15 +1407,16 @@
           return;
         }
         
+        // Filter for active teams *before* calculating rankings
         const activeTeamsForRanking = allTeams.filter(t => 
           t.team_id && 
-          t.team_id !== 'RETIRED' && 
-          t.team_id !== 'FREE_AGENT' &&
-          t.conference
+          t.team_id.toUpperCase() !== 'RETIRED' && 
+          t.team_id.toUpperCase() !== 'FREE_AGENT' &&
+          t.conference // Ensure team has a conference to be considered active for conference rankings
         );
         const rankings = calculateTeamRankings(teamData, activeTeamsForRanking);
         
-        displayTeamHeader(rankings);
+        displayTeamHeader(rankings); // Pass activeTeamsForRanking if needed for more context in display
         
         await Promise.all([
           loadRoster(),
@@ -1405,6 +1425,7 @@
         ]);
       }
       
+      // --- MODIFIED displayTeamHeader function ---
       function displayTeamHeader(rankings) {
         document.getElementById('page-title').textContent = `${escapeHTML(teamData.team_name)} - RKL Season 7`;
         document.getElementById('header-title').textContent = escapeHTML(teamData.team_name);
@@ -1425,31 +1446,64 @@
         `;
         
         const medRank = parseFloat(teamData.med_starter_rank || 0);
-        
-        document.getElementById('team-stats').innerHTML = `
+        const teamStatsContainer = document.getElementById('team-stats');
+        teamStatsContainer.innerHTML = ''; // Clear previous content
+
+        // 1. Record Card
+        const recordLink = document.createElement('a');
+        recordLink.href = 'standings.html'; // Defaults to conference standings
+        recordLink.className = 'stat-card-link';
+        recordLink.innerHTML = `
           <div class="stat-card">
             <div class="stat-value ${wins > losses ? 'positive' : losses > wins ? 'negative' : ''}">${wins}-${losses}</div>
             <div class="stat-label">Record</div>
             <div class="stat-rank">${getOrdinal(rankings.record)} in ${escapeHTML(teamData.conference)} Conference</div>
           </div>
+        `;
+        teamStatsContainer.appendChild(recordLink);
+
+        // 2. PAM Card
+        const pamLink = document.createElement('a');
+        pamLink.href = `standings.html?view=fullLeague&sortBy=pam&sortDirection=desc`;
+        pamLink.className = 'stat-card-link';
+        pamLink.innerHTML = `
           <div class="stat-card">
             <div class="stat-value ${pam > 0 ? 'positive' : pam < 0 ? 'negative' : ''}">${Math.round(pam).toLocaleString()}</div>
             <div class="stat-label">PAM</div>
             <div class="stat-rank">${getOrdinal(rankings.pam)} Overall</div>
           </div>
+        `;
+        teamStatsContainer.appendChild(pamLink);
+
+        // 3. Median Starter Rank Card
+        const medRankLink = document.createElement('a');
+        medRankLink.href = `standings.html?view=fullLeague&sortBy=med_starter_rank&sortDirection=asc`;
+        medRankLink.className = 'stat-card-link';
+        medRankLink.innerHTML = `
           <div class="stat-card">
             <div class="stat-value">${Math.round(medRank)}</div>
             <div class="stat-label">Median Starter Rank</div>
             <div class="stat-rank">${rankings.medRank > 0 ? `${getOrdinal(rankings.medRank)} Overall` : 'Not ranked'}</div>
           </div>
+        `;
+        teamStatsContainer.appendChild(medRankLink);
+
+        // 4. Transactions Card
+        const transactionsLink = document.createElement('a');
+        transactionsLink.href = `transactions.html?teamFilter=${teamData.team_id}`;
+        transactionsLink.className = 'stat-card-link';
+        transactionsLink.innerHTML = `
           <div class="stat-card">
             <div class="stat-value">${teamData.total_transactions || 0}</div>
             <div class="stat-label">Transactions</div>
+            ${(teamData.total_transactions || 0) > 0 ? `<div class="stat-rank">&nbsp;</div>` : '<div class="stat-rank" style="height:1em;">&nbsp;</div>'}
           </div>
         `;
+        teamStatsContainer.appendChild(transactionsLink);
         
-        document.getElementById('team-stats').style.display = 'grid';
+        teamStatsContainer.style.display = 'grid';
       }
+      // --- END OF MODIFIED displayTeamHeader function ---
       
       async function loadRoster() {
         const [players, lineups] = await Promise.all([
@@ -1730,16 +1784,14 @@
             
             const picksHTML = picks.map(pick => {
               const isOriginal = pick.original_team === teamId;
-              // MODIFIED: Consistent check for pending forfeiture
               const isPendingForfeiture = pick.notes && pick.notes.toUpperCase() === 'PENDING FORFEITURE';
               
               let originDisplayHTML = '';
               let pickDescriptionText = escapeHTML(pick.pick_description);
 
-              // MODIFIED: Logic for pending forfeiture takes precedence for origin display
               if (isPendingForfeiture) {
                 originDisplayHTML = `<div class="pick-origin" style="font-size: 0.8rem; color: #dc3545; font-weight: bold;">PENDING FORFEITURE</div>`;
-              } else if (!isOriginal) { // Only show "from" if not original AND not pending forfeiture
+              } else if (!isOriginal) { 
                 const originalTeamName = getTeamName(pick.original_team);
                 let originTextContent = `from ${escapeHTML(originalTeamName)}`;
                 
@@ -1755,7 +1807,7 @@
                 }
 
                 let linkCreated = false;
-                if (pick.notes) { // Check notes for linking only if not pending forfeiture
+                if (pick.notes) { 
                   const citationRegex = /\b([A-Z]{2,4})\s*\/\s*([A-Z]{2,4})\s+(\d{1,2}\/\d{1,2}\/\d{4})\b/i;
                   const noteMatch = pick.notes.match(citationRegex);
 
@@ -1779,18 +1831,16 @@
                     linkCreated = true;
                   }
                 }
-                if (!linkCreated) { // If not linkable but acquired
+                if (!linkCreated) { 
                   originDisplayHTML = `<div class="pick-origin" style="color: #666;">${originTextContent}</div>`;
                 }
               }
-              // No originDisplayHTML will be set if it's original and not pending_forfeiture
               
-              // Determine background color
-              let pickBackgroundColor = '#e8f5e8'; // Default for original
+              let pickBackgroundColor = '#e8f5e8'; 
               if (isPendingForfeiture) {
-                pickBackgroundColor = '#f8d7da'; // Reddish for pending forfeiture
+                pickBackgroundColor = '#f8d7da'; 
               } else if (!isOriginal) {
-                pickBackgroundColor = '#fff3cd'; // Yellowish for acquired
+                pickBackgroundColor = '#fff3cd'; 
               }
 
               return `
@@ -1819,7 +1869,6 @@
             `;
           }).join('');
         
-        // MODIFIED: Summary counts to correctly reflect pending forfeiture
         const totalPicks = teamPicks.length;
         const summaryPendingForfeitureCount = teamPicks.filter(p => p.notes && p.notes.toUpperCase() === 'PENDING FORFEITURE').length;
         const summaryOwnPicks = teamPicks.filter(p => p.original_team === teamId && !(p.notes && p.notes.toUpperCase() === 'PENDING FORFEITURE')).length;
