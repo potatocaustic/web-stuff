@@ -101,30 +101,7 @@
         margin-bottom: 0.5rem;
       }
       
-      /* START: Added styles for Real Profile link */
-      .real-profile-link-container {
-        margin-top: 0.3rem;
-        margin-bottom: 0.5rem; /* Existing player-subtitle has 0.5rem bottom margin */
-        font-size: 1rem; 
-      }
-
-      .real-profile-link-container a {
-        color: #007bff;
-        text-decoration: none;
-        display: inline-flex; 
-        align-items: center;
-      }
-
-      .real-profile-link-container a:hover {
-        text-decoration: underline;
-      }
-
-      .real-profile-link-container img {
-        height: 1em; /* Relative to current font size */
-        vertical-align: middle; /* Better alignment with text */
-        margin-left: 5px;
-      }
-      /* END: Added styles for Real Profile link */
+      /* Real Profile CSS REMOVED */
 
       .player-subtitle {
         font-size: 1.2rem;
@@ -444,7 +421,7 @@
         border-width: 2px;
       }
 
-      .team-header { /* This class name is duplicated, ensure it's styled for the modal context */
+      .team-header { 
         background-color: #333;
         color: white;
         padding: 1.5rem;
@@ -456,17 +433,17 @@
         flex-direction: column;
       }
 
-      .team-header.winner { /* Ensure this targets the modal's team header */
+      .team-header.winner { 
         background-color: #28a745;
       }
 
-      .team-header h4 { /* Ensure this targets the modal's team header */
+      .team-header h4 { 
         color: white;
         margin: 0;
         font-size: 1.2rem;
       }
 
-      .team-header .team-logo { /* Ensure this targets the modal's team header */
+      .team-header .team-logo { 
         width: 48px;
         height: 48px;
         border-radius: 4px;
@@ -520,12 +497,12 @@
         background-color: white;
       }
 
-      .captain-row { /* This class name is duplicated, ensure it's styled for the modal context if different */
+      .captain-row { 
         background-color: #fff3cd !important;
         font-weight: bold;
       }
 
-      .captain-badge { /* This class name is duplicated, ensure it's styled for the modal context */
+      .captain-badge { 
         background-color: #ffc107;
         color: #333;
         padding: 0.2rem 0.5rem;
@@ -660,7 +637,7 @@
           font-size: 0.8rem;
         }
 
-        .team-header .team-logo { /* Target modal specific team logo */
+        .team-header .team-logo { 
           width: 36px;
           height: 36px;
         }
@@ -673,7 +650,7 @@
 
         .performance-table th:nth-child(4),
         .performance-table td:nth-child(4) {
-          display: none; /* Hide rank column on very small screens */
+          display: none; 
         }
 
         .game-item {
@@ -785,7 +762,8 @@
           <button class="close-btn" onclick="closeGameModal()">&times;</button>
         </div>
         <div class="modal-body">
-          <div id="modal-content"> <div class="loading">Loading game details...</div>
+          <div id="modal-content"> 
+            <div class="loading">Loading game details...</div>
           </div>
         </div>
       </div>
@@ -796,8 +774,7 @@
     </footer>
 
     <script>
-      // Configuration - REPLACE WITH YOUR ACTUAL GOOGLE SHEET ID
-      const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4'; // Replace this with your actual sheet ID
+      const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4'; 
       const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
       
       let playerHandle = null;
@@ -805,7 +782,6 @@
       let allTeams = [];
       let allLineups = [];
       
-      // Helper function to parse numbers that might have comma formatting
       function parseNumber(value) {
         if (!value) return 0;
         const cleaned = value.toString().replace(/,/g, '');
@@ -813,7 +789,6 @@
         return isNaN(parsed) ? 0 : parsed;
       }
       
-      // Function to fetch data from Google Sheets
       async function fetchSheetData(sheetName) {
         try {
           const response = await fetch(BASE_URL + encodeURIComponent(sheetName));
@@ -825,7 +800,6 @@
         }
       }
       
-      // Simple CSV parser that properly handles quoted fields and commas within values
       function parseCSV(csvText) {
         const lines = csvText.trim().split('\n');
         const headers = parseCSVLine(lines[0]);
@@ -839,19 +813,15 @@
           });
           data.push(row);
         }
-        
         return data;
       }
       
-      // Parse a single CSV line, handling quoted fields properly
       function parseCSVLine(line) {
         const result = [];
         let current = '';
         let inQuotes = false;
-        
         for (let i = 0; i < line.length; i++) {
           const char = line[i];
-          
           if (char === '"') {
             inQuotes = !inQuotes;
           } else if (char === ',' && !inQuotes) {
@@ -861,79 +831,62 @@
             current += char;
           }
         }
-        
-        // Add the last field
         result.push(current.trim());
-        
-        // Clean up quotes from fields
         return result.map(field => field.replace(/^"(.*)"$/, '$1'));
       }
       
-      // Get URL parameter
       function getUrlParameter(name) {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get(name);
       }
       
-      // Format date
       function formatDate(dateString) {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       }
       
-      // Get team name from ID
       function getTeamName(teamId) {
         const team = allTeams.find(t => t.team_id === teamId);
         return team ? team.team_name : teamId;
       }
 
-      // Helper function to convert number to ordinal (1st, 2nd, 3rd, 4th, etc.)
       function getOrdinal(num) {
         const n = parseInt(num);
         if (n <= 0) return 'Unranked';
-        
         const suffix = ['th', 'st', 'nd', 'rd'];
         const v = n % 100;
         return n + (suffix[(v - 20) % 10] || suffix[v] || suffix[0]);
       }
 
-      // Calculate player rankings for each stat
       function calculatePlayerRankings(playerData, allPlayersData) {
         const rankings = {};
-        
-        // Total Karma ranking
         const totalKarmaPlayers = allPlayersData
           .filter(p => p.player_status === 'ACTIVE' && parseInt(p.games_played || 0) > 0)
           .sort((a, b) => parseFloat(b.total_points || 0) - parseFloat(a.total_points || 0));
         rankings.totalKarma = totalKarmaPlayers.findIndex(p => p.player_handle === playerData.player_handle) + 1;
         
-        // REL Median ranking
         const relMedianPlayers = allPlayersData
           .filter(p => p.player_status === 'ACTIVE' && parseInt(p.games_played || 0) > 0)
           .sort((a, b) => parseFloat(b.calculated_rel_median || 0) - parseFloat(a.calculated_rel_median || 0));
         rankings.relMedian = relMedianPlayers.findIndex(p => p.player_handle === playerData.player_handle) + 1;
         
-        // Games Above Median ranking (with REL Median tiebreaker)
         const gamesAboveMedianPlayers = allPlayersData
           .filter(p => p.player_status === 'ACTIVE' && parseInt(p.games_played || 0) > 0)
           .sort((a, b) => {
             const aGames = parseInt(a.aag_median || 0);
             const bGames = parseInt(b.aag_median || 0);
             if (bGames !== aGames) return bGames - aGames;
-            // Tiebreaker: REL Median
             const aREL = parseFloat(a.calculated_rel_median || 0);
             const bREL = parseFloat(b.calculated_rel_median || 0);
             return bREL - aREL;
           });
         rankings.gamesAboveMedian = gamesAboveMedianPlayers.findIndex(p => p.player_handle === playerData.player_handle) + 1;
         
-        // Above Median % ranking
         const aboveMedianPctPlayers = allPlayersData
           .filter(p => p.player_status === 'ACTIVE' && parseInt(p.games_played || 0) > 0)
           .sort((a, b) => parseFloat(b.aag_median_pct || 0) - parseFloat(a.aag_median_pct || 0));
         rankings.aboveMedianPct = aboveMedianPctPlayers.findIndex(p => p.player_handle === playerData.player_handle) + 1;
         
-        // Median Rank ranking (lower is better)
         const medianRankPlayers = allPlayersData
           .filter(p => p.player_status === 'ACTIVE' && parseInt(p.games_played || 0) > 0 && parseFloat(p.calculated_median_rank || 0) > 0)
           .sort((a, b) => parseFloat(a.calculated_median_rank || 999) - parseFloat(b.calculated_median_rank || 999));
@@ -942,11 +895,7 @@
         return rankings;
       }
 
-      // Function to calculate REL for all players (needed for rankings)
       function calculateRELForAllPlayers(players, weeklyAverages, lineups) {
-        console.log('Calculating REL values and median ranks for all players...');
-        
-        // Create lookup map for weekly averages by date - using parseNumber for comma handling
         const weeklyAveragesMap = {};
         weeklyAverages.forEach(week => {
           if (week.date) {
@@ -958,213 +907,127 @@
         });
         
         return players.map(player => {
-          // Get all games where this player started
           const playerGames = lineups.filter(lineup => 
             lineup.player_handle === player.player_handle && 
             (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1)
           );
-          
           if (playerGames.length === 0) {
-            return {
-              ...player,
-              calculated_rel_mean: 0,
-              calculated_rel_median: 0,
-              calculated_median_rank: 0
-            };
+            return { ...player, calculated_rel_mean: 0, calculated_rel_median: 0, calculated_median_rank: 0 };
           }
-          
-          // Calculate sums
-          let totalPlayerKarmaRaw = 0;
-          let totalMeanKarma = 0;
-          let totalMedianKarma = 0;
-          let validGames = 0;
-          
-          // For median rank calculation
+          let totalPlayerKarmaRaw = 0, totalMeanKarma = 0, totalMedianKarma = 0, validGames = 0;
           const ranks = [];
-          
           playerGames.forEach(game => {
-            const gameDate = game.date;
             const playerKarmaRaw = parseNumber(game.points_raw);
             const globalRank = parseNumber(game.global_rank);
-            
-            if (weeklyAveragesMap[gameDate]) {
+            if (weeklyAveragesMap[game.date]) {
               totalPlayerKarmaRaw += playerKarmaRaw;
-              totalMeanKarma += weeklyAveragesMap[gameDate].mean_score;
-              totalMedianKarma += weeklyAveragesMap[gameDate].median_score;
+              totalMeanKarma += weeklyAveragesMap[game.date].mean_score;
+              totalMedianKarma += weeklyAveragesMap[game.date].median_score;
               validGames++;
             }
-            
-            // Collect ranks for median calculation
-            if (globalRank > 0) {
-              ranks.push(globalRank);
-            }
+            if (globalRank > 0) ranks.push(globalRank);
           });
-          
-          // Calculate average-based REL
           const avgPlayerKarmaRaw = validGames > 0 ? totalPlayerKarmaRaw / validGames : 0;
           const avgMeanKarma = validGames > 0 ? totalMeanKarma / validGames : 0;
           const avgMedianKarma = validGames > 0 ? totalMedianKarma / validGames : 0;
-          
           const relMeanAvgRaw = avgMeanKarma > 0 ? (avgPlayerKarmaRaw / avgMeanKarma) : 0;
           const relMedianAvgRaw = avgMedianKarma > 0 ? (avgPlayerKarmaRaw / avgMedianKarma) : 0;
-          
-          // Calculate median rank
           let medianRank = 0;
           if (ranks.length > 0) {
             ranks.sort((a, b) => a - b);
             const mid = Math.floor(ranks.length / 2);
-            if (ranks.length % 2 === 0) {
-              medianRank = (ranks[mid - 1] + ranks[mid]) / 2;
-            } else {
-              medianRank = ranks[mid];
-            }
+            medianRank = ranks.length % 2 === 0 ? (ranks[mid - 1] + ranks[mid]) / 2 : ranks[mid];
           }
-          
-          return {
-            ...player,
-            calculated_rel_mean: relMeanAvgRaw,
-            calculated_rel_median: relMedianAvgRaw,
-            calculated_median_rank: medianRank
-          };
+          return { ...player, calculated_rel_mean: relMeanAvgRaw, calculated_rel_median: relMedianAvgRaw, calculated_median_rank: medianRank };
         });
       }
 
-      // Calculate REL Median for a specific player
       function calculatePlayerRELMedian(playerHandle, weeklyAverages, lineups) {
-        // Get all games where this player started
         const playerGames = lineups.filter(lineup => 
           lineup.player_handle === playerHandle && 
           (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1)
         );
-        
-        if (playerGames.length === 0) {
-          return 0;
-        }
-        
-        // Create lookup map for weekly averages by date
+        if (playerGames.length === 0) return 0;
         const weeklyAveragesMap = {};
         weeklyAverages.forEach(week => {
-          if (week.date) {
-            weeklyAveragesMap[week.date] = {
-              median_score: parseNumber(week.median_score)
-            };
-          }
+          if (week.date) weeklyAveragesMap[week.date] = { median_score: parseNumber(week.median_score) };
         });
-        
-        // Calculate average REL
-        let totalPlayerKarma = 0;
-        let totalMedianKarma = 0;
-        let validGames = 0;
-        
+        let totalPlayerKarma = 0, totalMedianKarma = 0, validGames = 0;
         playerGames.forEach(game => {
-          const gameDate = game.date;
-          const playerKarma = parseNumber(game.points_raw);
-          
-          if (weeklyAveragesMap[gameDate]) {
-            totalPlayerKarma += playerKarma;
-            totalMedianKarma += weeklyAveragesMap[gameDate].median_score;
+          if (weeklyAveragesMap[game.date]) {
+            totalPlayerKarma += parseNumber(game.points_raw);
+            totalMedianKarma += weeklyAveragesMap[game.date].median_score;
             validGames++;
           }
         });
-        
-        // Calculate average-based REL
         const avgPlayerKarma = validGames > 0 ? totalPlayerKarma / validGames : 0;
         const avgMedianKarma = validGames > 0 ? totalMedianKarma / validGames : 0;
-        
         return avgMedianKarma > 0 ? (avgPlayerKarma / avgMedianKarma) : 0;
       }
 
-      // Calculate median rank for a player
       function calculatePlayerMedianRank(playerHandle, lineups) {
         const playerGames = lineups.filter(lineup => 
           lineup.player_handle === playerHandle && 
           (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1) &&
-          lineup.global_rank && 
-          parseFloat(lineup.global_rank) > 0
+          lineup.global_rank && parseFloat(lineup.global_rank) > 0
         );
-        
         if (playerGames.length === 0) return 0;
-        
         const ranks = playerGames.map(game => parseFloat(game.global_rank)).sort((a, b) => a - b);
         const mid = Math.floor(ranks.length / 2);
-        
-        if (ranks.length % 2 === 0) {
-          return (ranks[mid - 1] + ranks[mid]) / 2;
-        } else {
-          return ranks[mid];
-        }
+        return ranks.length % 2 === 0 ? (ranks[mid - 1] + ranks[mid]) / 2 : ranks[mid];
       }
       
-      // Load player data
       async function loadPlayerData() {
         playerHandle = getUrlParameter('player');
         if (!playerHandle) {
-          document.getElementById('player-main-info').innerHTML = 
-            '<div class="error">No player specified</div>';
+          document.getElementById('player-main-info').innerHTML = '<div class="error">No player specified</div>';
           return;
         }
-        
         const [players, teams, weeklyAverages, lineups] = await Promise.all([
-          fetchSheetData('Players'),
-          fetchSheetData('Teams'),
-          fetchSheetData('Weekly_Averages'),
-          fetchSheetData('Lineups')
+          fetchSheetData('Players'), fetchSheetData('Teams'),
+          fetchSheetData('Weekly_Averages'), fetchSheetData('Lineups')
         ]);
-        
         if (!players || !teams) {
-          document.getElementById('player-main-info').innerHTML = 
-            '<div class="error">Error loading player data</div>';
+          document.getElementById('player-main-info').innerHTML = '<div class="error">Error loading player data</div>';
           return;
         }
-        
         allTeams = teams;
         allLineups = lineups || []; 
-        
         const playersWithREL = weeklyAverages ? calculateRELForAllPlayers(players, weeklyAverages, allLineups) : players;
-        
         playerData = playersWithREL.find(player => player.player_handle === playerHandle);
         if (!playerData) {
-          document.getElementById('player-main-info').innerHTML = 
-            '<div class="error">Player not found</div>';
+          document.getElementById('player-main-info').innerHTML = '<div class="error">Player not found</div>';
           return;
         }
-        
-        const calculatedRELMedian = weeklyAverages ? calculatePlayerRELMedian(playerHandle, weeklyAverages, allLineups) : 0;
-        const medianRank = calculatePlayerMedianRank(playerHandle, allLineups);
-        
-        playerData.calculated_rel_median = calculatedRELMedian;
-        playerData.calculated_median_rank = medianRank;
-        
-        const activePlayersWithREL = playersWithREL.filter(p => 
-          p.player_status === 'ACTIVE' && parseInt(p.games_played || 0) > 0
-        );
+        playerData.calculated_rel_median = weeklyAverages ? calculatePlayerRELMedian(playerHandle, weeklyAverages, allLineups) : 0;
+        playerData.calculated_median_rank = calculatePlayerMedianRank(playerHandle, allLineups);
+        const activePlayersWithREL = playersWithREL.filter(p => p.player_status === 'ACTIVE' && parseInt(p.games_played || 0) > 0);
         const rankings = calculatePlayerRankings(playerData, activePlayersWithREL);
-        
         displayPlayerHeader(rankings);
-        
-        await Promise.all([
-          loadPerformanceData(), 
-          loadGameHistory()      
-        ]);
+        await Promise.all([loadPerformanceData(), loadGameHistory()]);
       }
       
-      // Display player header
       function displayPlayerHeader(rankings) {
         document.getElementById('page-title').textContent = `${playerData.player_handle} - RKL Season 7`;
         document.getElementById('header-title').textContent = playerData.player_handle;
         
-        // START: MODIFICATIONS FOR FREE AGENT & REAL PROFILE LINK
         let teamLogoHTML = '';
         let teamInfoHTML = '';
+        
+        // --- Free Agent Logic ---
+        // For debugging, you can add this:
+        // console.log("Player current_team_id:", playerData.current_team_id, "Is it 'FREE_AGENT'?", playerData.current_team_id === 'FREE_AGENT');
+
         const isFreeAgent = playerData.current_team_id === 'FREE_AGENT';
 
         if (!isFreeAgent) {
             const teamData = allTeams.find(t => t.team_id === playerData.current_team_id);
-            const teamName = teamData ? teamData.team_name : playerData.current_team_id;
+            const teamName = teamData ? teamData.team_name : (playerData.current_team_id || "N/A"); // Handle undefined/empty team_id
             // Using original icon path style as "icons/TEAM_ID.webp"
-            teamLogoHTML = `<img src="icons/${playerData.current_team_id}.webp" alt="${teamName}" class="team-logo-large" onerror="this.style.display='none'">`;
+            teamLogoHTML = `<img src="icons/${playerData.current_team_id}.webp" alt="${teamName}" class="team-logo-large" onerror="this.style.display='none'; console.error('Error loading team logo: icons/${playerData.current_team_id}.webp')">`;
             teamInfoHTML = `<a href="team.html?id=${playerData.current_team_id}" class="team-info">Current Team: ${teamName}</a>`;
         } else {
+            // Player is a Free Agent
             teamLogoHTML = ''; // No logo for free agents per request
             teamInfoHTML = ''; // No "Current Team" text per request
         }
@@ -1172,29 +1035,15 @@
         const totalPoints = parseNumber(playerData.total_points);
         const gamesPlayed = parseInt(playerData.games_played || 0);
 
-        // Real Profile link. Player handle for URL, assuming it's URL-safe.
-        // If not, use encodeURIComponent(playerData.player_handle)
-        const realProfileUrlPlayerName = playerData.player_handle; // Or any transformation needed for the URL
-        const realProfileLink = `https://realsports.io/u/${realProfileUrlPlayerName}`;
-        // Path to REAL.png from RKL/S7/player.html to root icons/REAL.png is ../../icons/REAL.png
-        // This is a NEW icon, so its path must be relative to this HTML file's location.
-        const realProfileIconPath = 'icons/REAL.png';
-
         document.getElementById('player-main-info').innerHTML = `
           ${teamLogoHTML}
           <div class="player-details">
             <h2>${playerData.player_handle}</h2>
-            <div class="real-profile-link-container">
-              <a href="${realProfileLink}" target="_blank">
-                Real Profile
-                <img src="${realProfileIconPath}" alt="Real Sports Icon">
-              </a>
-            </div>
             <div class="player-subtitle">${playerData.player_status} • ${gamesPlayed} games played</div>
             ${teamInfoHTML}
           </div>
         `;
-        // END: MODIFICATIONS FOR FREE AGENT & REAL PROFILE LINK
+        // --- End of Free Agent related HTML injection ---
         
         const relMedian = playerData.calculated_rel_median || 0;
         const gamesAboveMedian = parseInt(playerData.aag_median || 0);
@@ -1227,296 +1076,115 @@
             <div class="stat-rank">${rankings.medianRank > 0 ? `${getOrdinal(rankings.medianRank)} Overall` : 'Not ranked'}</div>
           </a>
         `;
-        
         document.getElementById('player-stats').style.display = 'grid';
       }
       
-      // Load performance data from lineups
       async function loadPerformanceData() {
         if (!allLineups) {
-          document.getElementById('performance-table').innerHTML = 
-            '<tr><td colspan="4" class="error">Error loading performance data</td></tr>';
+          document.getElementById('performance-table').innerHTML = '<tr><td colspan="4" class="error">Error loading performance data</td></tr>';
           return;
         }
-        
         const playerLineups = allLineups
-          .filter(lineup => lineup.player_handle === playerHandle && 
-                           (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1))
+          .filter(lineup => lineup.player_handle === playerHandle && (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1))
           .sort((a, b) => parseInt(a.week || 0) - parseInt(b.week || 0)); 
-        
         if (playerLineups.length === 0) {
-          document.getElementById('performance-table').innerHTML = 
-            '<tr><td colspan="4" style="text-align: center; padding: 2rem; color: #666;">No games played yet</td></tr>';
+          document.getElementById('performance-table').innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem; color: #666;">No games played yet</td></tr>';
           return;
         }
-        
         const performanceHTML = playerLineups.map(lineup => {
           const isCaptain = String(lineup.captain).toLowerCase() === 'true' || lineup.captain === true || lineup.captain === 1;
           const pointsRaw = parseNumber(lineup.points_raw);
           const globalRank = parseNumber(lineup.global_rank);
-          
-          return `
-            <tr class="${isCaptain ? 'captain-row' : ''}">
-              <td>Week ${lineup.week}${isCaptain ? '<span class="captain-badge-small">C</span>' : ''}</td>
-              <td>${Math.round(pointsRaw).toLocaleString()}${isCaptain ? ` (+${Math.round(pointsRaw * 0.5).toLocaleString()})` : ''}</td>
-              <td>${globalRank > 0 ? Math.round(globalRank) : '-'}</td>
-              <td>${isCaptain ? 'Captain' : 'Starter'}</td>
-            </tr>
-          `;
+          return `<tr class="${isCaptain ? 'captain-row' : ''}"><td>Week ${lineup.week}${isCaptain ? '<span class="captain-badge-small">C</span>' : ''}</td><td>${Math.round(pointsRaw).toLocaleString()}${isCaptain ? ` (+${Math.round(pointsRaw * 0.5).toLocaleString()})` : ''}</td><td>${globalRank > 0 ? Math.round(globalRank) : '-'}</td><td>${isCaptain ? 'Captain' : 'Starter'}</td></tr>`;
         }).join('');
-        
         document.getElementById('performance-table').innerHTML = performanceHTML;
       }
       
-      // Load game history with modal functionality (REVISED VERSION from original code)
       async function loadGameHistory() {
         const schedule = await fetchSheetData('Schedule'); 
-        
         if (!schedule || !allLineups) { 
-          document.getElementById('game-history').innerHTML = 
-            '<div class="error">Error loading game history data.</div>';
+          document.getElementById('game-history').innerHTML = '<div class="error">Error loading game history data.</div>';
           return;
         }
-        
-        const playerStartedLineups = allLineups.filter(lineup => 
-            lineup.player_handle === playerHandle &&
-            (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1)
-        );
-
+        const playerStartedLineups = allLineups.filter(lineup => lineup.player_handle === playerHandle && (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1));
         if (playerStartedLineups.length === 0) {
-          document.getElementById('game-history').innerHTML = 
-            '<div style="text-align: center; padding: 2rem; color: #666;">No game history found (player has not started any games).</div>';
+          document.getElementById('game-history').innerHTML = '<div style="text-align: center; padding: 2rem; color: #666;">No game history found (player has not started any games).</div>';
           return;
         }
-
         const gamesWithPerformance = playerStartedLineups.map(lineup => {
-          const gameForThisLineup = schedule.find(sGame => 
-            sGame.date === lineup.date && 
-            (sGame.team1_id === lineup.team_id || sGame.team2_id === lineup.team_id) && 
-            String(sGame.completed).toLowerCase() === 'true' 
-          );
-
+          const gameForThisLineup = schedule.find(sGame => sGame.date === lineup.date && (sGame.team1_id === lineup.team_id || sGame.team2_id === lineup.team_id) && String(sGame.completed).toLowerCase() === 'true');
           if (!gameForThisLineup) {
             console.warn(`No matching completed game found in schedule for player ${playerHandle} on date ${lineup.date} with team ${lineup.team_id}`);
             return null; 
           }
-
           const opponentId = gameForThisLineup.team1_id === lineup.team_id ? gameForThisLineup.team2_id : gameForThisLineup.team1_id;
-          
-          return {
-            ...gameForThisLineup, 
-            opponentId,          
-            lineup: lineup       
-          };
-        }).filter(game => game !== null) 
-          .sort((a, b) => { 
-            const dateA = new Date(a.date);
-            const dateB = new Date(b.date);
-            if (dateA.getTime() !== dateB.getTime()) {
-                return dateA - dateB;
-            }
-            const weekA = parseInt(a.lineup.week || '0');
-            const weekB = parseInt(b.lineup.week || '0');
+          return { ...gameForThisLineup, opponentId, lineup: lineup };
+        }).filter(game => game !== null).sort((a, b) => { 
+            const dateA = new Date(a.date); const dateB = new Date(b.date);
+            if (dateA.getTime() !== dateB.getTime()) return dateA - dateB;
+            const weekA = parseInt(a.lineup.week || '0'); const weekB = parseInt(b.lineup.week || '0');
             return weekA - weekB;
           });
-
         if (gamesWithPerformance.length === 0) {
-          document.getElementById('game-history').innerHTML = 
-            '<div style="text-align: center; padding: 2rem; color: #666;">No completed game history found for started games.</div>';
+          document.getElementById('game-history').innerHTML = '<div style="text-align: center; padding: 2rem; color: #666;">No completed game history found for started games.</div>';
           return;
         }
-        
         const historyHTML = gamesWithPerformance.map(game => {
           const isCaptain = String(game.lineup.captain).toLowerCase() === 'true' || game.lineup.captain === true || game.lineup.captain === 1;
           const pointsRaw = parseNumber(game.lineup.points_raw);
           const globalRank = parseNumber(game.lineup.global_rank);
-          // Using original icon path style "icons/OPPONENT_ID.webp" for opponent logos
           const opponentLogoSrc = `icons/${game.opponentId}.webp`;
-          
-          return `
-            <div class="game-item" onclick="showGameDetails('${game.team1_id}', '${game.team2_id}', '${game.date}')">
-              <div class="game-opponent">
-                <img src="${opponentLogoSrc}" alt="${getTeamName(game.opponentId)}" class="opponent-logo" onerror="this.style.display='none'">
-                <div class="opponent-info">
-                  <div class="opponent-name">vs ${getTeamName(game.opponentId)}</div>
-                  <div class="game-date">${formatDate(game.date)}</div>
-                </div>
-              </div>
-              <div class="game-performance">
-                <div class="performance-score ${isCaptain ? 'captain-performance' : ''}">
-                  ${Math.round(pointsRaw).toLocaleString()}${isCaptain ? ' (C)' : ''}
-                </div>
-                <div class="performance-rank">
-                  Rank: ${globalRank > 0 ? Math.round(globalRank) : '-'}
-                </div>
-              </div>
-            </div>
-          `;
+          return `<div class="game-item" onclick="showGameDetails('${game.team1_id}', '${game.team2_id}', '${game.date}')"><div class="game-opponent"><img src="${opponentLogoSrc}" alt="${getTeamName(game.opponentId)}" class="opponent-logo" onerror="this.style.display='none'"><div class="opponent-info"><div class="opponent-name">vs ${getTeamName(game.opponentId)}</div><div class="game-date">${formatDate(game.date)}</div></div></div><div class="game-performance"><div class="performance-score ${isCaptain ? 'captain-performance' : ''}">${Math.round(pointsRaw).toLocaleString()}${isCaptain ? ' (C)' : ''}</div><div class="performance-rank">Rank: ${globalRank > 0 ? Math.round(globalRank) : '-'}</div></div></div>`;
         }).join('');
-        
         document.getElementById('game-history').innerHTML = historyHTML;
       }
 
-      // Show game details modal (Original function from your provided code)
       async function showGameDetails(team1Id, team2Id, date) {
         const modal = document.getElementById('game-modal');
         const modalTitle = document.getElementById('modal-title');
-        const modalBodyContent = document.getElementById('modal-content'); // Target the inner div for content
-        
+        const modalBodyContent = document.getElementById('modal-content'); 
         modal.style.display = 'block';
         modalTitle.textContent = `${getTeamName(team1Id)} vs ${getTeamName(team2Id)} - ${formatDate(date)}`;
         modalBodyContent.innerHTML = '<div class="loading">Loading game details...</div>';
-        
         const schedule = await fetchSheetData('Schedule');
-        if (!schedule) {
-          modalBodyContent.innerHTML = '<div class="error">Error loading game details (schedule)</div>';
-          return;
-        }
-        
-        const game = schedule.find(g => 
-          g.team1_id === team1Id && 
-          g.team2_id === team2Id && 
-          g.date === date
-        );
-        
-        if (!game) {
-          modalBodyContent.innerHTML = '<div class="error">Game not found in schedule</div>';
-          return;
-        }
-        
-        if (!allLineups) {
-             modalBodyContent.innerHTML = '<div class="error">Error loading game details (lineups)</div>';
-            return;
-        }
-
-        const team1AllGameLineups = allLineups.filter(lineup => 
-          lineup.team_id === team1Id && lineup.date === date
-        );
-        const team2AllGameLineups = allLineups.filter(lineup => 
-          lineup.team_id === team2Id && lineup.date === date
-        );
-        
-        const team1Lineups = team1AllGameLineups.filter(lineup => {
-          const isStarted = String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1;
-          return isStarted;
-        }).sort((a, b) => {
-          const aCaptain = String(a.captain).toLowerCase() === 'true' || a.captain === true || a.captain === 1;
-          const bCaptain = String(b.captain).toLowerCase() === 'true' || b.captain === true || b.captain === 1;
-          if (aCaptain && !bCaptain) return -1;
-          if (!aCaptain && bCaptain) return 1;
-          return parseNumber(b.points_final) - parseNumber(a.points_final);
-        });
-        
-        const team2Lineups = team2AllGameLineups.filter(lineup => {
-          const isStarted = String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1;
-          return isStarted;
-        }).sort((a, b) => {
-          const aCaptain = String(a.captain).toLowerCase() === 'true' || a.captain === true || a.captain === 1;
-          const bCaptain = String(b.captain).toLowerCase() === 'true' || b.captain === true || b.captain === 1;
-          if (aCaptain && !bCaptain) return -1;
-          if (!aCaptain && bCaptain) return 1;
-          return parseNumber(b.points_final) - parseNumber(a.points_final);
-        });
-        
+        if (!schedule) { modalBodyContent.innerHTML = '<div class="error">Error loading game details (schedule)</div>'; return; }
+        const game = schedule.find(g => g.team1_id === team1Id && g.team2_id === team2Id && g.date === date);
+        if (!game) { modalBodyContent.innerHTML = '<div class="error">Game not found in schedule</div>'; return; }
+        if (!allLineups) { modalBodyContent.innerHTML = '<div class="error">Error loading game details (lineups)</div>'; return; }
+        const team1AllGameLineups = allLineups.filter(lineup => lineup.team_id === team1Id && lineup.date === date);
+        const team2AllGameLineups = allLineups.filter(lineup => lineup.team_id === team2Id && lineup.date === date);
+        const team1Lineups = team1AllGameLineups.filter(lineup => String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1).sort((a,b) => (String(a.captain) === 'true' ? -1 : 1) - (String(b.captain) === 'true' ? -1 : 1) || parseNumber(b.points_final) - parseNumber(a.points_final));
+        const team2Lineups = team2AllGameLineups.filter(lineup => String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1).sort((a,b) => (String(a.captain) === 'true' ? -1 : 1) - (String(b.captain) === 'true' ? -1 : 1) || parseNumber(b.points_final) - parseNumber(a.points_final));
         const team1Total = team1Lineups.reduce((sum, player) => sum + parseNumber(player.points_final), 0);
         const team2Total = team2Lineups.reduce((sum, player) => sum + parseNumber(player.points_final), 0);
-        
         const winner = game.winner;
-        
         const generateLineupTable = (lineups, teamIdForTable, total, isWinner) => {
           const teamDetails = allTeams.find(t => t.team_id === teamIdForTable);
           const teamRecord = teamDetails ? `${teamDetails.wins || 0}-${teamDetails.losses || 0}` : '';
-          // Using original icon path style "icons/TEAM_ID.webp" for modal team logos
           const modalTeamLogoSrc = `icons/${teamIdForTable}.webp`;
           const teamLogoTagInModal = (teamIdForTable && teamIdForTable !== 'FREE_AGENT') ? `<img src="${modalTeamLogoSrc}" alt="${getTeamName(teamIdForTable)}" class="team-logo" onerror="this.style.display='none'">` : '';
-
-
-          if (lineups.length === 0) {
-            return `
-              <div class="team-breakdown ${isWinner ? 'winner' : ''}">
-                <div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamIdForTable}'" style="cursor: pointer;">
-                  ${teamLogoTagInModal}
-                  <div>
-                    <h4>${getTeamName(teamIdForTable)}</h4>
-                    <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
-                  </div>
-                </div>
-                <div class="team-total">Total: ${Math.round(total).toLocaleString()}</div>
-                <div style="padding: 2rem; text-align: center; color: #666;">No lineup data available for this game.</div>
-              </div>
-            `;
-          }
-          
+          if (lineups.length === 0) return `<div class="team-breakdown ${isWinner ? 'winner' : ''}"><div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamIdForTable}'" style="cursor: pointer;">${teamLogoTagInModal}<div><h4>${getTeamName(teamIdForTable)}</h4><div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div></div></div><div class="team-total">Total: ${Math.round(total).toLocaleString()}</div><div style="padding: 2rem; text-align: center; color: #666;">No lineup data available for this game.</div></div>`;
           const lineupRows = lineups.map(player => {
             const isCaptain = String(player.captain).toLowerCase() === 'true' || player.captain === true || player.captain === 1;
             const pointsRaw = parseNumber(player.points_raw);
             const globalRank = parseNumber(player.global_rank);
             const captainBonus = isCaptain ? Math.round(pointsRaw * 0.5) : 0;
-            
-            return `
-              <tr class="${isCaptain ? 'captain-row' : ''}">
-                <td class="player-name-cell">
-                  <a href="player.html?player=${encodeURIComponent(player.player_handle || 'Unknown')}" target="_blank" class="player-link"> ${player.player_handle || 'Unknown'}
-                  </a>
-                  ${isCaptain ? '<span class="captain-badge">C</span>' : ''}
-                </td>
-                <td class="points-cell">
-                  ${Math.round(pointsRaw).toLocaleString()}
-                  ${isCaptain ? `<div class="captain-bonus">+${captainBonus.toLocaleString()}</div>` : ''}
-                </td>
-                <td class="rank-cell">${globalRank > 0 ? Math.round(globalRank) : '-'}</td>
-              </tr>
-            `;
+            return `<tr class="${isCaptain ? 'captain-row' : ''}"><td class="player-name-cell"><a href="player.html?player=${encodeURIComponent(player.player_handle || 'Unknown')}" target="_blank" class="player-link"> ${player.player_handle || 'Unknown'}</a>${isCaptain ? '<span class="captain-badge">C</span>' : ''}</td><td class="points-cell">${Math.round(pointsRaw).toLocaleString()}${isCaptain ? `<div class="captain-bonus">+${captainBonus.toLocaleString()}</div>` : ''}</td><td class="rank-cell">${globalRank > 0 ? Math.round(globalRank) : '-'}</td></tr>`;
           }).join('');
-          
-          return `
-            <div class="team-breakdown ${isWinner ? 'winner' : ''}">
-              <div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamIdForTable}'" style="cursor: pointer;">
-                ${teamLogoTagInModal}
-                <div>
-                  <h4>${getTeamName(teamIdForTable)}</h4>
-                  <div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div>
-                </div>
-              </div>
-              <div class="team-total">Total: ${isNaN(total) ? '-' : Math.round(total).toLocaleString()}</div>
-              <table class="lineup-table">
-                <thead>
-                  <tr>
-                    <th>Player</th>
-                    <th>Points</th>
-                    <th>Rank</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${lineupRows}
-                </tbody>
-              </table>
-            </div>
-          `;
+          return `<div class="team-breakdown ${isWinner ? 'winner' : ''}"><div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${teamIdForTable}'" style="cursor: pointer;">${teamLogoTagInModal}<div><h4>${getTeamName(teamIdForTable)}</h4><div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div></div></div><div class="team-total">Total: ${isNaN(total) ? '-' : Math.round(total).toLocaleString()}</div><table class="lineup-table"><thead><tr><th>Player</th><th>Points</th><th>Rank</th></tr></thead><tbody>${lineupRows}</tbody></table></div>`;
         };
-        
-        modalBodyContent.innerHTML = `
-          <div class="game-details-grid">
-            ${generateLineupTable(team1Lineups, team1Id, team1Total, winner === team1Id)}
-            ${generateLineupTable(team2Lineups, team2Id, team2Total, winner === team2Id)}
-          </div>
-        `;
+        modalBodyContent.innerHTML = `<div class="game-details-grid">${generateLineupTable(team1Lineups, team1Id, team1Total, winner === team1Id)}${generateLineupTable(team2Lineups, team2Id, team2Total, winner === team2Id)}</div>`;
       }
       
-      // Close modal
       function closeGameModal() {
         document.getElementById('game-modal').style.display = 'none';
       }
       
-      // Close modal when clicking outside
       window.onclick = function(event) {
         const modal = document.getElementById('game-modal');
-        if (event.target === modal) {
-          closeGameModal();
-        }
+        if (event.target === modal) closeGameModal();
       }
       
-      // Initialize page
       document.addEventListener('DOMContentLoaded', loadPlayerData);
     </script>
   </body>
