@@ -239,7 +239,7 @@
         overflow: hidden; 
         flex-grow: 1; 
         min-width: 0; 
-        flex-basis: 0; /* MODIFIED: Added flex-basis: 0 */
+        flex-basis: 0; 
       }
 
 
@@ -321,8 +321,9 @@
 
         .leaderboard-table th:nth-child(1), .leaderboard-table td:nth-child(1) { width: 15%; min-width: 40px; }
         .leaderboard-table th:nth-child(2), .leaderboard-table td:nth-child(2) { 
-            width: 45%; min-width: 100px; 
-            max-width: calc(100% - 40px - 50px - 50px - 1rem); 
+            width: 45%; 
+            min-width: 100px; 
+            /* max-width: calc(100% - 40px - 50px - 50px - 1rem); /* MODIFIED: Commented out this line */
         }
 
         .leaderboard-table th:nth-child(3), .leaderboard-table td:nth-child(3) { width: 20%; min-width: 50px; }
@@ -332,8 +333,9 @@
         .leaderboard-table[data-active-columns="3"] td:nth-child(1) { width: 15%; min-width: 40px; }
         .leaderboard-table[data-active-columns="3"] th:nth-child(2),
         .leaderboard-table[data-active-columns="3"] td:nth-child(2) { 
-            width: 60%; min-width: 120px; 
-            max-width: calc(100% - 40px - 70px - 1rem);
+            width: 60%; 
+            min-width: 120px; 
+            /* max-width: calc(100% - 40px - 70px - 1rem); /* MODIFIED: Also comment out if a similar rule exists for 3-column layout */
         }
         .leaderboard-table[data-active-columns="3"] th:nth-child(3),
         .leaderboard-table[data-active-columns="3"] td:nth-child(3) { width: 25%; min-width: 70px; }
