@@ -376,11 +376,9 @@
       let allWeeklyAverages = [];
       let playerStatsCache = {}; 
       
-      // --- NEW: Global variables for URL parameters ---
       let urlDateFilter = null;
-      let urlTeamFilters = [];
+      let urlTeamFilters = []; // This will store the team IDs from URL
       let urlTransactionType = null;
-      // --- END NEW ---
 
       async function fetchSheetData(sheetName) {
         try {
@@ -434,7 +432,6 @@
         if (isNaN(date)) return 'Invalid Date';
         return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
       }
-       // Helper to format date as YYYY-MM-DD for comparison
       function getComparableDate(dateString) {
         if (!dateString) return null;
         const date = new Date(dateString);
@@ -554,14 +551,20 @@
         return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       }
       
-      // --- MODIFIED: loadData to parse URL parameters ---
+      // --- MODIFIED: loadData to correctly parse teamFilter (singular) ---
       async function loadData() {
         const params = new URLSearchParams(window.location.search);
-        urlDateFilter = params.get('date'); // Expects YYYY-MM-DD
+        urlDateFilter = params.get('date'); 
         urlTransactionType = params.get('type');
-        const teamFiltersParam = params.get('teamFilters'); // Expects comma-separated team IDs
-        if (teamFiltersParam) {
-            urlTeamFilters = teamFiltersParam.split(',');
+        
+        const singleTeamFilterParam = params.get('teamFilter'); // For links from team.html
+        const multiTeamFiltersParam = params.get('teamFilters'); // For other potential uses
+
+        urlTeamFilters = []; // Reset before populating
+        if (singleTeamFilterParam) {
+            urlTeamFilters = [singleTeamFilterParam]; // Use teamFilter if present
+        } else if (multiTeamFiltersParam) {
+            urlTeamFilters = multiTeamFiltersParam.split(','); // Fallback to teamFilters
         }
 
         const transactionsListEl = document.getElementById('transactions-list');
@@ -602,22 +605,20 @@
         transactionsListEl.innerHTML = '<div class="loading">Calculating player stats...</div>';
         await precalculateAllPlayerStats(); 
         
-        setupFilters(); // Setup filters after data load, potentially reflecting URL params
+        setupFilters(); 
         displayTransactions(); 
       }
       
-      // --- MODIFIED: setupFilters to reflect URL parameters ---
+      // --- MODIFIED: setupFilters to reflect URL parameters and disable appropriately ---
       function setupFilters() {
         const weekFilterEl = document.getElementById('week-filter');
         const typeFilterEl = document.getElementById('type-filter');
         const teamFilterEl = document.getElementById('team-filter');
 
-        // Week filter (populate as before)
         const weeks = [...new Set(allTransactions.map(t => t.week && parseInt(t.week)).filter(Boolean))].sort((a, b) => b - a);
         const weekOptions = weeks.map(week => `<option value="${week}">Week ${week}</option>`).join('');
         weekFilterEl.innerHTML = '<option value="all">All Weeks</option>' + weekOptions;
         
-        // Team filter (populate as before)
         const teamOptions = allTeams
           .filter(team => team.team_id && team.team_name && team.team_id !== "FA") 
           .sort((a, b) => a.team_name.localeCompare(b.team_name))
@@ -625,26 +626,28 @@
           .join('');
         teamFilterEl.innerHTML = '<option value="all">All Teams</option>' + teamOptions;
 
-        // Set filter values from URL params if they exist
         if (urlTransactionType) {
             typeFilterEl.value = urlTransactionType;
-            typeFilterEl.disabled = true; // Optionally disable if URL overrides
+            typeFilterEl.disabled = true; 
         }
         if (urlDateFilter) {
-            weekFilterEl.value = 'all'; // Or a special value like "custom"
+            weekFilterEl.value = 'all'; 
             weekFilterEl.disabled = true; 
         }
         if (urlTeamFilters.length > 0) {
-            teamFilterEl.value = 'all'; // Or a special value
+            if (urlTeamFilters.length === 1) { // If it's a single team from URL (e.g., teamFilter)
+                teamFilterEl.value = urlTeamFilters[0];
+            } else { // If multiple teams from a hypothetical teamFilters
+                teamFilterEl.value = 'all'; 
+            }
             teamFilterEl.disabled = true;
         }
         
         [weekFilterEl, typeFilterEl, teamFilterEl].forEach(filterEl => {
           filterEl.addEventListener('change', () => {
-            // If user changes a filter, clear relevant URL params so dropdown takes precedence
             if (filterEl.id === 'week-filter' && urlDateFilter) {
                 urlDateFilter = null;
-                weekFilterEl.disabled = false; // Re-enable
+                weekFilterEl.disabled = false; 
             }
             if (filterEl.id === 'type-filter' && urlTransactionType) {
                 urlTransactionType = null;
@@ -659,32 +662,23 @@
         });
       }
       
-      // --- MODIFIED: getFilteredTransactions to consider URL parameters ---
       function getFilteredTransactions() {
         const weekFilterValue = document.getElementById('week-filter').value;
         const typeFilterValue = document.getElementById('type-filter').value;
-        // Team dropdown filter is handled in displayTransactions after grouping for URL teamFilters
-
+        
         return allTransactions.filter(transaction => {
-          // URL Date Filter (takes precedence over week dropdown)
           if (urlDateFilter) {
-            // Ensure transaction.date is also formatted as YYYY-MM-DD for comparison
             const transactionDateComparable = getComparableDate(transaction.date);
             if (transactionDateComparable !== urlDateFilter) return false;
           } else if (weekFilterValue !== 'all' && parseInt(transaction.week) !== parseInt(weekFilterValue)) {
-            return false; // Week dropdown filter
+            return false; 
           }
           
-          // URL Type Filter (takes precedence over type dropdown)
           if (urlTransactionType) {
             if (transaction.transaction_type !== urlTransactionType) return false;
           } else if (typeFilterValue !== 'all' && transaction.transaction_type !== typeFilterValue) {
-            return false; // Type dropdown filter
+            return false; 
           }
-          
-          // Team dropdown filter (for non-trade types or when URL teamFilters are not active)
-          // will be applied in displayTransactions more effectively for trades.
-          // Here, we are doing a preliminary pass.
           return true;
         });
       }
@@ -699,7 +693,7 @@
         return Object.values(groups);
       }
       
-      // --- MODIFIED: displayTransactions to handle URL teamFilters ---
+      // --- MODIFIED: displayTransactions to correctly use urlTeamFilters ---
       function displayTransactions() {
         const initiallyFiltered = getFilteredTransactions(); 
         const transactionGroups = groupTransactions(initiallyFiltered);
@@ -708,14 +702,17 @@
         const teamFilterDropdownValue = document.getElementById('team-filter').value;
 
         if (urlTeamFilters.length > 0) {
-            // Filter by URL teamFilters (for trades, ensures ALL listed teams are involved)
+            // Filter by URL teamFilters. This logic works for one or more teams in urlTeamFilters.
+            // It shows groups where *at least one* of the urlTeamFilters is involved.
             finalGroupsToShow = transactionGroups.filter(group => {
-                const teamsInGroup = new Set();
-                group.forEach(t => { 
-                    if(t.from_team) teamsInGroup.add(t.from_team);
-                    if(t.to_team) teamsInGroup.add(t.to_team);
+                return group.some(transaction => { // Check if any transaction within this group...
+                    return urlTeamFilters.some(filterTeamId => { // ...matches any of the filterTeamIds
+                        return transaction.from_team === filterTeamId ||
+                               transaction.to_team === filterTeamId ||
+                               (transaction.transaction_type === 'GM_RESIGNATION' && transaction.from_team === filterTeamId) ||
+                               (transaction.transaction_type === 'GM_HIRED' && transaction.to_team === filterTeamId);
+                    });
                 });
-                return urlTeamFilters.every(tid => teamsInGroup.has(tid));
             });
         } else if (teamFilterDropdownValue !== 'all') {
             // Filter by dropdown if no URL team filter is active
@@ -723,20 +720,20 @@
                 return group.some(transaction => 
                     transaction.from_team === teamFilterDropdownValue || 
                     transaction.to_team === teamFilterDropdownValue ||
-                    (transaction.gm_involved && allTeams.find(t => t.team_id === transaction.gm_involved && t.team_id === teamFilterDropdownValue)) 
+                    (transaction.transaction_type === 'GM_RESIGNATION' && transaction.from_team === teamFilterDropdownValue) ||
+                    (transaction.transaction_type === 'GM_HIRED' && transaction.to_team === teamFilterDropdownValue)
                 );
             });
         }
 
         if (finalGroupsToShow.length === 0) {
-          document.getElementById('transactions-list').innerHTML = '<div class="no-transactions">No transactions match your filters</div>';
+          document.getElementById('transactions-list').innerHTML = '<div class="no-transactions">No transactions match your filters.</div>';
           document.getElementById('transactions-title').textContent = 'No Transactions Found';
           return;
         }
         
-        // Corrected title text
         document.getElementById('transactions-title').textContent = 
-          `${finalGroupsToShow.length} Transaction${finalGroupsToShow.length !== 1 ? 's' : ''}`;
+          `${finalGroupsToShow.length} Transaction Group${finalGroupsToShow.length !== 1 ? 's' : ''}`;
         
         const transactionsHTML = finalGroupsToShow.map(group => {
           const isTradeGroup = group.some(t => t.transaction_type === "TRADE");
@@ -825,7 +822,6 @@
                 let formattedPickDesc = transaction.draft_pick_id; 
                 if (pickInfo && pickInfo.pick_description) {
                     formattedPickDesc = pickInfo.pick_description;
-                    // Using pickInfo.original_team as per previous correction
                     if (pickInfo.original_team && pickInfo.original_team !== 'N/A' && pickInfo.original_team !== '') {
                         const originalOwnerData = getTeamData(pickInfo.original_team);
                         const originalOwnerAbbreviation = originalOwnerData.team_id; 
@@ -859,21 +855,21 @@
                 <div class="trade-side">
                     <div class="trade-team">${getTeamLogo(teamId)}${getTeamNameLink(teamId)}&nbsp;${getVerb(teamNameForVerb, 'receive')}:</div>
                     <ul class="trade-assets">
-                        ${assets.received_players.map(player => `<li>📝 ${getPlayerNameLink(player)}${getPlayerStatsString(player)}</li>`).join('')}
-                        ${assets.received_picks.map(pick => `<li>🎯 <span class="draft-pick">${pick}</span></li>`).join('')}
+                        ${assets.received_players.map(player => `<li>統 ${getPlayerNameLink(player)}${getPlayerStatsString(player)}</li>`).join('')}
+                        ${assets.received_picks.map(pick => `<li>識 <span class="draft-pick">${pick}</span></li>`).join('')}
                         ${assets.received_players.length === 0 && assets.received_picks.length === 0 ? '<li><em>Nothing</em></li>' : ''}
                     </ul>`;
             if (assets.sent_players.length > 0 || assets.sent_picks.length > 0) {
                  tradeSummaryHtml += `
                     <div class="trade-team" style="margin-top:0.5em;">${getTeamLogo(teamId)}${getTeamNameLink(teamId)}&nbsp;${getVerb(teamNameForVerb, 'send')}:</div>
                      <ul class="trade-assets">
-                        ${assets.sent_players.map(player => `<li>📝 ${getPlayerNameLink(player)}${getPlayerStatsString(player)}</li>`).join('')}
-                        ${assets.sent_picks.map(pick => `<li>🎯 <span class="draft-pick">${pick}</span></li>`).join('')}
+                        ${assets.sent_players.map(player => `<li>統 ${getPlayerNameLink(player)}${getPlayerStatsString(player)}</li>`).join('')}
+                        ${assets.sent_picks.map(pick => `<li>識 <span class="draft-pick">${pick}</span></li>`).join('')}
                     </ul>`;
             }
             tradeSummaryHtml += `</div>`;
             if (index < teamIdsArray.length - 1 && teamIdsArray.length === 2) { 
-                tradeSummaryHtml += `<div class="trade-arrow">⟷</div>`;
+                tradeSummaryHtml += `<div class="trade-arrow">筺ｷ</div>`;
             } else if (index < teamIdsArray.length - 1 && teamIdsArray.length > 2) {
                 tradeSummaryHtml += `<div class="trade-arrow" style="font-size:1em; color:#666;">then</div>`; 
             }
