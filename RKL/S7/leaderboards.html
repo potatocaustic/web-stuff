@@ -65,25 +65,26 @@
         border-collapse: collapse;
         margin-top: 1.5rem;
         font-size: 0.95em;
-        /* table-layout: fixed; */ /* Keeping auto for now */
       }
       .leaderboard-table th, .leaderboard-table td {
         text-align: left;
-        padding: 10px 12px; /* Increased padding slightly */
+        padding: 10px 12px; 
         border-bottom: 1px solid #eee;
-        vertical-align: top; /* Align top for cells with multi-line content */
+        vertical-align: top; 
       }
       .leaderboard-table th {
         background-color: #333;
         color: white;
         cursor: pointer;
-        position: sticky; /* If header needs to be sticky during vertical scroll */
-        top: 0;           /* Required for sticky header */
+        position: sticky; 
+        top: 0;          
         z-index: 1;
       }
       .leaderboard-table th:hover { background-color: #444; }
       .leaderboard-table tbody tr:hover { background-color: #f8f9fa; }
       .leaderboard-table td:first-child, .leaderboard-table th:first-child { text-align: center; } /* Rank */
+      
+      /* MODIFIED CSS for ellipses */
       .player-name, .team-name-leaderboard {
         display: flex;
         align-items: center;
@@ -102,14 +103,16 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        display: block; /* Ensures it takes its own line for ellipsis if player name is short */
-        margin-top: 2px; /* Small space between player name and team name */
+        display: block; 
+        margin-top: 2px; 
       }
+      /* END MODIFIED CSS */
+
       .team-logo-inline {
         width: 20px;
         height: 20px;
         vertical-align: middle;
-        margin-right: 0px; /* Gap is handled by parent flex */
+        margin-right: 0px; 
         border-radius: 3px;
       }
       .sort-indicator { margin-left: 5px; }
@@ -118,13 +121,13 @@
       .no-players { font-style: italic; }
       footer { text-align: center; margin-top: 3rem; padding: 1rem; background-color: #333; color: #fff; }
 
-      /* Responsive adjustments */
       @media (max-width: 768px) {
         .filter-controls { flex-direction: column; align-items: stretch; }
         .filter-group select { min-width: auto; width: 100%; }
         .leaderboard-table { font-size: 0.85em; }
         .leaderboard-table th, .leaderboard-table td { padding: 8px 6px; }
-        .player-name, .team-name-leaderboard { max-width: 150px; } /* Adjust for smaller screens if needed */
+        /* Further adjustments for ellipses on smaller screens if needed */
+        .player-name, .team-name-leaderboard { max-width: 150px; } 
         .player-team-name { max-width: 120px; }
       }
     </style>
@@ -158,6 +161,10 @@
             <option value="avg_score">Average Score</option>
             <option value="median_rank_raw">Median Global Rank</option>
             <option value="wins">Wins</option>
+            <option value="karma_score_รวม">Total Karma</option>
+            <option value="win_percentage">Win Percentage</option>
+            <option value="rel_median_plus_wins">REL + Wins Score</option>
+            <option value="consistency_score">Consistency Score</option>
             <option value="games_played">Games Played</option>
           </select>
         </div>
@@ -165,7 +172,7 @@
           <label for="team-select">Filter by Team:</label>
           <select id="team-select">
             <option value="all">All Teams</option>
-          </select>
+            </select>
         </div>
       </div>
 
@@ -174,18 +181,14 @@
           <thead id="leaderboard-table-head">
             <tr>
               <th data-sort-key="rank">Rank</th>
-              <th data-sort-key="player_name">Player (Team)</th>
+              <th data-sort-key="player_name">Player</th>
+              <th data-sort-key="team_name">Team</th>
               <th data-sort-key="games_played">GP</th>
-              <th data-sort-key="rel_median">Median REL</th>
-              <th data-sort-key="avg_score">Avg Score</th>
-              <th data-sort-key="median_rank_raw">Med Rank</th>
-              <th data-sort-key="wins">Wins</th>
-              <th data-sort-key="losses">Losses</th>
-              <th data-sort-key="ties">Ties</th>
+              <th data-sort-key="metric_value">Metric Value</th> 
             </tr>
           </thead>
           <tbody id="leaderboard-table-body">
-            <tr><td colspan="9" class="loading">Loading leaderboard...</td></tr>
+            <tr><td colspan="5" class="loading">Loading leaderboard...</td></tr>
           </tbody>
         </table>
       </div>
@@ -199,31 +202,34 @@
       const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4';
       const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
       
-      let allPlayers = []; // Will store enriched player data
+      let allPlayers = [];
       let allTeams = [];
       let allLineupsData = [];
       let allWeeklyAverages = [];
-      let currentPlayersForDisplay = []; // Players currently shown in the table, sorted by table interaction
+      let currentPlayersForTable = []; // Holds players filtered for display, will be sorted by table headers
 
       const metrics = {
         'rel_median': { label: 'Median REL', getValue: p => p.relMedian || 0, sortOrder: 'desc', format: val => typeof val === 'number' ? val.toFixed(3) : '-' },
-        'avg_score': { label: 'Avg Score', getValue: p => p.avg_score || 0, sortOrder: 'desc', format: val => typeof val === 'number' ? val.toFixed(1) : '-' },
+        'avg_score': { label: 'Average Score', getValue: p => p.avg_score || 0, sortOrder: 'desc', format: val => typeof val === 'number' ? val.toFixed(1) : '-' },
         'median_rank_raw': { label: 'Median Global Rank', getValue: p => p.median_rank_raw === '-' ? Infinity : (p.median_rank_raw || Infinity), sortOrder: 'asc', format: val => (val === Infinity || val === '-') ? '-' : Math.round(val) },
         'wins': { label: 'Wins', getValue: p => p.wins || 0, sortOrder: 'desc', format: val => val },
-        'losses': { label: 'Losses', getValue: p => p.losses || 0, sortOrder: 'desc', format: val => val }, // Note: sortOrder might be 'asc' if fewer is better
-        'ties': { label: 'Ties', getValue: p => p.ties || 0, sortOrder: 'desc', format: val => val },
+        'karma_score_รวม': { label: 'Total Karma', getValue: p => p.total_karma || 0, sortOrder: 'desc', format: val => Math.round(val) },
+        'win_percentage': { label: 'Win Percentage', getValue: p => p.win_percentage || 0, sortOrder: 'desc', format: val => `${(val * 100).toFixed(1)}%` },
+        'rel_median_plus_wins': { label: 'REL + Wins Score', getValue: p => p.rel_median_plus_wins || 0, sortOrder: 'desc', format: val => val.toFixed(3) },
+        'consistency_score': { label: 'Consistency Score', getValue: p => p.consistency_score || 0, sortOrder: 'desc', format: val => val.toFixed(3) },
         'games_played': { label: 'Games Played', getValue: p => p.games_played || 0, sortOrder: 'desc', format: val => val }
       };
 
       async function fetchSheetData(sheetName) {
         try {
           const response = await fetch(BASE_URL + encodeURIComponent(sheetName));
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status} for ${sheetName}`);
           const csvText = await response.text();
           return parseCSV(csvText);
         } catch (error) {
           console.error(`Error fetching ${sheetName}:`, error);
           const tableBody = document.getElementById('leaderboard-table-body');
-          tableBody.innerHTML = `<tr><td colspan="9" class="error">Error loading data sheet: ${sheetName}</td></tr>`;
+          if (tableBody) tableBody.innerHTML = `<tr><td colspan="5" class="error">Error loading data sheet: ${sheetName}</td></tr>`;
           return null;
         }
       }
@@ -248,7 +254,6 @@
                 }
             }
             values.push(currentVal.replace(/^"|"$/g, '').trim());
-
             if (values.length === headers.length) {
                 const row = {};
                 headers.forEach((header, index) => {
@@ -278,19 +283,12 @@
         const parsed = parseFloat(cleaned);
         return isNaN(parsed) ? 0 : parsed;
       }
-
-      function calculatePlayerRELMedian(playerHandle, weeklyAverages, lineups) {
-        const playerGames = lineups.filter(lineup =>
-          lineup.player_handle === playerHandle &&
-          (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1)
-        );
+      
+      function calculatePlayerRELMedian(playerHandle, weeklyAvgs, lineups) {
+        const playerGames = lineups.filter(lineup => lineup.player_handle === playerHandle && (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1));
         if (playerGames.length === 0) return 0;
         const weeklyAveragesMap = {};
-        (weeklyAverages || []).forEach(week => {
-          if (week.date) {
-            weeklyAveragesMap[week.date] = { median_score: parsePlayerNumber(week.median_score) };
-          }
-        });
+        (weeklyAvgs || []).forEach(week => { if (week.date) weeklyAveragesMap[week.date] = { median_score: parsePlayerNumber(week.median_score) }; });
         let totalPlayerKarma = 0, totalMedianKarma = 0, validGames = 0;
         playerGames.forEach(game => {
           if (weeklyAveragesMap[game.date]) {
@@ -305,57 +303,66 @@
       }
 
       function calculatePlayerMedianRank(playerHandle, lineups) {
-        const playerGames = lineups.filter(lineup =>
-          lineup.player_handle === playerHandle &&
-          (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1) &&
-          lineup.global_rank && parsePlayerNumber(lineup.global_rank) > 0
-        );
-        if (playerGames.length === 0) return 0; // Or perhaps '-' or Infinity depending on how it should be handled
+        const playerGames = lineups.filter(lineup => lineup.player_handle === playerHandle && (String(lineup.started).toLowerCase() === 'true' || lineup.started === true || lineup.started === 1) && lineup.global_rank && parsePlayerNumber(lineup.global_rank) > 0);
+        if (playerGames.length === 0) return 0;
         const ranks = playerGames.map(game => parsePlayerNumber(game.global_rank)).sort((a, b) => a - b);
         const mid = Math.floor(ranks.length / 2);
         return ranks.length % 2 === 0 ? (ranks[mid - 1] + ranks[mid]) / 2 : ranks[mid];
       }
-      
+
       async function precalculateAllPlayerStats() {
         const enrichedPlayers = [];
-        for (const player of allPlayers) { // Assuming allPlayers is raw player data initially
-            const gamesPlayed = allLineupsData.filter(l => l.player_handle === player.player_handle && (String(l.started).toLowerCase() === 'true' || l.started === true || l.started === 1)).length;
+        for (const rawPlayer of allPlayers) { // allPlayers is initially raw data
+            const playerHandle = rawPlayer.player_handle;
+            const gamesPlayedList = allLineupsData.filter(l => l.player_handle === playerHandle && (String(l.started).toLowerCase() === 'true' || l.started === true || l.started === 1));
+            const gamesPlayed = gamesPlayedList.length;
+            
             let totalScore = 0;
             let wins = 0, losses = 0, ties = 0;
+            let scores = [];
 
-            allLineupsData.forEach(l => {
-                if (l.player_handle === player.player_handle && (String(l.started).toLowerCase() === 'true' || l.started === true || l.started === 1)) {
-                    totalScore += parsePlayerNumber(l.points_raw);
-                    if (String(l.win).toLowerCase() === 'true' || l.win === 1) wins++;
-                    else if (String(l.loss).toLowerCase() === 'true' || l.loss === 1) losses++;
-                    else if (String(l.tie).toLowerCase() === 'true' || l.tie === 1) ties++;
-                }
+            gamesPlayedList.forEach(l => {
+                const score = parsePlayerNumber(l.points_raw);
+                totalScore += score;
+                scores.push(score);
+                if (String(l.win).toLowerCase() === 'true' || l.win === 1) wins++;
+                else if (String(l.loss).toLowerCase() === 'true' || l.loss === 1) losses++;
+                else if (String(l.tie).toLowerCase() === 'true' || l.tie === 1) ties++;
             });
             
             const avgScore = gamesPlayed > 0 ? totalScore / gamesPlayed : 0;
-            const relMedian = calculatePlayerRELMedian(player.player_handle, allWeeklyAverages, allLineupsData);
-            const medianRank = calculatePlayerMedianRank(player.player_handle, allLineupsData);
-            const teamInfo = getTeamData(player.team_id);
+            const relMedian = calculatePlayerRELMedian(playerHandle, allWeeklyAverages, allLineupsData);
+            const medianRank = calculatePlayerMedianRank(playerHandle, allLineupsData);
+            const teamInfo = getTeamData(rawPlayer.team_id);
+            
+            const stdDev = gamesPlayed > 1 ? Math.sqrt(scores.reduce((acc, val) => acc + Math.pow(val - avgScore, 2), 0) / (gamesPlayed -1)) : 0;
+            const consistency_score = avgScore > 0 ? (stdDev / avgScore) : Infinity; // Lower is better (less variable relative to mean) - treat 0 avg score carefully
+
 
             enrichedPlayers.push({
-                ...player,
+                ...rawPlayer, // Keep original fields like player_handle, team_id
                 games_played: gamesPlayed,
                 avg_score: avgScore,
                 wins: wins,
                 losses: losses,
                 ties: ties,
+                total_karma: totalScore,
+                win_percentage: gamesPlayed > 0 ? wins / gamesPlayed : 0,
                 relMedian: relMedian,
-                median_rank_raw: medianRank > 0 ? medianRank : '-', // Store as number or '-'
-                team_name: teamInfo.team_name // Ensure team_name is available
+                median_rank_raw: medianRank > 0 ? medianRank : '-',
+                rel_median_plus_wins: relMedian + (wins * 0.1), // Example composite score
+                consistency_score: consistency_score === Infinity ? Infinity : (1 - consistency_score), // Higher is better after inversion (1 - CV)
+                team_name: teamInfo.team_name,
+                team_abbreviation: teamInfo.abbreviation
             });
         }
-        allPlayers = enrichedPlayers; // Replace raw allPlayers with enriched data
+        allPlayers = enrichedPlayers; // Replace raw with enriched
       }
 
       async function loadData() {
-        const rawPlayersData = await fetchSheetData('Players'); // Fetch raw player list
-        if (!rawPlayersData) return;
-        allPlayers = rawPlayersData; // Initialize allPlayers with raw data
+        const rawPlayers = await fetchSheetData('Players');
+        if (!rawPlayers) return;
+        allPlayers = rawPlayers; // Start with raw players
 
         const [teamsData, lineupsData, weeklyAvgsData] = await Promise.all([
           fetchSheetData('Teams'),
@@ -364,18 +371,22 @@
         ]);
 
         if (!teamsData || !lineupsData || !weeklyAvgsData) {
-          const tableBody = document.getElementById('leaderboard-table-body');
-          tableBody.innerHTML = `<tr><td colspan="9" class="error">Error loading auxiliary data.</td></tr>`;
-          return;
+            const tableBody = document.getElementById('leaderboard-table-body');
+            if (tableBody) tableBody.innerHTML = `<tr><td colspan="5" class="error">Error loading auxiliary data.</td></tr>`;
+            return;
         }
         allTeams = teamsData;
         allLineupsData = lineupsData;
         allWeeklyAverages = weeklyAvgsData;
         
-        await precalculateAllPlayerStats(); // This enriches allPlayers
+        await precalculateAllPlayerStats(); // Enrich allPlayers
 
         setupFilters();
-        displayLeaderboard(); // Initial display
+        // Set default sort to match initial metric before first display
+        const initialMetricKey = document.getElementById('metric-select').value;
+        sortConfig.key = 'metric_value'; // We are always sorting the 'Metric Value' column
+        sortConfig.direction = metrics[initialMetricKey] ? metrics[initialMetricKey].sortOrder : 'desc';
+        displayLeaderboard();
       }
 
       function setupFilters() {
@@ -390,15 +401,18 @@
         teamSelect.innerHTML = '<option value="all">All Teams</option>' + teamOptions;
 
         metricSelect.value = 'rel_median'; // Default metric
-        sortConfig.key = 'rel_median'; // Align default sort with default metric
-        sortConfig.direction = metrics['rel_median'].sortOrder;
-
 
         teamSelect.addEventListener('change', displayLeaderboard);
-        metricSelect.addEventListener('change', displayLeaderboard);
+        metricSelect.addEventListener('change', () => {
+            // When metric changes, reset table sort to be by the new metric's value column
+            const newMetricKey = metricSelect.value;
+            sortConfig.key = 'metric_value'; // Sort by the actual metric value column
+            sortConfig.direction = metrics[newMetricKey] ? metrics[newMetricKey].sortOrder : 'desc';
+            displayLeaderboard();
+        });
       }
       
-      let sortConfig = { key: 'rel_median', direction: 'desc' };
+      let sortConfig = { key: 'metric_value', direction: 'desc' }; // Default: sort by metric value, descending
 
       function displayLeaderboard() {
         const metricSelect = document.getElementById('metric-select');
@@ -406,34 +420,35 @@
         const selectedMetricKey = metricSelect.value;
         const selectedTeam = teamSelect.value;
 
-        if (!metrics[selectedMetricKey]) {
+        const metricDefinition = metrics[selectedMetricKey];
+        if (!metricDefinition) {
             console.error("Invalid metric selected:", selectedMetricKey);
             return;
         }
+        
+        document.querySelector('#leaderboard-table-head th[data-sort-key="metric_value"]').textContent = metricDefinition.label;
 
-        // 1. Get all players eligible for ranking
+        // 1. Create a list of all players eligible for this leaderboard (GP > 0)
         let rankablePlayers = allPlayers.filter(p => p.games_played > 0);
 
         // 2. Sort these players by the selected metric to assign ranks
-        const metricDefinition = metrics[selectedMetricKey];
         rankablePlayers.sort((a, b) => {
             const valA = metricDefinition.getValue(a);
             const valB = metricDefinition.getValue(b);
-            
             if (valA === valB) return 0;
-            // Handle Infinity for sorting (lower median rank is better, so Infinity is "worst")
+            // Handle Infinity for sorting
             if (metricDefinition.sortOrder === 'asc') { // Lower is better
-                if (valA === Infinity) return 1;  // a is worse, comes after b
-                if (valB === Infinity) return -1; // b is worse, a comes before b
+                if (valA === Infinity) return 1;  
+                if (valB === Infinity) return -1; 
                 return valA - valB;
             } else { // desc, Higher is better
-                if (valA === Infinity) return -1; // Should not happen if higher is better & Infinity is worst
-                if (valB === Infinity) return 1;  // But if it did, handle it.
+                if (valA === Infinity) return -1; // Should be treated as "worst"
+                if (valB === Infinity) return 1;
                 return valB - valA;
             }
         });
 
-        // 3. Assign ranks (standard competition ranking: 1, 2, 2, 4)
+        // 3. Assign sticky ranks (standard competition ranking: 1, 2, 2, 4)
         if (rankablePlayers.length > 0) {
             rankablePlayers[0].leaderboardDisplayRank = 1;
             for (let i = 1; i < rankablePlayers.length; i++) {
@@ -441,89 +456,89 @@
                 const prevPlayer = rankablePlayers[i-1];
                 const currentValue = metricDefinition.getValue(currentPlayer);
                 const prevValue = metricDefinition.getValue(prevPlayer);
-
                 if (currentValue === prevValue) {
                     currentPlayer.leaderboardDisplayRank = prevPlayer.leaderboardDisplayRank;
                 } else {
                     currentPlayer.leaderboardDisplayRank = i + 1; 
                 }
             }
-        } else {
-             // Handle case with no rankable players if necessary, though filter later handles empty display
         }
         
-        // 4. Filter by selected team
-        currentPlayersForDisplay = rankablePlayers.filter(p => selectedTeam === 'all' || p.team_id === selectedTeam);
-
-        // 5. Set the table's visual sort to match the selected leaderboard metric initially
-        // The actual sorting for display is handled by sortPlayers if a header is clicked.
-        // For initial display, currentPlayersForDisplay is already sorted by the primary metric (due to rankablePlayers sort).
-        if (sortConfig.key !== selectedMetricKey) { // Update sortConfig if metric changed
-            sortConfig.key = selectedMetricKey;
-            sortConfig.direction = metricDefinition.sortOrder;
-        }
-        // No explicit sort of currentPlayersForDisplay needed here, it inherits from rankablePlayers sort.
-        // If user then clicks a header, sortPlayers will take over.
+        // 4. Filter by selected team for display
+        currentPlayersForTable = rankablePlayers.filter(p => selectedTeam === 'all' || p.team_id === selectedTeam);
+        
+        // 5. Apply the current table sort config (which might be different from the primary metric sort)
+        // This is important if the user had clicked a different column header.
+        // However, if the metric just changed, we want the table sorted by that metric's value.
+        // The event listener for metricSelect already sets sortConfig.key to 'metric_value' and its direction.
+        applyTableSort(); // This function will sort currentPlayersForTable based on sortConfig
 
         updateTableHeaders();
         populateTable();
       }
+      
+      function applyTableSort() {
+        if (!currentPlayersForTable) return;
 
-      function sortPlayers(columnKey) {
-        if (!currentPlayersForDisplay) return;
+        currentPlayersForTable.sort((a, b) => {
+            let valA, valB;
+            const key = sortConfig.key;
+
+            if (key === 'rank') {
+                valA = a.leaderboardDisplayRank;
+                valB = b.leaderboardDisplayRank;
+            } else if (key === 'player_name') {
+                valA = a.player_handle.toLowerCase();
+                valB = b.player_handle.toLowerCase();
+            } else if (key === 'team_name') {
+                valA = (a.team_name || "").toLowerCase();
+                valB = (b.team_name || "").toLowerCase();
+            } else if (key === 'games_played') {
+                valA = metrics['games_played'].getValue(a);
+                valB = metrics['games_played'].getValue(b);
+            } else if (key === 'metric_value') {
+                const metricDefinition = metrics[document.getElementById('metric-select').value];
+                valA = metricDefinition.getValue(a);
+                valB = metricDefinition.getValue(b);
+            } else { // Should not happen with defined headers
+                return 0;
+            }
+            
+            const isAsc = sortConfig.direction === 'asc';
+            if (valA === Infinity && valB === Infinity) return 0;
+            if (valA === Infinity) return isAsc ? 1 : -1;
+            if (valB === Infinity) return isAsc ? -1 : 1;
+            if (valA === null || valA === undefined || (typeof valA === 'number' && isNaN(valA))) valA = isAsc ? Infinity : -Infinity;
+            if (valB === null || valB === undefined || (typeof valB === 'number' && isNaN(valB))) valB = isAsc ? Infinity : -Infinity;
+
+            if (typeof valA === 'string' && typeof valB === 'string') {
+                return isAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+            } else {
+                return isAsc ? valA - valB : valB - valA;
+            }
+        });
+      }
+
+
+      function sortTableByColumn(columnKey) {
+        const currentMetricKey = document.getElementById('metric-select').value;
+        const currentMetricDefinition = metrics[currentMetricKey];
 
         if (sortConfig.key === columnKey) {
             sortConfig.direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
         } else {
             sortConfig.key = columnKey;
-            if (metrics[columnKey]) {
-                sortConfig.direction = metrics[columnKey].sortOrder;
+            if (columnKey === 'metric_value') {
+                sortConfig.direction = currentMetricDefinition.sortOrder;
             } else if (columnKey === 'player_name' || columnKey === 'team_name') {
                 sortConfig.direction = 'asc';
-            } else if (columnKey === 'rank') {
-                sortConfig.direction = 'asc'; // Rank is typically sorted ascending
-            }
-            else {
-                sortConfig.direction = 'desc';
+            } else if (columnKey === 'rank' || columnKey === 'games_played') {
+                 sortConfig.direction = 'asc'; // GP typically asc for secondary sort, rank always asc
+            } else {
+                sortConfig.direction = 'desc'; // Default for other numeric types
             }
         }
-
-        currentPlayersForDisplay.sort((a, b) => {
-            let valA, valB;
-
-            if (sortConfig.key === 'rank') {
-                valA = a.leaderboardDisplayRank;
-                valB = b.leaderboardDisplayRank;
-            } else if (metrics[sortConfig.key]) {
-                valA = metrics[sortConfig.key].getValue(a);
-                valB = metrics[sortConfig.key].getValue(b);
-            } else if (sortConfig.key === 'player_name') {
-                valA = a.player_handle.toLowerCase();
-                valB = b.player_handle.toLowerCase();
-            } else if (sortConfig.key === 'team_name') { // Should not be a sort key unless team name is a column
-                valA = (a.team_name || "").toLowerCase();
-                valB = (b.team_name || "").toLowerCase();
-            } else {
-                valA = a[sortConfig.key]; // Fallback, should ideally not be used
-                valB = b[sortConfig.key];
-            }
-            
-            // Handle Infinity consistently
-            const isAsc = sortConfig.direction === 'asc';
-            if (valA === Infinity && valB === Infinity) return 0;
-            if (valA === Infinity) return isAsc ? 1 : -1; // Infinity is "largest" or "worst"
-            if (valB === Infinity) return isAsc ? -1 : 1;
-
-
-            if (typeof valA === 'string' && typeof valB === 'string') {
-                return isAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
-            } else { // Numeric comparison
-                 if (valA === null || valA === undefined || isNaN(valA)) valA = isAsc ? Infinity : -Infinity;
-                 if (valB === null || valB === undefined || isNaN(valB)) valB = isAsc ? Infinity : -Infinity;
-                return isAsc ? valA - valB : valB - valA;
-            }
-        });
-
+        applyTableSort();
         updateTableHeaders();
         populateTable();
       }
@@ -532,58 +547,57 @@
         const tableBody = document.getElementById('leaderboard-table-body');
         tableBody.innerHTML = ''; 
 
-        if (currentPlayersForDisplay.length === 0) {
+        if (currentPlayersForTable.length === 0) {
             const row = tableBody.insertRow();
             const cell = row.insertCell();
             const headerCells = document.getElementById('leaderboard-table-head').rows[0].cells.length;
-            cell.colSpan = headerCells > 0 ? headerCells : 9; // Default to 9 if headers not ready
+            cell.colSpan = headerCells > 0 ? headerCells : 5;
             cell.textContent = 'No players match the current filters.';
             cell.className = 'no-players';
             return;
         }
+        
+        const selectedMetricKey = document.getElementById('metric-select').value;
+        const metricDefinition = metrics[selectedMetricKey];
 
-        currentPlayersForDisplay.forEach((player) => {
+        currentPlayersForTable.forEach((player) => {
             const row = tableBody.insertRow();
             
-            row.insertCell().textContent = player.leaderboardDisplayRank; 
+            row.insertCell().textContent = player.leaderboardDisplayRank; // Sticky rank
 
             const nameCell = row.insertCell();
-            nameCell.className = 'player-name-cell';
+            const playerIconHTML = getTeamLogo(player.team_id);
+            // Spans for name and team are used for ellipsis styling
+            nameCell.innerHTML = `<span class="player-name">${playerIconHTML} <a href="player.html?player=${encodeURIComponent(player.player_handle)}">${player.player_handle}</a></span>`;
             
-            const playerNameSpan = document.createElement('span');
-            playerNameSpan.className = 'player-name';
-            const playerIconHTML = getTeamLogo(player.team_id); 
-            playerNameSpan.innerHTML = `${playerIconHTML} <a href="player.html?player=${encodeURIComponent(player.player_handle)}" class="player-link">${player.player_handle}</a>`;
-            nameCell.appendChild(playerNameSpan);
-
-            if (player.team_name && player.team_name !== 'N/A') {
-                const teamNameSpan = document.createElement('span');
-                teamNameSpan.className = 'player-team-name';
-                teamNameSpan.textContent = `(${player.team_name})`;
-                nameCell.appendChild(teamNameSpan);
-            }
+            const teamCell = row.insertCell();
+            teamCell.innerHTML = `<span class="team-name-leaderboard">${getTeamLogo(player.team_id)} ${player.team_name || 'N/A'}</span>`;
             
-            row.insertCell().textContent = metrics['games_played'].format(metrics['games_played'].getValue(player));
-            row.insertCell().textContent = metrics['rel_median'].format(metrics['rel_median'].getValue(player));
-            row.insertCell().textContent = metrics['avg_score'].format(metrics['avg_score'].getValue(player));
-            row.insertCell().textContent = metrics['median_rank_raw'].format(metrics['median_rank_raw'].getValue(player));
-            row.insertCell().textContent = metrics['wins'].format(metrics['wins'].getValue(player));
-            row.insertCell().textContent = metrics['losses'].format(metrics['losses'].getValue(player));
-            row.insertCell().textContent = metrics['ties'].format(metrics['ties'].getValue(player));
+            row.insertCell().textContent = metrics['games_played'].format(player.games_played);
+            row.insertCell().textContent = metricDefinition.format(metricDefinition.getValue(player));
         });
       }
 
       function updateTableHeaders() {
         const headers = document.querySelectorAll('#leaderboard-table-head th');
+        const metricLabel = metrics[document.getElementById('metric-select').value].label;
+        
         headers.forEach(th => {
             const key = th.dataset.sortKey;
+            let baseText = th.textContent.replace(/ [▲▼]$/, '').trim(); // Clean old indicator and text
+
+            if (key === 'metric_value') { // Update metric value header text
+                baseText = metricLabel;
+            } else if (key === 'rank') baseText = "Rank";
+            else if (key === 'player_name') baseText = "Player";
+            else if (key === 'team_name') baseText = "Team";
+            else if (key === 'games_played') baseText = "GP";
+            
             let indicator = '';
             if (key === sortConfig.key) {
                 indicator = sortConfig.direction === 'asc' ? ' ▲' : ' ▼';
             }
-            // Remove existing indicators before adding new one
-            th.textContent = th.textContent.replace(/ [▲▼]$/, ''); 
-            th.innerHTML = `${th.textContent.trim()}<span class="sort-indicator">${indicator}</span>`;
+            th.innerHTML = `${baseText}<span class="sort-indicator">${indicator}</span>`;
         });
       }
 
@@ -591,7 +605,7 @@
       document.getElementById('leaderboard-table-head').addEventListener('click', (event) => {
           const target = event.target.closest('th');
           if (target && target.dataset.sortKey) {
-              sortPlayers(target.dataset.sortKey);
+              sortTableByColumn(target.dataset.sortKey);
           }
       });
     </script>
