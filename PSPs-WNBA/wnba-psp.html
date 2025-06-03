@@ -105,6 +105,11 @@
         padding: 2rem;
         max-width: 1200px;
         margin: 0 auto;
+        display: none; /* MODIFIED: Hide main content initially */
+      }
+
+      main.visible { /* ADDED: Class to show main content */
+        display: block;
       }
       
       /* Info Section */
@@ -122,6 +127,14 @@
         color: #666;
         margin-top: 0.5rem;
       }
+
+      /* CSS from wnba-psp-style.css would be here if it's not linked, or below if it is for overrides.
+         For this example, I'm assuming the relevant styles for .search-section, .results-section etc. 
+         are in the linked wnba-psp-style.css and don't need to be duplicated here IF that file
+         is correctly linked and loaded. If not, they'd need to be in this <style> block.
+         Given the original wnba-psp.html had <link rel="stylesheet" href="wnba-psp-style.css" />,
+         I will assume those styles are loaded from there. The general styles above are common.
+      */
 
       /* Footer */
       footer {
@@ -146,8 +159,7 @@
         </ul>
       </nav>
     </header>
-    <main>
-      <section class="info">
+    <main> <section class="info">
         <p>Search historical WNBA player stat pick poll results. Select a category, find a player, and view their performance history.</p>
         <p id="last-updated">Last updated: Loading...</p>
       </section>
@@ -183,8 +195,7 @@
               </tr>
             </thead>
             <tbody id="playerStatsBody">
-              <!-- Results will be populated here -->
-            </tbody>
+              </tbody>
           </table>
           <button id="showAllButton" class="show-all-button hidden">Show All Results</button>
           <div id="noResultsMessage" class="no-results hidden">
@@ -197,11 +208,9 @@
         <h2>Performance Summary</h2>
         <div class="stats-container">
           <div id="successRateByTarget" class="stat-block">
-            <!-- Success rate by target will be populated here -->
-          </div>
+            </div>
           <div id="avgRankSection" class="stat-block">
-            <!-- Average rank data will be populated here -->
-          </div>
+            </div>
         </div>
       </section>
     </main>
@@ -209,5 +218,39 @@
       <p>&copy; caustic.info</p>
     </footer>
     <script src="wnba-psp-script.js"></script>
+    <script>
+      function authenticateUser() {
+        const correctPassword = "7Jammers2025";
+        let attempts = 0;
+        const maxAttempts = 3; 
+
+        while (attempts < maxAttempts) {
+          const enteredPassword = prompt("Please enter the password to view this page:");
+
+          if (enteredPassword === null) {
+            // User clicked "Cancel" or closed the prompt
+            alert("Password entry was cancelled. Content will remain hidden.");
+             document.body.innerHTML = '<header>' + document.querySelector('header').innerHTML + '</header><p style="text-align:center; padding: 20px;">Access denied. Please refresh to try again.</p><footer>' + document.querySelector('footer').innerHTML + '</footer>';
+            return; // Exit the function
+          }
+
+          if (enteredPassword === correctPassword) {
+            document.querySelector('main').classList.add('visible');
+            return; // Exit after successful authentication
+          } else {
+            attempts++;
+            if (attempts < maxAttempts) {
+              alert(`Incorrect password. ${maxAttempts - attempts} attempts remaining.`);
+            } else {
+              alert("Too many incorrect attempts. Content will remain hidden.");
+              document.body.innerHTML = '<header>' + document.querySelector('header').innerHTML + '</header><p style="text-align:center; padding: 20px;">Access denied. Too many attempts. Please refresh to try again.</p><footer>' + document.querySelector('footer').innerHTML + '</footer>';
+            }
+          }
+        }
+      }
+      window.onload = function() {
+        authenticateUser();
+      };
+    </script>
   </body>
 </html>
