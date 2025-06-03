@@ -101,6 +101,11 @@
         padding: 2rem;
         max-width: 1200px;
         margin: 0 auto;
+        display: none; /* MODIFIED: Hide main content initially */
+      }
+
+      main.visible { /* ADDED: Class to show main content */
+        display: block;
       }
       
       .info {
@@ -346,8 +351,7 @@
         </ul>
       </nav>
     </header>
-    <main>
-      <section class="info">
+    <main> <section class="info">
         <p>Search historical MLB player stat pick poll results. Select a category, find a player, and view their performance history.</p>
         <p id="last-updated">Last updated: Loading...</p> </section>
       
@@ -404,5 +408,41 @@
       <p>&copy; caustic.info</p>
     </footer>
 
-    <script src="mlb-psp-script.js"></script> </body>
+    <script src="mlb-psp-script.js"></script> 
+    <script>
+      function authenticateUser() {
+        const correctPassword = "7Jammers2025"; 
+        let attempts = 0;
+        const maxAttempts = 3; // Optional: Limit the number of attempts
+
+        while (attempts < maxAttempts) {
+          const enteredPassword = prompt("Please enter the password to view this page:");
+
+          if (enteredPassword === null) {
+            // User clicked "Cancel" or closed the prompt
+            alert("Password entry was cancelled. Content will remain hidden.");
+            document.body.innerHTML = '<header>' + document.querySelector('header').innerHTML + '</header><p style="text-align:center; padding: 20px;">Access denied. Please refresh to try again.</p><footer>' + document.querySelector('footer').innerHTML + '</footer>';
+            return; // Exit the function
+          }
+
+          if (enteredPassword === correctPassword) {
+            document.querySelector('main').classList.add('visible');
+            return; // Exit after successful authentication
+          } else {
+            attempts++;
+            if (attempts < maxAttempts) {
+              alert(`Incorrect password. ${maxAttempts - attempts} attempts remaining.`);
+            } else {
+              alert("Too many incorrect attempts. Content will remain hidden.");
+              document.body.innerHTML = '<header>' + document.querySelector('header').innerHTML + '</header><p style="text-align:center; padding: 20px;">Access denied. Too many attempts. Please refresh to try again.</p><footer>' + document.querySelector('footer').innerHTML + '</footer>';
+            }
+          }
+        }
+      }
+
+      window.onload = function() {
+        authenticateUser();
+      };
+    </script>
+  </body>
 </html>
