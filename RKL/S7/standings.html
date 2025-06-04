@@ -132,6 +132,10 @@
         font-size: 2.5rem;
         margin-bottom: 1rem;
       }
+      #pageDescription { /* Style for the contextual description */
+        font-size: 0.95em;
+        color: #555;
+      }
       
       .hidden { display: none !important; }
 
@@ -191,15 +195,27 @@
         text-align: center;
         background-color: #f0f0f0;
         border-bottom: 1px solid #ddd;
-        /* margin-bottom: 1rem; Removed to be flush with table if desired, or let table margin handle it */
         font-size: 0.9em;
       }
-      .power-rankings-summary span {
-        display: block;
-        margin-bottom: 0.3rem;
+      .summary-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
       }
-      .power-rankings-summary span:last-child {
+      .summary-item:last-child {
         margin-bottom: 0;
+      }
+      .summary-team-logo {
+        width: 20px;
+        height: 20px;
+        border-radius: 2px;
+        margin-right: 8px;
+        flex-shrink: 0;
+      }
+      .summary-item strong { /* For consistent bolding if needed */
+          font-weight: 600;
       }
 
 
@@ -288,20 +304,20 @@
       .team-name { font-weight: 500; flex-grow: 1; }
       .record-cell { font-weight: 500; }
       .pam-cell { font-weight: 500; }
-      .pam-positive { color: #28a745; }
-      .pam-negative { color: #dc3545; }
+      .pam-positive { color: #28a745; font-weight: 600;}
+      .pam-negative { color: #dc3545; font-weight: 600;}
 
       .playoff-seed, .playin-seed, .eliminated-seed {
         width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; margin: 0 auto;
-        border-radius: 50%; /* Kept round for these */
+        border-radius: 50%; 
       }
       .playoff-seed { background-color: #28a745; color: white; }
       .playin-seed { background-color: #ffc107; color: #333; }
       .eliminated-seed { background-color: #dc3545; color: white; }
       
-      .rank-badge { /* For Gold, Silver, Bronze in PR */
+      .rank-badge { 
         width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; margin: 0 auto;
-        border-radius: 0; /* Square badges */
+        border-radius: 4px; /* Rounded square badges */
       }
       .gold-badge { background-color: gold; color: #333; }
       .silver-badge { background-color: silver; color: #333; }
@@ -336,16 +352,16 @@
         .view-toggle-button { width: 80%; margin: 0 auto; }
         .prev-rank-col { display: none; }
 
-        /* Adjust PR column widths for mobile when "Prev" is hidden */
         #powerRankingsViewContainer .standings-table th:nth-child(1),
-        #powerRankingsViewContainer .standings-table td:nth-child(1) { width: 15%; } /* Rank */
+        #powerRankingsViewContainer .standings-table td:nth-child(1) { width: 15%; } 
         #powerRankingsViewContainer .standings-table th:nth-child(2),
-        #powerRankingsViewContainer .standings-table td:nth-child(2) { width: 40%; } /* Team */
+        #powerRankingsViewContainer .standings-table td:nth-child(2) { width: 40%; } 
         #powerRankingsViewContainer .standings-table th:nth-child(3),
-        #powerRankingsViewContainer .standings-table td:nth-child(3) { width: 20%; } /* Record */
-        /* Child 4 (Prev) is hidden via .prev-rank-col */
+        #powerRankingsViewContainer .standings-table td:nth-child(3) { width: 20%; } 
         #powerRankingsViewContainer .standings-table th:nth-child(5),
-        #powerRankingsViewContainer .standings-table td:nth-child(5) { width: 25%; } /* Change */
+        #powerRankingsViewContainer .standings-table td:nth-child(5) { width: 25%; } 
+        .summary-item { flex-direction: column; } /* Stack logo and text on mobile for summary */
+        .summary-team-logo { margin-right: 0; margin-bottom: 5px; }
       }
 
       footer {
@@ -380,7 +396,7 @@
     <main>
       <div class="page-header">
         <h2 id="standingsPageTitle">Conference Standings</h2> 
-        <p>Updated after each completed game. Click headers to sort (where applicable).</p> 
+        <p id="pageDescription">Updated after each completed game. Click headers to sort (where applicable).</p> 
       </div>
 
       <div class="page-buttons-container">
@@ -645,7 +661,6 @@
         else return; 
         const table = document.getElementById(tableElementId)?.closest('table');
         if (!table) return;
-        // ... (rest of the function is the same)
         const headers = table.querySelectorAll('thead th[onclick]');
         headers.forEach(th => {
           const columnAttr = th.getAttribute('onclick');
@@ -664,7 +679,6 @@
       }
 
       function renderStandings(tableType, teamsToRender) {
-        // ... (function remains the same)
         let tableBodyId;
         if (tableType === 'Eastern') tableBodyId = 'eastern-standings';
         else if (tableType === 'Western') tableBodyId = 'western-standings';
@@ -774,7 +788,6 @@
       }
 
       function handleSort(tableType, column) {
-        // ... (function remains the same)
         if (!sortState[tableType]) { 
             if (column === 'med_starter_rank') sortState[tableType] = { column, direction: 'asc_rank' };
             else if (column === 'record') sortState[tableType] = { column, direction: 'asc' };
@@ -804,7 +817,6 @@
             console.error("View toggle buttons not found in updateButtonStates");
             return;
         }
-        // ... (function remains the same)
         let action1, text1, action2, text2;
 
         if (currentView === 'conferences') {
@@ -837,6 +849,7 @@
           document.getElementById('fullLeagueViewContainer').classList.add('hidden');
           document.getElementById('powerRankingsViewContainer').classList.add('hidden');
           document.getElementById('standingsPageTitle').textContent = 'Conference Standings';
+          document.getElementById('pageDescription').textContent = 'Updated after each completed game. Click headers to sort (where applicable).';
           const playoffLegend = document.querySelector('.playoff-legend');
           if (playoffLegend) playoffLegend.classList.remove('hidden');
           updateButtonStates();
@@ -848,6 +861,7 @@
           document.getElementById('fullLeagueViewContainer').classList.remove('hidden');
           document.getElementById('powerRankingsViewContainer').classList.add('hidden');
           document.getElementById('standingsPageTitle').textContent = 'Full League Standings';
+          document.getElementById('pageDescription').textContent = 'Updated after each completed game. Click headers to sort (where applicable).';
           const playoffLegend = document.querySelector('.playoff-legend');
           if (playoffLegend) playoffLegend.classList.add('hidden');
           updateButtonStates();
@@ -859,9 +873,10 @@
           document.getElementById('fullLeagueViewContainer').classList.add('hidden');
           document.getElementById('powerRankingsViewContainer').classList.remove('hidden');
           document.getElementById('standingsPageTitle').textContent = 'Power Rankings';
+          document.getElementById('pageDescription').textContent = 'Courtesy of @four. Updated every three weeks.';
           const playoffLegend = document.querySelector('.playoff-legend');
           if (playoffLegend) playoffLegend.classList.add('hidden');
-          calculateAndDisplayPowerRankingsSummary(); // Ensure summary is updated/shown
+          calculateAndDisplayPowerRankingsSummary(); 
           updateButtonStates();
       }
 
@@ -870,42 +885,49 @@
         if (!summaryContainer) return;
 
         if (!powerRankingsData || powerRankingsData.length === 0) {
-            summaryContainer.innerHTML = '<span>No power ranking data available to determine risers/fallers.</span>';
+            summaryContainer.innerHTML = '<div class="summary-item"><span>No power ranking data available to determine risers/fallers.</span></div>';
             return;
         }
 
         let biggestRiser = null;
-        let maxRise = 0; // Initialize to 0, only consider positive delta
+        let maxRise = 0; 
         let biggestFaller = null;
-        let maxFall = 0; // Initialize to 0, only consider negative delta
+        let maxFall = 0; 
 
         powerRankingsData.forEach(team => {
             const delta = team.delta; 
-            if (delta > 0 && delta > maxRise) { // Riser: positive and largest
+            if (delta > 0 && delta > maxRise) { 
                 maxRise = delta;
                 biggestRiser = team;
             }
-            if (delta < 0 && delta < maxFall) { // Faller: negative and smallest (most negative)
+            if (delta < 0 && delta < maxFall) { 
                 maxFall = delta;
                 biggestFaller = team;
             }
         });
 
-        let summaryHtml = '';
+        let riserHtml = '<div class="summary-item"><span>No significant risers this period.</span></div>';
         if (biggestRiser) {
-            summaryHtml += `<span>Biggest Riser: ${biggestRiser.team_name} (+${biggestRiser.delta}) 📈</span>`;
-        } else {
-            summaryHtml += '<span>No significant risers this period.</span>';
+            riserHtml = `
+                <div class="summary-item">
+                    <img src="icons/${biggestRiser.team_id}.webp" alt="${biggestRiser.team_name} logo" class="summary-team-logo" onerror="this.style.display='none'; this.nextSibling.style.marginLeft='0';">
+                    <span>Biggest Riser: 
+                        <strong class="pam-positive">${biggestRiser.team_name}</strong> (+<strong class="pam-positive">${biggestRiser.delta}</strong>) 📈
+                    </span>
+                </div>`;
         }
 
-        // summaryHtml += '<br>'; // Using CSS for block display instead
-
+        let fallerHtml = '<div class="summary-item"><span>No significant fallers this period.</span></div>';
         if (biggestFaller) {
-            summaryHtml += `<span>Biggest Faller: ${biggestFaller.team_name} (${biggestFaller.delta}) 📉</span>`;
-        } else {
-            summaryHtml += '<span>No significant fallers this period.</span>';
+            fallerHtml = `
+                <div class="summary-item">
+                    <img src="icons/${biggestFaller.team_id}.webp" alt="${biggestFaller.team_name} logo" class="summary-team-logo" onerror="this.style.display='none'; this.nextSibling.style.marginLeft='0';">
+                    <span>Biggest Faller: 
+                        <strong class="pam-negative">${biggestFaller.team_name}</strong> (<strong class="pam-negative">${biggestFaller.delta}</strong>) 📉
+                    </span>
+                </div>`;
         }
-        summaryContainer.innerHTML = summaryHtml;
+        summaryContainer.innerHTML = riserHtml + fallerHtml;
     }
 
 
@@ -919,7 +941,6 @@
         viewButton2 = document.getElementById('viewToggleButton2');
         
         if (!viewButton1 || !viewButton2) {
-            // ... (error handling for missing buttons remains the same)
             console.error("Toggle buttons not found on page load.");
             document.getElementById('conferenceViewContainer').classList.add('hidden');
             document.getElementById('fullLeagueViewContainer').classList.add('hidden');
@@ -932,7 +953,6 @@
         }
 
         if (viewParam === 'fullLeague' && sortByParam) {
-            // ... (sort direction logic remains the same)
             let effectiveSortDirection = sortDirectionParam;
             if (!effectiveSortDirection) {
                 if (sortByParam === 'med_starter_rank') effectiveSortDirection = 'asc_rank';
@@ -949,13 +969,10 @@
 
         let fetchedTeamsData = await fetchSheetData('Teams');
         if (!fetchedTeamsData) {
-          // ... (error handling for no Teams data remains the same)
           console.error("Failed to fetch main Teams data. Standings cannot be loaded.");
-          document.getElementById('conferenceViewContainer').classList.add('hidden');
-          document.getElementById('fullLeagueViewContainer').classList.add('hidden');
-          document.getElementById('powerRankingsViewContainer').classList.add('hidden');
-          if(playoffLegend) playoffLegend.classList.add('hidden');
+          // UI updates for error already handled in fetchSheetData
           document.querySelector('.page-buttons-container').classList.add('hidden');
+          if(playoffLegend) playoffLegend.classList.add('hidden');
           document.getElementById('standingsPageTitle').textContent = 'Standings Data Unavailable';
           return;
         }
@@ -966,7 +983,6 @@
         });
 
         if (!allTeamsData || allTeamsData.length === 0) {
-            // ... (error handling for no valid team data remains the same)
             const errorMsg = '<tr><td colspan="5" class="error">No valid team data available after filtering.</td></tr>';
             const prErrorMsg = '<tr><td colspan="5" class="error">No valid team data available.</td></tr>'; 
             ['eastern-standings', 'western-standings', 'full-league-standings'].forEach(id => {
@@ -976,8 +992,7 @@
             const prTableBody = document.getElementById('power-rankings-standings');
             if(prTableBody) prTableBody.innerHTML = prErrorMsg;
             const summaryContainer = document.getElementById('powerRankingsSummary');
-            if(summaryContainer) summaryContainer.innerHTML = '<span>Team data unavailable.</span>';
-
+            if(summaryContainer) summaryContainer.innerHTML = '<div class="summary-item"><span>Team data unavailable.</span></div>';
 
             document.getElementById('conferenceViewContainer').classList.add('hidden');
             document.getElementById('fullLeagueViewContainer').classList.add('hidden');
@@ -988,7 +1003,6 @@
             return;
         }
 
-        // ... (eastern, western, fullLeagueTeamsData processing remains the same) ...
         let rawEasternTeams = allTeamsData.filter(team => team.conference === 'Eastern');
         let rawWesternTeams = allTeamsData.filter(team => team.conference === 'Western');
 
@@ -1031,8 +1045,8 @@
                     rank: parseInt(prTeam.power_rank),
                     team_name: displayName, 
                     team_id: prTeam.team_id,      
-                    prev_rank: prTeam.prev_power ? parseInt(prTeam.prev_power) : null, // Ensure this key 'prev_power' matches your CSV header
-                    delta: parseInt(prTeam.power_delta) || 0, // Ensure 'power_delta' matches your CSV header
+                    prev_rank: prTeam.prev_power ? parseInt(prTeam.prev_power) : null,
+                    delta: parseInt(prTeam.power_delta) || 0,
                     wins: wins,
                     losses: losses
                 };
@@ -1042,23 +1056,20 @@
             if (powerRankingsData.length === 0 && rawPowerRankings.length > 0) {
                  console.warn("Power rankings data fetched, but no teams could be fully processed (missing team_id or invalid rank).");
                  if(prTableBody) prTableBody.innerHTML = `<tr><td colspan="5" class="error">Could not process power ranking data. Check team_ids and ranks in TPR sheet.</td></tr>`;
-                 if(summaryContainer) summaryContainer.innerHTML = '<span>Could not process power ranking data.</span>';
+                 if(summaryContainer) summaryContainer.innerHTML = '<div class="summary-item"><span>Could not process power ranking data.</span></div>';
             }
         } else if (rawPowerRankings && rawPowerRankings.length === 0) { 
             if(prTableBody) prTableBody.innerHTML = `<tr><td colspan="5" class="loading">No power ranking data available in the sheet.</td></tr>`;
-            if(summaryContainer) summaryContainer.innerHTML = '<span>No power ranking data available in the sheet.</span>';
+            if(summaryContainer) summaryContainer.innerHTML = '<div class="summary-item"><span>No power ranking data available in the sheet.</span></div>';
         } else if (!rawPowerRankings) { 
-            // Error message handled by fetchSheetData
             console.log("TPR sheet fetch failed, error message should be in table and summary.");
         }
-
 
         renderStandings('Eastern', easternTeamsData);
         renderStandings('Western', westernTeamsData);
         renderStandings('FullLeague', fullLeagueTeamsData);
         renderPowerRankings(powerRankingsData); 
-        // Note: calculateAndDisplayPowerRankingsSummary is called within showPowerRankingsView
-
+        
         if (viewParam === 'fullLeague') {
             showFullLeagueView();
         } else if (viewParam === 'powerRankings') {
