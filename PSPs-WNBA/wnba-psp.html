@@ -128,13 +128,7 @@
         margin-top: 0.5rem;
       }
 
-      /* CSS from wnba-psp-style.css would be here if it's not linked, or below if it is for overrides.
-         For this example, I'm assuming the relevant styles for .search-section, .results-section etc. 
-         are in the linked wnba-psp-style.css and don't need to be duplicated here IF that file
-         is correctly linked and loaded. If not, they'd need to be in this <style> block.
-         Given the original wnba-psp.html had <link rel="stylesheet" href="wnba-psp-style.css" />,
-         I will assume those styles are loaded from there. The general styles above are common.
-      */
+      /* Styles for your WNBA content from wnba-psp-style.css would be here or linked */
 
       /* Footer */
       footer {
@@ -154,12 +148,33 @@
           <li><a href="../index.html">Home</a></li>
           <li><a href="../RKL/rkl-stats.html">RKL Stats Database</a></li>
           <li><a href="../PSPs/mlb-psp.html">MLB PSP Database</a></li>
-          <li><a href="../PSPs-WNBA/wnba-psp.html">WNBA PSP Database</a></li>
-          <li><a href="../karma-calculator.html">Karma EV Calculator</a></li>
-        </ul>
+          <li><a href="./wnba-psp.html">WNBA PSP Database</a></li> <li><a href="../karma-calculator.html">Karma EV Calculator</a></li>
+          </ul>
       </nav>
     </header>
-    <main> <section class="info">
+
+    <div id="auth-container" style="padding: 2rem; max-width: 400px; margin: 2rem auto; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+      <h2 id="auth-title">Login</h2>
+      <p id="auth-error" style="color: red; margin-bottom: 1rem; min-height: 1.2em;"></p>
+
+      <div id="login-form">
+        <input type="text" id="login-username" placeholder="Username" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+        <input type="password" id="login-password" placeholder="Password" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+        <button id="login-button" style="background-color: #333; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; width: 100%;">Login</button>
+        <p style="margin-top: 1rem;">Don't have an account? <a href="#" id="show-signup">Sign Up</a></p>
+      </div>
+
+      <div id="signup-form" style="display: none;">
+        <input type="text" id="signup-username" placeholder="Choose Username" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+        <input type="password" id="signup-password" placeholder="Choose Password" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+        <input type="password" id="signup-confirm-password" placeholder="Confirm Password" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+        <button id="signup-button" style="background-color: #5cb85c; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; width: 100%;">Sign Up</button>
+        <p style="margin-top: 1rem;">Already have an account? <a href="#" id="show-login">Login</a></p>
+      </div>
+    </div>
+
+    <main>
+      <section class="info">
         <p>Search historical WNBA player stat pick poll results. Select a category, find a player, and view their performance history.</p>
         <p id="last-updated">Last updated: Loading...</p>
       </section>
@@ -217,40 +232,14 @@
     <footer>
       <p>&copy; caustic.info</p>
     </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics-compat.js"></script>
+
+    <script src="../auth.js"></script>
+
     <script src="wnba-psp-script.js"></script>
-    <script>
-      function authenticateUser() {
-        const correctPassword = "7Jammers2025";
-        let attempts = 0;
-        const maxAttempts = 3; 
-
-        while (attempts < maxAttempts) {
-          const enteredPassword = prompt("Please enter the password to view this page:");
-
-          if (enteredPassword === null) {
-            // User clicked "Cancel" or closed the prompt
-            alert("Password entry was cancelled. Content will remain hidden.");
-             document.body.innerHTML = '<header>' + document.querySelector('header').innerHTML + '</header><p style="text-align:center; padding: 20px;">Access denied. Please refresh to try again.</p><footer>' + document.querySelector('footer').innerHTML + '</footer>';
-            return; // Exit the function
-          }
-
-          if (enteredPassword === correctPassword) {
-            document.querySelector('main').classList.add('visible');
-            return; // Exit after successful authentication
-          } else {
-            attempts++;
-            if (attempts < maxAttempts) {
-              alert(`Incorrect password. ${maxAttempts - attempts} attempts remaining.`);
-            } else {
-              alert("Too many incorrect attempts. Content will remain hidden.");
-              document.body.innerHTML = '<header>' + document.querySelector('header').innerHTML + '</header><p style="text-align:center; padding: 20px;">Access denied. Too many attempts. Please refresh to try again.</p><footer>' + document.querySelector('footer').innerHTML + '</footer>';
-            }
-          }
-        }
-      }
-      window.onload = function() {
-        authenticateUser();
-      };
-    </script>
   </body>
 </html>
