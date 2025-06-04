@@ -132,7 +132,7 @@
         font-size: 2.5rem;
         margin-bottom: 1rem;
       }
-      #pageDescription { /* Style for the contextual description */
+      #pageDescription {
         font-size: 0.95em;
         color: #555;
       }
@@ -214,8 +214,15 @@
         margin-right: 8px;
         flex-shrink: 0;
       }
-      .summary-item strong { /* For consistent bolding if needed */
+      .summary-item strong {
           font-weight: 600;
+      }
+      .summary-team-link {
+          color: inherit; /* Inherits color from .pam-positive or .pam-negative */
+          text-decoration: none;
+      }
+      .summary-team-link:hover {
+          text-decoration: underline;
       }
 
 
@@ -360,7 +367,7 @@
         #powerRankingsViewContainer .standings-table td:nth-child(3) { width: 20%; } 
         #powerRankingsViewContainer .standings-table th:nth-child(5),
         #powerRankingsViewContainer .standings-table td:nth-child(5) { width: 25%; } 
-        .summary-item { flex-direction: column; } /* Stack logo and text on mobile for summary */
+        .summary-item { flex-direction: column; text-align: center;} 
         .summary-team-logo { margin-right: 0; margin-bottom: 5px; }
       }
 
@@ -497,7 +504,7 @@
       <div id="powerRankingsViewContainer" class="hidden">
         <div class="conference-section"> 
           <div class="conference-header">
-            <h3>Power Rankings v2 (Week 3)</h3>
+            <h3>Power Rankings</h3>
           </div>
           <div id="powerRankingsSummary" class="power-rankings-summary">
             Loading summary...
@@ -579,13 +586,13 @@
                 }
             });
             const summaryContainer = document.getElementById('powerRankingsSummary');
-            if(summaryContainer) summaryContainer.innerHTML = '<span>Core team data failed to load.</span>';
+            if(summaryContainer) summaryContainer.innerHTML = '<div class="summary-item"><span>Core team data failed to load.</span></div>';
 
           } else if (sheetName === 'TPR') {
             const tableBody = document.getElementById('power-rankings-standings');
             if (tableBody) tableBody.innerHTML = errorMsg;
             const summaryContainer = document.getElementById('powerRankingsSummary');
-            if(summaryContainer) summaryContainer.innerHTML = '<span>Power rankings data failed to load.</span>';
+            if(summaryContainer) summaryContainer.innerHTML = '<div class="summary-item"><span>Power rankings data failed to load.</span></div>';
           }
           return null;
         }
@@ -896,11 +903,11 @@
 
         powerRankingsData.forEach(team => {
             const delta = team.delta; 
-            if (delta > 0 && delta > maxRise) { 
+            if (delta > 0 && delta >= maxRise) { // Use >= to catch if multiple have same max rise
                 maxRise = delta;
                 biggestRiser = team;
             }
-            if (delta < 0 && delta < maxFall) { 
+            if (delta < 0 && delta <= maxFall) { // Use <= to catch if multiple have same max fall
                 maxFall = delta;
                 biggestFaller = team;
             }
@@ -910,9 +917,9 @@
         if (biggestRiser) {
             riserHtml = `
                 <div class="summary-item">
-                    <img src="icons/${biggestRiser.team_id}.webp" alt="${biggestRiser.team_name} logo" class="summary-team-logo" onerror="this.style.display='none'; this.nextSibling.style.marginLeft='0';">
+                    <img src="icons/${biggestRiser.team_id}.webp" alt="${biggestRiser.team_name} logo" class="summary-team-logo" onerror="this.style.display='none'; this.nextElementSibling.style.marginLeft='0';">
                     <span>Biggest Riser: 
-                        <strong class="pam-positive">${biggestRiser.team_name}</strong> (+<strong class="pam-positive">${biggestRiser.delta}</strong>) 📈
+                        <strong class="pam-positive"><a href="team.html?id=${biggestRiser.team_id}" class="summary-team-link">${biggestRiser.team_name}</a></strong> (+<strong class="pam-positive">${biggestRiser.delta}</strong>) 📈
                     </span>
                 </div>`;
         }
@@ -921,9 +928,9 @@
         if (biggestFaller) {
             fallerHtml = `
                 <div class="summary-item">
-                    <img src="icons/${biggestFaller.team_id}.webp" alt="${biggestFaller.team_name} logo" class="summary-team-logo" onerror="this.style.display='none'; this.nextSibling.style.marginLeft='0';">
+                    <img src="icons/${biggestFaller.team_id}.webp" alt="${biggestFaller.team_name} logo" class="summary-team-logo" onerror="this.style.display='none'; this.nextElementSibling.style.marginLeft='0';">
                     <span>Biggest Faller: 
-                        <strong class="pam-negative">${biggestFaller.team_name}</strong> (<strong class="pam-negative">${biggestFaller.delta}</strong>) 📉
+                        <strong class="pam-negative"><a href="team.html?id=${biggestFaller.team_id}" class="summary-team-link">${biggestFaller.team_name}</a></strong> (<strong class="pam-negative">${biggestFaller.delta}</strong>) 📉
                     </span>
                 </div>`;
         }
@@ -970,7 +977,6 @@
         let fetchedTeamsData = await fetchSheetData('Teams');
         if (!fetchedTeamsData) {
           console.error("Failed to fetch main Teams data. Standings cannot be loaded.");
-          // UI updates for error already handled in fetchSheetData
           document.querySelector('.page-buttons-container').classList.add('hidden');
           if(playoffLegend) playoffLegend.classList.add('hidden');
           document.getElementById('standingsPageTitle').textContent = 'Standings Data Unavailable';
