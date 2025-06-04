@@ -218,7 +218,7 @@
           font-weight: 600;
       }
       .summary-team-link {
-          color: inherit; /* Inherits color from .pam-positive or .pam-negative */
+          color: inherit; 
           text-decoration: none;
       }
       .summary-team-link:hover {
@@ -324,7 +324,7 @@
       
       .rank-badge { 
         width: 25px; height: 25px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; margin: 0 auto;
-        border-radius: 4px; /* Rounded square badges */
+        border-radius: 4px; 
       }
       .gold-badge { background-color: gold; color: #333; }
       .silver-badge { background-color: silver; color: #333; }
@@ -367,8 +367,8 @@
         #powerRankingsViewContainer .standings-table td:nth-child(3) { width: 20%; } 
         #powerRankingsViewContainer .standings-table th:nth-child(5),
         #powerRankingsViewContainer .standings-table td:nth-child(5) { width: 25%; } 
-        .summary-item { flex-direction: column; text-align: center;} 
-        .summary-team-logo { margin-right: 0; margin-bottom: 5px; }
+        /* .summary-item { flex-direction: column; text-align: center;} /* Removed to keep horizontal layout */
+        /* .summary-team-logo { margin-right: 0; margin-bottom: 5px; } /* Removed to keep horizontal layout */
       }
 
       footer {
@@ -903,18 +903,18 @@
 
         powerRankingsData.forEach(team => {
             const delta = team.delta; 
-            if (delta > 0 && delta >= maxRise) { // Use >= to catch if multiple have same max rise
+            if (delta > 0 && delta >= maxRise) { 
                 maxRise = delta;
                 biggestRiser = team;
             }
-            if (delta < 0 && delta <= maxFall) { // Use <= to catch if multiple have same max fall
+            if (delta < 0 && delta <= maxFall) { 
                 maxFall = delta;
                 biggestFaller = team;
             }
         });
 
         let riserHtml = '<div class="summary-item"><span>No significant risers this period.</span></div>';
-        if (biggestRiser) {
+        if (biggestRiser && biggestRiser.team_id) { // Ensure team_id exists for the link
             riserHtml = `
                 <div class="summary-item">
                     <img src="icons/${biggestRiser.team_id}.webp" alt="${biggestRiser.team_name} logo" class="summary-team-logo" onerror="this.style.display='none'; this.nextElementSibling.style.marginLeft='0';">
@@ -925,7 +925,7 @@
         }
 
         let fallerHtml = '<div class="summary-item"><span>No significant fallers this period.</span></div>';
-        if (biggestFaller) {
+        if (biggestFaller && biggestFaller.team_id) { // Ensure team_id exists for the link
             fallerHtml = `
                 <div class="summary-item">
                     <img src="icons/${biggestFaller.team_id}.webp" alt="${biggestFaller.team_name} logo" class="summary-team-logo" onerror="this.style.display='none'; this.nextElementSibling.style.marginLeft='0';">
