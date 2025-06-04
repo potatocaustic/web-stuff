@@ -163,7 +163,6 @@
         display: none !important;
       }
 
-      /* New button styling */
       .view-toggle-button {
         padding: 0.6rem 1.2rem;
         font-size: 1rem;
@@ -173,12 +172,12 @@
         border: none;
         border-radius: 4px;
         transition: background-color 0.2s ease;
-        margin: 0 5px; /* Spacing between buttons */
+        margin: 0 5px; 
       }
       .view-toggle-button:hover {
         background-color: #0056b3;
       }
-      .page-buttons-container { /* Container for the toggle buttons */
+      .page-buttons-container { 
         text-align: center;
         margin-bottom: 1.5rem;
       }
@@ -195,11 +194,11 @@
         background-color: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
+        overflow: hidden; /* Changed to hidden to contain box shadows if any child elements overflow */
       }
       
       #fullLeagueViewContainer .conference-section,
-      #powerRankingsViewContainer .conference-section { /* Apply to new PR container too */
+      #powerRankingsViewContainer .conference-section { 
         max-width: 700px; 
         margin-left: auto;  
         margin-right: auto; 
@@ -246,59 +245,50 @@
         cursor: default;
       }
 
-      /* Default column widths for 5-column tables */
-      .standings-table th:nth-child(1), 
-      .standings-table td:nth-child(1) {
-        width: 15%;
-        text-align: center;
+      /* Default column widths for 5-column standings tables */
+      .standings-table th:nth-child(1):not(#powerRankingsViewContainer .standings-table th), 
+      .standings-table td:nth-child(1):not(#powerRankingsViewContainer .standings-table td) {
+        width: 15%; text-align: center;
       }
-
-      .standings-table th:nth-child(2), 
-      .standings-table td:nth-child(2) {
-        width: 35%;
-        text-align: left;
+      .standings-table th:nth-child(2):not(#powerRankingsViewContainer .standings-table th), 
+      .standings-table td:nth-child(2):not(#powerRankingsViewContainer .standings-table td) {
+        width: 35%; text-align: left;
       }
-
-      .standings-table th:nth-child(3), 
-      .standings-table td:nth-child(3) {
-        width: 20%; 
-        text-align: center;
+      .standings-table th:nth-child(3):not(#powerRankingsViewContainer .standings-table th), 
+      .standings-table td:nth-child(3):not(#powerRankingsViewContainer .standings-table td) {
+        width: 20%; text-align: center;
       }
-
-      .standings-table th:nth-child(4), 
-      .standings-table td:nth-child(4) {
-        width: 15%;
-        text-align: center;
+      .standings-table th:nth-child(4):not(#powerRankingsViewContainer .standings-table th), 
+      .standings-table td:nth-child(4):not(#powerRankingsViewContainer .standings-table td) {
+        width: 15%; text-align: center;
       }
-
-      .standings-table th:nth-child(5), 
-      .standings-table td:nth-child(5) {
-        width: 15%;
-        text-align: center;
+      .standings-table th:nth-child(5):not(#powerRankingsViewContainer .standings-table th), 
+      .standings-table td:nth-child(5):not(#powerRankingsViewContainer .standings-table td) {
+        width: 15%; text-align: center;
       }
       
-      /* Column widths for 3-column Power Rankings table */
-      #powerRankingsViewContainer .standings-table th:nth-child(1),
-      #powerRankingsViewContainer .standings-table td:nth-child(1) {
-        width: 20%; /* Rank */
-        text-align: center;
-      }
-      #powerRankingsViewContainer .standings-table th:nth-child(2),
-      #powerRankingsViewContainer .standings-table td:nth-child(2) {
-        width: 50%; /* Team */
-        text-align: left;
-      }
-      #powerRankingsViewContainer .standings-table th:nth-child(3),
-      #powerRankingsViewContainer .standings-table td:nth-child(3) {
-        width: 30%; /* Change */
-        text-align: center;
-      }
+      /* Column widths for 5-column Power Rankings table */
+      #powerRankingsViewContainer .standings-table th:nth-child(1), /* Rank */
+      #powerRankingsViewContainer .standings-table td:nth-child(1) { width: 12%; text-align: center; }
+
+      #powerRankingsViewContainer .standings-table th:nth-child(2), /* Team */
+      #powerRankingsViewContainer .standings-table td:nth-child(2) { width: 33%; text-align: left; }
+
+      #powerRankingsViewContainer .standings-table th:nth-child(3), /* Record */
+      #powerRankingsViewContainer .standings-table td:nth-child(3) { width: 18%; text-align: center; }
+
+      #powerRankingsViewContainer .standings-table th:nth-child(4), /* Prev */
+      #powerRankingsViewContainer .standings-table td:nth-child(4) { width: 15%; text-align: center; }
+
+      #powerRankingsViewContainer .standings-table th:nth-child(5), /* Change */
+      #powerRankingsViewContainer .standings-table td:nth-child(5) { width: 22%; text-align: center; }
 
 
       .standings-table td {
         padding: 0.8rem 0.5rem;
         border-bottom: 1px solid #eee;
         font-size: 0.9rem;
+        vertical-align: middle; /* Ensure vertical alignment with badges */
       }
 
       .standings-table tr {
@@ -339,7 +329,7 @@
         flex-grow: 1; 
       }
 
-      .record-cell { /* Used for Record, and Change in PR */
+      .record-cell { 
         font-weight: 500;
       }
 
@@ -347,17 +337,15 @@
         font-weight: 500;
       }
 
-      .pam-positive { /* Also used for positive PR delta */
+      .pam-positive { 
         color: #28a745;
       }
 
-      .pam-negative { /* Also used for negative PR delta */
+      .pam-negative { 
         color: #dc3545;
       }
 
-      .playoff-seed {
-        background-color: #28a745;
-        color: white;
+      .playoff-seed, .playin-seed, .eliminated-seed, .rank-badge {
         border-radius: 50%;
         width: 25px;
         height: 25px;
@@ -368,37 +356,21 @@
         font-weight: bold;
         margin: 0 auto; 
       }
+      .playoff-seed { background-color: #28a745; color: white; }
+      .playin-seed { background-color: #ffc107; color: #333; }
+      .eliminated-seed { background-color: #dc3545; color: white; }
+      
+      .rank-badge {
+        /* Common styles already defined above */
+        /* Specific badge colors below */
+      }
+      .gold-badge { background-color: gold; color: #333; }
+      .silver-badge { background-color: silver; color: #333; }
+      .bronze-badge { background-color: #cd7f32; color: white; }
 
-      .playin-seed {
-        background-color: #ffc107;
-        color: #333;
-        border-radius: 50%;
-        width: 25px;
-        height: 25px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.8rem;
-        font-weight: bold;
-        margin: 0 auto; 
-      }
 
       .eliminated {
         opacity: 0.6;
-      }
-
-      .eliminated-seed {
-        background-color: #dc3545;
-        color: white;
-        border-radius: 50%;
-        width: 25px;
-        height: 25px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.8rem;
-        font-weight: bold;
-        margin: 0 auto; 
       }
 
       .playoff-legend {
@@ -435,17 +407,9 @@
         border-radius: 50%;
       }
 
-      .playoff-color {
-        background-color: #28a745;
-      }
-
-      .playin-color {
-        background-color: #ffc107;
-      }
-
-      .eliminated-color {
-        background-color: #dc3545;
-      }
+      .playoff-color { background-color: #28a745; }
+      .playin-color { background-color: #ffc107; }
+      .eliminated-color { background-color: #dc3545; }
       
       .loading {
         text-align: center;
@@ -469,7 +433,7 @@
           gap: 1.5rem;
         }
         #fullLeagueViewContainer .conference-section,
-        #powerRankingsViewContainer .conference-section { /* Apply to PR container too */
+        #powerRankingsViewContainer .conference-section { 
             max-width: 100%; 
         }
         .standings-table th .sort-indicator {
@@ -482,8 +446,23 @@
         }
         .view-toggle-button {
             width: 80%;
-            margin: 0 auto; /* Center buttons in flex column */
+            margin: 0 auto; 
         }
+        .prev-rank-col { /* Hides the "Prev" column on mobile for Power Rankings */
+           display: none;
+        }
+        /* Adjust PR column widths for mobile if "Prev" is hidden */
+        #powerRankingsViewContainer .standings-table th:nth-child(1), /* Rank */
+        #powerRankingsViewContainer .standings-table td:nth-child(1) { width: 15%; }
+
+        #powerRankingsViewContainer .standings-table th:nth-child(2), /* Team */
+        #powerRankingsViewContainer .standings-table td:nth-child(2) { width: 45%; }
+
+        #powerRankingsViewContainer .standings-table th:nth-child(3), /* Record */
+        #powerRankingsViewContainer .standings-table td:nth-child(3) { width: 20%; }
+        /* Child 4 (Prev) is hidden */
+        #powerRankingsViewContainer .standings-table th:nth-child(5), /* Change */
+        #powerRankingsViewContainer .standings-table td:nth-child(5) { width: 20%; }
       }
 
       footer {
@@ -626,12 +605,14 @@
               <tr>
                 <th class="no-sort">Rank<span class="sort-indicator"></span></th>
                 <th class="no-sort">Team<span class="sort-indicator"></span></th>
+                <th class="no-sort">Record<span class="sort-indicator"></span></th>
+                <th class="no-sort prev-rank-col">Prev<span class="sort-indicator"></span></th>
                 <th class="no-sort">Change<span class="sort-indicator"></span></th>
               </tr>
             </thead>
             <tbody id="power-rankings-standings">
               <tr>
-                <td colspan="3" class="loading">Loading Power Rankings...</td>
+                <td colspan="5" class="loading">Loading Power Rankings...</td>
               </tr>
             </tbody>
           </table>
@@ -655,7 +636,7 @@
       let powerRankingsData = []; 
 
       let currentView = 'conferences'; 
-      let viewButton1, viewButton2; // Button elements
+      let viewButton1, viewButton2; 
 
       const sortState = {
         Eastern: { column: 'record', direction: 'asc' },
@@ -683,25 +664,21 @@
         } catch (error) {
           console.error(`Error fetching ${sheetName}:`, error);
           let colspan = 5; 
-          if (sheetName === 'TPR') colspan = 3; 
+          if (sheetName === 'TPR') colspan = 5; // TPR table now has 5 columns
           
           const errorMsg = `<tr><td colspan="${colspan}" class="error">Error loading data from ${sheetName}</td></tr>`;
           
-          let tableBodyIdToUpdate;
           if (sheetName === 'Teams') { 
             ['eastern-standings', 'western-standings', 'full-league-standings', 'power-rankings-standings'].forEach(id => {
                 const tableBody = document.getElementById(id);
                 if (tableBody) {
-                    const currentTableColspan = id === 'power-rankings-standings' ? 3 : 5;
+                    const currentTableColspan = id === 'power-rankings-standings' ? 5 : 5;
                     tableBody.innerHTML = `<tr><td colspan="${currentTableColspan}" class="error">Core team data failed to load.</td></tr>`;
                 }
             });
           } else if (sheetName === 'TPR') {
-            tableBodyIdToUpdate = 'power-rankings-standings';
-            const tableBody = document.getElementById(tableBodyIdToUpdate);
+            const tableBody = document.getElementById('power-rankings-standings');
             if (tableBody) tableBody.innerHTML = errorMsg;
-          } else { 
-             console.warn("Error handling for sheet", sheetName, "not explicitly defined for UI update.");
           }
           return null;
         }
@@ -863,6 +840,13 @@
         return `<span>–</span>`;
       }
 
+      function getRankDisplay(rank) {
+        if (rank === 1) return `<span class="rank-badge gold-badge">1</span>`;
+        if (rank === 2) return `<span class="rank-badge silver-badge">2</span>`;
+        if (rank === 3) return `<span class="rank-badge bronze-badge">3</span>`;
+        return rank; 
+      }
+
       function renderPowerRankings(teamsToRender) {
         const tableBody = document.getElementById('power-rankings-standings');
         if (!tableBody) {
@@ -871,23 +855,27 @@
         }
         if (!teamsToRender || teamsToRender.length === 0) {
             if (tableBody.innerHTML.includes('class="loading"')) { 
-                 tableBody.innerHTML = `<tr><td colspan="3" class="loading">No teams to display for Power Rankings.</td></tr>`;
+                 tableBody.innerHTML = `<tr><td colspan="5" class="loading">No teams to display for Power Rankings.</td></tr>`;
             }
             return;
         }
         
         const html = teamsToRender.map(team => {
-          return `
-            <tr>
-              <td class="rank-cell">${team.rank}</td>
-              <td>
-                <div class="team-cell" onclick="handleTeamClick('${team.team_id}')">
-                  <img src="icons/${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
-                  <span class="team-name">${team.team_name}</span>
-                </div>
-              </td>
-              <td class="record-cell">${getChangeIndicator(team.delta)}</td>
-            </tr>`;
+            const record = `${team.wins}-${team.losses}`;
+            const prevRankDisplay = team.prev_rank !== null && !isNaN(team.prev_rank) ? team.prev_rank : '-';
+            return `
+                <tr>
+                    <td class="rank-cell">${getRankDisplay(team.rank)}</td>
+                    <td>
+                        <div class="team-cell" onclick="handleTeamClick('${team.team_id}')">
+                            <img src="icons/${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
+                            <span class="team-name">${team.team_name}</span>
+                        </div>
+                    </td>
+                    <td class="record-cell">${record}</td>
+                    <td class="rank-cell prev-rank-col">${prevRankDisplay}</td>
+                    <td class="record-cell">${getChangeIndicator(team.delta)}</td>
+                </tr>`;
         }).join('');
         tableBody.innerHTML = html;
       }
@@ -987,25 +975,26 @@
         const viewParam = getUrlParameter('view');
         const sortByParam = getUrlParameter('sortBy');
         let sortDirectionParam = getUrlParameter('sortDirection');
-        const playoffLegend = document.querySelector('.playoff-legend'); // Get reference to legend
+        const playoffLegend = document.querySelector('.playoff-legend'); 
 
         viewButton1 = document.getElementById('viewToggleButton1');
         viewButton2 = document.getElementById('viewToggleButton2');
         
         if (!viewButton1 || !viewButton2) {
             console.error("Toggle buttons not found on page load.");
-            // Hide all content containers if buttons are critical and missing
             document.getElementById('conferenceViewContainer').classList.add('hidden');
             document.getElementById('fullLeagueViewContainer').classList.add('hidden');
             document.getElementById('powerRankingsViewContainer').classList.add('hidden');
             if(playoffLegend) playoffLegend.classList.add('hidden');
+            const buttonsContainer = document.querySelector('.page-buttons-container');
+            if (buttonsContainer) buttonsContainer.classList.add('hidden');
             document.getElementById('standingsPageTitle').textContent = 'Page Error: UI Elements Missing';
             return;
         }
 
-
         if (viewParam === 'fullLeague' && sortByParam) {
             let effectiveSortDirection = sortDirectionParam;
+            // ... (sort direction logic remains the same)
             if (!effectiveSortDirection) {
                 if (sortByParam === 'med_starter_rank') effectiveSortDirection = 'asc_rank';
                 else if (sortByParam === 'pam') effectiveSortDirection = 'desc';
@@ -1037,8 +1026,9 @@
         });
 
         if (!allTeamsData || allTeamsData.length === 0) {
+            // ... (error handling for no valid team data remains the same)
             const errorMsg = '<tr><td colspan="5" class="error">No valid team data available after filtering.</td></tr>';
-            const prErrorMsg = '<tr><td colspan="3" class="error">No valid team data available.</td></tr>';
+            const prErrorMsg = '<tr><td colspan="5" class="error">No valid team data available.</td></tr>'; // colspan is 5 now
             ['eastern-standings', 'western-standings', 'full-league-standings'].forEach(id => {
                 const tableBody = document.getElementById(id);
                 if (tableBody) tableBody.innerHTML = errorMsg;
@@ -1055,6 +1045,7 @@
             return;
         }
 
+        // ... (eastern, western, fullLeagueTeamsData processing remains the same) ...
         let rawEasternTeams = allTeamsData.filter(team => team.conference === 'Eastern');
         let rawWesternTeams = allTeamsData.filter(team => team.conference === 'Western');
 
@@ -1088,25 +1079,29 @@
 
         if (rawPowerRankings && rawPowerRankings.length > 0) {
             powerRankingsData = rawPowerRankings.map(prTeam => {
-                // TPR sheet now has team_id (Col D), power_delta (assumed Col E or header 'power_delta')
                 const officialTeam = allTeamsData.find(t => t.team_id === prTeam.team_id);
                 const displayName = officialTeam ? officialTeam.team_name : prTeam.team_name; 
+                const wins = officialTeam ? (officialTeam.wins || 0) : 0;
+                const losses = officialTeam ? (officialTeam.losses || 0) : 0;
 
                 return {
                     rank: parseInt(prTeam.power_rank),
                     team_name: displayName, 
                     team_id: prTeam.team_id,      
-                    delta: parseInt(prTeam.power_delta) || 0 
+                    prev_rank: prTeam.prev_power ? parseInt(prTeam.prev_power) : null,
+                    delta: parseInt(prTeam.power_delta) || 0,
+                    wins: wins,
+                    losses: losses
                 };
             }).filter(team => team.team_id && team.team_id.trim() !== '' && !isNaN(team.rank))
               .sort((a, b) => a.rank - b.rank);
 
             if (powerRankingsData.length === 0 && rawPowerRankings.length > 0) {
                  console.warn("Power rankings data fetched, but no teams could be fully processed (missing team_id or invalid rank).");
-                 if(prTableBody) prTableBody.innerHTML = `<tr><td colspan="3" class="error">Could not process power ranking data. Check team_ids and ranks in TPR sheet.</td></tr>`;
+                 if(prTableBody) prTableBody.innerHTML = `<tr><td colspan="5" class="error">Could not process power ranking data. Check team_ids and ranks in TPR sheet.</td></tr>`;
             }
         } else if (rawPowerRankings && rawPowerRankings.length === 0) { 
-            if(prTableBody) prTableBody.innerHTML = `<tr><td colspan="3" class="loading">No power ranking data available in the sheet.</td></tr>`;
+            if(prTableBody) prTableBody.innerHTML = `<tr><td colspan="5" class="loading">No power ranking data available in the sheet.</td></tr>`;
         } else if (!rawPowerRankings) { 
             console.log("TPR sheet fetch failed, error message should be in table.");
         }
@@ -1117,15 +1112,13 @@
         renderStandings('FullLeague', fullLeagueTeamsData);
         renderPowerRankings(powerRankingsData); 
 
-        // Initial view setup based on URL params or default
         if (viewParam === 'fullLeague') {
             showFullLeagueView();
         } else if (viewParam === 'powerRankings') {
             showPowerRankingsView();
         } else {
-            showConferenceView(); // Default view
+            showConferenceView(); 
         }
-        // updateButtonStates() is called by each show...View() function.
 
         const navToggle = document.querySelector('.nav-toggle');
         const navMenu = document.getElementById('nav-menu');
