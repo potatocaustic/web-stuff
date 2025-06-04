@@ -92,7 +92,7 @@
         color: #ccc;
       }
 
-      @media (max-width: 600px) {
+      @media (max-width: 600px) { /* This breakpoint is for very small specific tweaks if needed */
         .header-text { display: none; }
         .header-logo { width: 50px; height: 50px; }
         .nav-toggle { display: block; }
@@ -184,7 +184,7 @@
         text-align: center;
       }
 
-      .conference-header h3 {
+      .conference-header h3 { /* Base style for h3 in conference headers */
         color: white;
         font-size: 1.5rem;
         margin: 0;
@@ -350,7 +350,7 @@
       .loading { text-align: center; padding: 3rem; color: #666; font-size: 1.1rem; }
       .error { text-align: center; padding: 2rem; color: #dc3545; background-color: #f8d7da; border-radius: 4px; margin: 1rem; }
 
-      @media (max-width: 768px) {
+      @media (max-width: 768px) { /* Main mobile breakpoint */
         .standings-container { grid-template-columns: 1fr; gap: 1.5rem; }
         #fullLeagueViewContainer .conference-section,
         #powerRankingsViewContainer .conference-section { max-width: 100%; }
@@ -367,8 +367,11 @@
         #powerRankingsViewContainer .standings-table td:nth-child(3) { width: 20%; } 
         #powerRankingsViewContainer .standings-table th:nth-child(5),
         #powerRankingsViewContainer .standings-table td:nth-child(5) { width: 25%; } 
-        /* .summary-item { flex-direction: column; text-align: center;} /* Removed to keep horizontal layout */
-        /* .summary-team-logo { margin-right: 0; margin-bottom: 5px; } /* Removed to keep horizontal layout */
+        
+        /* Adjust Power Rankings title font size on mobile */
+        #powerRankingsViewContainer .conference-header h3 {
+          font-size: 1.1rem; /* Adjust this value as needed to fit title on one line */
+        }
       }
 
       footer {
@@ -504,8 +507,7 @@
       <div id="powerRankingsViewContainer" class="hidden">
         <div class="conference-section"> 
           <div class="conference-header">
-            <h3>Power Rankings v2 (Week 3)</h3>
-          </div>
+            <h3>Power Rankings v2 (Week 3)</h3> </div>
           <div id="powerRankingsSummary" class="power-rankings-summary">
             Loading summary...
           </div>
@@ -879,7 +881,7 @@
           document.getElementById('conferenceViewContainer').classList.add('hidden');
           document.getElementById('fullLeagueViewContainer').classList.add('hidden');
           document.getElementById('powerRankingsViewContainer').classList.remove('hidden');
-          document.getElementById('standingsPageTitle').textContent = 'Power Rankings';
+          document.getElementById('standingsPageTitle').textContent = 'Power Rankings'; // Title for PR section is in HTML already
           document.getElementById('pageDescription').textContent = 'Courtesy of @four. Updated every three weeks.';
           const playoffLegend = document.querySelector('.playoff-legend');
           if (playoffLegend) playoffLegend.classList.add('hidden');
@@ -914,7 +916,7 @@
         });
 
         let riserHtml = '<div class="summary-item"><span>No significant risers this period.</span></div>';
-        if (biggestRiser && biggestRiser.team_id) { // Ensure team_id exists for the link
+        if (biggestRiser && biggestRiser.team_id) { 
             riserHtml = `
                 <div class="summary-item">
                     <img src="icons/${biggestRiser.team_id}.webp" alt="${biggestRiser.team_name} logo" class="summary-team-logo" onerror="this.style.display='none'; this.nextElementSibling.style.marginLeft='0';">
@@ -925,7 +927,7 @@
         }
 
         let fallerHtml = '<div class="summary-item"><span>No significant fallers this period.</span></div>';
-        if (biggestFaller && biggestFaller.team_id) { // Ensure team_id exists for the link
+        if (biggestFaller && biggestFaller.team_id) { 
             fallerHtml = `
                 <div class="summary-item">
                     <img src="icons/${biggestFaller.team_id}.webp" alt="${biggestFaller.team_name} logo" class="summary-team-logo" onerror="this.style.display='none'; this.nextElementSibling.style.marginLeft='0';">
@@ -980,6 +982,7 @@
           document.querySelector('.page-buttons-container').classList.add('hidden');
           if(playoffLegend) playoffLegend.classList.add('hidden');
           document.getElementById('standingsPageTitle').textContent = 'Standings Data Unavailable';
+          // Error messages in tables/summary are handled by fetchSheetData
           return;
         }
 
