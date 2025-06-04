@@ -1074,12 +1074,12 @@
           uniqueTransactionCount = uniqueTransactionIds.size;
         }
 
-        // Calculate totalKarma from the 'Lineups' sheet, summing 'points_final'
+        // Calculate totalKarma from the 'Lineups' sheet, summing 'points_raw'
         let totalKarma = 0;
         if (lineupsSheetData) {
           totalKarma = lineupsSheetData.reduce((sum, lineupEntry) => {
-            // Using the existing parseNumber function to convert 'points_final' to a number
-            return sum + parseNumber(lineupEntry.points_final || 0);
+            // Using the existing parseNumber function to convert 'points_raw' to a number
+            return sum + parseNumber(lineupEntry.points_raw || 0);
           }, 0);
         } else {
           // Handle case where lineupsSheetData might not be loaded
@@ -1145,14 +1145,14 @@
             const bCaptain = b.captain === 'TRUE' || b.captain === true || b.captain === 'true';
             if (aCaptain && !bCaptain) return -1;
             if (!aCaptain && bCaptain) return 1;
-            return parseNumber(b.points_final) - parseNumber(a.points_final);
+            return parseNumber(b.points_raw) - parseNumber(a.points_raw);
         };
 
         const team1Lineups = team1AllLineups.filter(l => (l.started === 'TRUE' || l.started === true || l.started === 'true' || l.started === 1 || l.started === '1')).sort(sortLineup);
         const team2Lineups = team2AllLineups.filter(l => (l.started === 'TRUE' || l.started === true || l.started === 'true' || l.started === 1 || l.started === '1')).sort(sortLineup);
         
-        const team1Total = team1Lineups.reduce((sum, p) => sum + parseNumber(p.points_final), 0);
-        const team2Total = team2Lineups.reduce((sum, p) => sum + parseNumber(p.points_final), 0);
+        const team1Total = team1Lineups.reduce((sum, p) => sum + parseNumber(p.points_raw), 0);
+        const team2Total = team2Lineups.reduce((sum, p) => sum + parseNumber(p.points_raw), 0);
         const winner = game.winner;
         
         const generateLineupTable = (lineups, teamIdForTable, total, isWinner) => {
