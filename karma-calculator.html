@@ -5,11 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Karma Betting Calculator - caustic.info</title>
     <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
-    <!-- React and ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
       /* Reset and General Styles */
       * {
@@ -109,6 +104,11 @@
         padding: 2rem;
         max-width: 1200px;
         margin: 0 auto;
+        display: none; /* Hide main content initially for auth */
+      }
+
+      main.visible { /* Class to show main content, added by auth.js */
+        display: block;
       }
       
       /* Info Section */
@@ -376,9 +376,30 @@
           <li><a href="PSPs/mlb-psp.html">MLB PSP Database</a></li>
           <li><a href="PSPs-WNBA/wnba-psp.html">WNBA PSP Database</a></li>
           <li><a href="karma-calculator.html">Karma EV Calculator</a></li>
-        </ul>
+          </ul>
       </nav>
     </header>
+
+    <div id="auth-container" style="padding: 2rem; max-width: 400px; margin: 2rem auto; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
+      <h2 id="auth-title">Login</h2>
+      <p id="auth-error" style="color: red; margin-bottom: 1rem; min-height: 1.2em;"></p>
+
+      <div id="login-form">
+        <input type="text" id="login-username" placeholder="Username" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+        <input type="password" id="login-password" placeholder="Password" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+        <button id="login-button" style="background-color: #333; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; width: 100%;">Login</button>
+        <p style="margin-top: 1rem;">Don't have an account? <a href="#" id="show-signup">Sign Up</a></p>
+      </div>
+
+      <div id="signup-form" style="display: none;">
+        <input type="text" id="signup-username" placeholder="Choose Username" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+        <input type="password" id="signup-password" placeholder="Choose Password" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+        <input type="password" id="signup-confirm-password" placeholder="Confirm Password" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+        <button id="signup-button" style="background-color: #5cb85c; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; width: 100%;">Sign Up</button>
+        <p style="margin-top: 1rem;">Already have an account? <a href="#" id="show-login">Login</a></p>
+      </div>
+    </div>
+
     <main>
       <section class="info">
         <p>Calculate the expected value of karma bets by comparing Real App odds with sportsbook odds.</p>
@@ -390,13 +411,23 @@
         </p>
       </section>
       <section class="form-section">
-        <!-- This is where our React component will be rendered -->
         <div id="calculator-root"></div>
       </section>
     </main>
     <footer>
       <p>&copy; caustic.info</p>
     </footer>
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics-compat.js"></script>
+
+    <script src="auth.js"></script>
 
     <script type="text/babel">
       const { useState, useRef, useEffect } = React;
@@ -499,8 +530,6 @@
           let value = parseFloat(american);
           if (isNaN(value)) return null;
           
-          // If the string doesn't start with "+", but is a positive number
-          // it should be treated as positive American odds
           if (!american.toString().startsWith('-') && !american.toString().startsWith('+')) {
             value = Math.abs(value);
           }
@@ -528,7 +557,6 @@
         const calculateNoVigProbabilities = () => {
           let probOver, probUnder, probDraw;
           
-          // Calculate implied probabilities based on selected odds format
           if (oddsFormat === 'american') {
             probOver = americanToImpliedProb(sbOver);
             probUnder = americanToImpliedProb(sbUnder);
@@ -546,7 +574,6 @@
           if (bettingMode === 'two-way') {
             if (!probOver || !probUnder) return { over: null, under: null, draw: null };
             
-            // Calculate the vig and remove it
             const totalProb = probOver + probUnder;
             const noVigProbOver = probOver / totalProb;
             const noVigProbUnder = probUnder / totalProb;
@@ -555,7 +582,6 @@
           } else {
             if (!probOver || !probUnder || !probDraw) return { over: null, under: null, draw: null };
             
-            // Calculate the vig and remove it for three-way
             const totalProb = probOver + probUnder + probDraw;
             const noVigProbOver = probOver / totalProb;
             const noVigProbUnder = probUnder / totalProb;
@@ -570,8 +596,6 @@
           let value = parseFloat(odds);
           if (isNaN(value)) return null;
           
-          // If the string doesn't start with "+", but is a positive number
-          // it should be treated as positive American odds
           if (!odds.toString().startsWith('-') && !odds.toString().startsWith('+')) {
             value = Math.abs(value);
           }
@@ -588,7 +612,6 @@
             return null;
           }
           
-          // Check if any loss event has null values
           for (let i = 0; i < lossEvents.length; i += 2) {
             if (lossEvents[i] === null || lossEvents[i + 1] === null) {
               return null;
@@ -597,7 +620,6 @@
           
           let ev = winProb * winValue;
           
-          // Add loss probabilities and values
           for (let i = 0; i < lossEvents.length; i += 2) {
             const lossProb = lossEvents[i];
             const lossValue = lossEvents[i + 1];
@@ -607,14 +629,15 @@
           return ev;
         };
         
-        // Update calculations when inputs change
         useEffect(() => {
           const requiredInputs = bettingMode === 'two-way' 
             ? [realAppOver, realAppUnder, sbOver, sbUnder]
             : [realAppOver, realAppUnder, realAppDraw, sbOver, sbUnder, sbDraw];
           
           if (!requiredInputs.every(input => input)) {
-            // Don't calculate if inputs are missing
+            setNoVigProbOver(null); setNoVigProbUnder(null); setNoVigProbDraw(null);
+            setEvMaxOver(null); setEvMaxUnder(null); setEvMaxDraw(null);
+            setEvZeroOver(null); setEvZeroUnder(null); setEvZeroDraw(null);
             return;
           }
           
@@ -623,12 +646,16 @@
           setNoVigProbUnder(underProb);
           setNoVigProbDraw(drawProb);
           
+          // This is the line for "zeroBetSize" - it already implements the requested logic.
+          const zeroBetSize = maxBetSize >= 100 ? 10 : 5; 
+
           if (bettingMode === 'two-way') {
             if (overProb === null || underProb === null) {
+              setEvMaxOver(null); setEvMaxUnder(null); setEvMaxDraw(null);
+              setEvZeroOver(null); setEvZeroUnder(null); setEvZeroDraw(null);
               return;
             }
             
-            // Calculate max bet EVs for two-way
             const winValueMaxOver = calculateWinValue(realAppOver, maxBetSize);
             const lossValueMax = -maxBetSize;
             const evMaxOverCalc = calculateExpectedValue(overProb, winValueMaxOver, underProb, lossValueMax);
@@ -638,25 +665,23 @@
             const evMaxUnderCalc = calculateExpectedValue(underProb, winValueMaxUnder, overProb, lossValueMax);
             setEvMaxUnder(evMaxUnderCalc);
             
-            // Calculate zero bet EVs for two-way
-            const zeroBetSize = maxBetSize >= 100 ? 10 : 5;
             const winValueZeroOver = calculateWinValue(realAppOver, zeroBetSize);
-            const evZeroOverCalc = calculateExpectedValue(overProb, winValueZeroOver, 0, 0);
+            const evZeroOverCalc = calculateExpectedValue(overProb, winValueZeroOver, 0, 0); // Loss for zero bet is 0
             setEvZeroOver(evZeroOverCalc);
             
             const winValueZeroUnder = calculateWinValue(realAppUnder, zeroBetSize);
-            const evZeroUnderCalc = calculateExpectedValue(underProb, winValueZeroUnder, 0, 0);
+            const evZeroUnderCalc = calculateExpectedValue(underProb, winValueZeroUnder, 0, 0); // Loss for zero bet is 0
             setEvZeroUnder(evZeroUnderCalc);
             
-            // Clear three-way results
             setEvMaxDraw(null);
             setEvZeroDraw(null);
-          } else {
+          } else { // three-way
             if (overProb === null || underProb === null || drawProb === null) {
+              setEvMaxOver(null); setEvMaxUnder(null); setEvMaxDraw(null);
+              setEvZeroOver(null); setEvZeroUnder(null); setEvZeroDraw(null);
               return;
             }
             
-            // Calculate max bet EVs for three-way
             const winValueMaxOver = calculateWinValue(realAppOver, maxBetSize);
             const lossValueMax = -maxBetSize;
             const evMaxOverCalc = calculateExpectedValue(overProb, winValueMaxOver, underProb, lossValueMax, drawProb, lossValueMax);
@@ -670,23 +695,20 @@
             const evMaxDrawCalc = calculateExpectedValue(drawProb, winValueMaxDraw, overProb, lossValueMax, underProb, lossValueMax);
             setEvMaxDraw(evMaxDrawCalc);
             
-            // Calculate zero bet EVs for three-way
-            const zeroBetSize = maxBetSize >= 100 ? 10 : 5;
             const winValueZeroOver = calculateWinValue(realAppOver, zeroBetSize);
-            const evZeroOverCalc = calculateExpectedValue(overProb, winValueZeroOver, 0, 0, 0, 0);
+            const evZeroOverCalc = calculateExpectedValue(overProb, winValueZeroOver, 0, 0, 0, 0); // Losses for zero bet are 0
             setEvZeroOver(evZeroOverCalc);
             
             const winValueZeroUnder = calculateWinValue(realAppUnder, zeroBetSize);
-            const evZeroUnderCalc = calculateExpectedValue(underProb, winValueZeroUnder, 0, 0, 0, 0);
+            const evZeroUnderCalc = calculateExpectedValue(underProb, winValueZeroUnder, 0, 0, 0, 0); // Losses for zero bet are 0
             setEvZeroUnder(evZeroUnderCalc);
             
             const winValueZeroDraw = calculateWinValue(realAppDraw, zeroBetSize);
-            const evZeroDrawCalc = calculateExpectedValue(drawProb, winValueZeroDraw, 0, 0, 0, 0);
+            const evZeroDrawCalc = calculateExpectedValue(drawProb, winValueZeroDraw, 0, 0, 0, 0); // Losses for zero bet are 0
             setEvZeroDraw(evZeroDrawCalc);
           }
         }, [realAppOver, realAppUnder, realAppDraw, sbOver, sbUnder, sbDraw, oddsFormat, maxBetSize, bettingMode]);
         
-        // Get labels based on betting mode
         const getLabels = () => {
           if (bettingMode === 'two-way') {
             return {
@@ -942,17 +964,17 @@
                       <div className="button-group">
                         <button
                           type="button"
-                          onClick={() => setSbUnder(prev => addSign(prev, '-'))}
-                          className="button"
-                        >
-                          -
-                        </button>
-                        <button
-                          type="button"
                           onClick={() => setSbUnder(prev => addSign(prev, '+'))}
                           className="button"
                         >
                           +
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSbUnder(prev => addSign(prev, '-'))}
+                          className="button"
+                        >
+                          -
                         </button>
                       </div>
                     )}
@@ -999,40 +1021,39 @@
               </div>
             </div>
             
-            {((bettingMode === 'two-way' && evMaxOver !== null && evMaxUnder !== null && evZeroOver !== null && evZeroUnder !== null) ||
-              (bettingMode === 'three-way' && evMaxOver !== null && evMaxUnder !== null && evMaxDraw !== null && evZeroOver !== null && evZeroUnder !== null && evZeroDraw !== null)) && (
+            {((bettingMode === 'two-way' && noVigProbOver !== null && noVigProbUnder !== null && evMaxOver !== null && evMaxUnder !== null && evZeroOver !== null && evZeroUnder !== null) ||
+              (bettingMode === 'three-way' && noVigProbOver !== null && noVigProbUnder !== null && noVigProbDraw !== null && evMaxOver !== null && evMaxUnder !== null && evMaxDraw !== null && evZeroOver !== null && evZeroUnder !== null && evZeroDraw !== null)) && (
               <div className="section">
                 <h2 className="section-title">Expected Value Results</h2>
                 
-                {/* Recommendation at the top */}
                 <div className="recommendation" style={{marginTop: 0, marginBottom: '1rem'}}>
                   <div style={{fontWeight: 'bold', fontSize: '1.1rem', marginBottom: '0.5rem'}}>Recommended Bet:</div>
                   {(() => {
-                    // Find the highest EV among all options
+                    const zeroBetSize = maxBetSize >= 100 ? 10 : 5; // Ensure this is defined here for recommendation
                     const evOptions = [
-                      { type: "Max Over", value: evMaxOver, side: labels.option1, amount: maxBetSize },
-                      { type: "Zero Over", value: evZeroOver, side: labels.option1, amount: maxBetSize >= 100 ? 10 : 5 },
-                      { type: "Max Under", value: evMaxUnder, side: labels.option2, amount: maxBetSize },
-                      { type: "Zero Under", value: evZeroUnder, side: labels.option2, amount: maxBetSize >= 100 ? 10 : 5 }
+                      { type: "Max Bet", value: evMaxOver, side: labels.option1, amount: maxBetSize },
+                      { type: "Zero Bet", value: evZeroOver, side: labels.option1, amount: zeroBetSize },
+                      { type: "Max Bet", value: evMaxUnder, side: labels.option2, amount: maxBetSize },
+                      { type: "Zero Bet", value: evZeroUnder, side: labels.option2, amount: zeroBetSize }
                     ];
                     
                     if (bettingMode === 'three-way') {
                       evOptions.push(
-                        { type: "Max Draw", value: evMaxDraw, side: labels.option3, amount: maxBetSize },
-                        { type: "Zero Draw", value: evZeroDraw, side: labels.option3, amount: maxBetSize >= 100 ? 10 : 5 }
+                        { type: "Max Bet", value: evMaxDraw, side: labels.option3, amount: maxBetSize },
+                        { type: "Zero Bet", value: evZeroDraw, side: labels.option3, amount: zeroBetSize }
                       );
                     }
                     
-                    const bestOption = evOptions.reduce((best, current) => 
+                    const bestOption = evOptions.filter(opt => opt.value !== null).reduce((best, current) => 
                       current.value > best.value ? current : best, { value: -Infinity });
                     
-                    if (bestOption.value <= 0) {
+                    if (bestOption.value === -Infinity || bestOption.value <= 0) { // check for no valid options or all non-positive EV
                       return <div style={{fontSize: '1.1rem'}}>None - all bets have negative or zero EV</div>;
                     }
                     
                     return (
                       <div style={{fontSize: '1.1rem'}}>
-                        {bestOption.type.includes("Max") ? "Max" : "Zero"} bet on {bestOption.side} ({bestOption.amount} karma)
+                        {bestOption.type} on {bestOption.side} ({bestOption.amount} karma)
                         <div className="ev-positive" style={{marginTop: '0.5rem'}}>
                           Expected Value: {bestOption.value.toFixed(2)} karma
                         </div>
@@ -1049,13 +1070,13 @@
                         <div>
                           <div style={{fontWeight: 'bold'}}>Max Bet EV:</div>
                           <div className={evMaxOver >= 0 ? 'ev-positive' : 'ev-negative'}>
-                            {evMaxOver.toFixed(2)} karma
+                            {evMaxOver !== null ? evMaxOver.toFixed(2) + ' karma' : 'N/A'}
                           </div>
                         </div>
                         <div>
                           <div style={{fontWeight: 'bold'}}>Zero Bet EV:</div>
                           <div className={evZeroOver >= 0 ? 'ev-positive' : 'ev-negative'}>
-                            {evZeroOver.toFixed(2)} karma
+                            {evZeroOver !== null ? evZeroOver.toFixed(2) + ' karma' : 'N/A'}
                           </div>
                         </div>
                       </div>
@@ -1067,19 +1088,19 @@
                         <div>
                           <div style={{fontWeight: 'bold'}}>Max Bet EV:</div>
                           <div className={evMaxUnder >= 0 ? 'ev-positive' : 'ev-negative'}>
-                            {evMaxUnder.toFixed(2)} karma
+                            {evMaxUnder !== null ? evMaxUnder.toFixed(2) + ' karma' : 'N/A'}
                           </div>
                         </div>
                         <div>
                           <div style={{fontWeight: 'bold'}}>Zero Bet EV:</div>
                           <div className={evZeroUnder >= 0 ? 'ev-positive' : 'ev-negative'}>
-                            {evZeroUnder.toFixed(2)} karma
+                            {evZeroUnder !== null ? evZeroUnder.toFixed(2) + ' karma' : 'N/A'}
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                ) : (
+                ) : ( // three-way
                   <div className="three-way-results">
                     <div className="result-card">
                       <h3 className="result-title">{labels.option1}</h3>
@@ -1087,13 +1108,13 @@
                         <div>
                           <div style={{fontWeight: 'bold'}}>Max Bet EV:</div>
                           <div className={evMaxOver >= 0 ? 'ev-positive' : 'ev-negative'}>
-                            {evMaxOver.toFixed(2)} karma
+                            {evMaxOver !== null ? evMaxOver.toFixed(2) + ' karma' : 'N/A'}
                           </div>
                         </div>
                         <div>
                           <div style={{fontWeight: 'bold'}}>Zero Bet EV:</div>
                           <div className={evZeroOver >= 0 ? 'ev-positive' : 'ev-negative'}>
-                            {evZeroOver.toFixed(2)} karma
+                            {evZeroOver !== null ? evZeroOver.toFixed(2) + ' karma' : 'N/A'}
                           </div>
                         </div>
                       </div>
@@ -1105,13 +1126,13 @@
                         <div>
                           <div style={{fontWeight: 'bold'}}>Max Bet EV:</div>
                           <div className={evMaxUnder >= 0 ? 'ev-positive' : 'ev-negative'}>
-                            {evMaxUnder.toFixed(2)} karma
+                            {evMaxUnder !== null ? evMaxUnder.toFixed(2) + ' karma' : 'N/A'}
                           </div>
                         </div>
                         <div>
                           <div style={{fontWeight: 'bold'}}>Zero Bet EV:</div>
                           <div className={evZeroUnder >= 0 ? 'ev-positive' : 'ev-negative'}>
-                            {evZeroUnder.toFixed(2)} karma
+                            {evZeroUnder !== null ? evZeroUnder.toFixed(2) + ' karma' : 'N/A'}
                           </div>
                         </div>
                       </div>
@@ -1123,13 +1144,13 @@
                         <div>
                           <div style={{fontWeight: 'bold'}}>Max Bet EV:</div>
                           <div className={evMaxDraw >= 0 ? 'ev-positive' : 'ev-negative'}>
-                            {evMaxDraw.toFixed(2)} karma
+                            {evMaxDraw !== null ? evMaxDraw.toFixed(2) + ' karma' : 'N/A'}
                           </div>
                         </div>
                         <div>
                           <div style={{fontWeight: 'bold'}}>Zero Bet EV:</div>
                           <div className={evZeroDraw >= 0 ? 'ev-positive' : 'ev-negative'}>
-                            {evZeroDraw.toFixed(2)} karma
+                            {evZeroDraw !== null ? evZeroDraw.toFixed(2) + ' karma' : 'N/A'}
                           </div>
                         </div>
                       </div>
@@ -1142,8 +1163,8 @@
         );
       };
       
-      // Render the component to the DOM
-      const root = ReactDOM.createRoot(document.getElementById('calculator-root'));
+      const container = document.getElementById('calculator-root');
+      const root = ReactDOM.createRoot(container);
       root.render(<KarmaBettingCalculator />);
     </script>
   </body>
