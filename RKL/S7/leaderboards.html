@@ -177,11 +177,11 @@
 
       #category-select { 
         width: 100%;
-        padding: 0.8rem; /* This one is larger */
+        padding: 0.8rem; 
         border: 1px solid #ddd;
         border-radius: 6px;
         font-size: 1rem;
-        background-color: #f8f9fa; /* Specific background */
+        background-color: #f8f9fa; 
         cursor: pointer;
       }
 
@@ -195,7 +195,7 @@
         background-color: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        overflow: visible; /* Ensure dropdown can overflow */
+        overflow: visible; 
       }
 
       .leaderboard-header {
@@ -379,7 +379,6 @@
         margin-right: 0.25rem; 
       }
 
-      /* Unified styling for form-like controls in .table-controls */
       .table-controls .control-item select,
       .table-controls .control-item input[type="number"],
       .dropdown-toggle-btn {
@@ -387,17 +386,16 @@
         border: 1px solid #ddd;
         border-radius: 4px;
         font-size: 1rem;
-        background-color: #f8f9fa; /* Consistent background */
+        background-color: #f8f9fa; 
         color: #333; 
-        line-height: 1.5; /* For consistent height */
+        line-height: 1.5; 
       }
-      /* Specifics for select to make background color apply */
       .table-controls .control-item select {
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
-        padding-right: 1.5em; /* Space for custom arrow if added */
-        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
+        padding-right: 1.5em; 
+        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236c757d%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
         background-repeat: no-repeat;
         background-position: right .5em top 50%, 0 0;
         background-size: .65em auto, 100%;
@@ -406,14 +404,13 @@
 
       #min-games { width: 60px; }
       
-      /* Dropdown Team Filter Styles */
       .dropdown-team-filter {
           position: relative;
           display: inline-block; 
-          min-width: 150px; /* Base width for the dropdown wrapper */
+          min-width: 150px; 
       }
-      .dropdown-toggle-btn { /* Now inherits from the unified group above */
-          width: 100%; /* To fill .dropdown-team-filter */
+      .dropdown-toggle-btn { 
+          width: 100%; 
           cursor: pointer;
           text-align: left;
           display: flex;
@@ -462,7 +459,7 @@
           border-bottom: none;
       }
       .team-checklist-container.dropdown-menu label:hover {
-          background-color: #e9ecef; /* Slightly darker hover */
+          background-color: #e9ecef; 
       }
       .team-checklist-container.dropdown-menu input[type="checkbox"] {
           margin-right: 0.6rem; 
@@ -499,18 +496,18 @@
         .table-controls .control-item {
             margin: 0.25rem 0; 
             width: 100%; 
-            justify-content: space-between;
+            justify-content: space-between; /* This helps labels and inputs spread out */
         }
          .table-controls .control-item > label { 
-            flex-shrink: 0;
+            flex-shrink: 0; /* Prevent label from shrinking */
+            margin-right: 0.5rem; /* More space between label and control on mobile */
          }
         
          .table-controls .control-item select,
          .table-controls .control-item input[type="number"],
-         .dropdown-team-filter { /* Applied to the wrapper of the button */
-            flex-grow: 1;
+         .dropdown-team-filter { 
+            flex-grow: 1; /* Allow controls to take up remaining space */
             min-width: 100px; 
-            /* width: 100%; /* .control-item width 100% will enforce this */
          }
          .team-checklist-container.dropdown-menu { 
              max-height: 120px;
@@ -544,6 +541,7 @@
       <div class="page-header">
         <h2>Player Leaderboards</h2>
         <p>Statistical leaders across all categories</p>
+        <p style="color: red; font-size: 0.9em; margin-top: 0.5rem;">NOTE: Starting week 4, the games played requirement for REL and median/average gameday rank leaderboards will increase from 1 GP to 3 GP. Will remain at 3 GP for the rest of the season.</p>
       </div>
 
       <div class="category-selector">
@@ -571,7 +569,9 @@
             <label for="min-games">Min Games:</label>
             <input type="number" id="min-games" value="3" min="0" step="1">
           </span>
-          <span class="control-item" id="team-filter-container" style="display:none;"> <label for="team-filter-toggle-btn">Team:</label> <div class="dropdown-team-filter">
+          <span class="control-item" id="team-filter-container" style="display:none;"> 
+            <label for="team-filter-toggle-btn">Team:</label> 
+            <div class="dropdown-team-filter">
                 <button type="button" id="team-filter-toggle-btn" class="dropdown-toggle-btn">
                     <span id="team-filter-btn-text">All Teams</span>
                     <span class="dropdown-arrow">▼</span>
@@ -683,6 +683,19 @@
           dataSourceType: 'players',
           hasMinGamesFilter: true 
         },
+        avg_gameday_rank: { 
+          title: 'Average Gameday Rank Leaders',
+          cols: [
+            { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' },
+            { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
+            { header: 'Avg Rank', dataField: 'calculated_avg_rank', sortable: true, type: 'number', formatFn: (v) => (v === Infinity || v === null || typeof v === 'undefined' || isNaN(parseFloat(String(v)))) ? '-' : parseFloat(String(v)).toFixed(1) },
+            { header: 'Games', dataField: 'games_played', sortable: true, type: 'number', formatFn: (v) => parseInt(v || 0) }
+          ],
+          defaultSortField: 'calculated_avg_rank',
+          defaultSortDescending: false,
+          dataSourceType: 'players',
+          hasMinGamesFilter: true
+        },
         aag_mean: {
           title: 'Games Above Mean Leaders',
           subtitle: 'Ties broken by % of Games Above Mean',
@@ -743,6 +756,19 @@
             { header: '% of Games', dataField: 't100_finishes_pct', sortable: true, type: 'number', formatFn: formatPercentage }
           ],
           defaultSortField: 't100_finishes',
+          defaultSortDescending: true,
+          dataSourceType: 'players'
+        },
+        t50_finishes: { 
+          title: 'T50 Finishes Leaders',
+          subtitle: 'Ties broken by % of Games in T50',
+          cols: [
+            { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' },
+            { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
+            { header: 'T50 Finishes', dataField: 't50_finishes', sortable: true, type: 'number', formatFn: (v) => parseInt(v || 0).toString() },
+            { header: '% of Games', dataField: 't50_finishes_pct', sortable: true, type: 'number', formatFn: formatPercentage }
+          ],
+          defaultSortField: 't50_finishes',
           defaultSortDescending: true,
           dataSourceType: 'players'
         }
@@ -829,9 +855,12 @@
           let totalMedianKarma = 0;
           let validGamesForREL = 0;
           const ranks = [];
+          let sumOfRanks = 0; 
+          let countOfRankedGames = 0; 
           let gamesAboveMean = 0;
           let gamesAboveMedian = 0;
           let t100_finishes = 0; 
+          let t50_finishes = 0; 
 
           playerGames.forEach(game => {
             const gameDate = game.date;
@@ -849,8 +878,13 @@
             }
             if (globalRank > 0) {
               ranks.push(globalRank);
+              sumOfRanks += globalRank;
+              countOfRankedGames++;
               if (globalRank <= 100) { 
                 t100_finishes++;
+              }
+              if (globalRank <= 50) { 
+                t50_finishes++;
               }
             }
           });
@@ -869,6 +903,8 @@
             calculated_median_rank = ranks.length % 2 === 0 ? (ranks[mid - 1] + ranks[mid]) / 2 : ranks[mid];
           }
           
+          const calculated_avg_rank = countOfRankedGames > 0 ? sumOfRanks / countOfRankedGames : Infinity;
+
           const games_played_count = parseInt(player.games_played || 0);
 
           return {
@@ -876,12 +912,15 @@
             calculated_rel_mean: calculated_rel_mean,
             calculated_rel_median: calculated_rel_median,
             calculated_median_rank: calculated_median_rank > 0 ? calculated_median_rank : Infinity, 
+            calculated_avg_rank: calculated_avg_rank,
             aag_mean: gamesAboveMean,
             aag_mean_pct: games_played_count > 0 ? gamesAboveMean / games_played_count : 0,
             aag_median: gamesAboveMedian,
             aag_median_pct: games_played_count > 0 ? gamesAboveMedian / games_played_count : 0,
             t100_finishes: t100_finishes, 
             t100_finishes_pct: games_played_count > 0 ? (t100_finishes / games_played_count) : 0,
+            t50_finishes: t50_finishes, 
+            t50_finishes_pct: games_played_count > 0 ? (t50_finishes / games_played_count) : 0, 
             total_points: parseNumber(player.total_points),
             games_played: games_played_count 
           };
@@ -960,7 +999,7 @@
           const specificTeamCheckboxes = Array.from(document.querySelectorAll('.team-specific-filter'));
           let selectedValues = [];
 
-          if (allTeamsCb && allTeamsCb.checked) { // Added null check for allTeamsCb
+          if (allTeamsCb && allTeamsCb.checked) { 
               selectedValues.push('all');
           } else {
               specificTeamCheckboxes.forEach(cb => {
@@ -978,7 +1017,6 @@
           sessionStorage.setItem('selectedLeaderboardTeamFilter', JSON.stringify(selectedValues));
           updateToggleButtonText(); 
           leaderboardSortState.columnField = null;
-          // Only call displayLeaderboard if the data is already loaded
           if (allPlayersData.length > 0 || allGamePerformancesData.length > 0) {
              displayLeaderboard();
           }
@@ -1192,7 +1230,7 @@
         if (categoryConfig.dataSourceType === 'players' || 
             currentCategory === 'single_game_karma' || 
             currentCategory === 'single_game_rank') {
-            teamFilterContainer.style.display = 'inline-flex'; // Revert to inline-flex for horizontal alignment with its label
+            teamFilterContainer.style.display = 'inline-flex'; 
         } else {
             teamFilterContainer.style.display = 'none';
         }
@@ -1280,6 +1318,9 @@
                     } else if (rankSortField === 't100_finishes') {
                         const valAPct = parseFloat(a.t100_finishes_pct || 0); const valBPct = parseFloat(b.t100_finishes_pct || 0);
                         if (valBPct !== valAPct) return valBPct - valAPct; 
+                    } else if (rankSortField === 't50_finishes') { 
+                        const valAPct = parseFloat(a.t50_finishes_pct || 0); const valBPct = parseFloat(b.t50_finishes_pct || 0);
+                        if (valBPct !== valAPct) return valBPct - valAPct;
                     }
                 } else { 
                     if (rankSortField === 'karma') return new Date(a.date) - new Date(b.date);
@@ -1324,6 +1365,9 @@
                             if (valAPct !== valBPct) tieBroken = true;
                         } else if (rankSortField === 't100_finishes') {
                             const valAPct = parseFloat(currentItem.t100_finishes_pct || 0); const valBPct = parseFloat(prevItem.t100_finishes_pct || 0);
+                            if (valAPct !== valBPct) tieBroken = true;
+                        } else if (rankSortField === 't50_finishes') { 
+                            const valAPct = parseFloat(currentItem.t50_finishes_pct || 0); const valBPct = parseFloat(prevItem.t50_finishes_pct || 0);
                             if (valAPct !== valBPct) tieBroken = true;
                         }
                     } 
@@ -1382,6 +1426,9 @@
                     if (valBPct !== valAPct) return valBPct - valAPct;
                 } else if (actualDisplaySortField === 't100_finishes') {
                     const valAPct = parseFloat(a.t100_finishes_pct || 0); const valBPct = parseFloat(b.t100_finishes_pct || 0);
+                    if (valBPct !== valAPct) return valBPct - valAPct;
+                } else if (actualDisplaySortField === 't50_finishes') { 
+                    const valAPct = parseFloat(a.t50_finishes_pct || 0); const valBPct = parseFloat(b.t50_finishes_pct || 0);
                     if (valBPct !== valAPct) return valBPct - valAPct;
                 }
             }
@@ -1482,7 +1529,7 @@
             sessionStorage.setItem('selectedLeaderboardCategory', currentCategory); 
             leaderboardSortState.columnField = null; 
             document.getElementById('min-games').dataset.userInteracted = "false"; 
-            const teamChecklistDropdown = document.getElementById('team-filter-checklist'); // Close dropdown
+            const teamChecklistDropdown = document.getElementById('team-filter-checklist'); 
             const teamFilterToggleBtn = document.getElementById('team-filter-toggle-btn');
             if (teamChecklistDropdown && teamChecklistDropdown.style.display === 'block') {
                 teamChecklistDropdown.style.display = 'none';
@@ -1508,7 +1555,7 @@
         const minGamesInputElement = document.getElementById('min-games');
         minGamesInputElement.addEventListener('change', () => {
             minGamesInputElement.dataset.userInteracted = "true"; 
-            const teamChecklistDropdown = document.getElementById('team-filter-checklist');
+             const teamChecklistDropdown = document.getElementById('team-filter-checklist');
             const teamFilterToggleBtn = document.getElementById('team-filter-toggle-btn');
             if (teamChecklistDropdown && teamChecklistDropdown.style.display === 'block') {
                 teamChecklistDropdown.style.display = 'none';
