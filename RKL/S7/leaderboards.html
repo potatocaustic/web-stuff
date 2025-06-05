@@ -384,7 +384,14 @@
         font-size: 1rem;
       }
       #min-games { width: 60px; }
-      #team-filter-select { min-width: 150px; }
+      #team-filter-select { 
+        min-width: 150px;
+        /* Styling for select[multiple] to make it more manageable */
+        height: auto; /* Allow it to grow if many options, or set a fixed height like 100px */
+        max-height: 150px; /* Prevent it from becoming too tall */
+        overflow-y: auto;
+      }
+
 
       .loading { text-align: center; padding: 3rem; color: #666; font-size: 1.1rem; }
       .error { color: #dc3545; background-color: #f8d7da; border-radius: 4px; margin: 1rem; padding: 1rem; text-align: center;}
@@ -424,7 +431,10 @@
             flex-grow: 1;
             min-width: 100px; 
          }
-         #team-filter-select { width: auto; } 
+         #team-filter-select { 
+            width: auto; 
+            max-height: 120px; /* Adjust for mobile if needed */
+        } 
       }
 
       footer { text-align: center; margin-top: 3rem; padding: 1rem; background-color: #333; color: #fff; }
@@ -482,8 +492,8 @@
             <input type="number" id="min-games" value="3" min="0" step="1">
           </span>
           <span class="control-item" id="team-filter-container" style="display:none;">
-            <label for="team-filter-select">Team: </label>
-            <select id="team-filter-select">
+            <label for="team-filter-select">Team (Ctrl/Cmd+Click for multiple): </label>
+            <select id="team-filter-select" multiple>
               <option value="all">All Teams</option>
             </select>
           </span>
@@ -523,7 +533,6 @@
       function formatKarma(value) {
         return Math.round(parseFloat(value || 0)).toLocaleString();
       }
-      // MODIFIED: formatRank now uses Math.round() and handles Infinity for unrankable
       function formatRank(value) {
         if (value === Infinity || value === null || typeof value === 'undefined' || String(value).trim() === '') {
             return '-';
@@ -532,7 +541,7 @@
         if (isNaN(numValue) || numValue <= 0) {
             return '-';
         }
-        const rank = Math.round(numValue); // Use Math.round()
+        const rank = Math.round(numValue);
         return rank > 0 ? rank : '-';
       }
       function formatPercentage(value) {
@@ -583,7 +592,7 @@
           cols: [
             { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, 
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
-            { header: 'Median Rank', dataField: 'calculated_median_rank', sortable: true, type: 'number', formatFn: formatRank }, // Uses updated formatRank
+            { header: 'Median Rank', dataField: 'calculated_median_rank', sortable: true, type: 'number', formatFn: formatRank },
             { header: 'Games', dataField: 'games_played', sortable: true, type: 'number', formatFn: (v) => parseInt(v || 0) }
           ],
           defaultSortField: 'calculated_median_rank',
@@ -634,7 +643,7 @@
           cols: [
             { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' }, 
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
-            { header: 'Daily Rank', dataField: 'daily_rank', sortable: true, type: 'number', formatFn: formatRank }, // Uses updated formatRank
+            { header: 'Daily Rank', dataField: 'daily_rank', sortable: true, type: 'number', formatFn: formatRank },
             { header: 'Week', dataField: 'week', sortable: true, type: 'number', formatFn: (v) => v }
           ],
           defaultSortField: 'daily_rank', 
@@ -668,7 +677,7 @@
       
       async function fetchSheetDataOriginal(sheetName) { 
         try {
-          const response = await fetch(BASE_URL + "sheet=" + encodeURIComponent(sheetName)); // Ensure "sheet=" is included
+          const response = await fetch(BASE_URL + "sheet=" + encodeURIComponent(sheetName));
           const csvText = await response.text();
           return parseCSVOriginal(csvText); 
         } catch (error) {
@@ -732,27 +741,26 @@
             (String(lineup.started).toUpperCase() === 'TRUE')
           );
           
-          let totalPlayerKarmaRawForREL = 0; // MODIFIED: For REL calculations using raw points
+          let totalPlayerKarmaRawForREL = 0;
           let totalMeanKarma = 0;
           let totalMedianKarma = 0;
           let validGamesForREL = 0;
           const ranks = [];
-          let gamesAboveMean = 0;   // Stays based on final points (including captaincy)
-          let gamesAboveMedian = 0; // Stays based on final points (including captaincy)
+          let gamesAboveMean = 0;
+          let gamesAboveMedian = 0;
           let t100_finishes = 0; 
 
           playerGames.forEach(game => {
             const gameDate = game.date;
-            const playerKarmaFinalForComparisons = parseNumber(game.points_final); // MODIFIED: For AAG, etc.
-            const playerKarmaRawForRELCalculation = parseNumber(game.points_raw); // MODIFIED: For REL sum
+            const playerKarmaFinalForComparisons = parseNumber(game.points_final);
+            const playerKarmaRawForRELCalculation = parseNumber(game.points_raw);
             const globalRank = parseNumber(game.global_rank);
             
             if (weeklyAveragesMap[gameDate]) {
-              totalPlayerKarmaRawForREL += playerKarmaRawForRELCalculation; // MODIFIED: Accumulate raw points for REL
+              totalPlayerKarmaRawForREL += playerKarmaRawForRELCalculation;
               totalMeanKarma += weeklyAveragesMap[gameDate].mean_score;
               totalMedianKarma += weeklyAveragesMap[gameDate].median_score;
               validGamesForREL++;
-              // Comparisons for AAG/AAM still use final points (includes captaincy)
               if (playerKarmaFinalForComparisons > weeklyAveragesMap[gameDate].mean_score) gamesAboveMean++;
               if (playerKarmaFinalForComparisons > weeklyAveragesMap[gameDate].median_score) gamesAboveMedian++;
             }
@@ -764,11 +772,10 @@
             }
           });
           
-          const avgPlayerRawKarmaForREL = validGamesForREL > 0 ? totalPlayerKarmaRawForREL / validGamesForREL : 0; // MODIFIED: Average of raw points for REL
+          const avgPlayerRawKarmaForREL = validGamesForREL > 0 ? totalPlayerKarmaRawForREL / validGamesForREL : 0;
           const avgMeanKarma = validGamesForREL > 0 ? totalMeanKarma / validGamesForREL : 0;
           const avgMedianKarma = validGamesForREL > 0 ? totalMedianKarma / validGamesForREL : 0;
           
-          // MODIFIED: REL calculations use average of raw karma
           const calculated_rel_mean = avgMeanKarma > 0 ? (avgPlayerRawKarmaForREL / avgMeanKarma) : 0;
           const calculated_rel_median = avgMedianKarma > 0 ? (avgPlayerRawKarmaForREL / avgMedianKarma) : 0;
           
@@ -786,13 +793,13 @@
             calculated_rel_mean: calculated_rel_mean,
             calculated_rel_median: calculated_rel_median,
             calculated_median_rank: calculated_median_rank > 0 ? calculated_median_rank : Infinity, 
-            aag_mean: gamesAboveMean, // Remains based on final points
+            aag_mean: gamesAboveMean,
             aag_mean_pct: games_played_count > 0 ? gamesAboveMean / games_played_count : 0,
-            aag_median: gamesAboveMedian, // Remains based on final points
+            aag_median: gamesAboveMedian,
             aag_median_pct: games_played_count > 0 ? gamesAboveMedian / games_played_count : 0,
             t100_finishes: t100_finishes, 
             t100_finishes_pct: games_played_count > 0 ? (t100_finishes / games_played_count) : 0,
-            total_points: parseNumber(player.total_points), // This is from Players sheet, not re-calculated here
+            total_points: parseNumber(player.total_points),
             games_played: games_played_count 
           };
         });
@@ -817,7 +824,7 @@
 
         lineups.forEach(game => {
           if (game.started && (String(game.started).toUpperCase() === 'TRUE')) {
-            const karma = parseNumber(game.points_final); // For single game leaderboards, final points (incl. captaincy) are typically used
+            const karma = parseNumber(game.points_final);
             const dailyRank = parseNumber(game.global_rank);
             const weekStr = dateToWeekMap[game.date];
             
@@ -826,7 +833,7 @@
                 gamePerformances.push({
                   player_handle: game.player_handle,
                   team_id: game.team_id || playerTeamMap[game.player_handle] || 'FA', 
-                  karma: karma, // Karma for single game leaderboard display
+                  karma: karma,
                   daily_rank: dailyRank > 0 ? dailyRank : Infinity, 
                   week: parseInt(weekStr), 
                   date: game.date 
@@ -868,12 +875,57 @@
         activeTeams.sort((a, b) => a.team_name.localeCompare(b.team_name));
         teamFilterSelect.innerHTML = '<option value="all">All Teams</option>' + activeTeams.map(team => `<option value="${team.team_id}">${team.team_name}</option>`).join('');
         
-        const storedTeamFilter = sessionStorage.getItem('selectedLeaderboardTeamFilter');
-        if (storedTeamFilter) {
-            teamFilterSelect.value = storedTeamFilter;
+        const storedTeamFilterJSON = sessionStorage.getItem('selectedLeaderboardTeamFilter');
+        let initialSelectionMade = false;
+        if (storedTeamFilterJSON) {
+            try {
+                const storedTeamValues = JSON.parse(storedTeamFilterJSON);
+                if (Array.isArray(storedTeamValues)) {
+                    if (storedTeamValues.length === 0 || (storedTeamValues.length === 1 && storedTeamValues[0] === 'all')) {
+                        Array.from(teamFilterSelect.options).forEach(option => {
+                            option.selected = (option.value === 'all');
+                        });
+                    } else {
+                        Array.from(teamFilterSelect.options).forEach(option => {
+                            option.selected = storedTeamValues.includes(option.value);
+                        });
+                        const allOpt = teamFilterSelect.querySelector('option[value="all"]');
+                        if (allOpt) allOpt.selected = false;
+                    }
+                    initialSelectionMade = true;
+                }
+            } catch (e) {
+                console.error("Error parsing stored team filter:", e);
+                sessionStorage.removeItem('selectedLeaderboardTeamFilter');
+            }
         }
-        teamFilterSelect.addEventListener('change', () => {
-            sessionStorage.setItem('selectedLeaderboardTeamFilter', teamFilterSelect.value);
+
+        if (!initialSelectionMade) {
+            Array.from(teamFilterSelect.options).forEach(option => {
+                option.selected = (option.value === 'all');
+            });
+        }
+        
+        teamFilterSelect.addEventListener('change', (event) => {
+            const newlySelectedOptions = Array.from(teamFilterSelect.selectedOptions);
+            const newlySelectedValues = newlySelectedOptions.map(option => option.value);
+            let finalSelectedValuesToStore = [];
+            const allOption = teamFilterSelect.querySelector('option[value="all"]');
+
+            if (newlySelectedValues.includes('all')) {
+                Array.from(teamFilterSelect.options).forEach(opt => {
+                    opt.selected = (opt.value === 'all');
+                });
+                finalSelectedValuesToStore = ['all'];
+            } else if (newlySelectedValues.length === 0) {
+                if (allOption) allOption.selected = true;
+                finalSelectedValuesToStore = ['all'];
+            } else {
+                finalSelectedValuesToStore = newlySelectedValues;
+                if (allOption) allOption.selected = false;
+            }
+
+            sessionStorage.setItem('selectedLeaderboardTeamFilter', JSON.stringify(finalSelectedValuesToStore));
             leaderboardSortState.columnField = null; 
             displayLeaderboard();
         });
@@ -924,7 +976,19 @@
         const minGamesContainer = document.getElementById('min-games-filter-container');
         const minGamesInput = document.getElementById('min-games');
         const teamFilterContainer = document.getElementById('team-filter-container');
-        const selectedTeamId = document.getElementById('team-filter-select').value;
+        
+        const teamFilterSelect = document.getElementById('team-filter-select');
+        const selectedTeamValues = Array.from(teamFilterSelect.selectedOptions).map(option => option.value);
+
+        let filterBySpecificTeams = false;
+        let specificTeamIdsToFilter = [];
+
+        if (selectedTeamValues.includes('all') || selectedTeamValues.length === 0) {
+            filterBySpecificTeams = false;
+        } else {
+            filterBySpecificTeams = true;
+            specificTeamIdsToFilter = selectedTeamValues;
+        }
         
         if (categoryConfig.hasMinGamesFilter) {
             minGamesContainer.style.display = 'inline-flex';
@@ -982,8 +1046,8 @@
           if (currentCategory === 'single_game_karma') sourceDataForProcessing = sourceDataForProcessing.filter(g => g.karma > 0);
           else if (currentCategory === 'single_game_rank') sourceDataForProcessing = sourceDataForProcessing.filter(g => g.daily_rank > 0 && g.daily_rank !== Infinity);
           
-          if (selectedTeamId !== 'all' && (currentCategory === 'single_game_karma' || currentCategory === 'single_game_rank')) {
-              sourceDataForProcessing = sourceDataForProcessing.filter(game => game.team_id === selectedTeamId);
+          if (filterBySpecificTeams && (currentCategory === 'single_game_karma' || currentCategory === 'single_game_rank')) {
+              sourceDataForProcessing = sourceDataForProcessing.filter(game => specificTeamIdsToFilter.includes(game.team_id));
           }
         } else { 
           sourceDataForProcessing = [...allPlayersData];
@@ -1086,8 +1150,9 @@
         }
         
         let dataForDisplaySort = [...sourceDataForProcessing]; 
-        if (!isGameLeaderboard && selectedTeamId !== 'all') {
-            dataForDisplaySort = dataForDisplaySort.filter(player => player.current_team_id === selectedTeamId);
+        
+        if (!isGameLeaderboard && filterBySpecificTeams) {
+            dataForDisplaySort = dataForDisplaySort.filter(player => specificTeamIdsToFilter.includes(player.current_team_id));
         }
         
         const displaySortField = leaderboardSortState.columnField || categoryConfig.defaultSortField;
@@ -1170,7 +1235,7 @@
           let rowCells = `
             <td class="rank-cell">${getRankIndicator(item.leaderboardDisplayRank)}</td>
             <td class="player-cell">
-              <img src="${teamLogoSrc}" alt="${getTeamName(teamIdForLogo)}" class="team-logo" onerror="this.style.display='none'; this.src='icons/FA.webp';">
+              <img src="${teamLogoSrc}" alt="${getTeamName(teamIdForLogo)}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
               <div>
                 <div class="player-name">
                   <a href="player.html?player=${encodeURIComponent(playerHandle || '')}">
@@ -1216,7 +1281,8 @@
           categorySelect.value = currentCategory;
           if (categoryParam) { 
             sessionStorage.setItem('selectedLeaderboardCategory', currentCategory); 
-            window.history.replaceState({}, document.title, window.location.pathname); 
+            const newUrl = window.location.pathname + window.location.search.replace(/([&?]category=)[^&]+/, '').replace(/^&/, '?').replace(/\?$/, '');
+            window.history.replaceState({}, document.title, newUrl === '?' ? window.location.pathname : newUrl);
           }
         } else { 
             currentCategory = 'total_points'; 
