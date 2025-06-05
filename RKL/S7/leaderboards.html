@@ -195,7 +195,7 @@
         background-color: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
+        overflow: hidden; /* Changed from hidden to visible for dropdown */
       }
 
       .leaderboard-header {
@@ -362,22 +362,24 @@
         text-align: center;
         display: flex; 
         justify-content: center;
-        align-items: center; /* Changed to flex-start for checklist alignment */
+        align-items: center; 
         gap: 0.5rem; 
         flex-wrap: wrap;
+        position: relative; /* For z-index context if needed for dropdown */
       }
       .table-controls .control-item {
         margin: 0 0.5rem; 
-        display: inline-flex; /* Keep for other items */
-        /* align-items: center; */ /* Handled by parent or specific item */
+        display: inline-flex; 
         gap: 0.3rem; 
+         align-items: center; /* Vertically align label with select/input */
       }
-      /* Specific styling for team filter item if it needs to stack label and checklist */
+      
       #team-filter-container.control-item {
         flex-direction: column;
-        align-items: flex-start; /* Align label and checklist div to the left */
+        align-items: flex-start; 
+        /* position: relative; /* Moved to .dropdown-team-filter */
       }
-      .table-controls .control-item label {
+      .table-controls .control-item > label { /* General labels for controls */
         font-size: 0.95rem; 
         margin-right: 0.25rem;
       }
@@ -395,28 +397,73 @@
       }
       #min-games { width: 60px; }
       
-      .team-checklist-container {
-        border: 1px solid #ddd;
-        padding: 0.5rem;
-        border-radius: 4px;
-        max-height: 150px;
-        overflow-y: auto;
-        background-color: #fff;
-        min-width: 180px; /* Ensure it has some base width */
+      /* Dropdown Team Filter Styles */
+      .dropdown-team-filter {
+          position: relative;
+          display: inline-block; 
+          width: 100%; 
+          min-width: 180px;
       }
-      .team-checklist-container label {
-        display: block;
-        padding: 0.2rem 0.4rem;
-        cursor: pointer;
-        font-size: 0.95rem;
-        white-space: nowrap;
+      .dropdown-toggle-btn {
+          width: 100%;
+          padding: 0.5rem;
+          font-size: 1rem;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          background-color: #fff;
+          cursor: pointer;
+          text-align: left;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
       }
-      .team-checklist-container label:hover {
-        background-color: #f0f0f0;
+      #team-filter-btn-text {
+          flex-grow: 1;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          padding-right: 5px;
       }
-      .team-checklist-container input[type="checkbox"] {
-        margin-right: 0.5rem;
-        vertical-align: middle;
+      .dropdown-arrow {
+          font-size: 0.8em;
+          transition: transform 0.2s ease-in-out;
+      }
+      .dropdown-toggle-btn.active .dropdown-arrow {
+          transform: rotate(180deg);
+      }
+
+      .team-checklist-container.dropdown-menu {
+          display: none; /* Initially hidden */
+          position: absolute;
+          top: 100%; 
+          left: 0;
+          right: 0; 
+          z-index: 1000; 
+          background-color: #fff; 
+          border: 1px solid #ddd; 
+          border-top: none; 
+          border-radius: 0 0 4px 4px; 
+          max-height: 150px; 
+          overflow-y: auto; 
+          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      }
+      .team-checklist-container.dropdown-menu label {
+          display: block;
+          padding: 0.35rem 0.6rem; /* Increased padding */
+          cursor: pointer;
+          font-size: 0.95rem;
+          white-space: nowrap;
+          border-bottom: 1px solid #f0f0f0; /* Separator lines */
+      }
+      .team-checklist-container.dropdown-menu label:last-child {
+          border-bottom: none;
+      }
+      .team-checklist-container.dropdown-menu label:hover {
+          background-color: #f0f0f0;
+      }
+      .team-checklist-container.dropdown-menu input[type="checkbox"] {
+          margin-right: 0.6rem; /* Increased margin */
+          vertical-align: middle;
       }
 
 
@@ -444,27 +491,27 @@
 
         .table-controls {
             gap: 0.5rem; 
-            align-items: stretch; /* Allow items to take full width if needed */
+            align-items: stretch; 
         }
         .table-controls .control-item {
             margin: 0.25rem 0; 
-            width: 100%; /* Make control items take full width on mobile */
+            width: 100%; 
             justify-content: space-between;
         }
-         .table-controls .control-item label { /* General labels in controls */
+         .table-controls .control-item > label { 
             flex-shrink: 0;
          }
-         #team-filter-container.control-item > label { /* Team group label */
+         #team-filter-container.control-item > label { 
             margin-bottom: 0.2rem;
          }
          .table-controls .control-item select,
          .table-controls .control-item input[type="number"],
-         .team-checklist-container { /* Checklist container takes available width */
+         .dropdown-team-filter { /* Ensure dropdown wrapper takes width */
             flex-grow: 1;
             min-width: 100px; 
-            width: 100%; /* Ensure checklist takes width */
+            width: 100%; 
          }
-         .team-checklist-container {
+         .team-checklist-container.dropdown-menu { /* Checklist within dropdown */
              max-height: 120px;
          }
       }
@@ -525,8 +572,14 @@
           </span>
           <span class="control-item" id="team-filter-container" style="display:none;">
             <label>Team:</label>
-            <div id="team-filter-checklist" class="team-checklist-container">
-              </div>
+            <div class="dropdown-team-filter">
+                <button type="button" id="team-filter-toggle-btn" class="dropdown-toggle-btn">
+                    <span id="team-filter-btn-text">All Teams</span>
+                    <span class="dropdown-arrow">▼</span>
+                </button>
+                <div id="team-filter-checklist" class="team-checklist-container dropdown-menu">
+                  </div>
+            </div>
           </span>
         </div>
         <table class="leaderboard-table" id="leaderboardTable">
@@ -876,6 +929,60 @@
         return gamePerformances;
       }
 
+      function updateToggleButtonText() {
+          const teamFilterBtnText = document.getElementById('team-filter-btn-text');
+          if (!teamFilterBtnText) return;
+
+          const allTeamsCb = document.getElementById('team-filter-all');
+          const specificTeamCheckboxes = Array.from(document.querySelectorAll('.team-specific-filter'));
+          let currentSelectedTeamIds = [];
+
+          if (allTeamsCb && allTeamsCb.checked) { // Check if allTeamsCb exists
+              teamFilterBtnText.textContent = 'All Teams';
+          } else {
+              specificTeamCheckboxes.forEach(cb => {
+                  if (cb.checked) {
+                      currentSelectedTeamIds.push(cb.value);
+                  }
+              });
+              if (currentSelectedTeamIds.length === 0 && allTeamsCb) { // If nothing specific, and 'all' exists
+                  teamFilterBtnText.textContent = 'All Teams'; 
+              } else if (currentSelectedTeamIds.length === 1) {
+                  const team = allTeamsData.find(t => t.team_id === currentSelectedTeamIds[0]);
+                  teamFilterBtnText.textContent = team ? team.team_name : '1 Team Selected';
+              } else {
+                  teamFilterBtnText.textContent = `${currentSelectedTeamIds.length} Teams Selected`;
+              }
+          }
+      }
+
+      function applyTeamSelections() {
+          const allTeamsCb = document.getElementById('team-filter-all');
+          const specificTeamCheckboxes = Array.from(document.querySelectorAll('.team-specific-filter'));
+          let selectedValues = [];
+
+          if (allTeamsCb.checked) {
+              selectedValues.push('all');
+          } else {
+              specificTeamCheckboxes.forEach(cb => {
+                  if (cb.checked) {
+                      selectedValues.push(cb.value);
+                  }
+              });
+          }
+          
+          if (selectedValues.length === 0 && allTeamsCb) { 
+              allTeamsCb.checked = true; 
+              selectedValues.push('all');
+          }
+
+          sessionStorage.setItem('selectedLeaderboardTeamFilter', JSON.stringify(selectedValues));
+          updateToggleButtonText(); 
+          leaderboardSortState.columnField = null;
+          displayLeaderboard();
+      }
+
+
       async function loadData() { 
         const leaderboardBody = document.getElementById('leaderboard-body');
         leaderboardBody.innerHTML = '<tr><td colspan="4" class="loading">Loading data from sheets...</td></tr>';
@@ -903,12 +1010,11 @@
         
         // --- Team Filter Checklist Setup ---
         const teamFilterChecklistContainer = document.getElementById('team-filter-checklist');
-        teamFilterChecklistContainer.innerHTML = ''; // Clear previous items
+        teamFilterChecklistContainer.innerHTML = ''; 
 
         const activeTeams = allTeamsData.filter(team => team.team_id && team.team_name && team.team_id.toUpperCase() !== 'FA' && team.team_id.toUpperCase() !== 'RETIRED' && team.team_id.toUpperCase() !== 'FREE_AGENT');
         activeTeams.sort((a, b) => a.team_name.localeCompare(b.team_name));
 
-        // Create "All Teams" checkbox
         const allTeamsLabel = document.createElement('label');
         const allTeamsCheckbox = document.createElement('input');
         allTeamsCheckbox.type = 'checkbox';
@@ -919,7 +1025,6 @@
         allTeamsLabel.appendChild(document.createTextNode(' All Teams'));
         teamFilterChecklistContainer.appendChild(allTeamsLabel);
 
-        // Create checkboxes for specific teams
         activeTeams.forEach(team => {
             const label = document.createElement('label');
             const checkbox = document.createElement('input');
@@ -932,29 +1037,8 @@
             teamFilterChecklistContainer.appendChild(label);
         });
 
-        // Event Listeners for Team Filter Checkboxes
         const allTeamsCb = document.getElementById('team-filter-all');
         const specificTeamCheckboxes = Array.from(document.querySelectorAll('.team-specific-filter'));
-
-        function applyTeamSelections() {
-            let selectedValues = [];
-            if (allTeamsCb.checked) {
-                selectedValues.push('all');
-            } else {
-                specificTeamCheckboxes.forEach(cb => {
-                    if (cb.checked) {
-                        selectedValues.push(cb.value);
-                    }
-                });
-            }
-            if (selectedValues.length === 0) { // Should not happen if logic is correct, but safeguard
-                allTeamsCb.checked = true; 
-                selectedValues.push('all');
-            }
-            sessionStorage.setItem('selectedLeaderboardTeamFilter', JSON.stringify(selectedValues));
-            leaderboardSortState.columnField = null;
-            displayLeaderboard();
-        }
 
         allTeamsCb.addEventListener('change', () => {
             if (allTeamsCb.checked) {
@@ -962,7 +1046,7 @@
             } else {
                 const anySpecificChecked = specificTeamCheckboxes.some(cb => cb.checked);
                 if (!anySpecificChecked) {
-                    allTeamsCb.checked = true; // Prevent unchecking 'All' if no specifics are chosen
+                    allTeamsCb.checked = true; 
                 }
             }
             applyTeamSelections();
@@ -982,7 +1066,6 @@
             });
         });
         
-        // Load initial state for checkboxes from sessionStorage
         const storedTeamFilterJSON = sessionStorage.getItem('selectedLeaderboardTeamFilter');
         if (storedTeamFilterJSON) {
             try {
@@ -1011,6 +1094,27 @@
             allTeamsCb.checked = true; 
             specificTeamCheckboxes.forEach(cb => cb.checked = false);
         }
+        updateToggleButtonText(); // Set initial button text
+
+        // Dropdown Toggle Logic
+        const teamFilterToggleBtn = document.getElementById('team-filter-toggle-btn');
+        const teamChecklistDropdown = document.getElementById('team-filter-checklist');
+
+        teamFilterToggleBtn.addEventListener('click', (event) => {
+            event.stopPropagation(); 
+            const isActive = teamChecklistDropdown.style.display === 'block';
+            teamChecklistDropdown.style.display = isActive ? 'none' : 'block';
+            teamFilterToggleBtn.classList.toggle('active', !isActive);
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!teamChecklistDropdown.contains(event.target) && event.target !== teamFilterToggleBtn && !teamFilterToggleBtn.contains(event.target) ) {
+                if (teamChecklistDropdown.style.display === 'block') {
+                    teamChecklistDropdown.style.display = 'none';
+                    teamFilterToggleBtn.classList.remove('active');
+                }
+            }
+        });
         // --- End of Team Filter Checklist Setup ---
         
         displayLeaderboard(); 
@@ -1042,6 +1146,13 @@
               leaderboardSortState.direction = 'desc';
           }
         }
+        // Do not close dropdown on sort
+        // const teamChecklistDropdown = document.getElementById('team-filter-checklist');
+        // const teamFilterToggleBtn = document.getElementById('team-filter-toggle-btn');
+        // if (teamChecklistDropdown.style.display === 'block') {
+        //     teamChecklistDropdown.style.display = 'none';
+        //     teamFilterToggleBtn.classList.remove('active');
+        // }
         displayLeaderboard();
       }
       
@@ -1060,7 +1171,6 @@
         const minGamesInput = document.getElementById('min-games');
         const teamFilterContainer = document.getElementById('team-filter-container');
         
-        // Get selected teams from checklist
         const selectedTeamCheckboxes = document.querySelectorAll('#team-filter-checklist input[name="teamFilter"]:checked');
         const selectedTeamValues = Array.from(selectedTeamCheckboxes).map(cb => cb.value);
 
@@ -1075,7 +1185,7 @@
         }
         
         if (categoryConfig.hasMinGamesFilter) {
-            minGamesContainer.style.display = 'inline-flex'; // or 'flex' depending on desired stacking
+            minGamesContainer.style.display = 'inline-flex'; 
             if (minGamesInput.dataset.lastCategory !== currentCategory || minGamesInput.dataset.userInteracted === "false") {
                 const playersMeeting3Games = allPlayersData.filter(p => (p.games_played || 0) >= 3).length;
                 minGamesInput.value = (playersMeeting3Games < 120 && allPlayersData.length > 20) ? "1" : "3";
@@ -1089,7 +1199,7 @@
         if (categoryConfig.dataSourceType === 'players' || 
             currentCategory === 'single_game_karma' || 
             currentCategory === 'single_game_rank') {
-            teamFilterContainer.style.display = 'flex'; // Changed to flex for new layout
+            teamFilterContainer.style.display = 'flex'; 
         } else {
             teamFilterContainer.style.display = 'none';
         }
@@ -1387,12 +1497,25 @@
         if (storedShowCount) showCountElement.value = storedShowCount;
         showCountElement.addEventListener('change', () => {
             sessionStorage.setItem('selectedLeaderboardShowCount', showCountElement.value);
+            // Close dropdown on other filter changes for better UX
+            const teamChecklistDropdown = document.getElementById('team-filter-checklist');
+            const teamFilterToggleBtn = document.getElementById('team-filter-toggle-btn');
+            if (teamChecklistDropdown.style.display === 'block') {
+                teamChecklistDropdown.style.display = 'none';
+                teamFilterToggleBtn.classList.remove('active');
+            }
             displayLeaderboard();
         });
 
         const minGamesInputElement = document.getElementById('min-games');
         minGamesInputElement.addEventListener('change', () => {
             minGamesInputElement.dataset.userInteracted = "true"; 
+             const teamChecklistDropdown = document.getElementById('team-filter-checklist');
+            const teamFilterToggleBtn = document.getElementById('team-filter-toggle-btn');
+            if (teamChecklistDropdown.style.display === 'block') {
+                teamChecklistDropdown.style.display = 'none';
+                teamFilterToggleBtn.classList.remove('active');
+            }
             displayLeaderboard();
         });
         minGamesInputElement.addEventListener('input', () => { 
