@@ -175,13 +175,13 @@
         text-align: center;
       }
 
-      #category-select { /* Styling for the new dropdown */
+      #category-select { 
         width: 100%;
-        padding: 0.8rem;
+        padding: 0.8rem; /* This one is larger */
         border: 1px solid #ddd;
         border-radius: 6px;
         font-size: 1rem;
-        background-color: #f8f9fa;
+        background-color: #f8f9fa; /* Specific background */
         cursor: pointer;
       }
 
@@ -195,7 +195,7 @@
         background-color: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        overflow: hidden; /* Changed from hidden to visible for dropdown */
+        overflow: visible; /* Ensure dropdown can overflow */
       }
 
       .leaderboard-header {
@@ -365,52 +365,55 @@
         align-items: center; 
         gap: 0.5rem; 
         flex-wrap: wrap;
-        position: relative; /* For z-index context if needed for dropdown */
+        position: relative; 
       }
       .table-controls .control-item {
         margin: 0 0.5rem; 
         display: inline-flex; 
         gap: 0.3rem; 
-         align-items: center; /* Vertically align label with select/input */
+         align-items: center; 
       }
       
-      #team-filter-container.control-item {
-        flex-direction: column;
-        align-items: flex-start; 
-        /* position: relative; /* Moved to .dropdown-team-filter */
-      }
-      .table-controls .control-item > label { /* General labels for controls */
+      .table-controls .control-item > label { 
         font-size: 0.95rem; 
-        margin-right: 0.25rem;
-      }
-      #team-filter-container.control-item > label { /* Label for the "Team" group */
-         margin-bottom: 0.3rem;
-         font-weight: bold;
+        margin-right: 0.25rem; 
       }
 
+      /* Unified styling for form-like controls in .table-controls */
       .table-controls .control-item select,
-      .table-controls .control-item input[type="number"] {
+      .table-controls .control-item input[type="number"],
+      .dropdown-toggle-btn {
         padding: 0.5rem;
         border: 1px solid #ddd;
         border-radius: 4px;
         font-size: 1rem;
+        background-color: #f8f9fa; /* Consistent background */
+        color: #333; 
+        line-height: 1.5; /* For consistent height */
       }
+      /* Specifics for select to make background color apply */
+      .table-controls .control-item select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        padding-right: 1.5em; /* Space for custom arrow if added */
+        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E');
+        background-repeat: no-repeat;
+        background-position: right .5em top 50%, 0 0;
+        background-size: .65em auto, 100%;
+      }
+
+
       #min-games { width: 60px; }
       
       /* Dropdown Team Filter Styles */
       .dropdown-team-filter {
           position: relative;
           display: inline-block; 
-          width: 100%; 
-          min-width: 180px;
+          min-width: 150px; /* Base width for the dropdown wrapper */
       }
-      .dropdown-toggle-btn {
-          width: 100%;
-          padding: 0.5rem;
-          font-size: 1rem;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-          background-color: #fff;
+      .dropdown-toggle-btn { /* Now inherits from the unified group above */
+          width: 100%; /* To fill .dropdown-team-filter */
           cursor: pointer;
           text-align: left;
           display: flex;
@@ -433,7 +436,7 @@
       }
 
       .team-checklist-container.dropdown-menu {
-          display: none; /* Initially hidden */
+          display: none; 
           position: absolute;
           top: 100%; 
           left: 0;
@@ -449,20 +452,20 @@
       }
       .team-checklist-container.dropdown-menu label {
           display: block;
-          padding: 0.35rem 0.6rem; /* Increased padding */
+          padding: 0.35rem 0.6rem; 
           cursor: pointer;
           font-size: 0.95rem;
           white-space: nowrap;
-          border-bottom: 1px solid #f0f0f0; /* Separator lines */
+          border-bottom: 1px solid #f0f0f0; 
       }
       .team-checklist-container.dropdown-menu label:last-child {
           border-bottom: none;
       }
       .team-checklist-container.dropdown-menu label:hover {
-          background-color: #f0f0f0;
+          background-color: #e9ecef; /* Slightly darker hover */
       }
       .team-checklist-container.dropdown-menu input[type="checkbox"] {
-          margin-right: 0.6rem; /* Increased margin */
+          margin-right: 0.6rem; 
           vertical-align: middle;
       }
 
@@ -501,17 +504,15 @@
          .table-controls .control-item > label { 
             flex-shrink: 0;
          }
-         #team-filter-container.control-item > label { 
-            margin-bottom: 0.2rem;
-         }
+        
          .table-controls .control-item select,
          .table-controls .control-item input[type="number"],
-         .dropdown-team-filter { /* Ensure dropdown wrapper takes width */
+         .dropdown-team-filter { /* Applied to the wrapper of the button */
             flex-grow: 1;
             min-width: 100px; 
-            width: 100%; 
+            /* width: 100%; /* .control-item width 100% will enforce this */
          }
-         .team-checklist-container.dropdown-menu { /* Checklist within dropdown */
+         .team-checklist-container.dropdown-menu { 
              max-height: 120px;
          }
       }
@@ -558,7 +559,7 @@
         
         <div class="table-controls">
           <span class="control-item">
-            <label for="show-count">Show: </label>
+            <label for="show-count">Show:</label>
             <select id="show-count">
               <option value="10">Top 10</option>
               <option value="25" selected>Top 25</option>
@@ -567,12 +568,10 @@
             </select>
           </span>
           <span class="control-item" id="min-games-filter-container" style="display:none;">
-            <label for="min-games">Min Games: </label>
+            <label for="min-games">Min Games:</label>
             <input type="number" id="min-games" value="3" min="0" step="1">
           </span>
-          <span class="control-item" id="team-filter-container" style="display:none;">
-            <label>Team:</label>
-            <div class="dropdown-team-filter">
+          <span class="control-item" id="team-filter-container" style="display:none;"> <label for="team-filter-toggle-btn">Team:</label> <div class="dropdown-team-filter">
                 <button type="button" id="team-filter-toggle-btn" class="dropdown-toggle-btn">
                     <span id="team-filter-btn-text">All Teams</span>
                     <span class="dropdown-arrow">▼</span>
@@ -937,7 +936,7 @@
           const specificTeamCheckboxes = Array.from(document.querySelectorAll('.team-specific-filter'));
           let currentSelectedTeamIds = [];
 
-          if (allTeamsCb && allTeamsCb.checked) { // Check if allTeamsCb exists
+          if (allTeamsCb && allTeamsCb.checked) { 
               teamFilterBtnText.textContent = 'All Teams';
           } else {
               specificTeamCheckboxes.forEach(cb => {
@@ -945,7 +944,7 @@
                       currentSelectedTeamIds.push(cb.value);
                   }
               });
-              if (currentSelectedTeamIds.length === 0 && allTeamsCb) { // If nothing specific, and 'all' exists
+              if (currentSelectedTeamIds.length === 0 && allTeamsCb) { 
                   teamFilterBtnText.textContent = 'All Teams'; 
               } else if (currentSelectedTeamIds.length === 1) {
                   const team = allTeamsData.find(t => t.team_id === currentSelectedTeamIds[0]);
@@ -961,7 +960,7 @@
           const specificTeamCheckboxes = Array.from(document.querySelectorAll('.team-specific-filter'));
           let selectedValues = [];
 
-          if (allTeamsCb.checked) {
+          if (allTeamsCb && allTeamsCb.checked) { // Added null check for allTeamsCb
               selectedValues.push('all');
           } else {
               specificTeamCheckboxes.forEach(cb => {
@@ -979,7 +978,10 @@
           sessionStorage.setItem('selectedLeaderboardTeamFilter', JSON.stringify(selectedValues));
           updateToggleButtonText(); 
           leaderboardSortState.columnField = null;
-          displayLeaderboard();
+          // Only call displayLeaderboard if the data is already loaded
+          if (allPlayersData.length > 0 || allGamePerformancesData.length > 0) {
+             displayLeaderboard();
+          }
       }
 
 
@@ -1008,7 +1010,6 @@
         
         allGamePerformancesData = processGamePerformances(lineupsRaw, weeklyAveragesRaw, playersRaw);
         
-        // --- Team Filter Checklist Setup ---
         const teamFilterChecklistContainer = document.getElementById('team-filter-checklist');
         teamFilterChecklistContainer.innerHTML = ''; 
 
@@ -1094,9 +1095,8 @@
             allTeamsCb.checked = true; 
             specificTeamCheckboxes.forEach(cb => cb.checked = false);
         }
-        updateToggleButtonText(); // Set initial button text
+        updateToggleButtonText(); 
 
-        // Dropdown Toggle Logic
         const teamFilterToggleBtn = document.getElementById('team-filter-toggle-btn');
         const teamChecklistDropdown = document.getElementById('team-filter-checklist');
 
@@ -1108,14 +1108,14 @@
         });
 
         document.addEventListener('click', (event) => {
-            if (!teamChecklistDropdown.contains(event.target) && event.target !== teamFilterToggleBtn && !teamFilterToggleBtn.contains(event.target) ) {
-                if (teamChecklistDropdown.style.display === 'block') {
+            const dropdownWrapper = teamFilterToggleBtn.closest('.dropdown-team-filter');
+            if (dropdownWrapper && !dropdownWrapper.contains(event.target)) {
+                 if (teamChecklistDropdown.style.display === 'block') {
                     teamChecklistDropdown.style.display = 'none';
                     teamFilterToggleBtn.classList.remove('active');
                 }
             }
         });
-        // --- End of Team Filter Checklist Setup ---
         
         displayLeaderboard(); 
       }
@@ -1146,13 +1146,6 @@
               leaderboardSortState.direction = 'desc';
           }
         }
-        // Do not close dropdown on sort
-        // const teamChecklistDropdown = document.getElementById('team-filter-checklist');
-        // const teamFilterToggleBtn = document.getElementById('team-filter-toggle-btn');
-        // if (teamChecklistDropdown.style.display === 'block') {
-        //     teamChecklistDropdown.style.display = 'none';
-        //     teamFilterToggleBtn.classList.remove('active');
-        // }
         displayLeaderboard();
       }
       
@@ -1199,7 +1192,7 @@
         if (categoryConfig.dataSourceType === 'players' || 
             currentCategory === 'single_game_karma' || 
             currentCategory === 'single_game_rank') {
-            teamFilterContainer.style.display = 'flex'; 
+            teamFilterContainer.style.display = 'inline-flex'; // Revert to inline-flex for horizontal alignment with its label
         } else {
             teamFilterContainer.style.display = 'none';
         }
@@ -1489,6 +1482,12 @@
             sessionStorage.setItem('selectedLeaderboardCategory', currentCategory); 
             leaderboardSortState.columnField = null; 
             document.getElementById('min-games').dataset.userInteracted = "false"; 
+            const teamChecklistDropdown = document.getElementById('team-filter-checklist'); // Close dropdown
+            const teamFilterToggleBtn = document.getElementById('team-filter-toggle-btn');
+            if (teamChecklistDropdown && teamChecklistDropdown.style.display === 'block') {
+                teamChecklistDropdown.style.display = 'none';
+                if (teamFilterToggleBtn) teamFilterToggleBtn.classList.remove('active');
+            }
             displayLeaderboard();
         });
 
@@ -1497,12 +1496,11 @@
         if (storedShowCount) showCountElement.value = storedShowCount;
         showCountElement.addEventListener('change', () => {
             sessionStorage.setItem('selectedLeaderboardShowCount', showCountElement.value);
-            // Close dropdown on other filter changes for better UX
             const teamChecklistDropdown = document.getElementById('team-filter-checklist');
             const teamFilterToggleBtn = document.getElementById('team-filter-toggle-btn');
-            if (teamChecklistDropdown.style.display === 'block') {
+            if (teamChecklistDropdown && teamChecklistDropdown.style.display === 'block') {
                 teamChecklistDropdown.style.display = 'none';
-                teamFilterToggleBtn.classList.remove('active');
+                if (teamFilterToggleBtn) teamFilterToggleBtn.classList.remove('active');
             }
             displayLeaderboard();
         });
@@ -1510,11 +1508,11 @@
         const minGamesInputElement = document.getElementById('min-games');
         minGamesInputElement.addEventListener('change', () => {
             minGamesInputElement.dataset.userInteracted = "true"; 
-             const teamChecklistDropdown = document.getElementById('team-filter-checklist');
+            const teamChecklistDropdown = document.getElementById('team-filter-checklist');
             const teamFilterToggleBtn = document.getElementById('team-filter-toggle-btn');
-            if (teamChecklistDropdown.style.display === 'block') {
+            if (teamChecklistDropdown && teamChecklistDropdown.style.display === 'block') {
                 teamChecklistDropdown.style.display = 'none';
-                teamFilterToggleBtn.classList.remove('active');
+                if (teamFilterToggleBtn) teamFilterToggleBtn.classList.remove('active');
             }
             displayLeaderboard();
         });
