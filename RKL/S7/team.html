@@ -373,6 +373,14 @@
         color: #0056b3;
         text-decoration: underline;
       }
+      
+      .all-star-badge {
+        color: gold;
+        text-shadow: 0 0 2px #a18000;
+        font-size: 1em;
+        margin-left: 5px;
+        vertical-align: middle;
+      }
 
       .player-stats {
         font-size: 0.9rem;
@@ -1199,6 +1207,7 @@
         const rosterHTML = sortedPlayers.map(player => {
           const relMedian = player.calculated_rel_median || 0; // Uses raw
           const gamesPlayed = parseInt(player.games_played || 0);
+          const isAllStar = player.all_star === '1';
           
           let medianRankDisplay = '-';
           if (player.calculated_median_rank !== Infinity && player.calculated_median_rank > 0) {
@@ -1214,7 +1223,7 @@
                 <img src="icons/${teamData.team_id}.webp" alt="${escapeHTML(teamData.team_name)}" class="roster-team-logo-inline" onerror="this.style.display='none'">
               </div>
               <div class="player-info">
-                <a href="player.html?player=${encodeURIComponent(player.player_handle)}" class="player-name">${escapeHTML(player.player_handle)}</a>
+                <a href="player.html?player=${encodeURIComponent(player.player_handle)}" class="player-name">${escapeHTML(player.player_handle)}${isAllStar ? ' <span class="all-star-badge">&#9733;</span>' : ''}</a>
                 <div class="player-stats">
                   ${gamesPlayed} games • 
                   ${medianRankDisplay} med rank 
