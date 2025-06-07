@@ -202,6 +202,14 @@
         text-decoration: underline;
       }
 
+      .all-star-badge {
+        color: gold;
+        text-shadow: 0 0 3px #a18000;
+        font-size: 0.8em;
+        margin-left: 8px;
+        vertical-align: text-top;
+      }
+
       .player-previous-teams { 
         font-size: 0.95rem;
         color: #777;
@@ -885,10 +893,12 @@
 
         const totalPoints = parseNumber(playerData.total_points);
         const gamesPlayed = parseInt(playerData.games_played || 0);
+        const isAllStar = playerData.all_star === '1';
+
         document.getElementById('player-main-info').innerHTML = `
           ${teamLogoHTML}
           <div class="player-details">
-            <h2>${playerData.player_handle}</h2>
+            <h2>${playerData.player_handle}${isAllStar ? ' <span class="all-star-badge">&#9733;</span>' : ''}</h2>
             <div class="player-subtitle">${playerData.player_status} • ${gamesPlayed} games played</div>
             ${teamInfoHTML}
             ${previousTeamsHTML} 
