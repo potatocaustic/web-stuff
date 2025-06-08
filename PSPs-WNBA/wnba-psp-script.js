@@ -113,6 +113,28 @@ function isDate51825(dateString) {
   return patterns.some(pattern => pattern.test(dateString.trim()));
 }
 
+// Helper function to check if a date is 6-6-25
+function isDate6625(dateString) {
+  if (!dateString) return false;
+  
+  // Check for various date formats that could represent 6-6-25
+  const patterns = [
+    /^6-6-25$/,            // 6-6-25
+    /^06-06-25$/,          // 06-06-25
+    /^6\/6\/2025$/,        // 6/6/2025
+    /^06\/06\/2025$/,      // 06/06/2025
+    /^6-6-2025$/,          // 6-6-2025
+    /^06-06-2025$/         // 06-06-2025
+  ];
+  
+  return patterns.some(pattern => pattern.test(dateString.trim()));
+}
+
+// Helper function to check if a date is an exception date
+function isExceptionDate(dateString) {
+  return isDate51825(dateString) || isDate6625(dateString);
+}
+
 // Function to load data for a specific category
 async function loadData(category) {
   if (allData[category].length > 0) {
@@ -143,10 +165,10 @@ async function loadData(category) {
       }
     }
     
-    // Modified filter: Keep entries with Projection !== 0 OR entries from 5-18-25
+    // Modified filter: Keep entries with Projection !== 0 OR entries from exception dates (5-18-25 or 6-6-25)
     const filtered = data.filter(entry => {
-      // Always include entries from 5-18-25, regardless of Projection value
-      if (isDate51825(entry.Date)) {
+      // Always include entries from exception dates, regardless of Projection value
+      if (isExceptionDate(entry.Date)) {
         return true;
       }
       // For all other dates, filter out entries with Projection = 0
