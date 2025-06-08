@@ -336,14 +336,6 @@
         text-overflow: ellipsis;
       }
       
-      .all-star-badge {
-        color: gold;
-        text-shadow: 0 0 2px #a18000;
-        font-size: 0.9em;
-        margin-left: 5px;
-        vertical-align: middle;
-      }
-      
       .team-name {
         color: #666;
         font-size: 0.9rem;
@@ -956,7 +948,7 @@
 
         lineups.forEach(game => {
           if (game.started && (String(game.started).toUpperCase() === 'TRUE')) {
-            const karma = parseNumber(game.points_final);
+            const karma = parseNumber(game.points_raw);
             const dailyRank = parseNumber(game.global_rank);
             const weekStr = dateToWeekMap[game.date];
             
@@ -1462,19 +1454,14 @@
         }
 
         const tableHTML = itemsToShow.map((item) => {
-          let playerHandle, teamIdForLogo, isAllStar = false;
+          let playerHandle, teamIdForLogo;
 
           if (isGameLeaderboard) {
             playerHandle = item.player_handle;
             teamIdForLogo = item.team_id; 
-            const playerInfo = allPlayersData.find(p => p.player_handle === playerHandle);
-            if (playerInfo) {
-                isAllStar = playerInfo.all_star === '1';
-            }
           } else { 
             playerHandle = item.player_handle;
             teamIdForLogo = item.current_team_id;
-            isAllStar = item.all_star === '1';
           }
           
           const teamLogoSrc = (teamIdForLogo && String(teamIdForLogo).toLowerCase() !== 'undefined' && String(teamIdForLogo).trim() !== '' && teamIdForLogo !== 'N/A') 
@@ -1488,7 +1475,7 @@
               <div>
                 <div class="player-name">
                   <a href="player.html?player=${encodeURIComponent(playerHandle || '')}">
-                    ${playerHandle || 'N/A'}${isAllStar ? ' <span class="all-star-badge">&#9733;</span>' : ''}
+                    ${playerHandle || 'N/A'}
                   </a>
                 </div>
                 <div class="team-name">${getTeamName(teamIdForLogo)}</div>
