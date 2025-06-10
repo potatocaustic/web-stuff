@@ -320,18 +320,7 @@
       </div>
 
       <div id="awards-container">
-        <div class="awards-grid" id="top-awards">
-          </div>
-        <div class="all-stars-container">
-          <div class="all-star-team">
-            <div class="all-star-header"><h3>Eastern Conference All-Stars</h3></div>
-            <ul class="all-star-list" id="all-stars-east"></ul>
-          </div>
-          <div class="all-star-team">
-            <div class="all-star-header"><h3>Western Conference All-Stars</h3></div>
-            <ul class="all-star-list" id="all-stars-west"></ul>
-          </div>
-        </div>
+        <div class="loading">Loading awards...</div>
       </div>
     </main>
     
@@ -359,10 +348,16 @@
       }
       
       function parseCSV(csvText) {
-        const lines = csvText.trim().split('\n');
-        const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
+        const lines = csvText.trim().split(/\r?\n/);
+        let headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
+        
+        if (headers[0] && headers[0].charCodeAt(0) === 0xFEFF) {
+            headers[0] = headers[0].slice(1);
+        }
+
         const data = [];
         for (let i = 1; i < lines.length; i++) {
+            if (!lines[i]) continue;
             const values = [];
             let currentVal = '';
             let inQuotes = false;
@@ -397,16 +392,10 @@
         const team = allTeamsData.find(t => t.team_name === teamName);
         return team ? team.team_id : null;
       }
-      
-      function getTeamIdByHandle(teamHandle) {
-        if (!teamHandle) return null;
-        const team = allTeamsData.find(t => t.team_id === teamHandle);
-        return team ? team.team_id : null;
-      }
 
       function createAwardCard(title, winnerData) {
         if (!winnerData) return '';
-        const { name, detail, link, logoId, isPlayer } = winnerData;
+        const { name, detail, link, logoId } = winnerData;
         
         const logoUrl = `icons/${logoId}.webp`;
         const winnerNameHTML = link ? `<a href="${link}">${name}</a>` : name;
@@ -428,7 +417,6 @@
 
       async function loadTrophyCase() {
         const awardsContainer = document.getElementById('awards-container');
-        awardsContainer.innerHTML = '<div class="loading">Loading awards...</div>';
         
         const [trophyData, teamsData] = await Promise.all([
             fetchSheetData('Trophy_Case'),
@@ -442,6 +430,7 @@
 
         allTrophyData = trophyData;
         allTeamsData = teamsData;
+
         awardsContainer.innerHTML = `
             <div class="awards-grid" id="top-awards"></div>
             <div class="all-stars-container">
@@ -490,7 +479,7 @@
             name: mvp.Player,
             detail: mvp.team_name,
             detailLink: `team.html?id=${team?.team_id}`,
-            link: `player.html?player=${mvp.Player}`,
+            link: `player.html?player=${encodeURIComponent(mvp.Player)}`,
             logoId: team?.team_id
           });
         }
@@ -503,7 +492,7 @@
                 name: fmvp.Player,
                 detail: fmvp.team_name,
                 detailLink: `team.html?id=${team?.team_id}`,
-                link: `player.html?player=${fmvp.Player}`,
+                link: `player.html?player=${encodeURIComponent(fmvp.Player)}`,
                 logoId: team?.team_id
             });
         }
@@ -516,7 +505,7 @@
                 name: roy.Player,
                 detail: roy.team_name,
                 detailLink: `team.html?id=${team?.team_id}`,
-                link: `player.html?player=${roy.Player}`,
+                link: `player.html?player=${encodeURIComponent(roy.Player)}`,
                 logoId: team?.team_id
             });
         }
@@ -529,7 +518,7 @@
                 name: smoy.Player,
                 detail: smoy.team_name,
                 detailLink: `team.html?id=${team?.team_id}`,
-                link: `player.html?player=${smoy.Player}`,
+                link: `player.html?player=${encodeURIComponent(smoy.Player)}`,
                 logoId: team?.team_id
             });
         }
@@ -537,10 +526,10 @@
         // GM of the Year
         const gmoy = allTrophyData.find(d => d.Award === 'GMOY');
         if (gmoy) {
-          const teamId = getTeamIdByHandle(gmoy.gm_team);
+          const teamId = getTeamIdByName(gmoy.gm_team); // Corrected lookup
           awardsHTML += createAwardCard('GM of the Year', {
             name: gmoy.gm_handle,
-            detail: getTeamName(gmoy.gm_team),
+            detail: gmoy.gm_team,
             detailLink: `team.html?id=${teamId}`,
             link: null, // No link for GM
             logoId: teamId
@@ -557,12 +546,12 @@
 
         eastList.innerHTML = eastAllStars.map(player => {
             const team = allTeamsData.find(t => t.team_name === player.team_name);
-            return `<li><img src="icons/${team?.team_id}.webp" class="winner-logo" onerror="this.onerror=null; this.src='icons/FA.webp';"> <a href="player.html?player=${player.Player}">${player.Player}</a></li>`;
+            return `<li><img src="icons/${team?.team_id}.webp" class="winner-logo" onerror="this.onerror=null; this.src='icons/FA.webp';"> <a href="player.html?player=${encodeURIComponent(player.Player)}">${player.Player}</a></li>`;
         }).join('');
 
         westList.innerHTML = westAllStars.map(player => {
             const team = allTeamsData.find(t => t.team_name === player.team_name);
-            return `<li><img src="icons/${team?.team_id}.webp" class="winner-logo" onerror="this.onerror=null; this.src='icons/FA.webp';"> <a href="player.html?player=${player.Player}">${player.Player}</a></li>`;
+            return `<li><img src="icons/${team?.team_id}.webp" class="winner-logo" onerror="this.onerror=null; this.src='icons/FA.webp';"> <a href="player.html?player=${encodeURIComponent(player.Player)}">${player.Player}</a></li>`;
         }).join('');
       }
 
