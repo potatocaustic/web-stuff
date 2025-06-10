@@ -225,6 +225,10 @@
       .winner-detail a:hover {
         text-decoration: underline;
       }
+      .winner-detail .detail-positive {
+        font-weight: bold;
+        color: #28a745;
+      }
       
       .winner-stats {
         margin-top: auto; /* Pushes stats to the bottom */
@@ -263,6 +267,24 @@
         color: white;
         margin: 0;
       }
+      .all-star-list-header {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 1rem;
+        padding: 0.5rem 1rem;
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #ddd;
+        font-weight: bold;
+        font-size: 0.9rem;
+        color: #666;
+      }
+      .all-star-list-header .player-col-header {
+        text-align: left;
+      }
+      .all-star-list-header .rel-col-header {
+        text-align: right;
+      }
+
       .all-star-list {
         list-style: none;
         padding: 0;
@@ -505,15 +527,17 @@
       async function loadTrophyCase() {
         const awardsContainer = document.getElementById('awards-container');
         
-        const [trophyData, teamsData, playersData, weeklyAveragesData, lineupsData] = await Promise.all([
+        const [trophyData, teamsData, playersData, weeklyAveragesData, lineupsData, scheduleData, weeklyScoresData] = await Promise.all([
             fetchSheetData('Trophy_Case'),
             fetchSheetData('Teams'),
             fetchSheetData('Players'),
             fetchSheetData('Weekly_Averages'),
-            fetchSheetData('Lineups')
+            fetchSheetData('Lineups'),
+            fetchSheetData('Schedule'),
+            fetchSheetData('Weekly_Scores')
         ]);
         
-        if (!trophyData || !teamsData || !playersData || !weeklyAveragesData || !lineupsData) {
+        if (!trophyData || !teamsData || !playersData || !weeklyAveragesData || !lineupsData || !scheduleData || !weeklyScoresData) {
             awardsContainer.innerHTML = '<div class="error">Failed to load necessary data for all awards.</div>';
             return;
         }
@@ -527,10 +551,12 @@
             <div class="all-stars-container">
               <div class="all-star-team">
                 <div class="all-star-header"><h3>Eastern Conference All-Stars</h3></div>
+                <div class="all-star-list-header"><span class="player-col-header">Player</span><span class="rel-col-header">REL Median</span></div>
                 <ul class="all-star-list" id="all-stars-east"></ul>
               </div>
               <div class="all-star-team">
                 <div class="all-star-header"><h3>Western Conference All-Stars</h3></div>
+                <div class="all-star-list-header"><span class="player-col-header">Player</span><span class="rel-col-header">REL Median</span></div>
                 <ul class="all-star-list" id="all-stars-west"></ul>
               </div>
             </div>`;
@@ -556,6 +582,38 @@
             ];
         };
 
+        // --- Performance Calculations ---
+        let bestTeamPerf = { percentage_diff: -Infinity };
+        const weeklyScoresMap = {};
+        weeklyScoresData.forEach(ws => { weeklyScoresMap[ws.date] = parseNumber(ws.daily_median); });
+        const completedGames = scheduleData.filter(g => g.completed === 'TRUE');
+        completedGames.forEach(game => {
+            const median = weeklyScoresMap[game.date];
+            if (!median || median === 0) return;
+            const teams = [{ id: game.team1_id, score: parseNumber(game.team1_score) }, { id: game.team2_id, score: parseNumber(game.team2_score) }];
+            teams.forEach(team => {
+                const pctDiff = ((team.score / median) - 1) * 100;
+                if (pctDiff > bestTeamPerf.percentage_diff) {
+                    bestTeamPerf = { team_id: team.id, score: team.score, percentage_diff: pctDiff, date: game.date };
+                }
+            });
+        });
+
+        let bestPlayerPerf = { percentage_diff: -Infinity };
+        const weeklyAveragesMap = {};
+        weeklyAveragesData.forEach(wa => { weeklyAveragesMap[wa.date] = parseNumber(wa.median_score); });
+        const startedLineups = lineupsData.filter(l => l.started === 'TRUE');
+        startedLineups.forEach(lineup => {
+            const median = weeklyAveragesMap[lineup.date];
+            const score = parseNumber(lineup.points_raw);
+            if (!median || median === 0) return;
+            const pctDiff = ((score / median) - 1) * 100;
+            if (pctDiff > bestPlayerPerf.percentage_diff) {
+                bestPlayerPerf = { player_handle: lineup.player_handle, team_id: lineup.team_id, score: score, percentage_diff: pctDiff, date: lineup.date };
+            }
+        });
+        
+        // --- Render Cards ---
         const champ = allTrophyData.find(d => d.Award === 'CHAMP');
         if (champ) {
           const teamData = allTeamsData.find(t => t.team_name === champ.team_name);
@@ -578,6 +636,26 @@
             logoId: teamData?.team_id,
             stats: createTeamStatsArray(teamData)
           });
+        }
+
+        if (bestTeamPerf.team_id) {
+            const teamData = allTeamsData.find(t => t.team_id === bestTeamPerf.team_id);
+            awardsHTML += createAwardCard('Best Performance (Team)', {
+                name: teamData.team_name,
+                detail: `${bestTeamPerf.score.toLocaleString()} pts <span class="detail-positive">(+${bestTeamPerf.percentage_diff.toFixed(1)}%)</span>`,
+                link: `team.html?id=${teamData.team_id}`,
+                logoId: teamData.team_id,
+            });
+        }
+
+        if (bestPlayerPerf.player_handle) {
+            const teamData = allTeamsData.find(t => t.team_id === bestPlayerPerf.team_id);
+            awardsHTML += createAwardCard('Best Performance (Player)', {
+                name: bestPlayerPerf.player_handle,
+                detail: `${bestPlayerPerf.score.toLocaleString()} pts <span class="detail-positive">(+${bestPlayerPerf.percentage_diff.toFixed(1)}%)</span>`,
+                link: `player.html?player=${encodeURIComponent(bestPlayerPerf.player_handle)}`,
+                logoId: teamData?.team_id,
+            });
         }
         
         const mvp = allTrophyData.find(d => d.Award === 'MVP');
