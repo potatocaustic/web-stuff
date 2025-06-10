@@ -165,7 +165,7 @@
 
       .awards-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
         gap: 1.5rem;
         margin-bottom: 2.5rem;
       }
@@ -176,12 +176,10 @@
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         padding: 1.5rem;
         text-align: center;
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        display: flex;
+        flex-direction: column;
       }
-      .award-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      }
+      
       .award-card h3 {
         color: #0056b3;
         font-size: 1.4rem;
@@ -192,6 +190,7 @@
         align-items: center;
         justify-content: center;
         gap: 0.75rem;
+        margin-bottom: 1rem;
       }
       .winner-logo {
         width: 48px;
@@ -226,6 +225,21 @@
       .winner-detail a:hover {
         text-decoration: underline;
       }
+      
+      .winner-stats {
+        margin-top: auto; /* Pushes stats to the bottom */
+        padding-top: 1rem;
+        border-top: 1px solid #eee;
+        font-size: 0.9rem;
+        color: #555;
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .winner-stats span {
+        font-weight: 500;
+      }
 
       .all-stars-container {
         display: grid;
@@ -251,31 +265,47 @@
       }
       .all-star-list {
         list-style: none;
-        padding: 1rem;
+        padding: 0;
       }
-      .all-star-list li {
-        padding: 0.75rem 0.5rem;
-        border-bottom: 1px solid #eee;
-        display: flex;
-        align-items: center;
+      .all-star-item {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
         gap: 1rem;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #eee;
         transition: background-color 0.2s;
       }
-      .all-star-list li:hover {
+      .all-star-item:hover {
         background-color: #f8f9fa;
       }
-      .all-star-list li:last-child {
+      .all-star-item:last-child {
         border-bottom: none;
       }
-      .all-star-list a {
+
+      .all-star-player-info {
+          display: flex;
+          flex-direction: column;
+      }
+      .all-star-player-info a {
         text-decoration: none;
         color: #007bff;
         font-weight: 500;
         font-size: 1.1rem;
       }
-      .all-star-list a:hover {
+      .all-star-player-info a:hover {
         text-decoration: underline;
       }
+      .all-star-stats {
+        font-size: 0.85rem;
+        color: #666;
+      }
+      .all-star-rel {
+          text-align: right;
+          font-weight: bold;
+          font-size: 1.1rem;
+      }
+      
 
       @media (max-width: 768px) {
         .all-stars-container {
@@ -334,6 +364,14 @@
       
       let allTeamsData = [];
       let allTrophyData = [];
+      let allPlayersProcessed = [];
+
+      function parseNumber(value) {
+        if (value === null || typeof value === 'undefined' || String(value).trim() === '') return 0;
+        const cleaned = String(value).replace(/,/g, '');
+        const parsed = parseFloat(cleaned);
+        return isNaN(parsed) ? 0 : parsed;
+      }
 
       async function fetchSheetData(sheetName) {
         try {
@@ -387,30 +425,79 @@
         return data;
       }
 
+      function calculateAllPlayerStats(players, weeklyAverages, lineups) {
+        if (!players || !weeklyAverages || !lineups) return players || [];
+        const weeklyAveragesMap = {};
+        weeklyAverages.forEach(week => {
+          if (week.date) {
+            weeklyAveragesMap[week.date] = { median_score: parseNumber(week.median_score) };
+          }
+        });
+
+        return players.map(player => {
+          const playerGames = lineups.filter(lineup => 
+            lineup.player_handle === player.player_handle && (String(lineup.started).toUpperCase() === 'TRUE')
+          );
+          
+          let totalPlayerKarma = 0, totalMedianKarma = 0, validGames = 0;
+          const ranks = [];
+
+          playerGames.forEach(game => {
+            if (weeklyAveragesMap[game.date]) {
+              totalPlayerKarma += parseNumber(game.points_raw);
+              totalMedianKarma += weeklyAveragesMap[game.date].median_score;
+              validGames++;
+            }
+            const globalRank = parseNumber(game.global_rank);
+            if (globalRank > 0) ranks.push(globalRank);
+          });
+          
+          const avgPlayerKarma = validGames > 0 ? totalPlayerKarma / validGames : 0;
+          const avgMedianKarma = validGames > 0 ? totalMedianKarma / validGames : 0;
+          const rel_median = avgMedianKarma > 0 ? (avgPlayerKarma / avgMedianKarma) : 0;
+          
+          let median_rank = Infinity;
+          if (ranks.length > 0) {
+            ranks.sort((a, b) => a - b);
+            const mid = Math.floor(ranks.length / 2);
+            median_rank = ranks.length % 2 === 0 ? (ranks[mid - 1] + ranks[mid]) / 2 : ranks[mid];
+          }
+          
+          return { ...player, calculated_rel_median: rel_median, calculated_median_rank: median_rank };
+        });
+      }
+
       function getTeamIdByName(teamName) {
         if (!teamName) return null;
         const team = allTeamsData.find(t => t.team_name === teamName);
         return team ? team.team_id : null;
       }
-
+      
       function createAwardCard(title, winnerData) {
         if (!winnerData) return '';
-        const { name, detail, link, logoId } = winnerData;
+        const { name, detail, link, logoId, stats } = winnerData;
         
         const logoUrl = `icons/${logoId}.webp`;
         const winnerNameHTML = link ? `<a href="${link}">${name}</a>` : name;
         const winnerDetailHTML = winnerData.detailLink ? `<a href="${winnerData.detailLink}">${detail}</a>` : detail;
+        
+        const statsHTML = stats && stats.length > 0 
+            ? `<div class="winner-stats">${stats.map(s => `<span>${s}</span>`).join('')}</div>`
+            : '';
 
         return `
           <div class="award-card">
-            <h3>${title}</h3>
-            <div class="award-winner">
-              <img src="${logoUrl}" alt="${name}" class="winner-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
-              <div class="winner-info">
-                <div class="winner-name">${winnerNameHTML}</div>
-                <div class="winner-detail">${winnerDetailHTML}</div>
+            <div>
+              <h3>${title}</h3>
+              <div class="award-winner">
+                <img src="${logoUrl}" alt="${name}" class="winner-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
+                <div class="winner-info">
+                  <div class="winner-name">${winnerNameHTML}</div>
+                  <div class="winner-detail">${winnerDetailHTML}</div>
+                </div>
               </div>
             </div>
+            ${statsHTML}
           </div>
         `;
       }
@@ -418,18 +505,22 @@
       async function loadTrophyCase() {
         const awardsContainer = document.getElementById('awards-container');
         
-        const [trophyData, teamsData] = await Promise.all([
+        const [trophyData, teamsData, playersData, weeklyAveragesData, lineupsData] = await Promise.all([
             fetchSheetData('Trophy_Case'),
-            fetchSheetData('Teams')
+            fetchSheetData('Teams'),
+            fetchSheetData('Players'),
+            fetchSheetData('Weekly_Averages'),
+            fetchSheetData('Lineups')
         ]);
         
-        if (!trophyData || !teamsData) {
-            awardsContainer.innerHTML = '<div class="error">Failed to load necessary data.</div>';
+        if (!trophyData || !teamsData || !playersData || !weeklyAveragesData || !lineupsData) {
+            awardsContainer.innerHTML = '<div class="error">Failed to load necessary data for all awards.</div>';
             return;
         }
 
         allTrophyData = trophyData;
         allTeamsData = teamsData;
+        allPlayersProcessed = calculateAllPlayerStats(playersData, weeklyAveragesData, lineupsData);
 
         awardsContainer.innerHTML = `
             <div class="awards-grid" id="top-awards"></div>
@@ -447,117 +538,150 @@
         const topAwardsContainer = document.getElementById('top-awards');
         let awardsHTML = '';
 
-        // League Champions
+        const createTeamStatsArray = (teamData) => {
+            if (!teamData) return [];
+            return [
+                `Record: ${teamData.wins}-${teamData.losses}`,
+                `PAM: ${Math.round(parseNumber(teamData.pam)).toLocaleString()}`,
+                `Med Rank: ${Math.round(parseNumber(teamData.med_starter_rank))}`
+            ];
+        };
+
+        const createPlayerStatsArray = (playerData) => {
+            if (!playerData) return [];
+            const medianRank = (playerData.calculated_median_rank !== Infinity) ? Math.round(playerData.calculated_median_rank) : '-';
+            return [
+                `REL Median: ${playerData.calculated_rel_median.toFixed(3)}`,
+                `Med Rank: ${medianRank}`
+            ];
+        };
+
         const champ = allTrophyData.find(d => d.Award === 'CHAMP');
         if (champ) {
-          const teamId = getTeamIdByName(champ.team_name);
+          const teamData = allTeamsData.find(t => t.team_name === champ.team_name);
           awardsHTML += createAwardCard('🏆 League Champions 🏆', {
             name: champ.team_name,
             detail: 'Season 7',
-            link: `team.html?id=${teamId}`,
-            logoId: teamId
+            link: `team.html?id=${teamData?.team_id}`,
+            logoId: teamData?.team_id,
+            stats: createTeamStatsArray(teamData)
           });
         }
         
-        // Regular Season Title
         const regSzn = allTrophyData.find(d => d.Award === 'REGSZN');
         if (regSzn) {
-          const teamId = getTeamIdByName(regSzn.team_name);
+          const teamData = allTeamsData.find(t => t.team_name === regSzn.team_name);
           awardsHTML += createAwardCard('Regular Season Title', {
             name: regSzn.team_name,
             detail: 'Best Record',
-            link: `team.html?id=${teamId}`,
-            logoId: teamId
+            link: `team.html?id=${teamData?.team_id}`,
+            logoId: teamData?.team_id,
+            stats: createTeamStatsArray(teamData)
           });
         }
         
-        // MVP
         const mvp = allTrophyData.find(d => d.Award === 'MVP');
         if (mvp) {
           const team = allTeamsData.find(t => t.team_name === mvp.team_name);
+          const playerStats = allPlayersProcessed.find(p => p.player_handle === mvp.Player);
           awardsHTML += createAwardCard('League MVP', {
             name: mvp.Player,
             detail: mvp.team_name,
             detailLink: `team.html?id=${team?.team_id}`,
             link: `player.html?player=${encodeURIComponent(mvp.Player)}`,
-            logoId: team?.team_id
+            logoId: team?.team_id,
+            stats: createPlayerStatsArray(playerStats)
           });
         }
 
-        // Finals MVP
         const fmvp = allTrophyData.find(d => d.Award === 'FMVP');
         if (fmvp) {
             const team = allTeamsData.find(t => t.team_name === fmvp.team_name);
+            const playerStats = allPlayersProcessed.find(p => p.player_handle === fmvp.Player);
             awardsHTML += createAwardCard('Finals MVP', {
                 name: fmvp.Player,
                 detail: fmvp.team_name,
                 detailLink: `team.html?id=${team?.team_id}`,
                 link: `player.html?player=${encodeURIComponent(fmvp.Player)}`,
-                logoId: team?.team_id
+                logoId: team?.team_id,
+                stats: createPlayerStatsArray(playerStats)
             });
         }
         
-        // Rookie of the Year
         const roy = allTrophyData.find(d => d.Award === 'ROY');
         if (roy) {
             const team = allTeamsData.find(t => t.team_name === roy.team_name);
+            const playerStats = allPlayersProcessed.find(p => p.player_handle === roy.Player);
             awardsHTML += createAwardCard('Rookie of the Year', {
                 name: roy.Player,
                 detail: roy.team_name,
                 detailLink: `team.html?id=${team?.team_id}`,
                 link: `player.html?player=${encodeURIComponent(roy.Player)}`,
-                logoId: team?.team_id
+                logoId: team?.team_id,
+                stats: createPlayerStatsArray(playerStats)
             });
         }
 
-        // 6th Man of the Year
         const smoy = allTrophyData.find(d => d.Award === '6MOY');
         if (smoy) {
             const team = allTeamsData.find(t => t.team_name === smoy.team_name);
+            const playerStats = allPlayersProcessed.find(p => p.player_handle === smoy.Player);
             awardsHTML += createAwardCard('Sixth Man of the Year', {
                 name: smoy.Player,
                 detail: smoy.team_name,
                 detailLink: `team.html?id=${team?.team_id}`,
                 link: `player.html?player=${encodeURIComponent(smoy.Player)}`,
-                logoId: team?.team_id
+                logoId: team?.team_id,
+                stats: createPlayerStatsArray(playerStats)
             });
         }
         
-        // GM of the Year
         const gmoy = allTrophyData.find(d => d.Award === 'GMOY');
         if (gmoy) {
-          const teamId = getTeamIdByName(gmoy.gm_team); // Corrected lookup
+          const teamData = allTeamsData.find(t => t.team_name === gmoy.gm_team);
           awardsHTML += createAwardCard('GM of the Year', {
             name: gmoy.gm_handle,
             detail: gmoy.gm_team,
-            detailLink: `team.html?id=${teamId}`,
-            link: null, // No link for GM
-            logoId: teamId
+            detailLink: `team.html?id=${teamData?.team_id}`,
+            link: null,
+            logoId: teamData?.team_id,
+            stats: createTeamStatsArray(teamData)
           });
         }
 
         topAwardsContainer.innerHTML = awardsHTML;
 
-        // All-Stars
         const eastAllStars = allTrophyData.filter(d => d.Award === 'ALLSTAR_EAST');
         const westAllStars = allTrophyData.filter(d => d.Award === 'ALLSTAR_WEST');
         const eastList = document.getElementById('all-stars-east');
         const westList = document.getElementById('all-stars-west');
 
-        eastList.innerHTML = eastAllStars.map(player => {
-            const team = allTeamsData.find(t => t.team_name === player.team_name);
-            return `<li><img src="icons/${team?.team_id}.webp" class="winner-logo" onerror="this.onerror=null; this.src='icons/FA.webp';"> <a href="player.html?player=${encodeURIComponent(player.Player)}">${player.Player}</a></li>`;
-        }).join('');
+        const generateAllStarHTML = (allStarPlayer) => {
+            const team = allTeamsData.find(t => t.team_name === allStarPlayer.team_name);
+            const playerStats = allPlayersProcessed.find(p => p.player_handle === allStarPlayer.Player);
+            if (!playerStats) return '';
+            
+            const medianRankDisplay = playerStats.calculated_median_rank !== Infinity ? Math.round(playerStats.calculated_median_rank) : '-';
+            const relMedianDisplay = playerStats.calculated_rel_median.toFixed(3);
+            
+            return `
+                <li class="all-star-item">
+                    <img src="icons/${team?.team_id}.webp" class="winner-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
+                    <div class="all-star-player-info">
+                        <a href="player.html?player=${encodeURIComponent(playerStats.player_handle)}">${playerStats.player_handle}</a>
+                        <span class="all-star-stats">Med Rank: ${medianRankDisplay}</span>
+                    </div>
+                    <div class="all-star-rel">${relMedianDisplay}</div>
+                </li>
+            `;
+        };
 
-        westList.innerHTML = westAllStars.map(player => {
-            const team = allTeamsData.find(t => t.team_name === player.team_name);
-            return `<li><img src="icons/${team?.team_id}.webp" class="winner-logo" onerror="this.onerror=null; this.src='icons/FA.webp';"> <a href="player.html?player=${encodeURIComponent(player.Player)}">${player.Player}</a></li>`;
-        }).join('');
+        eastList.innerHTML = eastAllStars.map(generateAllStarHTML).join('');
+        westList.innerHTML = westAllStars.map(generateAllStarHTML).join('');
       }
 
       document.addEventListener('DOMContentLoaded', () => {
         loadTrophyCase();
-        // Nav Toggle JS
         const navToggle = document.querySelector('.nav-toggle');
         const navMenu = document.getElementById('nav-menu');
         if (navToggle && navMenu) {
