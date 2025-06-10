@@ -221,6 +221,7 @@
       .winner-detail a {
         color: #666;
         text-decoration: none;
+        cursor: pointer;
       }
       .winner-detail a:hover {
         text-decoration: underline;
@@ -269,7 +270,7 @@
       }
       .all-star-list-header {
         display: grid;
-        grid-template-columns: 1fr auto;
+        grid-template-columns: auto 1fr auto;
         gap: 1rem;
         padding: 0.5rem 1rem;
         background-color: #f8f9fa;
@@ -280,6 +281,7 @@
       }
       .all-star-list-header .player-col-header {
         text-align: left;
+        grid-column: 2;
       }
       .all-star-list-header .rel-col-header {
         text-align: right;
@@ -328,11 +330,34 @@
           font-size: 1.1rem;
       }
       
+      /* Modal styles */
+      .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); overflow-y: auto; }
+      .modal-content { background-color: #fff; margin: 2rem auto; border-radius: 8px; width: 95%; max-width: 900px; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+      .modal-header { background-color: #333; color: white; padding: 1.5rem; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; }
+      .modal-header h3 { color: white; margin: 0; font-size: 1.4rem; }
+      .close-btn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; padding: 0.5rem; border-radius: 4px; transition: background-color 0.3s; }
+      .close-btn:hover { background-color: rgba(255,255,255,0.1); }
+      .modal-body { padding: 2rem; }
+      .game-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+      .team-breakdown { background-color: #f8f9fa; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; }
+      .team-breakdown.winner { border-color: #28a745; border-width: 2px; }
+      .modal-team-header { background-color: #333; color: white; padding: 1.5rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 1rem; flex-direction: column;}
+      .modal-team-header.winner { background-color: #28a745; }
+      .modal-team-header .team-logo { width: 48px; height: 48px; border-radius: 4px; } 
+      .team-total { background-color: #e9ecef; padding: 1rem; text-align: center; font-weight: bold; font-size: 1.1rem; border-bottom: 2px solid #ddd; }
+      .lineup-table { width: 100%; border-collapse: collapse; }
+      .lineup-table th { background-color: #f8f9fa; padding: 0.8rem 0.5rem; text-align: center; font-weight: bold; border-bottom: 2px solid #ddd; font-size: 0.9rem; }
+      .lineup-table td { padding: 0.8rem 0.5rem; border-bottom: 1px solid #eee; font-size: 0.9rem; text-align: center; }
+      .lineup-table th:first-child, .lineup-table td:first-child { text-align: left; }
+      .captain-badge { background-color: #ffc107; color: #333; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.7rem; font-weight: bold; margin-left: 0.5rem; }
+      .captain-bonus { font-size: 0.75rem; color: #ffc107; font-weight: 500; margin-top: 0.2rem; }
 
       @media (max-width: 768px) {
         .all-stars-container {
           grid-template-columns: 1fr;
         }
+        .modal-content { margin: 1rem; width: calc(100% - 2rem); }
+        .game-details-grid { grid-template-columns: 1fr; gap: 1rem; }
       }
       
       footer {
@@ -376,6 +401,18 @@
       </div>
     </main>
     
+    <div id="game-modal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 id="modal-title">Game Details</h3>
+          <button class="close-btn" onclick="closeGameModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modal-body">
+            <div class="loading">Loading game details...</div>
+        </div>
+      </div>
+    </div>
+
     <footer>
       <p>@caustic on Real</p>
     </footer>
@@ -385,8 +422,8 @@
       const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
       
       let allTeamsData = [];
-      let allTrophyData = [];
-      let allPlayersProcessed = [];
+      let allScheduleData = [];
+      let allLineupsData = [];
 
       function parseNumber(value) {
         if (value === null || typeof value === 'undefined' || String(value).trim() === '') return 0;
@@ -497,11 +534,16 @@
       
       function createAwardCard(title, winnerData) {
         if (!winnerData) return '';
-        const { name, detail, link, logoId, stats } = winnerData;
+        const { name, detail, link, logoId, stats, modalOnClick } = winnerData;
         
         const logoUrl = `icons/${logoId}.webp`;
         const winnerNameHTML = link ? `<a href="${link}">${name}</a>` : name;
-        const winnerDetailHTML = winnerData.detailLink ? `<a href="${winnerData.detailLink}">${detail}</a>` : detail;
+        const detailLinkClass = modalOnClick ? '<a>' : '<div>';
+        const detailLinkClose = modalOnClick ? '</a>' : '</div>';
+
+        const winnerDetailHTML = modalOnClick 
+            ? `<a href="#" onclick="${modalOnClick}; return false;">${detail}</a>` 
+            : detail;
         
         const statsHTML = stats && stats.length > 0 
             ? `<div class="winner-stats">${stats.map(s => `<span>${s}</span>`).join('')}</div>`
@@ -542,9 +584,10 @@
             return;
         }
 
-        allTrophyData = trophyData;
         allTeamsData = teamsData;
-        allPlayersProcessed = calculateAllPlayerStats(playersData, weeklyAveragesData, lineupsData);
+        allScheduleData = scheduleData;
+        allLineupsData = lineupsData;
+        const allPlayersProcessed = calculateAllPlayerStats(playersData, weeklyAveragesData, lineupsData);
 
         awardsContainer.innerHTML = `
             <div class="awards-grid" id="top-awards"></div>
@@ -563,6 +606,9 @@
         
         const topAwardsContainer = document.getElementById('top-awards');
         let awardsHTML = '';
+
+        const dateToWeekMap = {};
+        weeklyAveragesData.forEach(wa => { dateToWeekMap[wa.date] = wa.week; });
 
         const createTeamStatsArray = (teamData) => {
             if (!teamData) return [];
@@ -594,7 +640,7 @@
             teams.forEach(team => {
                 const pctDiff = ((team.score / median) - 1) * 100;
                 if (pctDiff > bestTeamPerf.percentage_diff) {
-                    bestTeamPerf = { team_id: team.id, score: team.score, percentage_diff: pctDiff, date: game.date };
+                    bestTeamPerf = { team_id: team.id, score: team.score, percentage_diff: pctDiff, game: game };
                 }
             });
         });
@@ -609,128 +655,99 @@
             if (!median || median === 0) return;
             const pctDiff = ((score / median) - 1) * 100;
             if (pctDiff > bestPlayerPerf.percentage_diff) {
-                bestPlayerPerf = { player_handle: lineup.player_handle, team_id: lineup.team_id, score: score, percentage_diff: pctDiff, date: lineup.date };
+                const gameForLineup = scheduleData.find(g => g.date === lineup.date && (g.team1_id === lineup.team_id || g.team2_id === lineup.team_id));
+                bestPlayerPerf = { player_handle: lineup.player_handle, team_id: lineup.team_id, score: score, percentage_diff: pctDiff, game: gameForLineup, week: lineup.week };
             }
         });
         
         // --- Render Cards ---
-        const champ = allTrophyData.find(d => d.Award === 'CHAMP');
+        const champ = trophyData.find(d => d.Award === 'CHAMP');
         if (champ) {
           const teamData = allTeamsData.find(t => t.team_name === champ.team_name);
           awardsHTML += createAwardCard('🏆 League Champions 🏆', {
-            name: champ.team_name,
-            detail: 'Season 7',
-            link: `team.html?id=${teamData?.team_id}`,
-            logoId: teamData?.team_id,
-            stats: createTeamStatsArray(teamData)
+            name: champ.team_name, detail: 'Season 7', link: `team.html?id=${teamData?.team_id}`, logoId: teamData?.team_id, stats: createTeamStatsArray(teamData)
           });
         }
         
-        const regSzn = allTrophyData.find(d => d.Award === 'REGSZN');
+        const regSzn = trophyData.find(d => d.Award === 'REGSZN');
         if (regSzn) {
           const teamData = allTeamsData.find(t => t.team_name === regSzn.team_name);
           awardsHTML += createAwardCard('Regular Season Title', {
-            name: regSzn.team_name,
-            detail: 'Best Record',
-            link: `team.html?id=${teamData?.team_id}`,
-            logoId: teamData?.team_id,
-            stats: createTeamStatsArray(teamData)
+            name: regSzn.team_name, detail: 'Best Record', link: `team.html?id=${teamData?.team_id}`, logoId: teamData?.team_id, stats: createTeamStatsArray(teamData)
           });
         }
 
-        if (bestTeamPerf.team_id) {
+        if (bestTeamPerf.game) {
             const teamData = allTeamsData.find(t => t.team_id === bestTeamPerf.team_id);
+            const week = dateToWeekMap[bestTeamPerf.game.date] || '';
             awardsHTML += createAwardCard('Best Performance (Team)', {
                 name: teamData.team_name,
-                detail: `${bestTeamPerf.score.toLocaleString()} pts <span class="detail-positive">(+${bestTeamPerf.percentage_diff.toFixed(1)}%)</span>`,
+                detail: `Week ${week}: ${bestTeamPerf.score.toLocaleString()} pts <span class="detail-positive">(+${bestTeamPerf.percentage_diff.toFixed(1)}% over median)</span>`,
                 link: `team.html?id=${teamData.team_id}`,
                 logoId: teamData.team_id,
+                modalOnClick: `showGameDetails('${bestTeamPerf.game.team1_id}','${bestTeamPerf.game.team2_id}','${bestTeamPerf.game.date}')`
             });
         }
 
-        if (bestPlayerPerf.player_handle) {
+        if (bestPlayerPerf.game) {
             const teamData = allTeamsData.find(t => t.team_id === bestPlayerPerf.team_id);
             awardsHTML += createAwardCard('Best Performance (Player)', {
                 name: bestPlayerPerf.player_handle,
-                detail: `${bestPlayerPerf.score.toLocaleString()} pts <span class="detail-positive">(+${bestPlayerPerf.percentage_diff.toFixed(1)}%)</span>`,
+                detail: `Week ${bestPlayerPerf.week}: ${bestPlayerPerf.score.toLocaleString()} pts <span class="detail-positive">(+${bestPlayerPerf.percentage_diff.toFixed(1)}% over median)</span>`,
                 link: `player.html?player=${encodeURIComponent(bestPlayerPerf.player_handle)}`,
                 logoId: teamData?.team_id,
+                modalOnClick: `showGameDetails('${bestPlayerPerf.game.team1_id}','${bestPlayerPerf.game.team2_id}','${bestPlayerPerf.game.date}')`
             });
         }
         
-        const mvp = allTrophyData.find(d => d.Award === 'MVP');
+        const mvp = trophyData.find(d => d.Award === 'MVP');
         if (mvp) {
           const team = allTeamsData.find(t => t.team_name === mvp.team_name);
           const playerStats = allPlayersProcessed.find(p => p.player_handle === mvp.Player);
           awardsHTML += createAwardCard('League MVP', {
-            name: mvp.Player,
-            detail: mvp.team_name,
-            detailLink: `team.html?id=${team?.team_id}`,
-            link: `player.html?player=${encodeURIComponent(mvp.Player)}`,
-            logoId: team?.team_id,
-            stats: createPlayerStatsArray(playerStats)
+            name: mvp.Player, detail: mvp.team_name, detailLink: `team.html?id=${team?.team_id}`, link: `player.html?player=${encodeURIComponent(mvp.Player)}`, logoId: team?.team_id, stats: createPlayerStatsArray(playerStats)
           });
         }
 
-        const fmvp = allTrophyData.find(d => d.Award === 'FMVP');
+        const fmvp = trophyData.find(d => d.Award === 'FMVP');
         if (fmvp) {
             const team = allTeamsData.find(t => t.team_name === fmvp.team_name);
             const playerStats = allPlayersProcessed.find(p => p.player_handle === fmvp.Player);
             awardsHTML += createAwardCard('Finals MVP', {
-                name: fmvp.Player,
-                detail: fmvp.team_name,
-                detailLink: `team.html?id=${team?.team_id}`,
-                link: `player.html?player=${encodeURIComponent(fmvp.Player)}`,
-                logoId: team?.team_id,
-                stats: createPlayerStatsArray(playerStats)
+                name: fmvp.Player, detail: fmvp.team_name, detailLink: `team.html?id=${team?.team_id}`, link: `player.html?player=${encodeURIComponent(fmvp.Player)}`, logoId: team?.team_id, stats: createPlayerStatsArray(playerStats)
             });
         }
         
-        const roy = allTrophyData.find(d => d.Award === 'ROY');
+        const roy = trophyData.find(d => d.Award === 'ROY');
         if (roy) {
             const team = allTeamsData.find(t => t.team_name === roy.team_name);
             const playerStats = allPlayersProcessed.find(p => p.player_handle === roy.Player);
             awardsHTML += createAwardCard('Rookie of the Year', {
-                name: roy.Player,
-                detail: roy.team_name,
-                detailLink: `team.html?id=${team?.team_id}`,
-                link: `player.html?player=${encodeURIComponent(roy.Player)}`,
-                logoId: team?.team_id,
-                stats: createPlayerStatsArray(playerStats)
+                name: roy.Player, detail: roy.team_name, detailLink: `team.html?id=${team?.team_id}`, link: `player.html?player=${encodeURIComponent(roy.Player)}`, logoId: team?.team_id, stats: createPlayerStatsArray(playerStats)
             });
         }
 
-        const smoy = allTrophyData.find(d => d.Award === '6MOY');
+        const smoy = trophyData.find(d => d.Award === '6MOY');
         if (smoy) {
             const team = allTeamsData.find(t => t.team_name === smoy.team_name);
             const playerStats = allPlayersProcessed.find(p => p.player_handle === smoy.Player);
             awardsHTML += createAwardCard('Sixth Man of the Year', {
-                name: smoy.Player,
-                detail: smoy.team_name,
-                detailLink: `team.html?id=${team?.team_id}`,
-                link: `player.html?player=${encodeURIComponent(smoy.Player)}`,
-                logoId: team?.team_id,
-                stats: createPlayerStatsArray(playerStats)
+                name: smoy.Player, detail: smoy.team_name, detailLink: `team.html?id=${team?.team_id}`, link: `player.html?player=${encodeURIComponent(smoy.Player)}`, logoId: team?.team_id, stats: createPlayerStatsArray(playerStats)
             });
         }
         
-        const gmoy = allTrophyData.find(d => d.Award === 'GMOY');
+        const gmoy = trophyData.find(d => d.Award === 'GMOY');
         if (gmoy) {
           const teamData = allTeamsData.find(t => t.team_name === gmoy.gm_team);
           awardsHTML += createAwardCard('GM of the Year', {
-            name: gmoy.gm_handle,
-            detail: gmoy.gm_team,
-            detailLink: `team.html?id=${teamData?.team_id}`,
-            link: null,
-            logoId: teamData?.team_id,
-            stats: createTeamStatsArray(teamData)
+            name: gmoy.gm_handle, detail: gmoy.gm_team, detailLink: `team.html?id=${teamData?.team_id}`, link: null, logoId: teamData?.team_id, stats: createTeamStatsArray(teamData)
           });
         }
 
         topAwardsContainer.innerHTML = awardsHTML;
 
-        const eastAllStars = allTrophyData.filter(d => d.Award === 'ALLSTAR_EAST');
-        const westAllStars = allTrophyData.filter(d => d.Award === 'ALLSTAR_WEST');
+        const eastAllStars = trophyData.filter(d => d.Award === 'ALLSTAR_EAST');
+        const westAllStars = trophyData.filter(d => d.Award === 'ALLSTAR_WEST');
         const eastList = document.getElementById('all-stars-east');
         const westList = document.getElementById('all-stars-west');
 
@@ -757,6 +774,67 @@
         eastList.innerHTML = eastAllStars.map(generateAllStarHTML).join('');
         westList.innerHTML = westAllStars.map(generateAllStarHTML).join('');
       }
+
+      function closeGameModal() { 
+        document.getElementById('game-modal').style.display = 'none';
+      }
+      window.onclick = function(event) { 
+        const modal = document.getElementById('game-modal');
+        if (event.target === modal) closeGameModal();
+      }
+
+      async function showGameDetails(team1Id, team2Id, date) {
+        const modal = document.getElementById('game-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
+        
+        modal.style.display = 'block';
+        modalBody.innerHTML = '<div class="loading">Loading game details...</div>';
+        
+        const game = allScheduleData.find(g => g.team1_id === team1Id && g.team2_id === team2Id && g.date === date);
+        if (!game) {
+          modalBody.innerHTML = '<div class="error">Game not found.</div>';
+          return;
+        }
+
+        const team1Name = allTeamsData.find(t => t.team_id === team1Id)?.team_name || team1Id;
+        const team2Name = allTeamsData.find(t => t.team_id === team2Id)?.team_name || team2Id;
+        modalTitle.textContent = `${team1Name} vs ${team2Name}`;
+        
+        const gameLineups = allLineupsData.filter(lineup => 
+          lineup.date === game.date && 
+          (lineup.team_id === team1Id || lineup.team_id === team2Id) &&
+          (String(lineup.started).toUpperCase() === 'TRUE')
+        );
+
+        const team1Lineups = gameLineups.filter(l => l.team_id === team1Id);
+        const team2Lineups = gameLineups.filter(l => l.team_id === team2Id);
+        
+        const team1Total = parseNumber(game.team1_score);
+        const team2Total = parseNumber(game.team2_score);
+        
+        const generateLineupTable = (lineups, teamId, total, isWinner) => {
+          const teamData = allTeamsData.find(t => t.team_id === teamId);
+          const lineupRows = lineups.map(player => {
+            const isCaptain = player.captain === 'TRUE';
+            const pointsRaw = parseNumber(player.points_raw);
+            const captainBonus = isCaptain ? Math.round(pointsRaw * 0.5) : 0; 
+            return `<tr><td class="player-name-cell"><a href="player.html?player=${encodeURIComponent(player.player_handle)}">${player.player_handle}</a>${isCaptain ? '<span class="captain-badge">C</span>' : ''}</td><td>${pointsRaw.toLocaleString()}${isCaptain ? `<div class="captain-bonus">+${captainBonus.toLocaleString()}</div>` : ''}</td><td>${parseNumber(player.global_rank) || '-'}</td></tr>`;
+          }).join('');
+          
+          return `<div class="team-breakdown ${isWinner ? 'winner' : ''}">
+                    <div class="modal-team-header ${isWinner ? 'winner' : ''}">
+                      <img src="icons/${teamId}.webp" class="team-logo" onerror="this.style.display='none'"/>
+                      <h4>${teamData.team_name}</h4>
+                    </div>
+                    <div class="team-total">Total: ${total.toLocaleString()}</div>
+                    <table class="lineup-table"><thead><tr><th>Player</th><th>Points</th><th>Rank</th></tr></thead><tbody>${lineupRows}</tbody></table>
+                  </div>`;
+        };
+        
+        modalBody.innerHTML = `<div class="game-details-grid">${generateLineupTable(team1Lineups, team1Id, team1Total, game.winner === team1Id)}${generateLineupTable(team2Lineups, team2Id, team2Total, game.winner === team2Id)}</div>`;
+      }
+
 
       document.addEventListener('DOMContentLoaded', () => {
         loadTrophyCase();
