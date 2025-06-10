@@ -242,8 +242,14 @@
         flex-wrap: wrap;
         gap: 0.5rem;
       }
-      .winner-stats span {
+      .winner-stats a, .winner-stats span {
         font-weight: 500;
+        color: #555;
+        text-decoration: none;
+      }
+      .winner-stats a:hover {
+        color: #007bff;
+        text-decoration: underline;
       }
 
       .all-stars-container {
@@ -343,12 +349,14 @@
       .team-breakdown.winner { border-color: #28a745; border-width: 2px; }
       .modal-team-header { background-color: #333; color: white; padding: 1.5rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 1rem; flex-direction: column;}
       .modal-team-header.winner { background-color: #28a745; }
+      .modal-team-header h4 { color: white; margin: 0; font-size: 1.2rem; }
       .modal-team-header .team-logo { width: 48px; height: 48px; border-radius: 4px; } 
       .team-total { background-color: #e9ecef; padding: 1rem; text-align: center; font-weight: bold; font-size: 1.1rem; border-bottom: 2px solid #ddd; }
       .lineup-table { width: 100%; border-collapse: collapse; }
       .lineup-table th { background-color: #f8f9fa; padding: 0.8rem 0.5rem; text-align: center; font-weight: bold; border-bottom: 2px solid #ddd; font-size: 0.9rem; }
       .lineup-table td { padding: 0.8rem 0.5rem; border-bottom: 1px solid #eee; font-size: 0.9rem; text-align: center; }
       .lineup-table th:first-child, .lineup-table td:first-child { text-align: left; }
+      .captain-row { background-color: #fff3cd !important; font-weight: bold; }
       .captain-badge { background-color: #ffc107; color: #333; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.7rem; font-weight: bold; margin-left: 0.5rem; }
       .captain-bonus { font-size: 0.75rem; color: #ffc107; font-weight: 500; margin-top: 0.2rem; }
 
@@ -431,6 +439,16 @@
         const parsed = parseFloat(cleaned);
         return isNaN(parsed) ? 0 : parsed;
       }
+
+      function formatDateShort(dateString) {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString); 
+        if (isNaN(date.getTime())) return 'Invalid Date';
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); 
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const year = String(date.getUTCFullYear()).slice(-2);
+        return `${month}/${day}/${year}`;
+       }
 
       async function fetchSheetData(sheetName) {
         try {
@@ -538,15 +556,13 @@
         
         const logoUrl = `icons/${logoId}.webp`;
         const winnerNameHTML = link ? `<a href="${link}">${name}</a>` : name;
-        const detailLinkClass = modalOnClick ? '<a>' : '<div>';
-        const detailLinkClose = modalOnClick ? '</a>' : '</div>';
-
+        
         const winnerDetailHTML = modalOnClick 
             ? `<a href="#" onclick="${modalOnClick}; return false;">${detail}</a>` 
-            : detail;
-        
-        const statsHTML = stats && stats.length > 0 
-            ? `<div class="winner-stats">${stats.map(s => `<span>${s}</span>`).join('')}</div>`
+            : (winnerData.detailLink ? `<a href="${winnerData.detailLink}">${detail}</a>` : detail);
+
+        const statsHTML = stats
+            ? `<div class="winner-stats">${modalOnClick ? `<a href="#" onclick="${modalOnClick}; return false;">${stats}</a>` : `<span>${stats}</span>`}</div>`
             : '';
 
         return `
@@ -610,22 +626,15 @@
         const dateToWeekMap = {};
         weeklyAveragesData.forEach(wa => { dateToWeekMap[wa.date] = wa.week; });
 
-        const createTeamStatsArray = (teamData) => {
-            if (!teamData) return [];
-            return [
-                `Record: ${teamData.wins}-${teamData.losses}`,
-                `PAM: ${Math.round(parseNumber(teamData.pam)).toLocaleString()}`,
-                `Med Rank: ${Math.round(parseNumber(teamData.med_starter_rank))}`
-            ];
+        const createTeamStatsString = (teamData) => {
+            if (!teamData) return '';
+            return `Record: ${teamData.wins}-${teamData.losses} | PAM: ${Math.round(parseNumber(teamData.pam)).toLocaleString()} | Med Rank: ${Math.round(parseNumber(teamData.med_starter_rank))}`;
         };
 
-        const createPlayerStatsArray = (playerData) => {
-            if (!playerData) return [];
+        const createPlayerStatsString = (playerData) => {
+            if (!playerData) return '';
             const medianRank = (playerData.calculated_median_rank !== Infinity) ? Math.round(playerData.calculated_median_rank) : '-';
-            return [
-                `REL Median: ${playerData.calculated_rel_median.toFixed(3)}`,
-                `Med Rank: ${medianRank}`
-            ];
+            return `REL Median: ${playerData.calculated_rel_median.toFixed(3)} | Med Rank: ${medianRank}`;
         };
 
         // --- Performance Calculations ---
@@ -665,7 +674,7 @@
         if (champ) {
           const teamData = allTeamsData.find(t => t.team_name === champ.team_name);
           awardsHTML += createAwardCard('🏆 League Champions 🏆', {
-            name: champ.team_name, detail: 'Season 7', link: `team.html?id=${teamData?.team_id}`, logoId: teamData?.team_id, stats: createTeamStatsArray(teamData)
+            name: champ.team_name, detail: 'Season 7', link: `team.html?id=${teamData?.team_id}`, logoId: teamData?.team_id, stats: createTeamStatsString(teamData)
           });
         }
         
@@ -673,7 +682,7 @@
         if (regSzn) {
           const teamData = allTeamsData.find(t => t.team_name === regSzn.team_name);
           awardsHTML += createAwardCard('Regular Season Title', {
-            name: regSzn.team_name, detail: 'Best Record', link: `team.html?id=${teamData?.team_id}`, logoId: teamData?.team_id, stats: createTeamStatsArray(teamData)
+            name: regSzn.team_name, detail: 'Best Record', link: `team.html?id=${teamData?.team_id}`, logoId: teamData?.team_id, stats: createTeamStatsString(teamData)
           });
         }
 
@@ -682,9 +691,10 @@
             const week = dateToWeekMap[bestTeamPerf.game.date] || '';
             awardsHTML += createAwardCard('Best Performance (Team)', {
                 name: teamData.team_name,
-                detail: `Week ${week}: ${bestTeamPerf.score.toLocaleString()} pts <span class="detail-positive">(+${bestTeamPerf.percentage_diff.toFixed(1)}% over median)</span>`,
+                detail: `Week ${week}: ${bestTeamPerf.score.toLocaleString()} pts`,
                 link: `team.html?id=${teamData.team_id}`,
                 logoId: teamData.team_id,
+                stats: `<span class="detail-positive">+${bestTeamPerf.percentage_diff.toFixed(1)}%</span> over median`,
                 modalOnClick: `showGameDetails('${bestTeamPerf.game.team1_id}','${bestTeamPerf.game.team2_id}','${bestTeamPerf.game.date}')`
             });
         }
@@ -693,9 +703,10 @@
             const teamData = allTeamsData.find(t => t.team_id === bestPlayerPerf.team_id);
             awardsHTML += createAwardCard('Best Performance (Player)', {
                 name: bestPlayerPerf.player_handle,
-                detail: `Week ${bestPlayerPerf.week}: ${bestPlayerPerf.score.toLocaleString()} pts <span class="detail-positive">(+${bestPlayerPerf.percentage_diff.toFixed(1)}% over median)</span>`,
+                detail: `Week ${bestPlayerPerf.week}: ${bestPlayerPerf.score.toLocaleString()} pts`,
                 link: `player.html?player=${encodeURIComponent(bestPlayerPerf.player_handle)}`,
                 logoId: teamData?.team_id,
+                stats: `<span class="detail-positive">+${bestPlayerPerf.percentage_diff.toFixed(1)}%</span> over median`,
                 modalOnClick: `showGameDetails('${bestPlayerPerf.game.team1_id}','${bestPlayerPerf.game.team2_id}','${bestPlayerPerf.game.date}')`
             });
         }
@@ -705,7 +716,7 @@
           const team = allTeamsData.find(t => t.team_name === mvp.team_name);
           const playerStats = allPlayersProcessed.find(p => p.player_handle === mvp.Player);
           awardsHTML += createAwardCard('League MVP', {
-            name: mvp.Player, detail: mvp.team_name, detailLink: `team.html?id=${team?.team_id}`, link: `player.html?player=${encodeURIComponent(mvp.Player)}`, logoId: team?.team_id, stats: createPlayerStatsArray(playerStats)
+            name: mvp.Player, detail: mvp.team_name, detailLink: `team.html?id=${team?.team_id}`, link: `player.html?player=${encodeURIComponent(mvp.Player)}`, logoId: team?.team_id, stats: createPlayerStatsString(playerStats)
           });
         }
 
@@ -714,7 +725,7 @@
             const team = allTeamsData.find(t => t.team_name === fmvp.team_name);
             const playerStats = allPlayersProcessed.find(p => p.player_handle === fmvp.Player);
             awardsHTML += createAwardCard('Finals MVP', {
-                name: fmvp.Player, detail: fmvp.team_name, detailLink: `team.html?id=${team?.team_id}`, link: `player.html?player=${encodeURIComponent(fmvp.Player)}`, logoId: team?.team_id, stats: createPlayerStatsArray(playerStats)
+                name: fmvp.Player, detail: fmvp.team_name, detailLink: `team.html?id=${team?.team_id}`, link: `player.html?player=${encodeURIComponent(fmvp.Player)}`, logoId: team?.team_id, stats: createPlayerStatsString(playerStats)
             });
         }
         
@@ -723,7 +734,7 @@
             const team = allTeamsData.find(t => t.team_name === roy.team_name);
             const playerStats = allPlayersProcessed.find(p => p.player_handle === roy.Player);
             awardsHTML += createAwardCard('Rookie of the Year', {
-                name: roy.Player, detail: roy.team_name, detailLink: `team.html?id=${team?.team_id}`, link: `player.html?player=${encodeURIComponent(roy.Player)}`, logoId: team?.team_id, stats: createPlayerStatsArray(playerStats)
+                name: roy.Player, detail: roy.team_name, detailLink: `team.html?id=${team?.team_id}`, link: `player.html?player=${encodeURIComponent(roy.Player)}`, logoId: team?.team_id, stats: createPlayerStatsString(playerStats)
             });
         }
 
@@ -732,7 +743,7 @@
             const team = allTeamsData.find(t => t.team_name === smoy.team_name);
             const playerStats = allPlayersProcessed.find(p => p.player_handle === smoy.Player);
             awardsHTML += createAwardCard('Sixth Man of the Year', {
-                name: smoy.Player, detail: smoy.team_name, detailLink: `team.html?id=${team?.team_id}`, link: `player.html?player=${encodeURIComponent(smoy.Player)}`, logoId: team?.team_id, stats: createPlayerStatsArray(playerStats)
+                name: smoy.Player, detail: smoy.team_name, detailLink: `team.html?id=${team?.team_id}`, link: `player.html?player=${encodeURIComponent(smoy.Player)}`, logoId: team?.team_id, stats: createPlayerStatsString(playerStats)
             });
         }
         
@@ -740,7 +751,7 @@
         if (gmoy) {
           const teamData = allTeamsData.find(t => t.team_name === gmoy.gm_team);
           awardsHTML += createAwardCard('GM of the Year', {
-            name: gmoy.gm_handle, detail: gmoy.gm_team, detailLink: `team.html?id=${teamData?.team_id}`, link: null, logoId: teamData?.team_id, stats: createTeamStatsArray(teamData)
+            name: gmoy.gm_handle, detail: gmoy.gm_team, detailLink: `team.html?id=${teamData?.team_id}`, link: null, logoId: teamData?.team_id, stats: createTeamStatsString(teamData)
           });
         }
 
@@ -799,7 +810,8 @@
 
         const team1Name = allTeamsData.find(t => t.team_id === team1Id)?.team_name || team1Id;
         const team2Name = allTeamsData.find(t => t.team_id === team2Id)?.team_name || team2Id;
-        modalTitle.textContent = `${team1Name} vs ${team2Name}`;
+        const week = allLineupsData.find(l => l.date === date)?.week || '';
+        modalTitle.textContent = `${team1Name} vs ${team2Name} (Week ${week} - ${formatDateShort(date)})`;
         
         const gameLineups = allLineupsData.filter(lineup => 
           lineup.date === game.date && 
@@ -816,10 +828,10 @@
         const generateLineupTable = (lineups, teamId, total, isWinner) => {
           const teamData = allTeamsData.find(t => t.team_id === teamId);
           const lineupRows = lineups.map(player => {
-            const isCaptain = player.captain === 'TRUE';
+            const isCaptain = String(player.captain).toUpperCase() === 'TRUE';
             const pointsRaw = parseNumber(player.points_raw);
             const captainBonus = isCaptain ? Math.round(pointsRaw * 0.5) : 0; 
-            return `<tr><td class="player-name-cell"><a href="player.html?player=${encodeURIComponent(player.player_handle)}">${player.player_handle}</a>${isCaptain ? '<span class="captain-badge">C</span>' : ''}</td><td>${pointsRaw.toLocaleString()}${isCaptain ? `<div class="captain-bonus">+${captainBonus.toLocaleString()}</div>` : ''}</td><td>${parseNumber(player.global_rank) || '-'}</td></tr>`;
+            return `<tr class="${isCaptain ? 'captain-row' : ''}"><td class="player-name-cell"><a href="player.html?player=${encodeURIComponent(player.player_handle)}">${player.player_handle}</a>${isCaptain ? '<span class="captain-badge">C</span>' : ''}</td><td>${pointsRaw.toLocaleString()}${isCaptain ? `<div class="captain-bonus">+${captainBonus.toLocaleString()}</div>` : ''}</td><td>${parseNumber(player.global_rank) || '-'}</td></tr>`;
           }).join('');
           
           return `<div class="team-breakdown ${isWinner ? 'winner' : ''}">
