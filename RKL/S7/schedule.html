@@ -372,8 +372,9 @@
 
       .games-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, 350px);
+        gap: 1.5rem;
+        justify-content: center;
       }
 
       .game-card {
@@ -382,6 +383,8 @@
         border-radius: 8px;
         padding: 1.5rem;
         transition: all 0.3s ease;
+        max-width: 400px;
+        margin: 0 auto;
       }
 
       .game-card:hover {
@@ -531,6 +534,7 @@
       .captain-badge { background-color: #ffc107; color: #333; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.7rem; font-weight: bold; margin-left: 0.5rem; }
       .captain-bonus { font-size: 0.75rem; color: #ffc107; font-weight: 500; margin-top: 0.2rem; }
       .player-name-cell { font-weight: 500; }
+      .all-star-badge { color: gold; margin-left: 0.5rem; font-size: 1rem; vertical-align: middle; }
       .player-link { color: #007bff; text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
       .player-link:hover { color: #0056b3; text-decoration: underline; }
       .points-cell { text-align: center; font-weight: bold; }
@@ -700,6 +704,7 @@
       let currentWeek = 1;
       let allGames = [];
       let allTeams = [];
+      let allPlayers = [];
       let allLineups = [];
       let allWeeklyScores = []; 
       let dateToMedianTeamScoreMap = {}; 
@@ -790,17 +795,18 @@
       }
       
       async function loadData() {
-        const [scheduleData, allstarScheduleData, teamsData, lineupsData, allstarLineupsData, weeklyAveragesData, weeklyScoresData] = await Promise.all([
+        const [scheduleData, allstarScheduleData, teamsData, playersData, lineupsData, allstarLineupsData, weeklyAveragesData, weeklyScoresData] = await Promise.all([
           fetchSheetData('Schedule'),
           fetchSheetData('Allstar_Schedule'),
           fetchSheetData('Teams'),
+          fetchSheetData('Players'),
           fetchSheetData('Lineups'),
           fetchSheetData('Allstar_Lineups'),
           fetchSheetData('Weekly_Averages'), 
           fetchSheetData('Weekly_Scores') 
         ]);
         
-        if (!scheduleData || !teamsData) { 
+        if (!scheduleData || !teamsData || !playersData) { 
           document.getElementById('games-content').innerHTML = 
             '<div class="error">Error loading core data. Please check console.</div>';
           return;
@@ -810,6 +816,7 @@
         allGames = allstarGames.concat(scheduleData);
 
         allTeams = teamsData;
+        allPlayers = playersData;
         
         allLineups = lineupsData || [];
         if(allstarLineupsData) {
@@ -1152,6 +1159,9 @@
           
           const lineupRows = lineups.map(player => {
             const isCaptain = String(player.captain).toUpperCase() === 'TRUE';
+            const fullPlayerData = allPlayers.find(p => p.player_handle === player.player_handle);
+            const isPlayerAllStar = fullPlayerData && fullPlayerData.all_star === '1';
+            const allStarBadge = isPlayerAllStar ? '<span class="all-star-badge">⭐</span>' : '';
             const pointsRaw = parseNumber(player.points_raw);
             const globalRank = parseNumber(player.global_rank);
             const captainBonus = isCaptain ? Math.round(pointsRaw * 0.5) : 0; 
@@ -1162,6 +1172,7 @@
                   <a href="player.html?player=${encodeURIComponent(player.player_handle || 'Unknown')}" class="player-link">
                     ${escapeHTML(player.player_handle || 'Unknown')}
                   </a>
+                  ${allStarBadge}
                   ${isCaptain ? '<span class="captain-badge">C</span>' : ''}
                 </td>
                 <td class="points-cell">
