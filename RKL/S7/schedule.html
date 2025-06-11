@@ -436,6 +436,13 @@
         border-radius: 2px;
         flex-shrink: 0;
       }
+      
+      .team-logo.allstar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
 
       .team-info {
         display: flex;
@@ -503,7 +510,17 @@
       .team-breakdown .team-header { background-color: #333; color: white; padding: 1.5rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 1rem; flex-direction: column; }
       .team-breakdown .team-header.winner { background-color: #28a745; }
       .team-breakdown .team-header h4 { color: white; margin: 0; font-size: 1.2rem; }
-      .team-breakdown .team-header .team-logo { width: 48px; height: 48px; border-radius: 4px;}
+      .modal-team-header .team-logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 4px;
+      }
+      .modal-team-header .team-logo.allstar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
       .team-total { background-color: #e9ecef; padding: 1rem; text-align: center; font-weight: bold; font-size: 1.1rem; border-bottom: 2px solid #ddd; }
       .lineup-table { width: 100%; border-collapse: collapse; }
       .lineup-table th { background-color: #f8f9fa; padding: 0.8rem 0.5rem; text-align: center; font-weight: bold; border-bottom: 2px solid #ddd; font-size: 0.9rem; }
@@ -533,8 +550,9 @@
         .game-details-grid { grid-template-columns: 1fr; gap: 1rem; }
         .modal-body { padding: 1rem; }
         .lineup-table th, .lineup-table td { padding: 0.5rem 0.3rem; font-size: 0.8rem; }
-        .team-header .team-logo { width: 36px; height: 36px; }
-        .team-logo { width: 28px; height: 28px; }
+        .team-logo.allstar, .modal-team-header .team-logo.allstar {
+          width: 36px; height: 36px;
+        }
         .modal-header { padding: 1rem; }
         .modal-header h3 { font-size: 1.1rem; line-height: 1.3; word-break: break-word; hyphens: auto; }
         .standouts-grid { grid-template-columns: 1fr; } 
@@ -939,6 +957,7 @@
               const isCompleted = game.completed === 'TRUE';
               const isAllstarGame = game.week === 'ALLSTAR';
               const logoExt = isAllstarGame ? 'png' : 'webp';
+              const logoClass = isAllstarGame ? 'team-logo allstar' : 'team-logo';
               const team1Score = parseNumber(game.team1_score);
               const team2Score = parseNumber(game.team2_score);
               const winner = game.winner;
@@ -954,7 +973,7 @@
                   <div class="game-teams">
                     <div class="team ${winner === game.team1_id ? 'winner' : ''}">
                       <div class="team-left">
-                        <img src="icons/${escapeHTML(game.team1_id)}.${logoExt}" alt="${escapeHTML(getTeamName(game.team1_id))}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
+                        <img src="icons/${escapeHTML(game.team1_id)}.${logoExt}" alt="${escapeHTML(getTeamName(game.team1_id))}" class="${logoClass}" onerror="this.onerror=null; this.src='icons/FA.webp';">
                         <div class="team-info">
                           <div class="team-name">${escapeHTML(getTeamName(game.team1_id))}</div>
                           <div class="team-record">${escapeHTML(team1Record)}</div>
@@ -964,7 +983,7 @@
                     </div>
                     <div class="team ${winner === game.team2_id ? 'winner' : ''}">
                       <div class="team-left">
-                        <img src="icons/${escapeHTML(game.team2_id)}.${logoExt}" alt="${escapeHTML(getTeamName(game.team2_id))}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
+                        <img src="icons/${escapeHTML(game.team2_id)}.${logoExt}" alt="${escapeHTML(getTeamName(game.team2_id))}" class="${logoClass}" onerror="this.onerror=null; this.src='icons/FA.webp';">
                         <div class="team-info">
                           <div class="team-name">${escapeHTML(getTeamName(game.team2_id))}</div>
                           <div class="team-record">${escapeHTML(team2Record)}</div>
@@ -1119,6 +1138,7 @@
           const teamData = allTeams.find(t => t.team_id === teamIdForTable);
           const isAllstarGame = game.week === 'ALLSTAR';
           const logoExt = isAllstarGame ? 'png' : 'webp';
+          const logoClass = isAllstarGame ? 'team-logo allstar' : 'team-logo';
           const headerOnClick = isAllstarGame ? '' : `onclick="window.location.href='team.html?id=${escapeHTML(teamIdForTable)}'" style="cursor: pointer;"`;
           const teamRecord = teamData ? `${teamData.wins || 0}-${teamData.losses || 0}` : 'N/A';
           
@@ -1126,7 +1146,7 @@
             return `
               <div class="team-breakdown ${isWinner ? 'winner' : ''}">
                 <div class="team-header ${isWinner ? 'winner' : ''}" ${headerOnClick}>
-                  <img src="icons/${escapeHTML(teamIdForTable)}.${logoExt}" alt="${escapeHTML(getTeamName(teamIdForTable))}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
+                  <img src="icons/${escapeHTML(teamIdForTable)}.${logoExt}" alt="${escapeHTML(getTeamName(teamIdForTable))}" class="${logoClass}" onerror="this.onerror=null; this.src='icons/FA.webp';">
                   <div><h4>${escapeHTML(getTeamName(teamIdForTable))}</h4><div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div></div>
                 </div>
                 <div class="team-total">Total: ${formatInThousands(totalScoreFromSchedule)}</div>
@@ -1160,7 +1180,7 @@
           return `
             <div class="team-breakdown ${isWinner ? 'winner' : ''}">
               <div class="team-header ${isWinner ? 'winner' : ''}" ${headerOnClick}>
-                 <img src="icons/${escapeHTML(teamIdForTable)}.${logoExt}" alt="${escapeHTML(getTeamName(teamIdForTable))}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
+                 <img src="icons/${escapeHTML(teamIdForTable)}.${logoExt}" alt="${escapeHTML(getTeamName(teamIdForTable))}" class="${logoClass}" onerror="this.onerror=null; this.src='icons/FA.webp';">
                 <div><h4>${escapeHTML(getTeamName(teamIdForTable))}</h4><div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div></div>
               </div>
               <div class="team-total">Total: ${formatInThousands(totalScoreFromSchedule)}</div>
