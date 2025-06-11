@@ -511,13 +511,11 @@
       .team-breakdown .team-header.winner { background-color: #28a745; }
       .team-breakdown .team-header h4 { color: white; margin: 0; font-size: 1.2rem; }
       .modal-team-header .team-logo {
-        width: 36px;
-        height: 36px;
+        width: 48px;
+        height: 48px;
         border-radius: 4px;
       }
       .modal-team-header .team-logo.allstar {
-        width: 48px;
-        height: 48px;
         border-radius: 50%;
         object-fit: cover;
       }
@@ -808,11 +806,8 @@
           return;
         }
         
-        allGames = scheduleData;
-        if(allstarScheduleData) {
-            const allstarGames = allstarScheduleData.map(g => ({...g, week: 'ALLSTAR'}));
-            allGames = allGames.concat(allstarGames);
-        }
+        const allstarGames = allstarScheduleData ? allstarScheduleData.map(g => ({...g, week: 'ALLSTAR'})) : [];
+        allGames = allstarGames.concat(scheduleData);
 
         allTeams = teamsData;
         
@@ -1139,7 +1134,7 @@
           const teamData = allTeams.find(t => t.team_id === teamIdForTable);
           const isAllstarTeam = ALLSTAR_TEAM_IDS.includes(teamIdForTable);
           const logoExt = isAllstarTeam ? 'png' : 'webp';
-          const logoClass = isAllstarTeam ? 'team-logo allstar' : 'team-logo';
+          const logoClass = 'team-logo' + (isAllstarTeam ? ' allstar' : '');
           const headerOnClick = isAllstarTeam ? '' : `onclick="window.location.href='team.html?id=${escapeHTML(teamIdForTable)}'" style="cursor: pointer;"`;
           const teamRecord = teamData ? `${teamData.wins || 0}-${teamData.losses || 0}` : 'N/A';
           
