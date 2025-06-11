@@ -887,7 +887,6 @@
         if (week === 'ALLSTAR') {
             weekStandoutsSection.style.display = 'none';
         } else {
-            weekStandoutsSection.style.display = 'block';
             const standoutWeekNumSpan = document.getElementById('standout-week-number');
             if (standoutWeekNumSpan) standoutWeekNumSpan.textContent = week;
         }
@@ -938,6 +937,8 @@
             const dateGames = gamesByDate[date];
             const gamesHTML = dateGames.map(game => {
               const isCompleted = game.completed === 'TRUE';
+              const isAllstarGame = game.week === 'ALLSTAR';
+              const logoExt = isAllstarGame ? 'png' : 'webp';
               const team1Score = parseNumber(game.team1_score);
               const team2Score = parseNumber(game.team2_score);
               const winner = game.winner;
@@ -953,7 +954,7 @@
                   <div class="game-teams">
                     <div class="team ${winner === game.team1_id ? 'winner' : ''}">
                       <div class="team-left">
-                        <img src="icons/${escapeHTML(game.team1_id)}.webp" alt="${escapeHTML(getTeamName(game.team1_id))}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
+                        <img src="icons/${escapeHTML(game.team1_id)}.${logoExt}" alt="${escapeHTML(getTeamName(game.team1_id))}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
                         <div class="team-info">
                           <div class="team-name">${escapeHTML(getTeamName(game.team1_id))}</div>
                           <div class="team-record">${escapeHTML(team1Record)}</div>
@@ -963,7 +964,7 @@
                     </div>
                     <div class="team ${winner === game.team2_id ? 'winner' : ''}">
                       <div class="team-left">
-                        <img src="icons/${escapeHTML(game.team2_id)}.webp" alt="${escapeHTML(getTeamName(game.team2_id))}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
+                        <img src="icons/${escapeHTML(game.team2_id)}.${logoExt}" alt="${escapeHTML(getTeamName(game.team2_id))}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
                         <div class="team-info">
                           <div class="team-name">${escapeHTML(getTeamName(game.team2_id))}</div>
                           <div class="team-record">${escapeHTML(team2Record)}</div>
@@ -1116,13 +1117,16 @@
         
         const generateLineupTable = (lineups, teamIdForTable, totalScoreFromSchedule, isWinner) => {
           const teamData = allTeams.find(t => t.team_id === teamIdForTable);
+          const isAllstarGame = game.week === 'ALLSTAR';
+          const logoExt = isAllstarGame ? 'png' : 'webp';
+          const headerOnClick = isAllstarGame ? '' : `onclick="window.location.href='team.html?id=${escapeHTML(teamIdForTable)}'" style="cursor: pointer;"`;
           const teamRecord = teamData ? `${teamData.wins || 0}-${teamData.losses || 0}` : 'N/A';
           
           if (lineups.length === 0) { 
             return `
               <div class="team-breakdown ${isWinner ? 'winner' : ''}">
-                <div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${escapeHTML(teamIdForTable)}'" style="cursor: pointer;">
-                  <img src="icons/${escapeHTML(teamIdForTable)}.webp" alt="${escapeHTML(getTeamName(teamIdForTable))}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
+                <div class="team-header ${isWinner ? 'winner' : ''}" ${headerOnClick}>
+                  <img src="icons/${escapeHTML(teamIdForTable)}.${logoExt}" alt="${escapeHTML(getTeamName(teamIdForTable))}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
                   <div><h4>${escapeHTML(getTeamName(teamIdForTable))}</h4><div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div></div>
                 </div>
                 <div class="team-total">Total: ${formatInThousands(totalScoreFromSchedule)}</div>
@@ -1155,8 +1159,8 @@
           
           return `
             <div class="team-breakdown ${isWinner ? 'winner' : ''}">
-              <div class="team-header ${isWinner ? 'winner' : ''}" onclick="window.location.href='team.html?id=${escapeHTML(teamIdForTable)}'" style="cursor: pointer;">
-                 <img src="icons/${escapeHTML(teamIdForTable)}.webp" alt="${escapeHTML(getTeamName(teamIdForTable))}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
+              <div class="team-header ${isWinner ? 'winner' : ''}" ${headerOnClick}>
+                 <img src="icons/${escapeHTML(teamIdForTable)}.${logoExt}" alt="${escapeHTML(getTeamName(teamIdForTable))}" class="team-logo" onerror="this.onerror=null; this.src='icons/FA.webp';">
                 <div><h4>${escapeHTML(getTeamName(teamIdForTable))}</h4><div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div></div>
               </div>
               <div class="team-total">Total: ${formatInThousands(totalScoreFromSchedule)}</div>
