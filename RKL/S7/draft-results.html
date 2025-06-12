@@ -45,15 +45,16 @@
       .results-table td { padding: 0.8rem 0.5rem; border-bottom: 1px solid #eee; font-size: 0.9rem; vertical-align: middle; text-align: center; }
       .results-table tr:hover { background-color: #f8f9fa; }
 
+      /* Final Column Widths */
       .col-round { width: 6%; }
       .col-overall { width: 6%; } 
       .col-gp { width: 8%; }
       .col-rel, .col-med-rank { width: 10%; }
-      .col-team { width: 20%; } 
-      .col-player { width: 40%; } 
+      .col-team { width: 28%; } 
+      .col-player { width: 32%; } 
 
       .results-table td.team-cell, .results-table td.player-cell { text-align: left; }
-      .team-cell-content, .player-cell-content { display: flex; align-items: center; gap: 0.75rem; }
+      .team-cell-content { display: flex; align-items: center; gap: 0.75rem; }
       .team-logo { width: 24px; height: 24px; border-radius: 2px; flex-shrink: 0; }
       .player-link, .team-link { color: #007bff; text-decoration: none; font-weight: 500; }
       .player-link:hover, .team-link:hover { text-decoration: underline; }
@@ -68,13 +69,13 @@
         .desktop-only { display: none; }
         .mobile-only { display: table-cell; }
 
-        .col-round, .col-gp, .col-med-rank { width: 0; } /* Hide these columns fully */
+        .col-round, .col-gp, .col-med-rank { width: 0; }
         .col-overall { width: 12%; } 
         .col-team { width: 40%; }
         .col-player { width: 33%; } 
         .col-rel { width: 15%; }
         .results-table th, .results-table td { font-size: 0.85rem; padding: 0.6rem 0.3rem; }
-        .team-cell-content, .player-cell-content { gap: 0.5rem; }
+        .team-cell-content { gap: 0.5rem; }
         .team-logo { width: 20px; height: 20px; }
       }
 
@@ -361,7 +362,7 @@
         resultsBody.innerHTML = dataToDisplay.map(pick => {
           const medRankDisplay = pick.calculated_median_rank === Infinity ? '-' : Math.round(pick.calculated_median_rank);
           const relDisplay = pick.calculated_rel_median.toFixed(3);
-          const playerContent = pick.Player.toUpperCase() === 'FORFEITED'
+          const playerCellHTML = pick.Player.toUpperCase() === 'FORFEITED'
             ? `<span>${pick.Player}</span>`
             : `<a href="player.html?player=${encodeURIComponent(pick.Player)}" class="player-link">${pick.Player}</a>`;
 
@@ -376,9 +377,7 @@
                 </div>
               </td>
               <td class="player-cell">
-                <div class="player-cell-content">
-                  ${playerContent}
-                </div>
+                ${playerCellHTML}
               </td>
               <td class="desktop-only">${pick.games_played}</td>
               <td class="desktop-only">${medRankDisplay}</td>
