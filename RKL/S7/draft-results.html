@@ -45,10 +45,12 @@
       .results-table td { padding: 0.8rem 0.5rem; border-bottom: 1px solid #eee; font-size: 0.9rem; vertical-align: middle; text-align: center; }
       .results-table tr:hover { background-color: #f8f9fa; }
 
-      .col-round, .col-overall, .col-gp { width: 8%; }
+      .col-round { width: 8%; }
+      .col-overall { width: 6%; } /* Adjusted width */
+      .col-gp { width: 8%; }
       .col-rel, .col-med-rank { width: 10%; }
       .col-team { width: 26%; }
-      .col-player { width: 30%; }
+      .col-player { width: 32%; } /* Adjusted width */
 
       .results-table td.team-cell, .results-table td.player-cell { text-align: left; }
       .team-cell-content, .player-cell-content { display: flex; align-items: center; gap: 0.75rem; }
@@ -67,9 +69,9 @@
         .mobile-only { display: table-cell; }
 
         .col-round, .col-gp, .col-med-rank { width: 0; } /* Hide these columns fully */
-        .col-overall { width: 15%; }
+        .col-overall { width: 12%; } /* Adjusted width */
         .col-team { width: 40%; }
-        .col-player { width: 30%; }
+        .col-player { width: 33%; } /* Adjusted width */
         .col-rel { width: 15%; }
         .results-table th, .results-table td { font-size: 0.85rem; padding: 0.6rem 0.3rem; }
         .team-cell-content, .player-cell-content { gap: 0.5rem; }
@@ -359,7 +361,10 @@
         resultsBody.innerHTML = dataToDisplay.map(pick => {
           const medRankDisplay = pick.calculated_median_rank === Infinity ? '-' : Math.round(pick.calculated_median_rank);
           const relDisplay = pick.calculated_rel_median.toFixed(3);
-          
+          const playerCellHTML = pick.Player.toUpperCase() === 'FORFEITED'
+            ? `<span>${pick.Player}</span>`
+            : `<a href="player.html?player=${encodeURIComponent(pick.Player)}" class="player-link">${pick.Player}</a>`;
+
           return `
             <tr>
               <td class="desktop-only">${pick.Round}</td>
@@ -371,7 +376,7 @@
                 </div>
               </td>
               <td class="player-cell">
-                <a href="player.html?player=${encodeURIComponent(pick.Player)}" class="player-link">${pick.Player}</a>
+                ${playerCellHTML}
               </td>
               <td class="desktop-only">${pick.games_played}</td>
               <td class="desktop-only">${medRankDisplay}</td>
