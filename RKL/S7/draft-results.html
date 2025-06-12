@@ -32,26 +32,25 @@
       .filter-group label { font-weight: 500; margin-right: 0.5rem; }
       .filter-group select { padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; min-width: 150px; }
       
-      .results-container { background-color: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); overflow: hidden; }
+      .results-container { background-color: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); overflow-x: auto; } /* Added overflow-x for safety on small screens */
       .results-header { background-color: #333; color: white; padding: 1.5rem; text-align: center; }
       .results-header h3 { color: white; margin: 0; font-size: 1.4rem; }
       
-      .results-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-      .results-table th { background-color: #f8f9fa; padding: 1rem 0.5rem; text-align: center; font-weight: bold; border-bottom: 2px solid #ddd; font-size: 0.9rem; }
+      .results-table {
+        width: auto; /* Let table size itself */
+        margin: 0 auto; /* Center the table within its container */
+        border-collapse: collapse;
+        table-layout: auto; /* Key change: Allow browser to auto-size columns */
+      }
+      .results-table th { background-color: #f8f9fa; padding: 1rem 1rem; text-align: center; font-weight: bold; border-bottom: 2px solid #ddd; font-size: 0.9rem; white-space: nowrap; } /* Added nowrap and more padding */
       .results-table th.sortable { cursor: pointer; }
       .results-table th.sortable:hover { background-color: #e9ecef; }
       .results-table th .sort-indicator { font-size: 0.8em; margin-left: 5px; }
       
-      .results-table td { padding: 0.8rem 0.5rem; border-bottom: 1px solid #eee; font-size: 0.9rem; vertical-align: middle; text-align: center; }
+      .results-table td { padding: 0.8rem 1rem; border-bottom: 1px solid #eee; font-size: 0.9rem; vertical-align: middle; text-align: center; }
       .results-table tr:hover { background-color: #f8f9fa; }
 
-      /* Final Column Widths */
-      .col-round { width: 6%; }
-      .col-overall { width: 6%; } 
-      .col-gp { width: 8%; }
-      .col-rel, .col-med-rank { width: 10%; }
-      .col-team { width: 28%; } 
-      .col-player { width: 32%; } 
+      /* DELETED the .col-* width styles */
 
       .results-table td.team-cell, .results-table td.player-cell { text-align: left; }
       .team-cell-content { display: flex; align-items: center; gap: 0.75rem; }
@@ -66,17 +65,12 @@
 
       /* Responsive Styles */
       @media (max-width: 768px) {
-        .desktop-only { display: none; }
-        .mobile-only { display: table-cell; }
-
-        .col-round, .col-gp, .col-med-rank { width: 0; }
-        .col-overall { width: 12%; } 
-        .col-team { width: 40%; }
-        .col-player { width: 33%; } 
-        .col-rel { width: 15%; }
-        .results-table th, .results-table td { font-size: 0.85rem; padding: 0.6rem 0.3rem; }
+        /* Adjusted responsive styles to not rely on .col-* classes */
+        .results-table th, .results-table td { font-size: 0.85rem; padding: 0.6rem 0.5rem; }
         .team-cell-content { gap: 0.5rem; }
         .team-logo { width: 20px; height: 20px; }
+        .desktop-only { display: none; }
+        .mobile-only { display: table-cell; }
       }
 
       @media (max-width: 600px) {
@@ -135,16 +129,7 @@
           <h3 id="results-title">All Drafts</h3>
         </div>
         <table class="results-table">
-          <colgroup>
-            <col class="col-round desktop-only">
-            <col class="col-overall">
-            <col class="col-team">
-            <col class="col-player">
-            <col class="col-gp desktop-only">
-            <col class="col-med-rank desktop-only">
-            <col class="col-rel">
-          </colgroup>
-          <thead id="table-header">
+          <thead>
             <tr>
               <th class="desktop-only">Round</th>
               <th class="sortable" onclick="handleSort('Overall')">Overall<span class="sort-indicator"></span></th>
@@ -348,8 +333,13 @@
             valB = valB === Infinity ? Number.MAX_SAFE_INTEGER : valB;
           }
 
-          if (parseFloat(valA) > parseFloat(valB)) return 1 * dir;
-          if (parseFloat(valA) < parseFloat(valB)) return -1 * dir;
+          if (['Overall', 'games_played', 'calculated_median_rank', 'calculated_rel_median'].includes(col)) {
+              valA = parseFloat(valA) || 0;
+              valB = parseFloat(valB) || 0;
+          }
+
+          if (valA > valB) return 1 * dir;
+          if (valA < valB) return -1 * dir;
           return 0;
         });
 
