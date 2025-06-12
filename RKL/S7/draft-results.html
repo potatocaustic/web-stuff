@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RKL Draft Results</title>
+    <title>RKL S7 Draft Results</title>
     <link rel="icon" href="../rklfavicon.ico" type="image/x-icon" />
     <style>
       /* General Styles from other pages */
@@ -28,27 +28,22 @@
       /* Page-specific styles */
       .page-header { text-align: center; margin-bottom: 2rem; }
       .page-header h2 { font-size: 2.5rem; margin-bottom: 1rem; }
-      .filter-controls { background-color: #fff; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); padding: 1.5rem; margin-bottom: 2rem; display: flex; justify-content: center; align-items: center; gap: 1rem; flex-wrap: wrap; }
-      .filter-group label { font-weight: 500; margin-right: 0.5rem; }
-      .filter-group select { padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; min-width: 150px; }
       
       .results-container {
-        /* Styles moved to the table itself */
         overflow-x: auto; /* Keep for horizontal scrolling on small screens */
       }
       .results-header { background-color: #333; color: white; padding: 1.5rem; text-align: center; }
       .results-header h3 { color: white; margin: 0; font-size: 1.4rem; }
       
       .results-table {
-        width: auto; /* Let table size itself */
-        margin: 0 auto; /* Center the table within its container */
+        width: auto; 
+        margin: 0 auto; 
         border-collapse: collapse;
-        table-layout: auto; /* Allow browser to auto-size columns */
-        /* Visual styles from container are now here */
+        table-layout: auto; 
         background-color: #fff;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        overflow: hidden; /* Ensures corners are clipped correctly */
+        overflow: hidden; 
       }
       .results-table th { background-color: #f8f9fa; padding: 1rem 1rem; text-align: center; font-weight: bold; border-bottom: 2px solid #ddd; font-size: 0.9rem; white-space: nowrap; }
       .results-table th.sortable { cursor: pointer; }
@@ -88,8 +83,6 @@
         nav ul li a { display: block; padding: 0.8rem 1rem; }
         nav ul li a:hover { background-color: #555; }
         main { padding: 1rem; }
-        .filter-group { width: 100%; }
-        .filter-group select { width: 100%; }
       }
     </style>
   </head>
@@ -116,22 +109,13 @@
     
     <main>
       <div class="page-header">
-        <h2>Draft Results</h2>
-        <p>Historical draft results and rookie season performance</p>
-      </div>
-
-      <div class="filter-controls">
-        <div class="filter-group">
-          <label for="season-filter">Season:</label>
-          <select id="season-filter">
-            <option value="all">All Seasons</option>
-          </select>
-        </div>
+        <h2>S7 Draft Results</h2>
+        <p>Season 7 draft results and player performance</p>
       </div>
 
       <div class="results-container">
         <div class="results-header" style="border-radius: 8px 8px 0 0; width: auto; margin: 0 auto;">
-          <h3 id="results-title">All Drafts</h3>
+          <h3 id="results-title">Season 7 Draft</h3>
         </div>
         <table class="results-table">
           <thead>
@@ -143,10 +127,11 @@
               <th class="sortable desktop-only" onclick="handleSort('games_played')">GP<span class="sort-indicator"></span></th>
               <th class="sortable desktop-only" onclick="handleSort('calculated_median_rank')">Med Rank<span class="sort-indicator"></span></th>
               <th class="sortable" onclick="handleSort('calculated_rel_median')">REL<span class="sort-indicator"></span></th>
+              <th class="sortable" onclick="handleSort('WAR')">WAR<span class="sort-indicator"></span></th>
             </tr>
           </thead>
           <tbody id="results-body">
-            <tr><td colspan="7" class="loading">Loading draft results...</td></tr>
+            <tr><td colspan="8" class="loading">Loading draft results...</td></tr>
           </tbody>
         </table>
       </div>
@@ -161,7 +146,6 @@
       let allDraftData = [];
       let sortState = { column: 'Overall', direction: 'asc' };
 
-      // Helper function to fetch and parse CSV data
       async function fetchSheetData(sheetName) {
         try {
           const response = await fetch(BASE_URL + encodeURIComponent(sheetName));
@@ -174,7 +158,6 @@
         }
       }
 
-      // CSV parser
       function parseCSV(csvText) {
         const lines = csvText.trim().split('\n');
         const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
@@ -206,7 +189,6 @@
         return isNaN(parsed) ? 0 : parsed;
       }
 
-      // Re-using the player stat calculation logic from other pages
       function calculateAllPlayerStats(players, weeklyAverages, lineups) {
         if (!players || !weeklyAverages || !lineups) return players || [];
         const weeklyAveragesMap = {};
@@ -259,16 +241,17 @@
             ...player, 
             calculated_rel_median: calculated_rel_median,
             calculated_median_rank: calculated_median_rank,
-            games_played: parseInt(player.games_played || 0)
+            games_played: parseInt(player.games_played || 0),
+            WAR: parseNumber(player.WAR)
           };
         });
       }
 
       async function loadDataAndDisplay() {
         const resultsBody = document.getElementById('results-body');
-        resultsBody.innerHTML = '<tr><td colspan="7" class="loading">Fetching data...</td></tr>';
+        resultsBody.innerHTML = `<tr><td colspan="8" class="loading">Fetching data...</td></tr>`;
         
-        const [draftResults, playersRaw, teams, weeklyAverages, lineups] = await Promise.all([
+        const [draftResultsRaw, playersRaw, teams, weeklyAverages, lineups] = await Promise.all([
           fetchSheetData('Draft_Results'),
           fetchSheetData('Players'),
           fetchSheetData('Teams'),
@@ -276,13 +259,16 @@
           fetchSheetData('Lineups')
         ]);
 
-        if (!draftResults || !playersRaw || !teams || !weeklyAverages || !lineups) {
-          resultsBody.innerHTML = '<tr><td colspan="7" class="error">Failed to load required data. Please try again later.</td></tr>';
+        if (!draftResultsRaw || !playersRaw || !teams || !weeklyAverages || !lineups) {
+          resultsBody.innerHTML = `<tr><td colspan="8" class="error">Failed to load required data. Please try again later.</td></tr>`;
           return;
         }
 
-        resultsBody.innerHTML = '<tr><td colspan="7" class="loading">Processing data...</td></tr>';
+        resultsBody.innerHTML = `<tr><td colspan="8" class="loading">Processing data...</td></tr>`;
         
+        // Filter for Season 7 draft picks only
+        const draftResults = draftResultsRaw.filter(p => p.Season === '7');
+
         const playersWithStats = calculateAllPlayerStats(playersRaw, weeklyAverages, lineups);
         const teamsMap = new Map(teams.map(team => [team.team_id, team.team_name]));
         const playersMap = new Map(playersWithStats.map(p => [p.player_id, p]));
@@ -295,36 +281,15 @@
             games_played: playerData ? playerData.games_played : 0,
             calculated_median_rank: playerData ? playerData.calculated_median_rank : Infinity,
             calculated_rel_median: playerData ? playerData.calculated_rel_median : 0,
+            WAR: playerData ? playerData.WAR : 0,
           };
         });
         
-        // Populate season filter
-        const seasons = [...new Set(allDraftData.map(p => p.Season))].sort((a,b) => b-a);
-        const seasonFilter = document.getElementById('season-filter');
-        seasonFilter.innerHTML = '<option value="all">All Seasons</option>';
-        seasons.forEach(season => {
-          const option = document.createElement('option');
-          option.value = season;
-          option.textContent = `Season ${season} Draft`;
-          seasonFilter.appendChild(option);
-        });
-        seasonFilter.addEventListener('change', displayDraftResults);
-
         displayDraftResults();
       }
 
       function displayDraftResults() {
-        const seasonFilter = document.getElementById('season-filter').value;
-        const resultsTitle = document.getElementById('results-title');
-        const resultsHeader = document.querySelector('.results-header');
-
-        let dataToDisplay = allDraftData;
-        if (seasonFilter !== 'all') {
-          dataToDisplay = allDraftData.filter(p => p.Season === seasonFilter);
-          resultsTitle.textContent = `Season ${seasonFilter} Draft`;
-        } else {
-          resultsTitle.textContent = 'All Drafts';
-        }
+        let dataToDisplay = [...allDraftData];
         
         // Sorting logic
         dataToDisplay.sort((a, b) => {
@@ -339,7 +304,7 @@
             valB = valB === Infinity ? Number.MAX_SAFE_INTEGER : valB;
           }
           
-          if (['Overall', 'games_played', 'calculated_median_rank', 'calculated_rel_median'].includes(col)) {
+          if (['Overall', 'games_played', 'calculated_median_rank', 'calculated_rel_median', 'WAR'].includes(col)) {
               valA = parseFloat(valA) || 0;
               valB = parseFloat(valB) || 0;
           }
@@ -350,24 +315,22 @@
         });
 
         const resultsBody = document.getElementById('results-body');
-        if (dataToDisplay.length === 0) {
-            resultsBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;">No results found for this season.</td></tr>';
-            // Hide header if no data
-            resultsHeader.style.display = 'none';
-            // Hide table border if no data
-            document.querySelector('.results-table').style.boxShadow = 'none';
+        const resultsHeader = document.querySelector('.results-header');
 
+        if (dataToDisplay.length === 0) {
+            resultsBody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 2rem;">No S7 draft results found.</td></tr>`;
+            resultsHeader.style.display = 'none';
+            document.querySelector('.results-table').style.boxShadow = 'none';
             return;
         }
 
-        // Show header and table border if data exists
         resultsHeader.style.display = 'block';
         document.querySelector('.results-table').style.boxShadow = '0 2px 5px rgba(0,0,0,0.1)';
-
 
         resultsBody.innerHTML = dataToDisplay.map(pick => {
           const medRankDisplay = pick.calculated_median_rank === Infinity ? '-' : Math.round(pick.calculated_median_rank);
           const relDisplay = pick.calculated_rel_median.toFixed(3);
+          const warDisplay = pick.WAR.toFixed(2);
           const playerCellHTML = pick.Player.toUpperCase() === 'FORFEITED'
             ? `<span>${pick.Player}</span>`
             : `<a href="player.html?player=${encodeURIComponent(pick.Player)}" class="player-link">${pick.Player}</a>`;
@@ -388,16 +351,14 @@
               <td class="desktop-only">${pick.games_played}</td>
               <td class="desktop-only">${medRankDisplay}</td>
               <td>${relDisplay}</td>
+              <td>${warDisplay}</td>
             </tr>
           `;
         }).join('');
         
-        // After populating the table, we need to manually set the header width to match the table width
         const table = document.querySelector('.results-table');
         resultsHeader.style.width = `${table.offsetWidth}px`;
-        // And reset bottom border radius on the now-separate header
-        document.querySelector('.results-table').style.borderRadius = '0 0 8px 8px';
-
+        table.style.borderRadius = '0 0 8px 8px';
       }
 
       function handleSort(column) {
@@ -409,7 +370,7 @@
           if (column === 'Overall' || column === 'calculated_median_rank') {
             sortState.direction = 'asc';
           } else {
-            sortState.direction = 'desc';
+            sortState.direction = 'desc'; // Default desc for REL, WAR, GP
           }
         }
         updateSortIndicators();
@@ -425,7 +386,6 @@
           }
       }
       
-      // Add a resize observer to adjust header width if window size changes
       const resultsHeader = document.querySelector('.results-header');
       const table = document.querySelector('.results-table');
       const resizeObserver = new ResizeObserver(entries => {
@@ -435,7 +395,9 @@
             }
         }
       });
-      resizeObserver.observe(table);
+      if(table) {
+        resizeObserver.observe(table);
+      }
 
 
       document.addEventListener('DOMContentLoaded', () => {
