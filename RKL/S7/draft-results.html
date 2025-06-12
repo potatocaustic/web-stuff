@@ -49,8 +49,8 @@
       .col-overall { width: 6%; } 
       .col-gp { width: 8%; }
       .col-rel, .col-med-rank { width: 10%; }
-      .col-team { width: 22%; } 
-      .col-player { width: 38%; } 
+      .col-team { width: 20%; } 
+      .col-player { width: 40%; } 
 
       .results-table td.team-cell, .results-table td.player-cell { text-align: left; }
       .team-cell-content, .player-cell-content { display: flex; align-items: center; gap: 0.75rem; }
@@ -361,7 +361,7 @@
         resultsBody.innerHTML = dataToDisplay.map(pick => {
           const medRankDisplay = pick.calculated_median_rank === Infinity ? '-' : Math.round(pick.calculated_median_rank);
           const relDisplay = pick.calculated_rel_median.toFixed(3);
-          const playerCellHTML = pick.Player.toUpperCase() === 'FORFEITED'
+          const playerContent = pick.Player.toUpperCase() === 'FORFEITED'
             ? `<span>${pick.Player}</span>`
             : `<a href="player.html?player=${encodeURIComponent(pick.Player)}" class="player-link">${pick.Player}</a>`;
 
@@ -376,7 +376,9 @@
                 </div>
               </td>
               <td class="player-cell">
-                ${playerCellHTML}
+                <div class="player-cell-content">
+                  ${playerContent}
+                </div>
               </td>
               <td class="desktop-only">${pick.games_played}</td>
               <td class="desktop-only">${medRankDisplay}</td>
