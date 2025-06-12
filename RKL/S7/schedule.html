@@ -757,12 +757,14 @@
       
       function formatDate(dateString) { 
         if (!dateString) return 'Invalid Date';
+        if (dateString.toUpperCase() === 'TBD') return 'TBD';
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return 'Invalid Date'; 
         return date.toLocaleDateString('en-US', { timeZone: 'UTC', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
        }
       function formatDateShort(dateString) {
         if (!dateString) return 'N/A';
+        if (dateString.toUpperCase() === 'TBD') return 'TBD';
         const date = new Date(dateString); 
         if (isNaN(date.getTime())) {
             const parts = dateString.split('-');
@@ -950,7 +952,16 @@
         });
         
         const datesHTML = Object.keys(gamesByDate)
-          .sort((a, b) => new Date(a) - new Date(b))
+          .sort((a, b) => {
+            const isADate = a.toUpperCase() !== 'TBD' && !isNaN(new Date(a).getTime());
+            const isBDate = b.toUpperCase() !== 'TBD' && !isNaN(new Date(b).getTime());
+
+            if (isADate && !isBDate) return -1;
+            if (!isADate && isBDate) return 1;
+            if (!isADate && !isBDate) return 0;
+
+            return new Date(a) - new Date(b);
+          })
           .map(date => {
             const dateGames = gamesByDate[date];
             const gamesHTML = dateGames.map(game => {
