@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RKL Changelog</title>
+    <link rel="icon" href="../rklfavicon.ico" type="image/x-icon" />
+    <style>
+      /* General Styles from other pages */
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; line-height: 1.6; }
+      h1, h2, h3 { color: #333; }
+      main { padding: 2rem; max-width: 900px; margin: 0 auto; }
+
+      /* Header & Nav */
+      header { background-color: #333; color: #fff; padding: 1rem; text-align: center; }
+      header h1 { color: white !important; font-size: 2rem; margin: 0; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
+      .header-logo { width: 40px; height: 40px; object-fit: cover; }
+      nav { position: relative; }
+      .nav-toggle { display: none; background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer; padding: 0.5rem 1rem; position: absolute; top: -2.8rem; right: 1rem; }
+      nav ul { display: flex; justify-content: center; list-style: none; margin-top: 1rem; flex-wrap: wrap; }
+      nav ul li { margin: 0.5rem 1rem; }
+      nav ul li a { color: #fff; text-decoration: none; font-size: 1.1rem; transition: color 0.3s ease; white-space: nowrap; }
+      nav ul li a:hover { color: #ccc; }
+
+      /* Page-specific styles */
+      .page-header { text-align: center; margin-bottom: 2.5rem; }
+      .page-header h2 { font-size: 2.5rem; margin-bottom: 1rem; }
+      
+      .changelog-timeline {
+        position: relative;
+        padding: 1rem 0;
+      }
+
+      /* HOW TO ADD A NEW ENTRY:
+         1. Copy the entire <div class="changelog-entry">...</div> block for an existing entry.
+         2. Paste it at the top of the <div class="changelog-timeline"> container, right after the opening tag.
+         3. Change the date inside the <h2> tag.
+         4. Update the list items (<li>) with your new changes. You can add or remove list items as needed.
+         5. Use the <span> tags for labels like "New", "Improved", or "Fixed".
+      */
+      .changelog-entry {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+      }
+      .changelog-entry h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: #333;
+      }
+      .changelog-entry ul {
+        list-style-type: none;
+        padding-left: 0;
+      }
+      .changelog-entry li {
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: flex-start; /* Aligns items to the top */
+      }
+      .changelog-entry li::before {
+        content: '•';
+        color: #007bff;
+        font-weight: bold;
+        display: inline-block;
+        width: 1em;
+        margin-left: -1em;
+        padding-top: 2px; /* Small adjustment for better alignment with text */
+      }
+      .changelog-tag {
+        display: inline-block;
+        width: 85px; /* Fixed width to create a column */
+        text-align: center; /* Center text within the tag */
+        font-size: 0.75rem;
+        font-weight: bold;
+        padding: 0.2rem 0.5rem;
+        border-radius: 12px;
+        color: #fff;
+        margin-right: 0.75rem;
+        flex-shrink: 0;
+      }
+      .tag-new { background-color: #28a745; } /* Green */
+      .tag-improved { background-color: #007bff; } /* Blue */
+      .tag-fixed { background-color: #dc3545; } /* Red */
+      
+      footer { text-align: center; margin-top: 3rem; padding: 1rem; background-color: #333; color: #fff; }
+
+      /* Responsive Styles */
+      @media (max-width: 600px) {
+        .header-text { display: none; }
+        .header-logo { width: 50px; height: 50px; }
+        .nav-toggle { display: block; }
+        nav ul { display: none; position: absolute; top: calc(100% - 1rem); left: 0; right: 0; background-color: #444; flex-direction: column; align-items: center; gap: 0; margin-top: 0; padding: 0.5rem 0; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 100; }
+        nav ul.active { display: flex; }
+        nav ul li { margin: 0; width: 100%; text-align: center; }
+        nav ul li a { display: block; padding: 0.8rem 1rem; }
+        nav ul li a:hover { background-color: #555; }
+        main { padding: 1rem; }
+        .changelog-entry { padding: 1.5rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>
+        <img src="icons/RKL.webp" alt="RKL Logo" class="header-logo" onerror="this.style.display='none'">
+        <span class="header-text">Real Karma League</span>
+      </h1>
+      <nav>
+        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">&#9776;</button>
+        <ul id="nav-menu">
+            <li><a href="RKL-S7.html">S7 Home</a></li>
+            <li><a href="standings.html">Standings</a></li>
+            <li><a href="leaderboards.html">Leaderboards</a></li>
+            <li><a href="schedule.html">Schedule</a></li>
+            <li><a href="draft-results.html">Draft Results</a></li>
+            <li><a href="transactions.html">Transactions</a></li>
+            <li><a href="teams.html">Teams</a></li>
+            <li><a href="draft-capital.html">Draft Capital</a></li>
+            <li><a href="changelog.html">Changelog</a></li>
+        </ul>
+      </nav>
+    </header>
+    
+    <main>
+      <div class="page-header">
+        <h2>Changelog</h2>
+        <p>Recent updates and improvements to the RKL website.</p>
+      </div>
+
+      <div class="changelog-timeline">
+        <!-- To add a new entry, copy a "changelog-entry" block and paste it here. -->
+
+        <div class="changelog-entry">
+          <h3>June 12, 2025</h3>
+          <ul>
+            <li>
+              <span class="changelog-tag tag-improved">Improved</span>
+              <div class="change-description">
+                <strong>Draft Results Page:</strong> Enhanced mobile view by truncating long team/player names to prevent screen overflow.
+              </div>
+            </li>
+             <li>
+              <span class="changelog-tag tag-fixed">Fixed</span>
+              <div class="change-description">
+                <strong>Draft Results Page:</strong> The WAR column is now hidden on mobile devices to improve table layout.
+              </div>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="changelog-entry">
+          <h3>June 11, 2025</h3>
+          <ul>
+            <li>
+              <span class="changelog-tag tag-new">New</span>
+              <div class="change-description">
+                <strong>Draft Results Page:</strong> Added a "WAR" column to the results table.
+              </div>
+            </li>
+            <li>
+              <span class="changelog-tag tag-improved">Improved</span>
+              <div class="change-description">
+                <strong>Draft Results Page:</strong> Updated page and table titles to specify "Season 7". Removed the unnecessary season selector.
+              </div>
+            </li>
+             <li>
+              <span class="changelog-tag tag-fixed">Fixed</span>
+              <div class="change-description">
+                <strong>Draft Results Page:</strong> Corrected the table container width to properly fit the content, removing excess whitespace.
+              </div>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </main>
+    
+    <footer><p>@caustic on Real</p></footer>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const navToggle = document.querySelector('.nav-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        if (navToggle && navMenu) {
+            navToggle.addEventListener('click', () => {
+                const isExpanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
+                navToggle.setAttribute('aria-expanded', !isExpanded);
+                navMenu.classList.toggle('active');
+            });
+        }
+      });
+    </script>
+  </body>
+</html>
