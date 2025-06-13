@@ -699,15 +699,15 @@
         },
         gem: {
           title: 'GEM Leaders',
-          subtitle: 'Geometric Mean of REL Mean and REL Median',
+          subtitle: 'Geometric Mean of Gameday Rank',
           cols: [
             { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' },
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
-            { header: 'GEM', dataField: 'gem', sortable: true, type: 'number', formatFn: (v) => parseFloat(v || 0).toFixed(3) },
+            { header: 'GEM', dataField: 'gem', sortable: true, type: 'number', formatFn: (v) => parseFloat(v || 0).toFixed(1) },
             { header: 'Games', dataField: 'games_played', sortable: true, type: 'number', formatFn: (v) => parseInt(v || 0) }
           ],
           defaultSortField: 'gem',
-          defaultSortDescending: true,
+          defaultSortDescending: false,
           dataSourceType: 'players',
           hasMinGamesFilter: true
         },
@@ -717,7 +717,7 @@
           cols: [
             { header: 'Rank', dataField: 'leaderboardDisplayRank', sortable: true, type: 'number' },
             { header: 'Player', dataField: 'player_handle', sortable: true, type: 'string' },
-            { header: 'WAR', dataField: 'war', sortable: true, type: 'number', formatFn: (v) => parseFloat(v || 0).toFixed(3) },
+            { header: 'WAR', dataField: 'war', sortable: true, type: 'number', formatFn: (v) => parseFloat(v || 0).toFixed(2) },
             { header: 'Games', dataField: 'games_played', sortable: true, type: 'number', formatFn: (v) => parseInt(v || 0) }
           ],
           defaultSortField: 'war',
