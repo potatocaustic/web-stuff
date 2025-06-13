@@ -504,19 +504,18 @@
         }
         .team-logo { width: 28px; height: 28px; }
 
-        .leaderboard-table col.col-rank { width: 15%; }
-        .leaderboard-table col.col-player { width: 45%; }
-        .leaderboard-table col.col-stat1 { width: 20%; }
-        .leaderboard-table col.col-stat2 { width: 20%; }
-        
-        .leaderboard-table[data-active-columns="3"] col.col-rank { width: 15%; }
-        .leaderboard-table[data-active-columns="3"] col.col-player { width: 60%; }
-        .leaderboard-table[data-active-columns="3"] col.col-stat1 { width: 25%; }
-        .leaderboard-table[data-active-columns="3"] col.col-stat2 { width: 0; } 
-        
-        .leaderboard-table[data-active-columns="3"] th:nth-child(4), 
-        .leaderboard-table[data-active-columns="3"] td:nth-child(4) { display: none; }
+        /* Hide the 4th column on mobile */
+        .leaderboard-table th:nth-child(4),
+        .leaderboard-table td:nth-child(4) {
+            display: none;
+        }
 
+        /* Adjust column widths for the new 3-column layout on mobile */
+        .leaderboard-table col.col-rank { width: 20%; }
+        .leaderboard-table col.col-player { width: 55%; }
+        .leaderboard-table col.col-stat1 { width: 25%; }
+        .leaderboard-table col.col-stat2 { display: none; }
+        
         .table-controls {
             gap: 0.5rem; 
             align-items: stretch; 
@@ -524,17 +523,17 @@
         .table-controls .control-item {
             margin: 0.25rem 0; 
             width: 100%; 
-            justify-content: space-between; /* This helps labels and inputs spread out */
+            justify-content: space-between;
         }
          .table-controls .control-item > label { 
-            flex-shrink: 0; /* Prevent label from shrinking */
-            margin-right: 0.5rem; /* More space between label and control on mobile */
+            flex-shrink: 0;
+            margin-right: 0.5rem;
          }
         
          .table-controls .control-item select,
          .table-controls .control-item input[type="number"],
          .dropdown-team-filter { 
-            flex-grow: 1; /* Allow controls to take up remaining space */
+            flex-grow: 1;
             min-width: 100px; 
          }
          .team-checklist-container.dropdown-menu { 
@@ -978,8 +977,8 @@
             t50_finishes_pct: games_played_count > 0 ? (t50_finishes / games_played_count) : 0, 
             total_points: parseNumber(player.total_points),
             games_played: games_played_count,
-            gem: parseNumber(player.gem),
-            war: parseNumber(player.war)
+            gem: parseNumber(player.GEM),
+            war: parseNumber(player.WAR)
           };
         });
       }
@@ -1379,7 +1378,7 @@
                         if (valBPct !== valAPct) return valBPct - valAPct; 
                     } else if (rankSortField === 't50_finishes') { 
                         const valAPct = parseFloat(a.t50_finishes_pct || 0); const valBPct = parseFloat(b.t50_finishes_pct || 0);
-                        if (valAPct !== valBPct) return valBPct - valAPct;
+                        if (valBPct !== valAPct) return valBPct - valAPct;
                     }
                 } else { 
                     if (rankSortField === 'karma') return new Date(a.date) - new Date(b.date);
@@ -1506,7 +1505,7 @@
         
         if (itemsToShow.length === 0) {
             leaderboardBody.innerHTML = `<tr><td colspan="${categoryConfig.cols.length || 4}" style="text-align:center; padding: 2rem;">No data available for this category or filter.</td></tr>`;
-            leaderboardTable.dataset.activeColumns = categoryConfig.cols.length || 4;
+            leaderboardTable.dataset.activeColumns = categoryConfig.cols.length;
             return;
         }
 
