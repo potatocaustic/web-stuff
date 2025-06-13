@@ -71,6 +71,17 @@
         .team-logo { width: 20px; height: 20px; }
         .desktop-only { display: none; }
         .mobile-only { display: table-cell; }
+
+        /* Truncate long names on mobile */
+        .results-table .team-link,
+        .results-table .player-link {
+            display: inline-block;
+            max-width: 120px; /* Adjust this value as needed */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: middle; /* Aligns truncated text with the team logo */
+        }
       }
 
       @media (max-width: 600px) {
@@ -127,7 +138,7 @@
               <th class="sortable desktop-only" onclick="handleSort('games_played')">GP<span class="sort-indicator"></span></th>
               <th class="sortable desktop-only" onclick="handleSort('calculated_median_rank')">Med Rank<span class="sort-indicator"></span></th>
               <th class="sortable" onclick="handleSort('calculated_rel_median')">REL<span class="sort-indicator"></span></th>
-              <th class="sortable" onclick="handleSort('WAR')">WAR<span class="sort-indicator"></span></th>
+              <th class="sortable desktop-only" onclick="handleSort('WAR')">WAR<span class="sort-indicator"></span></th>
             </tr>
           </thead>
           <tbody id="results-body">
@@ -351,7 +362,7 @@
               <td class="desktop-only">${pick.games_played}</td>
               <td class="desktop-only">${medRankDisplay}</td>
               <td>${relDisplay}</td>
-              <td>${warDisplay}</td>
+              <td class="desktop-only">${warDisplay}</td>
             </tr>
           `;
         }).join('');
