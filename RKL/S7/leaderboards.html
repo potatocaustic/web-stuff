@@ -911,14 +911,11 @@
           const ranks = [];
           let sumOfRanks = 0; 
           let countOfRankedGames = 0; 
-          let gamesAboveMean = 0;
-          let gamesAboveMedian = 0;
           let t100_finishes = 0; 
           let t50_finishes = 0; 
 
           playerGames.forEach(game => {
             const gameDate = game.date;
-            const playerKarmaFinalForComparisons = parseNumber(game.points_final);
             const playerKarmaRawForRELCalculation = parseNumber(game.points_raw);
             const globalRank = parseNumber(game.global_rank);
             
@@ -927,8 +924,6 @@
               totalMeanKarma += weeklyAveragesMap[gameDate].mean_score;
               totalMedianKarma += weeklyAveragesMap[gameDate].median_score;
               validGamesForREL++;
-              if (playerKarmaFinalForComparisons > weeklyAveragesMap[gameDate].mean_score) gamesAboveMean++;
-              if (playerKarmaFinalForComparisons > weeklyAveragesMap[gameDate].median_score) gamesAboveMedian++;
             }
             if (globalRank > 0) {
               ranks.push(globalRank);
@@ -967,10 +962,10 @@
             calculated_rel_median: calculated_rel_median,
             calculated_median_rank: calculated_median_rank > 0 ? calculated_median_rank : Infinity, 
             calculated_avg_rank: calculated_avg_rank,
-            aag_mean: gamesAboveMean,
-            aag_mean_pct: games_played_count > 0 ? gamesAboveMean / games_played_count : 0,
-            aag_median: gamesAboveMedian,
-            aag_median_pct: games_played_count > 0 ? gamesAboveMedian / games_played_count : 0,
+            aag_mean: parseNumber(player.aag_mean),
+            aag_mean_pct: parseNumber(player.aag_mean_pct),
+            aag_median: parseNumber(player.aag_median),
+            aag_median_pct: parseNumber(player.aag_median_pct),
             t100_finishes: t100_finishes, 
             t100_finishes_pct: games_played_count > 0 ? (t100_finishes / games_played_count) : 0,
             t50_finishes: t50_finishes, 
