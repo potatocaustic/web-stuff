@@ -215,9 +215,9 @@
        .rookie-badge {
         background-color: #6c757d;
         color: white;
-        padding: 0.2rem 0.5rem;
+        padding: 0.15rem 0.4rem;
         border-radius: 4px;
-        font-size: 0.7em;
+        font-size: 0.65em;
         font-weight: bold;
         margin-left: 8px;
         line-height: 1;
@@ -915,7 +915,7 @@
 
         document.getElementById('player-stats').innerHTML = `
           <a href="leaderboards.html?category=war" class="stat-card-link"><div class="stat-card">
-            <div class="stat-value ${warValue > 0 ? 'positive' : 'negative'}">${warValue.toFixed(2)}</div><div class="stat-label">WAR</div><div class="${rankClass(rankings.war)}">${rankings.war}</div></div></a>
+            <div class="stat-value">${warValue.toFixed(2)}</div><div class="stat-label">WAR</div><div class="${rankClass(rankings.war)}">${rankings.war}</div></div></a>
           <a href="leaderboards.html?category=rel_median" class="stat-card-link"><div class="stat-card">
             <div class="stat-value">${relMedian.toFixed(3)}</div><div class="stat-label">REL Median</div><div class="${rankClass(rankings.relMedian)}">${rankings.relMedian}</div></div></a>
           <a href="leaderboards.html?category=median_gameday_rank" class="stat-card-link"><div class="stat-card"> 
