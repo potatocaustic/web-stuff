@@ -74,6 +74,32 @@
         }
 
         /* Page-specific styles */
+        .quick-links-container {
+            text-align: center;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .quick-link-btn {
+            background-color: #fff;
+            color: #333;
+            border: 1px solid #ddd;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .quick-link-btn:hover {
+            background-color: #f8f9fa;
+            border-color: #ccc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
         .lottery-container {
             background-color: #fff;
             border-radius: 8px;
@@ -264,11 +290,16 @@
     <!-- Main Content -->
     <main>
         
+        <div class="quick-links-container">
+            <a href="draft-capital.html" class="quick-link-btn">Draft Capital</a>
+            <a href="draft-results.html" class="quick-link-btn">S7 Draft Results</a>
+        </div>
+
         <div class="lottery-container">
             <div class="lottery-header">
                 <div class="lottery-header-content">
-                    <h2 id="table-title">Lottery Odds</h2>
-                    <p id="table-description">Odds for the 14 non-playoff teams to land a top 4 pick in the upcoming draft.</p>
+                    <h2 id="table-title">S8 Lottery Odds</h2>
+                    <p id="table-description">S8 lottery odds for the 14 (projected) non-playoff teams.</p>
                 </div>
                 <!-- Simulation/Reset Button Container -->
                 <div id="button-container" class="button-container">
@@ -446,7 +477,7 @@ function renderSimulatedResults(finalOrder) {
                 <td>${teamCellHtml}</td>
                 <td class="text-center hidden-mobile">${originalTeam.wins} - ${originalTeam.losses}</td>
                 <td class="text-center">${originalTeam.pct1st.toFixed(2)}%</td>
-                <td class="text-center hidden-mobile">${originalTeam.pctTop4.toFixed(2)}%</td>
+                <td class="text-center hidden-mobile">${team.pctTop4.toFixed(2)}%</td>
             </tr>
         `;
     });
@@ -504,15 +535,15 @@ function renderSimulatedButtons() {
 }
 
 function resetView() {
-    document.getElementById('table-title').textContent = 'Lottery Odds';
-    document.getElementById('table-description').textContent = 'Odds for the 14 non-playoff teams to land a top 4 pick in the upcoming draft.';
+    document.getElementById('table-title').textContent = 'S8 Lottery Odds';
+    document.getElementById('table-description').textContent = 'S8 lottery odds for the 14 (projected) non-playoff teams.';
     renderLotteryOddsTable();
     renderInitialButtons();
 }
 
 function handleFirstSimulation() {
-    document.getElementById('table-title').textContent = 'Lottery Results';
-    document.getElementById('table-description').textContent = 'The official draft order based on the simulation.';
+    document.getElementById('table-title').textContent = 'Lottery Simulation';
+    document.getElementById('table-description').textContent = 'Projected draft order based on the simulation.';
     runSimulation();
     renderSimulatedButtons();
 }
@@ -541,6 +572,10 @@ async function initializeApp() {
     renderTableHeader();
     renderInitialButtons();
     document.getElementById('simulateBtn').disabled = true;
+
+    // Set initial titles
+    document.getElementById('table-title').textContent = 'S8 Lottery Odds';
+    document.getElementById('table-description').textContent = 'S8 lottery odds for the 14 (projected) non-playoff teams.';
 
     const [allTeams, draftPicks] = await Promise.all([
         fetchSheetData('Teams'),
