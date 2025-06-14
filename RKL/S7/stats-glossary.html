@@ -192,22 +192,27 @@
 
       <div class="glossary-section">
         <div class="glossary-term">
-          <h3>REL (Relative Engagement Level)</h3>
+          <h3>REL (Relative Performance Score)</h3>
           <p>
-            REL measures a player's raw point generation relative to the league's median performance for a given week. It's a way to normalize scores across weeks that might have different scoring environments. A REL above 1.000 indicates an above-average performance, while a score below 1.000 is below average.
+            REL measures a player's raw point generation relative to the league's mean or median on days they played. It's a way to normalize scores across games that might have different scoring opportunities. An REL above 1.000 indicates above-average performance, while a score below 1.000 is below average.
           </p>
           <div class="formula">
-            (Player's Raw Score / League Median Score for the Week)
+            REL Median = (Player's Raw Score / League Median Score)
+            REL Mean = (Player's Raw Score / League Mean Score)
           </div>
         </div>
 
         <div class="glossary-term">
           <h3>WAR (Wins Above Replacement)</h3>
           <p>
-            WAR attempts to quantify a player's total contribution to their team in a single number. It compares a player's performance to that of a "replacement-level" player—a hypothetical player who is readily available and typically performs at a league-minimum level. The resulting value represents the number of additional wins a team gets by having that player on their roster instead of a replacement.
+            WAR attempts to quantify a player's total contribution to their team in a single number. It compares a player's performance to that of a "replacement-level" player—a hypothetical player who is readily available and typically performs at a league-minimum level. The resulting value represents the number of additional wins a team gets by having that player on their roster instead of a replacement. WAR is a cumulative stat, increasing with every above-replacement level performance.
+            <br>
+            For the purposes of WAR calculations, "replacement level" is 80% of the leaguewide median player score on a given day. This is approximately equal to the 180th-best REL in the league (30 teams * 6 starters). 
+            <br>
+            The average margin of victory in a S7 RKL game is equal to 92% of the leaguewide median player score on a given day. Therefore, producing (.92 * median) more karma than a replacement level player is considered adding 1.0 win above replacement.
           </p>
            <div class="formula">
-            (Player's Performance - Replacement-Level Performance) / (Points Per Win)
+            WAR = (Player Performance - Replacement-Level Performance) / (Avg MoV)
           </div>
         </div>
         
