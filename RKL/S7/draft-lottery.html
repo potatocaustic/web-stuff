@@ -4,80 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RKL Draft Lottery Simulator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="../rklfavicon.ico" type="image/x-icon" />
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
+        /* General Styles from other pages */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; line-height: 1.6; }
+        h1, h2, h3 { color: #333; }
+        main { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+        .loading { text-align: center; padding: 3rem; color: #666; font-size: 1.1rem; }
+        .error { text-align: center; padding: 2rem; color: #dc3545; background-color: #f8d7da; border-radius: 4px; margin: 1rem; }
+
+        /* Header & Nav */
+        header { background-color: #333; color: #fff; padding: 1rem; text-align: center; }
+        header h1 { color: white !important; font-size: 2rem; margin: 0; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
+        .header-logo { width: 40px; height: 40px; object-fit: cover; }
+        nav { position: relative; }
+        .nav-toggle { display: none; background: none; border: none; color: white; font-size: 1.8rem; cursor: pointer; padding: 0.5rem 1rem; position: absolute; top: -2.8rem; right: 1rem; }
+        nav ul { display: flex; justify-content: center; list-style: none; margin-top: 1rem; flex-wrap: wrap; }
+        nav ul li { margin: 0.5rem 1rem; }
+        nav ul li a { color: #fff; text-decoration: none; font-size: 1.1rem; transition: color 0.3s ease; white-space: nowrap; }
+        nav ul li a:hover { color: #ccc; }
+
+        /* Page-specific styles */
+        .lottery-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 960px; /* Equivalent to max-w-5xl */
+            margin: 0 auto 2rem auto;
         }
-        /* Header & Nav styles from other pages */
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 1rem;
-            text-align: center;
-        }
-        header h1 {
-            color: white !important;
-            font-size: 2rem;
-            margin: 0;
+
+        .lottery-header {
+            padding: 1.5rem;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
+            flex-direction: column;
+            gap: 1rem;
         }
-        .header-logo {
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
+        
+        .lottery-header-content h2 {
+            font-size: 1.75rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
         }
-        nav {
-            position: relative;
+
+        .lottery-header-content p {
+            color: #555;
         }
-        nav ul {
+
+        .button-container {
             display: flex;
-            justify-content: center;
-            list-style: none;
-            margin-top: 1rem;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 0.5rem;
         }
-        nav ul li {
-            margin: 0.5rem 1rem;
-        }
-        nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 1.1rem;
-            transition: color 0.3s ease;
-        }
-        .original-team-traded {
-            opacity: 0.6;
-            text-decoration: line-through;
-        }
-        .team-logo {
-            width: 28px;
-            height: 28px;
-            object-fit: contain;
-            flex-shrink: 0;
-        }
-        .move-up {
-            color: #16a34a; /* green-600 */
-            font-weight: 600;
-        }
-        .move-down {
-            color: #dc2626; /* red-600 */
-            font-weight: 600;
-        }
-        .no-move {
-            color: #6b7280; /* gray-500 */
-        }
-        .top-pick-row {
-            background-color: #fef9c3; /* yellow-100 */
-        }
-         /* Main simulation button style */
+
         .action-button {
+            border: none;
+            color: white;
+            font-weight: bold;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
             transition: all 0.2s ease;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
@@ -89,12 +77,73 @@
             transform: translateY(0);
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
+        .action-button:disabled {
+            background-color: #999;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+        #simulateBtn { background-color: #2563eb; }
+        #simulateBtn:hover:not(:disabled) { background-color: #1d4ed8; }
+        #simulateAgainBtn { background-color: #16a34a; }
+        #simulateAgainBtn:hover { background-color: #15803d; }
+        #resetBtn { background-color: #6b7280; }
+        #resetBtn:hover { background-color: #4b5563; }
+        
+        .table-container { overflow-x: auto; }
+        .lottery-table { width: 100%; border-collapse: collapse; }
+        .lottery-table th, .lottery-table td { text-align: left; padding: 1rem 1.25rem; border-bottom: 1px solid #eee; }
+        .lottery-table th { background-color: #f8f9fa; text-transform: uppercase; font-size: 0.8rem; color: #444; }
+        .lottery-table td { color: #333; }
+        .lottery-table tr:hover { background-color: #f8f9fa; }
+        .lottery-table .text-center { text-align: center; }
+
+        .team-cell { display: inline-flex; align-items: center; gap: 0.75rem; color: #111827; text-decoration: none; transition: color 0.3s; }
+        .team-cell:hover { color: #2563eb; }
+        .team-cell-content { display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
+        .team-cell .font-semibold { font-weight: 600; }
+        .team-logo { width: 28px; height: 28px; object-fit: contain; flex-shrink: 0; }
+        .original-team-traded { opacity: 0.6; text-decoration: line-through; }
+        
+        .move-up { color: #16a34a; font-weight: 600; font-size: 0.8rem; margin-left: 0.5rem; }
+        .move-down { color: #dc2626; font-weight: 600; font-size: 0.8rem; margin-left: 0.5rem; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hidden-mobile { display: table-cell; }
+
+        footer { text-align: center; margin-top: 3rem; padding: 1rem; background-color: #333; color: #fff; }
+
+        /* Responsive Styles */
+        @media (min-width: 640px) { /* sm breakpoint */
+            .lottery-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .button-container {
+                flex-direction: row;
+            }
+        }
+
+        @media (max-width: 768px) { /* md breakpoint */
+            .hidden-mobile { display: none; }
+            .lottery-table th, .lottery-table td { padding: 0.8rem 0.6rem; }
+        }
+
+        @media (max-width: 600px) {
+            .header-text { display: none; }
+            .header-logo { width: 50px; height: 50px; }
+            .nav-toggle { display: block; }
+            nav ul { display: none; position: absolute; top: calc(100% - 1rem); left: 0; right: 0; background-color: #444; flex-direction: column; align-items: center; gap: 0; margin-top: 0; padding: 0.5rem 0; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 100; }
+            nav ul.active { display: flex; }
+            nav ul li { margin: 0; width: 100%; text-align: center; }
+            nav ul li a { display: block; padding: 0.8rem 1rem; }
+            nav ul li a:hover { background-color: #555; }
+            main { padding: 1rem; }
         }
     </style>
 </head>
@@ -107,51 +156,54 @@
         <span class="header-text">Real Karma League</span>
       </h1>
       <nav>
+        <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">&#9776;</button>
         <ul id="nav-menu">
           <li><a href="RKL-S7.html">S7 Home</a></li>
-          <li><a href="standings.html">Standings & Rankings</a></li>
+          <li><a href="standings.html">Standings</a></li>
+          <li><a href="leaderboards.html">Leaderboards</a></li>
+          <li><a href="schedule.html">Schedule</a></li>
+          <li><a href="draft-results.html">Draft Results</a></li>
+          <li><a href="draft-lottery.html">Draft Lottery</a></li>
+          <li><a href="transactions.html">Transactions</a></li>
+          <li><a href="teams.html">Teams</a></li>
           <li><a href="draft-capital.html">Draft Capital</a></li>
         </ul>
       </nav>
     </header>
 
     <!-- Main Content -->
-    <main class="container mx-auto p-4 md:p-8">
+    <main>
         
-        <div class="flex justify-center">
-            <div class="bg-white rounded-lg shadow-lg mb-8 overflow-hidden w-full max-w-5xl">
-                <div class="p-6">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                        <div>
-                            <h2 id="table-title" class="text-2xl font-bold mb-1">Lottery Odds</h2>
-                            <p id="table-description" class="text-gray-600">Odds for the 14 non-playoff teams to land a top 4 pick in the upcoming draft.</p>
-                        </div>
-                        <!-- Simulation/Reset Button Container -->
-                        <div id="button-container" class="flex flex-col sm:flex-row justify-end items-center gap-2">
-                            <!-- Buttons are injected here by JS -->
-                        </div>
-                    </div>
+        <div class="lottery-container">
+            <div class="lottery-header">
+                <div class="lottery-header-content">
+                    <h2 id="table-title">Lottery Odds</h2>
+                    <p id="table-description">Odds for the 14 non-playoff teams to land a top 4 pick in the upcoming draft.</p>
                 </div>
+                <!-- Simulation/Reset Button Container -->
+                <div id="button-container" class="button-container">
+                    <!-- Buttons are injected here by JS -->
+                </div>
+            </div>
 
-                <!-- Lottery Table -->
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left text-gray-600">
-                        <thead id="lottery-table-head" class="text-xs text-gray-700 uppercase bg-gray-50">
-                            <!-- Header content is generated by JS -->
-                        </thead>
-                        <tbody id="lottery-table-body">
-                            <!-- Body content is generated by JS -->
-                        </tbody>
-                    </table>
-                </div>
+            <!-- Lottery Table -->
+            <div class="table-container">
+                <table id="lottery-table" class="lottery-table">
+                    <thead id="lottery-table-head">
+                        <!-- Header content is generated by JS -->
+                    </thead>
+                    <tbody id="lottery-table-body">
+                        <!-- Body content is generated by JS -->
+                    </tbody>
+                </table>
             </div>
         </div>
 
     </main>
 
     <!-- Footer -->
-    <footer class="text-center py-6 mt-8">
-        <p class="text-gray-500 text-sm">@caustic on Real</p>
+    <footer>
+        <p>@caustic on Real</p>
     </footer>
 
 <script>
@@ -183,6 +235,10 @@ async function fetchSheetData(sheetName) {
         return parseCSV(await response.text());
     } catch (error) {
         console.error(`Error fetching ${sheetName}:`, error);
+        const tableBody = document.getElementById('lottery-table-body');
+        if (tableBody) {
+             tableBody.innerHTML = `<tr><td colspan="5"><div class="error">Failed to load required data from sheet: ${sheetName}. Please try again later.</div></td></tr>`;
+        }
         return null;
     }
 }
@@ -207,31 +263,35 @@ function renderTableHeader(isSimulatedView = false) {
     const pickOrSeed = isSimulatedView ? 'Pick' : 'Seed';
     document.getElementById('lottery-table-head').innerHTML = `
         <tr>
-            <th scope="col" class="px-4 md:px-6 py-3">${pickOrSeed}</th>
-            <th scope="col" class="px-4 md:px-6 py-3">Team</th>
-            <th scope="col" class="px-4 md:px-6 py-3 text-center hidden md:table-cell">Record</th>
-            <th scope="col" class="px-4 md:px-6 py-3 text-center">#1 Pick Odds</th>
-            <th scope="col" class="px-4 md:px-6 py-3 text-center hidden md:table-cell">Top 4 Odds</th>
+            <th scope="col">${pickOrSeed}</th>
+            <th scope="col">Team</th>
+            <th scope="col" class="text-center hidden-mobile">Record</th>
+            <th scope="col" class="text-center">#1 Pick Odds</th>
+            <th scope="col" class="text-center hidden-mobile">Top 4 Odds</th>
         </tr>
     `;
 }
 
 function getTeamCellHtml(ownerTeam, originalTeam, ownerId, isTraded) {
+    const teamName = ownerTeam ? ownerTeam.team_name : 'Unknown';
+    const originalTeamName = originalTeam ? originalTeam.team_name : 'Unknown';
+    const teamLogoUrl = ownerId ? `icons/${ownerId}.webp` : '';
+
     if (isTraded) {
         return `
-            <a href="team.html?id=${ownerId}" class="inline-flex items-center gap-3 text-gray-900 hover:text-blue-600 transition-colors">
-                <img src="icons/${ownerId}.webp" alt="${ownerTeam.team_name}" class="team-logo" onerror="this.style.display='none'">
-                <div class="flex items-center gap-2 whitespace-nowrap">
-                    <span class="font-semibold">${ownerTeam.team_name}</span>
-                    <span class="original-team-traded">${originalTeam.team_name}</span>
+            <a href="team.html?id=${ownerId}" class="team-cell">
+                <img src="${teamLogoUrl}" alt="${teamName}" class="team-logo" onerror="this.style.display='none'">
+                <div class="team-cell-content">
+                    <span class="font-semibold">${teamName}</span>
+                    <span class="original-team-traded">${originalTeamName}</span>
                 </div>
             </a>
         `;
     } else {
         return `
-            <a href="team.html?id=${ownerId}" class="inline-flex items-center gap-3 text-gray-900 hover:text-blue-600 transition-colors">
-                <img src="icons/${ownerId}.webp" alt="${ownerTeam.team_name}" class="team-logo" onerror="this.style.display='none'">
-                <span class="font-semibold whitespace-nowrap">${ownerTeam.team_name}</span>
+            <a href="team.html?id=${ownerId}" class="team-cell">
+                <img src="${teamLogoUrl}" alt="${teamName}" class="team-logo" onerror="this.style.display='none'">
+                <span class="font-semibold whitespace-nowrap">${teamName}</span>
             </a>
         `;
     }
@@ -250,12 +310,12 @@ function renderLotteryOddsTable() {
         const teamCellHtml = getTeamCellHtml(ownerTeam, team, ownerId, isTraded);
 
         html += `
-            <tr class="bg-white border-b hover:bg-gray-50">
-                <td class="px-4 md:px-6 py-4 font-bold text-gray-900">${team.seed}</td>
-                <td class="px-4 md:px-6 py-4">${teamCellHtml}</td>
-                <td class="px-4 md:px-6 py-4 text-center font-medium hidden md:table-cell">${team.wins} - ${team.losses}</td>
-                <td class="px-4 md:px-6 py-4 text-center">${team.pct1st.toFixed(2)}%</td>
-                <td class="px-4 md:px-6 py-4 text-center hidden md:table-cell">${team.pctTop4.toFixed(2)}%</td>
+            <tr>
+                <td class="font-semibold">${team.seed}</td>
+                <td>${teamCellHtml}</td>
+                <td class="text-center hidden-mobile">${team.wins} - ${team.losses}</td>
+                <td class="text-center">${team.pct1st.toFixed(2)}%</td>
+                <td class="text-center hidden-mobile">${team.pctTop4.toFixed(2)}%</td>
             </tr>
         `;
     });
@@ -276,9 +336,9 @@ function renderSimulatedResults(finalOrder) {
 
         let movementHtml;
         if (movement > 0) {
-            movementHtml = `<span class="move-up text-xs ml-2">▲ ${movement}</span>`;
+            movementHtml = `<span class="move-up">▲ ${movement}</span>`;
         } else if (movement < 0) {
-            movementHtml = `<span class="move-down text-xs ml-2">▼ ${Math.abs(movement)}</span>`;
+            movementHtml = `<span class="move-down">▼ ${Math.abs(movement)}</span>`;
         } else {
             movementHtml = ``; // No indicator for no move
         }
@@ -286,17 +346,17 @@ function renderSimulatedResults(finalOrder) {
         const teamCellHtml = getTeamCellHtml(ownerTeam, originalTeam, ownerId, isTraded);
 
         html += `
-            <tr class="bg-white border-b hover:bg-gray-50 fade-in ${pickNumber === 1 ? 'top-pick-row' : ''}" style="animation-delay: ${index * 50}ms;">
-                <td class="px-4 md:px-6 py-4 font-bold text-gray-900">
-                    <div class="flex items-center whitespace-nowrap">
+            <tr class="fade-in" style="animation-delay: ${index * 50}ms;">
+                <td class="font-semibold">
+                    <div style="display: flex; align-items: center; white-space: nowrap;">
                         <span>${pickNumber}</span>
                         ${movementHtml}
                     </div>
                 </td>
-                <td class="px-4 md:px-6 py-4">${teamCellHtml}</td>
-                <td class="px-4 md:px-6 py-4 text-center font-medium hidden md:table-cell">${originalTeam.wins} - ${originalTeam.losses}</td>
-                <td class="px-4 md:px-6 py-4 text-center">${originalTeam.pct1st.toFixed(2)}%</td>
-                <td class="px-4 md:px-6 py-4 text-center hidden md:table-cell">${originalTeam.pctTop4.toFixed(2)}%</td>
+                <td>${teamCellHtml}</td>
+                <td class="text-center hidden-mobile">${originalTeam.wins} - ${originalTeam.losses}</td>
+                <td class="text-center">${originalTeam.pct1st.toFixed(2)}%</td>
+                <td class="text-center hidden-mobile">${originalTeam.pctTop4.toFixed(2)}%</td>
             </tr>
         `;
     });
@@ -332,12 +392,11 @@ function runSimulation() {
 }
 
 // --- UI AND EVENT HANDLING ---
-
 const buttonContainer = document.getElementById('button-container');
 
 function renderInitialButtons() {
     buttonContainer.innerHTML = `
-        <button id="simulateBtn" class="action-button w-full sm:w-auto bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 disabled:bg-gray-400">
+        <button id="simulateBtn" class="action-button">
             Simulate Lottery
         </button>
     `;
@@ -345,10 +404,10 @@ function renderInitialButtons() {
 
 function renderSimulatedButtons() {
     buttonContainer.innerHTML = `
-        <button id="simulateAgainBtn" class="action-button w-full sm:w-auto bg-green-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-700">
+        <button id="simulateAgainBtn" class="action-button">
             Simulate Again
         </button>
-        <button id="resetBtn" class="action-button w-full sm:w-auto bg-gray-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-600">
+        <button id="resetBtn" class="action-button">
             Reset
         </button>
     `;
@@ -387,8 +446,8 @@ function setupButtonListeners() {
 
 // --- INITIALIZATION ---
 async function initializeApp() {
-    document.getElementById('lottery-table-body').innerHTML = `
-        <tr><td colspan="5" class="text-center p-8"><div class="font-semibold text-gray-500">Loading Team Data...</div></td></tr>`;
+    const tableBody = document.getElementById('lottery-table-body');
+    tableBody.innerHTML = `<tr><td colspan="5"><div class="loading">Loading Team Data...</div></td></tr>`;
     renderTableHeader();
     renderInitialButtons();
     document.getElementById('simulateBtn').disabled = true;
@@ -399,8 +458,7 @@ async function initializeApp() {
     ]);
 
     if (!allTeams || !draftPicks) {
-        document.getElementById('lottery-table-body').innerHTML = `
-            <tr><td colspan="5" class="text-center p-8 text-red-600 font-semibold">Failed to load required data. Please try again later.</td></tr>`;
+        // Error is already handled inside fetchSheetData
         renderInitialButtons(); // Render buttons even on fail, but they will be disabled.
         return;
     }
@@ -427,6 +485,17 @@ async function initializeApp() {
     renderLotteryOddsTable();
     document.getElementById('simulateBtn').disabled = false;
     setupButtonListeners();
+
+    // Nav Toggle JS
+    const navToggle = document.querySelector('.nav-toggle');
+    const navMenu = document.getElementById('nav-menu');
+    if (navToggle && navMenu) {
+        navToggle.addEventListener('click', () => {
+            const isExpanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
+            navToggle.setAttribute('aria-expanded', !isExpanded);
+            navMenu.classList.toggle('active');
+        });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', initializeApp);
