@@ -219,20 +219,20 @@ function renderTableHeader(isSimulatedView = false) {
 function getTeamCellHtml(ownerTeam, originalTeam, ownerId, isTraded) {
     if (isTraded) {
         return `
-            <div class="flex items-center gap-3">
+            <a href="team.html?id=${ownerId}" class="inline-flex items-center gap-3 text-gray-900 hover:text-blue-600 transition-colors">
                 <img src="icons/${ownerId}.webp" alt="${ownerTeam.team_name}" class="team-logo" onerror="this.style.display='none'">
-                <div class="flex items-center gap-2">
-                    <span class="font-semibold text-gray-900">${ownerTeam.team_name}</span>
+                <div class="flex items-center gap-2 whitespace-nowrap">
+                    <span class="font-semibold">${ownerTeam.team_name}</span>
                     <span class="original-team-traded">${originalTeam.team_name}</span>
                 </div>
-            </div>
+            </a>
         `;
     } else {
         return `
-            <div class="flex items-center gap-3">
+            <a href="team.html?id=${ownerId}" class="inline-flex items-center gap-3 text-gray-900 hover:text-blue-600 transition-colors">
                 <img src="icons/${ownerId}.webp" alt="${ownerTeam.team_name}" class="team-logo" onerror="this.style.display='none'">
-                <span class="font-semibold text-gray-900">${ownerTeam.team_name}</span>
-            </div>
+                <span class="font-semibold whitespace-nowrap">${ownerTeam.team_name}</span>
+            </a>
         `;
     }
 }
