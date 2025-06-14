@@ -288,7 +288,7 @@ function renderSimulatedResults(finalOrder) {
         html += `
             <tr class="bg-white border-b hover:bg-gray-50 fade-in ${pickNumber === 1 ? 'top-pick-row' : ''}" style="animation-delay: ${index * 50}ms;">
                 <td class="px-4 md:px-6 py-4 font-bold text-gray-900">
-                    <div class="flex items-center">
+                    <div class="flex items-center whitespace-nowrap">
                         <span>${pickNumber}</span>
                         ${movementHtml}
                     </div>
