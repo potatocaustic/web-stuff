@@ -74,6 +74,18 @@
         }
 
         /* Page-specific styles */
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .page-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .page-header p {
+            color: #555;
+        }
+
         .quick-links-container {
             text-align: center;
             margin-bottom: 2rem;
@@ -116,15 +128,11 @@
             flex-direction: column;
             gap: 1rem;
         }
-        
-        .lottery-header-content h2 {
-            font-size: 1.75rem;
-            font-weight: bold;
-            margin-bottom: 0.25rem;
-        }
 
-        .lottery-header-content p {
-            color: #555;
+        .lottery-card-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 0;
         }
 
         .button-container {
@@ -195,7 +203,7 @@
         @media (min-width: 640px) { /* sm breakpoint */
             .lottery-header {
                 flex-direction: row;
-                justify-content: space-between;
+                justify-content: space-between; /* Align title and buttons */
                 align-items: center;
             }
             .button-container {
@@ -290,6 +298,11 @@
     <!-- Main Content -->
     <main>
         
+        <div class="page-header">
+            <h2 id="table-title">S8 Lottery Odds</h2>
+            <p id="table-description">S8 lottery odds for the 14 (projected) non-playoff teams.</p>
+        </div>
+        
         <div class="quick-links-container">
             <a href="draft-capital.html" class="quick-link-btn">Draft Capital</a>
             <a href="draft-results.html" class="quick-link-btn">S7 Draft Results</a>
@@ -297,11 +310,8 @@
 
         <div class="lottery-container">
             <div class="lottery-header">
-                <div class="lottery-header-content">
-                    <h2 id="table-title">S8 Lottery Odds</h2>
-                    <p id="table-description">S8 lottery odds for the 14 (projected) non-playoff teams.</p>
-                </div>
-                <!-- Simulation/Reset Button Container -->
+                <h3 class="lottery-card-title">Season 8 Draft</h3>
+                <!-- Button Container -->
                 <div id="button-container" class="button-container">
                     <!-- Buttons are injected here by JS -->
                 </div>
