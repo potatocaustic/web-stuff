@@ -95,7 +95,7 @@
       }
       .glossary-term .formula {
         background-color: #e9ecef;
-        padding: 1rem;
+        padding: 0.5rem;
         border-radius: 4px;
         font-family: 'Courier New', Courier, monospace;
         font-size: 0.95rem;
@@ -187,18 +187,29 @@
     <main>
       <div class="page-header">
         <h2>Stats Glossary</h2>
-        <p>An explanation of the advanced analytics used in the RKL.</p>
+        <p>An explanation of the advanced stats used in RKL.</p>
       </div>
 
       <div class="glossary-section">
+
+        <div class="glossary-term">
+          <h3>GEM (Geometric Mean Rank)</h3>
+          <p>
+            GEM is an alternative way of averaging a player's rankings to reduce the impact of outliers. GEM is calculated by taking the nth root of the product of all the player's gameday ranks, where n is the total number of values.
+          </p>
+          <div class="formula">
+            GEM = (x1 * x2 * ... * xn) ^ (1/n)
+          </div>
+        </div>
+        
         <div class="glossary-term">
           <h3>REL (Relative Performance Score)</h3>
           <p>
             REL measures a player's raw point generation relative to the league's mean or median on days they played. It's a way to normalize scores across games that might have different scoring opportunities. An REL above 1.000 indicates above-average performance, while a score below 1.000 is below average.
           </p>
           <div class="formula">
-            REL Median = (Player's Raw Score / League Median Score)
-            REL Mean = (Player's Raw Score / League Mean Score)
+            REL Median = (Player's Raw Scores / League Median Scores)
+            REL Mean = (Player's Raw Scores / League Mean Scores)
           </div>
         </div>
 
@@ -214,7 +225,7 @@
             The average margin of victory in a S7 RKL game is equal to 92% of the leaguewide median player score on a given day. Therefore, producing (.92 * median) more karma than a replacement level player is considered adding 1.0 win above replacement.
           </p>
            <div class="formula">
-            WAR = (Player Performance - Replacement-Level Performance) / (Avg MoV)
+            WAR = (Player Performances - Replacement-Level Performances) / (Avg Margins of Victory)
           </div>
         </div>
         
