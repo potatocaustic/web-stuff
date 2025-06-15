@@ -684,7 +684,7 @@
     </footer>
 
     <script>
-      const SHEET_ID = '1zb1x8r4OlRTVg9W5WMZF-ootyfsMg2yx2_3rcUhmIrc';
+      const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4';
       const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
 
       let allTeamsData = [];
@@ -1197,10 +1197,17 @@
           document.getElementById('standingsPageTitle').textContent = 'Standings Data Unavailable';
           return;
         }
+        
+        // Define sets of team IDs and names to exclude.
+        const excludedTeamIds = new Set(['EGM', 'WGM', 'RSE', 'RSW', 'EAST', 'WEST', 'RETIRED', 'FREE_AGENT']);
+        const excludedTeamNames = new Set(['East GMs', 'West GMs', 'East Rising Stars', 'West Rising Stars', 'East All-Stars', 'West All-Stars']);
 
+        // Filter out the excluded teams
         allTeamsData = fetchedTeamsData.filter(team => {
-            const id = team.team_id ? team.team_id.trim().toUpperCase() : '';
-            return id !== 'RETIRED' && id !== 'FREE_AGENT';
+            if (!team.team_id) return false;
+            if (excludedTeamIds.has(team.team_id.trim().toUpperCase())) return false;
+            if (team.team_name && excludedTeamNames.has(team.team_name)) return false;
+            return true;
         });
 
         if (!allTeamsData || allTeamsData.length === 0) {
@@ -1303,11 +1310,23 @@
 
         const navToggle = document.querySelector('.nav-toggle');
         const navMenu = document.getElementById('nav-menu');
+        const dropdownBtn = document.querySelector('.dropdown .dropbtn');
+
         if (navToggle && navMenu) {
             navToggle.addEventListener('click', () => {
                 const isExpanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
                 navToggle.setAttribute('aria-expanded', !isExpanded);
                 navMenu.classList.toggle('active');
+            });
+        }
+        
+        if(dropdownBtn) {
+            dropdownBtn.addEventListener('click', function(event) {
+                // Check if we are in mobile view (nav-toggle is visible)
+                if (window.getComputedStyle(navToggle).display !== 'none') {
+                    event.preventDefault(); // Prevent link navigation
+                    this.parentElement.classList.toggle('active');
+                }
             });
         }
       }
