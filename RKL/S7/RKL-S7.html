@@ -66,20 +66,19 @@
 
       #theme-toggle-btn {
         position: absolute;
-        top: 1rem;
+        top: 1.2rem;
         right: 1rem;
-        padding: 0.5rem 1rem;
-        font-size: 0.8rem;
-        background-color: #f4f4f4;
-        color: #333;
-        border: 1px solid #ccc;
-        border-radius: 4px;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
         cursor: pointer;
-        transition: background-color 0.3s, color 0.3s;
+        padding: 0.5rem;
+        line-height: 1;
+        z-index: 102;
       }
-      #theme-toggle-btn:hover {
-        background-color: #ddd;
-      }
+      #theme-toggle-btn .moon-icon { display: none; }
+
 
       /* Navigation styling */
       nav {
@@ -174,13 +173,6 @@
 
       /* Mobile navigation & header adjustments */
       @media (max-width: 600px) {
-        #theme-toggle-btn {
-          top: auto;
-          bottom: 1rem; 
-          right: 50%;
-          transform: translateX(50%);
-        }
-        header { padding-bottom: 4rem; }
         .header-text {
           display: none; 
         }
@@ -191,6 +183,7 @@
 
         .nav-toggle {
           display: block; /* Show hamburger on mobile */
+          right: 4rem; /* Move hamburger to the left of the theme toggle */
         }
         
         nav ul {
@@ -802,6 +795,9 @@
       .dark-mode h1, .dark-mode h2, .dark-mode h3 {
         color: #f5f5f5;
       }
+      .dark-mode #theme-toggle-btn .sun-icon { display: none; }
+      .dark-mode #theme-toggle-btn .moon-icon { display: block; }
+
       .dark-mode .season-info,
       .dark-mode .nav-card,
       .dark-mode .standings-preview,
@@ -896,28 +892,20 @@
         background-color: #5d1c21;
         color: #f8d7da;
       }
-      .dark-mode #theme-toggle-btn {
-        background-color: #1e1e1e;
-        color: #f4f4f4;
-        border-color: #555;
-      }
-      .dark-mode #theme-toggle-btn:hover {
-        background-color: #333;
-      }
       .dark-mode .dropdown-content {
           background-color: #444;
       }
       .dark-mode .dropdown-content a:hover {
           background-color: #666;
       }
-      .dark-mode nav ul {
-          background-color: #2c2c2c;
+      .dark-mode nav ul.active {
+          background-color: #444;
       }
       .dark-mode nav ul li a:hover {
-        background-color: #383838;
+        background-color: #555;
       }
       .dark-mode .dropdown.active .dropdown-content {
-          background-color: #383838;
+          background-color: #4a4a4a;
       }
 
       @media (max-width: 768px) {
@@ -991,7 +979,10 @@
   </head>
   <body>
     <header>
-      <button id="theme-toggle-btn">Toggle Theme</button>
+      <button id="theme-toggle-btn" aria-label="Toggle Theme">
+        <span class="sun-icon">☀️</span>
+        <span class="moon-icon">🌙</span>
+      </button>
       <h1>
         <img src="icons/RKL.webp" alt="RKL Logo" class="header-logo" onerror="this.style.display='none'">
         <span class="header-text">Real Karma League</span>
@@ -1480,22 +1471,12 @@
         // --- Theme Toggler ---
         const themeToggleBtn = document.getElementById('theme-toggle-btn');
         if(themeToggleBtn) {
-            // Set initial button text
-            if (document.documentElement.classList.contains('dark-mode')) {
-                themeToggleBtn.textContent = 'Light Mode';
-            } else {
-                themeToggleBtn.textContent = 'Dark Mode';
-            }
-            
             themeToggleBtn.addEventListener('click', () => {
                 document.documentElement.classList.toggle('dark-mode');
                 
                 let theme = 'light';
                 if (document.documentElement.classList.contains('dark-mode')) {
                     theme = 'dark';
-                    themeToggleBtn.textContent = 'Light Mode';
-                } else {
-                    themeToggleBtn.textContent = 'Dark Mode';
                 }
                 localStorage.setItem('theme', theme);
             });
