@@ -599,7 +599,7 @@
     </footer>
 
     <script>
-      const SHEET_ID = '1zb1x8r4OlRTVg9W5WMZF-ootyfsMg2yx2_3rcUhmIrc'; 
+      const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4'; 
       const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
       
       let allTeamsData = [];
@@ -861,7 +861,7 @@
             
             // --- Render Cards ---
             const champTeamData = allTeamsData.find(t => t.team_name === champRow.team_name);
-            awardsHTML += createAwardCard('醇 League Champions 醇', {
+            awardsHTML += createAwardCard('🏆 League Champions 🏆', {
                 name: champRow.team_name, detail: 'Season 7', link: `team.html?id=${champTeamData?.team_id}`, logoId: champTeamData?.team_id, stats: createTeamStatsString(champTeamData)
             });
             
@@ -928,7 +928,7 @@
         } else {
             let tbdAwardsHTML = '';
             const awardTitles = [
-                '醇 League Champions 醇', 'Regular Season Title', 'Best Performance (Team)', 'Best Performance (Player)',
+                '🏆 League Champions 🏆', 'Regular Season Title', 'Best Performance (Team)', 'Best Performance (Player)',
                 'League MVP', 'Finals MVP', 'Rookie of the Year', 'Sixth Man of the Year', 'GM of the Year'
             ];
             awardTitles.forEach(title => {
