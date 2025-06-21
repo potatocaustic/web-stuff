@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RKL Season 7 Schedule & Results</title>
+    <link rel="stylesheet" href="../css/global-styles.css" />
     <link rel="icon" href="../rklfavicon.ico" type="image/x-icon" />
     <script>
       // Apply theme from local storage before page loads to prevent flashing
@@ -15,264 +16,7 @@
       })();
     </script>
     <style>
-      /* Reset and General Styles */
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-        color: #333;
-        line-height: 1.6;
-        transition: background-color 0.3s, color 0.3s;
-      }
-      
-      h1, h2, h3 {
-        color: #333;
-        transition: color 0.3s;
-      }
-
-      /* Header styling */
-      header {
-        background-color: #333;
-        color: #fff;
-        padding: 1rem;
-        text-align: center;
-        position: relative;
-      }
-      
-      header h1 {
-        color: white !important;
-        font-size: 2rem; 
-        margin: 0;
-        display: flex; 
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem; 
-      }
-      
-      .header-logo {
-        width: 40px; 
-        height: 40px;
-        object-fit: cover;
-      }
-
-      .header-text {}
-
-      #theme-toggle-btn {
-        position: absolute;
-        top: 1.2rem;
-        right: 1rem;
-        background: none;
-        border: none;
-        color: white;
-        font-size: 1.5rem;
-        cursor: pointer;
-        padding: 0.5rem;
-        line-height: 1;
-        z-index: 102;
-      }
-      #theme-toggle-btn .moon-icon { display: none; }
-      
-      /* Navigation styling */
-      nav {
-        position: relative;
-      }
-
-      .nav-toggle {
-        display: none;
-        background: none;
-        border: none;
-        color: white;
-        font-size: 1.8rem;
-        cursor: pointer;
-        padding: 0.5rem 1rem;
-        position: absolute; 
-        top: -2.8rem; 
-        right: 1rem;
-      }
-      
-      nav ul {
-        display: flex;
-        justify-content: center;
-        list-style: none;
-        margin-top: 1rem;
-        flex-wrap: wrap;
-      }
-      
-      nav ul li {
-        margin: 0.5rem 1rem;
-      }
-      
-      nav ul li a {
-        color: #fff;
-        text-decoration: none;
-        font-size: 1.1rem;
-        transition: color 0.3s ease;
-        white-space: nowrap;
-      }
-      
-      nav ul li a:hover {
-        color: #ccc;
-      }
-      
-      /* Dropdown Menu Styles */
-      .dropdown {
-          position: relative;
-          display: inline-block;
-      }
-
-      .dropdown .dropbtn {
-          background: none;
-          border: none;
-          cursor: pointer;
-          color: #fff;
-          text-decoration: none;
-          font-size: 1.1rem;
-          font-family: inherit;
-      }
-
-      .dropdown-content {
-          display: none;
-          position: absolute;
-          background-color: #333;
-          min-width: 180px;
-          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-          z-index: 101;
-          border-radius: 4px;
-          top: 100%;
-          left: 50%;
-          transform: translateX(-50%);
-          padding-top: 0.5rem;
-          transition: background-color 0.3s;
-      }
-
-      .dropdown-content a {
-          color: white;
-          padding: 12px 16px;
-          text-decoration: none;
-          display: block;
-          text-align: left;
-          font-size: 1rem;
-      }
-
-      .dropdown-content a:hover {
-          background-color: #555;
-          color: #fff;
-      }
-
-      .dropdown:hover .dropdown-content {
-          display: block; /* Show on desktop hover */
-      }
-
-      @media (max-width: 600px) {
-        #theme-toggle-btn {
-          left: 1rem;
-          right: auto;
-        }
-
-        .header-text {
-          display: none; 
-        }
-        .header-logo {
-          width: 50px; 
-          height: 50px;
-        }
-
-        .nav-toggle {
-          display: block;
-        }
-        
-        nav ul {
-          display: none;
-          position: absolute;
-          top: calc(100% - 1rem); 
-          left: 0;
-          right: 0;
-          background-color: #444; 
-          flex-direction: column;
-          align-items: center;
-          gap: 0rem; 
-          margin-top: 0;
-          padding: 0.5rem 0;
-          box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-          z-index: 100; 
-        }
-
-        nav ul.active {
-          display: flex;
-        }
-        
-        nav ul li {
-          margin: 0;
-          width: 100%;
-          text-align: center;
-        }
-        nav ul li a {
-            display: block;
-            padding: 0.8rem 1rem;
-        }
-        nav ul li a:hover {
-            background-color: #555;
-        }
-        
-        .dropdown {
-            display: block;
-            width: 100%;
-        }
-        .dropdown .dropbtn {
-            width: 100%;
-            padding: 0.8rem 1rem;
-        }
-        .dropdown .dropbtn:hover {
-            background-color: #555;
-        }
-        .dropdown-content {
-            position: static;
-            display: none;
-            box-shadow: none;
-            background-color: #4a4a4a;
-            border-radius: 0;
-            padding-top: 0;
-            transform: none;
-            left: auto;
-            top: auto;
-        }
-        .dropdown-content a {
-            padding-left: 2.5rem;
-        }
-        .dropdown.active .dropdown-content {
-            display: block;
-        }
-        .dropdown:hover .dropdown-content {
-            display: none;
-        }
-        .dropdown.active:hover .dropdown-content {
-            display: block;
-        }
-      }
-
-      /* Main content */
-      main {
-        padding: 2rem;
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-
-      .page-header {
-        text-align: center;
-        margin-bottom: 2rem;
-      }
-
-      .page-header h2 {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-      }
-
-      /* Week selector */
+      /* Page-specific styles for schedule.html */
       .week-selector {
         background-color: #fff;
         border-radius: 8px;
@@ -330,7 +74,6 @@
         border-color: #155724;
       }
 
-      /* Games container */
       .games-container {
         background-color: #fff;
         border-radius: 8px;
@@ -634,7 +377,6 @@
       .team-breakdown.winner { border-color: #28a745; border-width: 2px; }
       .team-breakdown .team-header { background-color: #333; color: white; padding: 1.5rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 1rem; flex-direction: column; transition: background-color 0.3s; }
       .team-breakdown .team-header.winner { background-color: #28a745; }
-      .team-breakdown .team-header h4 { color: white; margin: 0; font-size: 1.2rem; }
       .modal-team-header .team-logo {
         width: 48px;
         height: 48px;
@@ -661,21 +403,9 @@
       .player-link:hover { color: #0056b3; text-decoration: underline; }
       .points-cell { text-align: center; font-weight: bold; }
 
-      .loading { text-align: center; padding: 3rem; color: #666; font-size: 1.1rem; }
-      .error { text-align: center; padding: 2rem; color: #dc3545; background-color: #f8d7da; border-radius: 4px; margin: 1rem; }
       .no-games { text-align: center; padding: 3rem; color: #666; font-style: italic; }
 
       /* Dark Mode Styles */
-      .dark-mode body {
-        background-color: #121212;
-        color: #e0e0e0;
-      }
-      .dark-mode h1, .dark-mode h2, .dark-mode h3 {
-        color: #f5f5f5;
-      }
-      .dark-mode #theme-toggle-btn .sun-icon { display: none; }
-      .dark-mode #theme-toggle-btn .moon-icon { display: block; }
-      .dark-mode .page-header p { color: #aaa; }
       .dark-mode .week-selector, .dark-mode .games-container, .dark-mode .modal-content, .dark-mode .standout-item {
         background-color: #1e1e1e;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
@@ -732,13 +462,6 @@
       .dark-mode .captain-row { background-color: #4a4100 !important; }
       .dark-mode .player-link { color: #8ab4f8; }
       .dark-mode .player-link:hover { color: #a7c7fa; }
-      .dark-mode .error { background-color: #5d1c21; color: #f8d7da; }
-      .dark-mode .dropdown-content { background-color: #444; }
-      .dark-mode .dropdown-content a:hover { background-color: #666; }
-      .dark-mode nav ul.active { background-color: #444; }
-      .dark-mode nav ul li a:hover { background-color: #555; }
-      .dark-mode .dropdown.active .dropdown-content { background-color: #4a4a4a; }
-
 
       @media (max-width: 768px) {
         .week-buttons { gap: 0.3rem; }
@@ -761,14 +484,6 @@
         .modal-header { padding: 0.8rem; }
         .modal-header h3 { font-size: 1rem; line-height: 1.2; }
       }
-
-      footer {
-        text-align: center;
-        margin-top: 3rem;
-        padding: 1rem;
-        background-color: #333;
-        color: #fff;
-      }
     </style>
   </head>
   <body>
@@ -786,7 +501,13 @@
         <ul id="nav-menu">
             <li><a href="RKL-S7.html">S7 Home</a></li>
             <li><a href="standings.html">Standings & Rankings</a></li>
-            <li><a href="leaderboards.html">Leaderboards</a></li>
+            <li class="dropdown">
+                <a href="javascript:void(0);" class="dropbtn">Stats Hub &#9662;</a>
+                <div class="dropdown-content">
+                    <a href="leaderboards.html">Leaderboards</a>
+                    <a href="compare.html">Comparison Tool</a>
+                </div>
+            </li>
             <li><a href="schedule.html">Schedule</a></li>
             <li class="dropdown">
                 <a href="javascript:void(0);" class="dropbtn">Draft Central &#9662;</a>
@@ -881,11 +602,13 @@
     </div>
     
     <footer>
-      <p>&copy; caustic.info</p>
+      <p>@caustic on Real</p>
+      <a href="trade-block.html">GM Portal</a>
     </footer>
 
+    <script src="../js/main.js" defer></script>
     <script>
-      const SHEET_ID = '1zb1x8r4OlRTVg9W5WMZF-ootyfsMg2yx2_3rcUhmIrc'; 
+      const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4'; 
       const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
       const ALLSTAR_TEAM_IDS = ['EAST', 'WEST', 'EGM', 'WGM', 'RSE', 'RSW'];
       
@@ -917,6 +640,7 @@
       let allWeeklyScores = []; 
       let dateToMedianTeamScoreMap = {}; 
       let dateToWeekMap = {}; 
+      let allstarRosters = [];
       
       async function fetchSheetData(sheetName) {
         try {
@@ -1005,7 +729,7 @@
       }
       
       async function loadData() {
-        const [scheduleData, allstarScheduleData, teamsData, playersData, lineupsData, allstarLineupsData, weeklyAveragesData, weeklyScoresData] = await Promise.all([
+        const [scheduleData, allstarScheduleData, teamsData, playersData, lineupsData, allstarLineupsData, weeklyAveragesData, weeklyScoresData, allstarRostersData] = await Promise.all([
           fetchSheetData('Schedule'),
           fetchSheetData('Allstar_Schedule'),
           fetchSheetData('Teams'),
@@ -1013,10 +737,11 @@
           fetchSheetData('Lineups'),
           fetchSheetData('Allstar_Lineups'),
           fetchSheetData('Weekly_Averages'), 
-          fetchSheetData('Weekly_Scores') 
+          fetchSheetData('Weekly_Scores'),
+          fetchSheetData('Allstar_Rosters')
         ]);
         
-        if (!scheduleData || !teamsData || !playersData) { 
+        if (!scheduleData || !teamsData || !playersData || !allstarRostersData) { 
           document.getElementById('games-content').innerHTML = 
             '<div class="error">Error loading core data. Please check console.</div>';
           return;
@@ -1027,6 +752,7 @@
 
         allTeams = teamsData;
         allPlayers = playersData;
+        allstarRosters = allstarRostersData || [];
         
         allLineups = lineupsData || [];
         if(allstarLineupsData) {
@@ -1055,11 +781,23 @@
         displayWeek(currentWeek); 
       }
       
-      function determineCurrentWeek(schedule) { 
+      function determineCurrentWeek(schedule) {
+        // First, create a chronologically sorted list of all unique weeks.
+        const numericWeeks = [...new Set(schedule.map(game => parseInt(game.week)).filter(w => !isNaN(w)))].sort((a, b) => a - b);
+        const hasAllstarWeek = schedule.some(g => g.week === 'ALLSTAR');
+        
+        let allAvailableWeeks = [...numericWeeks];
+        if (hasAllstarWeek) {
+            // Splice ALLSTAR week into the array after week 8.
+            const allstarBreakIndex = allAvailableWeeks.indexOf(8) + 1;
+            allAvailableWeeks.splice(allstarBreakIndex, 0, 'ALLSTAR');
+        }
+
+        // Next, get the completion status for each week.
         const gamesByWeek = {};
         schedule.forEach(game => {
           const week = game.week;
-          if (week) { 
+          if (week) {
             if (!gamesByWeek[week]) {
               gamesByWeek[week] = { total: 0, completed: 0 };
             }
@@ -1069,13 +807,18 @@
             }
           }
         });
-        const numericWeeks = Object.keys(gamesByWeek).map(w => parseInt(w)).filter(w => !isNaN(w)).sort((a, b) => a - b);
-        for (const week of numericWeeks) {
-          if (gamesByWeek[week].completed < gamesByWeek[week].total) {
+
+        // Iterate through the correctly ordered list of weeks.
+        for (const week of allAvailableWeeks) {
+          const weekStats = gamesByWeek[String(week)]; // Use string for object key access.
+          // If a week has scheduled games and is not fully completed, this is our target week.
+          if (weekStats && weekStats.completed < weekStats.total) {
             return week;
           }
         }
-        return numericWeeks.length > 0 ? numericWeeks[numericWeeks.length - 1] : 1;
+
+        // If all weeks are completed, default to the last one in the ordered list.
+        return allAvailableWeeks.length > 0 ? allAvailableWeeks[allAvailableWeeks.length - 1] : 1;
        }
       
       function setupWeekSelector() { 
@@ -1356,9 +1099,10 @@
         const team2Total = parseNumber(game.team2_score); 
         const winner = game.winner;
         
-        const generateLineupTable = (lineups, teamIdForTable, totalScoreFromSchedule, isWinner) => {
+        const generateLineupTable = (lineups, teamIdForTable, totalScoreFromSchedule, isWinner, game) => {
           const teamData = allTeams.find(t => t.team_id === teamIdForTable);
           const isAllstarTeam = ALLSTAR_TEAM_IDS.includes(teamIdForTable);
+          const isGMGame = (game.team1_id === 'EGM' && game.team2_id === 'WGM') || (game.team1_id === 'WGM' && game.team2_id === 'EGM');
           const logoExt = isAllstarTeam ? 'png' : 'webp';
           const logoClass = 'team-logo' + (isAllstarTeam ? ' allstar' : '');
           const headerOnClick = isAllstarTeam ? '' : `onclick="window.location.href='team.html?id=${escapeHTML(teamIdForTable)}'" style="cursor: pointer;"`;
@@ -1367,7 +1111,7 @@
           if (lineups.length === 0) { 
             return `
               <div class="team-breakdown ${isWinner ? 'winner' : ''}">
-                <div class="team-header ${isWinner ? 'winner' : ''}" ${headerOnClick}>
+                <div class="team-header modal-team-header ${isWinner ? 'winner' : ''}" ${headerOnClick}>
                   <img src="icons/${escapeHTML(teamIdForTable)}.${logoExt}" alt="${escapeHTML(getTeamName(teamIdForTable))}" class="${logoClass}" onerror="this.onerror=null; this.src='icons/FA.webp';">
                   <div><h4>${escapeHTML(getTeamName(teamIdForTable))}</h4><div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div></div>
                 </div>
@@ -1380,17 +1124,32 @@
             const isCaptain = String(player.captain).toUpperCase() === 'TRUE';
             const fullPlayerData = allPlayers.find(p => p.player_handle === player.player_handle);
             const isPlayerAllStar = fullPlayerData && fullPlayerData.all_star === '1';
-            const allStarBadge = isPlayerAllStar ? '<span class="all-star-badge">⭐</span>' : '';
+            const isRookie = fullPlayerData && fullPlayerData.rookie === '1';
+            const allStarBadge = isPlayerAllStar ? '<span class="all-star-badge">★</span>' : '';
+            const rookieBadge = isRookie ? '<span class="rookie-badge">R</span>' : '';
             const pointsRaw = parseNumber(player.points_raw);
             const globalRank = parseNumber(player.global_rank);
-            const captainBonus = isCaptain ? Math.round(pointsRaw * 0.5) : 0; 
+            const captainBonus = isCaptain ? Math.round(pointsRaw * 0.5) : 0;
             
+            let realTeamLogoHTML = '';
+            if (isAllstarTeam) {
+                const rosterInfo = allstarRosters.find(r => r.player_handle === player.player_handle);
+                if (rosterInfo && rosterInfo.current_team_id) {
+                    const realTeamId = rosterInfo.current_team_id;
+                    realTeamLogoHTML = `<img src="icons/${escapeHTML(realTeamId)}.webp" alt="${escapeHTML(getTeamName(realTeamId))}" style="width: 24px; height: 24px; margin-right: 8px; vertical-align: middle;" class="team-logo" onerror="this.style.display='none'">`;
+                }
+            }
+
+            const playerNameHTML = isGMGame
+              ? escapeHTML(player.player_handle || 'Unknown')
+              : `<a href="player.html?player=${encodeURIComponent(player.player_handle || 'Unknown')}" class="player-link">${escapeHTML(player.player_handle || 'Unknown')}</a>`;
+
             return `
               <tr class="${isCaptain ? 'captain-row' : ''}">
                 <td class="player-name-cell">
-                  <a href="player.html?player=${encodeURIComponent(player.player_handle || 'Unknown')}" class="player-link">
-                    ${escapeHTML(player.player_handle || 'Unknown')}
-                  </a>
+                  ${realTeamLogoHTML}
+                  ${playerNameHTML}
+                  ${rookieBadge}
                   ${allStarBadge}
                   ${isCaptain ? '<span class="captain-badge">C</span>' : ''}
                 </td>
@@ -1405,7 +1164,7 @@
           
           return `
             <div class="team-breakdown ${isWinner ? 'winner' : ''}">
-              <div class="team-header ${isWinner ? 'winner' : ''}" ${headerOnClick}>
+              <div class="team-header modal-team-header ${isWinner ? 'winner' : ''}" ${headerOnClick}>
                  <img src="icons/${escapeHTML(teamIdForTable)}.${logoExt}" alt="${escapeHTML(getTeamName(teamIdForTable))}" class="${logoClass}" onerror="this.onerror=null; this.src='icons/FA.webp';">
                 <div><h4>${escapeHTML(getTeamName(teamIdForTable))}</h4><div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div></div>
               </div>
@@ -1420,8 +1179,8 @@
         
         modalContent.innerHTML = `
           <div class="game-details-grid">
-            ${generateLineupTable(team1Lineups, game.team1_id, team1Total, winner === game.team1_id)}
-            ${generateLineupTable(team2Lineups, game.team2_id, team2Total, winner === game.team2_id)}
+            ${generateLineupTable(team1Lineups, game.team1_id, team1Total, winner === game.team1_id, game)}
+            ${generateLineupTable(team2Lineups, game.team2_id, team2Total, winner === game.team2_id, game)}
           </div>
         `;
        }
@@ -1436,44 +1195,7 @@
         }
        }
       
-      document.addEventListener('DOMContentLoaded', () => {
-        const themeToggleBtn = document.getElementById('theme-toggle-btn');
-        if(themeToggleBtn) {
-            themeToggleBtn.addEventListener('click', () => {
-                document.documentElement.classList.toggle('dark-mode');
-                
-                let theme = 'light';
-                if (document.documentElement.classList.contains('dark-mode')) {
-                    theme = 'dark';
-                }
-                localStorage.setItem('theme', theme);
-            });
-        }
-        
-        loadData();
-        // Nav Toggle JS
-        const navToggle = document.querySelector('.nav-toggle');
-        const navMenu = document.getElementById('nav-menu');
-        const dropdownBtn = document.querySelector('.dropdown .dropbtn');
-
-        if (navToggle && navMenu) {
-            navToggle.addEventListener('click', () => {
-                const isExpanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
-                navToggle.setAttribute('aria-expanded', !isExpanded);
-                navMenu.classList.toggle('active');
-            });
-        }
-        
-        if(dropdownBtn) {
-            dropdownBtn.addEventListener('click', function(event) {
-                // Check if we are in mobile view (nav-toggle is visible)
-                if (window.getComputedStyle(navToggle).display !== 'none') {
-                    event.preventDefault(); // Prevent link navigation
-                    this.parentElement.classList.toggle('active');
-                }
-            });
-        }
-      });
+      document.addEventListener('DOMContentLoaded', loadData);
     </script>
   </body>
 </html>
