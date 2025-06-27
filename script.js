@@ -1,170 +1,654 @@
-// Fetch the team and player data from the JSON file
-fetch('teamsData.json')
-  .then(response => response.json())
-  .then(teamsData => {
-    // Fetch the latest builderTeams_abbr_fullnames_v2.json file
-    fetch('builderTeams_abbr_fullnames_v2.json')  // Updated to the new JSON
-      .then(response => response.json())
-      .then(builderTeams => {
-        // Populate the team selection dynamically
-        const teamSelectionContainer = document.querySelector('.team-selection');
-        teamsData.forEach((team, index) => {
-          // Skip "FA" team
-          if (team.name === "FA") return;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pool Optimizer - caustic.info</title>
+    <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .info-card {
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+        }
+        .results-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+        }
+    </style>
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <header class="bg-gray-800 text-white p-4 text-center">
+        <h1 class="text-2xl font-bold">Pool Optimizer</h1>
+        <nav class="mt-2">
+            <ul class="flex justify-center space-x-4 flex-wrap">
+                <li><a href="index.html" class="hover:text-gray-300">Home</a></li>
+                <li><a href="../RKL/rkl-stats.html" class="hover:text-gray-300">Jammers Stats</a></li>
+                <li><a href="PSPs/mlb-psp.html" class="hover:text-gray-300">MLB PSP Database</a></li>
+                <li><a href="PSPs-WNBA/wnba-psp.html" class="hover:text-gray-300">WNBA PSP Database</a></li>
+                <li><a href="karma-calculator.html" class="hover:text-gray-300">Karma EV Calculator</a></li>
+                <li><a href="pool-optimizer.html" class="hover:text-gray-300">Pool Optimizer</a></li>
+            </ul>
+        </nav>
+    </header>
 
-          // Create a checkbox for each team with full name
-          const teamLabel = document.createElement('label');
-          const checkbox = document.createElement('input');
-          
-          checkbox.type = 'checkbox';
-          checkbox.id = `team${index + 1}`; // Unique ID for each team
-          teamLabel.appendChild(checkbox);
-          
-          const textNode = document.createTextNode(` ${team.name}`); // Display full team name
-          teamLabel.appendChild(textNode);
-          teamSelectionContainer.appendChild(teamLabel);
-          teamSelectionContainer.appendChild(document.createElement('br'));
-        });
+    <div id="auth-container" class="p-8 max-w-md mx-auto my-8 bg-white rounded-lg shadow-md text-center">
+        <h2 id="auth-title" class="text-2xl font-bold mb-4">Login</h2>
+        <p id="auth-error" class="text-red-500 mb-4 min-h-[1.2em]"></p>
+        <div id="login-form">
+            <input type="text" id="login-username" placeholder="Username" class="w-full p-2 mb-4 border rounded">
+            <input type="password" id="login-password" placeholder="Password" class="w-full p-2 mb-4 border rounded">
+            <button id="login-button" class="bg-gray-800 text-white py-2 px-4 rounded hover:bg-gray-700 w-full">Login</button>
+            <p class="mt-4">Don't have an account? <a href="#" id="show-signup" class="text-blue-600 hover:underline">Sign Up</a></p>
+        </div>
+        <div id="signup-form" class="hidden">
+            <input type="text" id="signup-username" placeholder="Choose Username" class="w-full p-2 mb-4 border rounded">
+            <input type="password" id="signup-password" placeholder="Choose Password" class="w-full p-2 mb-4 border rounded">
+            <input type="password" id="signup-confirm-password" placeholder="Confirm Password" class="w-full p-2 mb-4 border rounded">
+            <button id="signup-button" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 w-full">Sign Up</button>
+            <p class="mt-4">Already have an account? <a href="#" id="show-login" class="text-blue-600 hover:underline">Login</a></p>
+        </div>
+    </div>
 
-        // Set up the Build My List button
-        const buildButton = document.getElementById("buildButton");
-        const buttonContainer = document.getElementById("buttonContainer"); // A container for both buttons
-        buildButton.addEventListener("click", function () {
-          // Clear the existing recommended buys list before creating a new one
-          const recommendationsList = document.getElementById("recommendationsList");
-          recommendationsList.innerHTML = ""; // Clear previous recommendations
+    <main class="p-4 md:p-8 max-w-7xl mx-auto hidden">
+        <div id="app" class="space-y-6">
+            <!-- Controls -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label for="pool-mode" class="block text-sm font-medium text-gray-700 mb-1">Pool Mode</label>
+                        <select id="pool-mode" class="w-full p-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="Pregame">Pregame</option>
+                            <option value="Live">Live</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="num-games" class="block text-sm font-medium text-gray-700 mb-1">Number of Games</label>
+                        <select id="num-games" class="w-full p-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="0" disabled selected>Select</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                     <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">&nbsp;</label>
+                        <div class="flex space-x-2">
+                             <button id="submit-btn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 shadow-sm">Run Optimizer</button>
+                            <button id="save-btn" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 shadow-sm">Save Inputs</button>
+                            <button id="load-btn" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 shadow-sm">Load Inputs</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-          // Get the budget value, remove commas, and convert to number
-          const budgetInput = document.getElementById("budget").value;
-          const budget = parseFloat(budgetInput.replace(/,/g, '')); // Remove commas
-
-          // If the budget is not a valid number, exit early
-          if (isNaN(budget) || budget <= 0) {
-            alert("Please enter a valid budget.");
-            return;
-          }
-
-          const selectedTeams = [];
-          let totalCost = 0;
-          let totalPlayers = 0;
-          let playerCost = 200;
-          let maxPlayers = 70;
-
-          // Check which teams are selected
-          teamsData.forEach((team, index) => {
-            const checkbox = document.getElementById(`team${index + 1}`);
-            if (checkbox && checkbox.checked && team.name !== "FA") {  // Exclude "FA" team
-              selectedTeams.push(team);
-              totalCost += 800; // Each team costs 800
-              totalPlayers += (budget >= 10000) ? 5 : 1; // For each selected team, you must buy 5 players (or 1/2 depending on budget)
-            }
-          });
-
-          // Ensure budget is not exceeded by the team selection
-          if (totalCost > budget) return; // Skip if total team cost exceeds budget
-
-          // Use a Set to keep track of already added players (prevents duplicates)
-          const addedPlayers = new Set();
-          const recommendedPlayers = [];
-
-          // Add players from selected teams (ensure no duplicates)
-          selectedTeams.forEach(team => {
-            const topPlayers = team.players.sort((a, b) => a.Rank - b.Rank).slice(0, budget >= 10000 ? 5 : 2);
-            topPlayers.forEach(player => {
-              // Check if player is already in the set
-              if (!addedPlayers.has(player.Name)) {
-                recommendedPlayers.push(player);
-                addedPlayers.add(player.Name);
-              }
-            });
-          });
-
-          // Subtract the cost of players from the remaining budget
-          totalCost += recommendedPlayers.length * playerCost;
-          let remainingBudget = budget - totalCost;
-
-          if (remainingBudget < 0) return;
-
-          // Add remaining players (ensure no duplicates)
-          const remainingPlayers = teamsData.filter(team => team.name !== "FA").flatMap(team => team.players);
-          const sortedRemainingPlayers = remainingPlayers.sort((a, b) => a.Rank - b.Rank);
-
-          const remainingPlayerCount = Math.floor(remainingBudget / playerCost);
-
-          for (let i = 0; i < sortedRemainingPlayers.length; i++) {
-            if (recommendedPlayers.length < maxPlayers && i < remainingPlayerCount) {
-              const player = sortedRemainingPlayers[i];
-              if (!addedPlayers.has(player.Name)) {
-                recommendedPlayers.push(player);
-                addedPlayers.add(player.Name);
-              }
-            }
-          }
-
-          // Ensure no more than 70 players are selected
-          if (recommendedPlayers.length > maxPlayers) {
-            recommendedPlayers.length = maxPlayers;
-          }
-
-          // Display recommended buys with numbering
-          recommendedPlayers.forEach((player, index) => {
-            const listItem = document.createElement("li");
-            listItem.textContent = `${index + 1}. ${player.Name}`; 
-            recommendationsList.appendChild(listItem);
-          });
-
-          // Calculate the total cost again: (800 * number of teams) + (200 * number of players)
-          const totalTeamCost = 800 * selectedTeams.length;
-          const totalPlayerCost = recommendedPlayers.length * playerCost;
-          const finalTotalCost = totalTeamCost + totalPlayerCost;
-
-          // Display the total cost at the end of the list
-          const totalCostItem = document.createElement("li");
-          totalCostItem.textContent = `Total Cost: ${finalTotalCost} Rax`;  // Show total cost
-          recommendationsList.appendChild(totalCostItem);
-
-          // Check if CSV button already exists, if so, do not create a new one
-          let csvButton = document.getElementById("csvButton");
-          if (!csvButton) {
-            // Create a CSV button if it does not already exist
-            csvButton = document.createElement('button');
-            csvButton.id = "csvButton";
-            csvButton.textContent = 'Download CSV';
-            csvButton.addEventListener('click', function () {
-              downloadCSV(recommendedPlayers);
-            });
+            <!-- Game Inputs -->
+            <div id="games-container" class="space-y-6"></div>
             
-            // Insert the CSV button next to the Build My List button
-            buttonContainer.appendChild(csvButton);
-          }
+            <!-- Results -->
+            <div id="results-container" class="hidden">
+                 <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-900">Optimal Strategy</h2>
+                    <div id="best-result" class="p-4 rounded-md bg-indigo-50 border border-indigo-200"></div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md mt-6">
+                    <h3 class="text-xl font-bold mb-4 text-gray-900">Detailed Results</h3>
+                    <div id="all-results" class="space-y-4"></div>
+                </div>
+            </div>
+             <div id="loading-indicator" class="hidden text-center p-8">
+                <svg class="animate-spin h-8 w-8 text-indigo-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <p class="mt-4 text-lg font-semibold">Calculating optimal strategies...</p>
+            </div>
+        </div>
+    </main>
+    <footer class="text-center mt-8 py-4 bg-gray-800 text-white">
+        <p>&copy; caustic.info</p>
+    </footer>
+
+    <!-- Firebase Compatibility Libraries -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // --- FIREBASE CONFIG (WILL BE POPULATED) ---
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-pool-optimizer';
+
+        // --- FIREBASE INITIALIZATION (Compat style) ---
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // --- AUTHENTICATION LOGIC (from auth.js) ---
+        const authContainer = document.getElementById('auth-container');
+        const mainContent = document.querySelector('main');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const authTitle = document.getElementById('auth-title');
+        const authError = document.getElementById('auth-error');
+        
+        const showSignup = document.getElementById('show-signup');
+        const showLogin = document.getElementById('show-login');
+
+        const DUMMY_DOMAIN = "yourleague.local";
+
+        showSignup.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginForm.classList.add('hidden');
+            signupForm.classList.remove('hidden');
+            authTitle.textContent = 'Sign Up';
+            authError.textContent = '';
         });
-      })
-      .catch(error => console.error("Error fetching builder teams data:", error));
-  })
-  .catch(error => console.error("Error fetching teams data:", error));
+        
+        showLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            signupForm.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+            authTitle.textContent = 'Login';
+            authError.textContent = '';
+        });
 
-// Function to download the recommended player list as a CSV file
-function downloadCSV(players) {
-  // Create CSV data (header + rows of player names)
-  const header = ["Player Name"];
-  const rows = players.map(player => [player.Name]);
+        const loginButton = document.getElementById('login-button');
+        loginButton.addEventListener('click', async () => {
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+            const email = username + '@' + DUMMY_DOMAIN;
+            
+            if (!username || !password) {
+                authError.textContent = "Please enter username and password.";
+                return;
+            }
 
-  // Create CSV content by joining rows with commas and separating each row with a new line
-  let csvContent = header.join(",") + "\n";
-  rows.forEach(row => {
-    csvContent += row.join(",") + "\n";
-  });
+            loginButton.disabled = true;
+            loginButton.textContent = 'Logging in...';
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                authError.textContent = '';
+            } catch (error) {
+                 if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                    authError.textContent = "Invalid username or password.";
+                } else {
+                    authError.textContent = "Login failed. Please try again.";
+                }
+            } finally {
+                loginButton.disabled = false;
+                loginButton.textContent = 'Login';
+            }
+        });
 
-  // Create a Blob object containing the CSV content
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const signupButton = document.getElementById('signup-button');
+        signupButton.addEventListener('click', async () => {
+            const username = document.getElementById('signup-username').value.trim();
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('signup-confirm-password').value;
+            const email = username + '@' + DUMMY_DOMAIN;
 
-  // Create a download link and trigger the download
-  const link = document.createElement("a");
-  if (link.download !== undefined) {  // Ensure download attribute is supported
-    const fileName = "recommended_buy_list.csv";
-    link.setAttribute("href", URL.createObjectURL(blob));
-    link.setAttribute("download", fileName);
-    link.click();  // Trigger the download
-  }
-}
+            if (password !== confirmPassword) {
+                authError.textContent = "Passwords do not match.";
+                return;
+            }
+             if (password.length < 6) {
+                authError.textContent = "Password should be at least 6 characters.";
+                return;
+            }
 
+            signupButton.disabled = true;
+            signupButton.textContent = 'Signing up...';
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                // Optionally create a user document in Firestore
+                await db.collection('users').doc(user.uid).set({
+                    username: username,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                authError.textContent = '';
+            } catch (error) {
+                 if (error.code === 'auth/email-already-in-use') {
+                    authError.textContent = "This username is already taken.";
+                } else if (error.code === 'auth/weak-password') {
+                    authError.textContent = "Password is too weak.";
+                } else {
+                    authError.textContent = "Signup failed. Please try again.";
+                }
+            } finally {
+                signupButton.disabled = false;
+                signupButton.textContent = 'Sign Up';
+            }
+        });
+
+        let currentUserId = null;
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                authContainer.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+                mainContent.classList.add('visible');
+                currentUserId = user.uid;
+            } else {
+                authContainer.classList.remove('hidden');
+                mainContent.classList.add('hidden');
+                mainContent.classList.remove('visible');
+                currentUserId = null;
+            }
+        });
+
+        // --- APPLICATION LOGIC ---
+        const poolModeSelect = document.getElementById('pool-mode');
+        const numGamesSelect = document.getElementById('num-games');
+        const gamesContainer = document.getElementById('games-container');
+        const submitBtn = document.getElementById('submit-btn');
+        const saveBtn = document.getElementById('save-btn');
+        const loadBtn = document.getElementById('load-btn');
+        const resultsContainer = document.getElementById('results-container');
+        const bestResultDiv = document.getElementById('best-result');
+        const allResultsDiv = document.getElementById('all-results');
+        const loadingIndicator = document.getElementById('loading-indicator');
+
+        numGamesSelect.addEventListener('change', () => {
+            const numGames = parseInt(numGamesSelect.value);
+            if (numGames > 0) {
+                renderGameInputs(numGames);
+            }
+        });
+
+        poolModeSelect.addEventListener('change', () => {
+             const numGames = parseInt(numGamesSelect.value);
+             if (numGames > 0) {
+                renderGameInputs(numGames);
+             }
+        });
+
+        function renderGameInputs(numGames) {
+            gamesContainer.innerHTML = '';
+            const isLiveMode = poolModeSelect.value === 'Live';
+
+            for (let i = 1; i <= numGames; i++) {
+                const gameDiv = document.createElement('div');
+                gameDiv.id = `game-${i}-card`;
+                gameDiv.className = 'p-6 rounded-lg shadow-md info-card';
+                gameDiv.innerHTML = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-gray-900">Game ${i}</h3>
+                        ${isLiveMode ? `<button id="lock-btn-${i}" class="bg-gray-200 text-gray-800 py-1 px-3 rounded-md hover:bg-gray-300 text-sm">Lock Game</button>` : ''}
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div><label class="block text-sm">Home Vote Share (%)</label><input id="home_vote_share_${i}" type="number" class="w-full p-2 border rounded mt-1" value="50"></div>
+                        <div><label class="block text-sm">Home Vote Total</label><input id="home_votes_${i}" type="number" class="w-full p-2 border rounded mt-1" value="1000"></div>
+                        <div><label class="block text-sm">Away Vote Total</label><input id="away_votes_${i}" type="number" class="w-full p-2 border rounded mt-1" value="1000"></div>
+                        <div><label class="block text-sm">Home Vegas Odds (Decimal)</label><input id="home_vegas_odds_${i}" type="number" step="0.01" class="w-full p-2 border rounded mt-1" value="1.91"></div>
+                        <div><label class="block text-sm">Away Vegas Odds (Decimal)</label><input id="away_vegas_odds_${i}" type="number" step="0.01" class="w-full p-2 border rounded mt-1" value="1.91"></div>
+                        <div><label class="block text-sm">Home Betting Odds (American)</label><input id="home_american_odds_${i}" type="number" class="w-full p-2 border rounded mt-1" value="-110"></div>
+                        <div><label class="block text-sm">Away Betting Odds (American)</label><input id="away_american_odds_${i}" type="number" class="w-full p-2 border rounded mt-1" value="-110"></div>
+                    </div>
+                    <div id="locked-inputs-${i}" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 hidden">
+                         <div>
+                            <label class="block text-sm">Team Chosen</label>
+                            <select id="team_chosen_${i}" class="w-full p-2 border rounded mt-1">
+                                <option value="Home">Home</option>
+                                <option value="Away">Away</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm">Bet Size</label>
+                            <select id="bet_size_${i}" class="w-full p-2 border rounded mt-1">
+                                <option value="Zero">Zero (10)</option>
+                                <option value="Max">Max (100)</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
+                gamesContainer.appendChild(gameDiv);
+                
+                if (isLiveMode) {
+                    const lockBtn = document.getElementById(`lock-btn-${i}`);
+                    const lockedInputs = document.getElementById(`locked-inputs-${i}`);
+                    const gameCard = document.getElementById(`game-${i}-card`);
+
+                    lockBtn.addEventListener('click', () => {
+                        lockedInputs.classList.toggle('hidden');
+                        gameCard.classList.toggle('bg-blue-100');
+                        gameCard.classList.toggle('border-blue-400');
+                        lockBtn.textContent = lockedInputs.classList.contains('hidden') ? 'Lock Game' : 'Unlock Game';
+                        lockBtn.classList.toggle('bg-blue-500');
+                        lockBtn.classList.toggle('text-white');
+                    });
+                }
+            }
+        }
+        
+        // --- Optimizer Logic (Ported from Python) ---
+        const participationRate = 50.0;
+        const zeroBetsAllowed = 'YES';
+
+        function calculateTki(participationRate, minVoteTotal) {
+            const participants = Math.floor(participationRate * minVoteTotal / 100);
+            return [participants * 100, participants];
+        }
+
+        function calculatePayouts(tki, winners1st, winners2nd = 0, num_games) {
+            if (winners1st === 0) return [0, 0];
+
+            if (winners2nd === 0) {
+                 const maxPayout = num_games === 3 ? 600 : (num_games === 2 ? 400 : 800);
+                return [Math.min(maxPayout, Math.floor(tki / winners1st)), 0];
+            }
+            
+            // This is for 4-game pools with a 2nd place
+            const ed = tki / (winners1st + winners2nd);
+            if (ed >= 600) {
+                 return [800, 600];
+            }
+
+            const haircut = winners1st / (winners1st + winners2nd);
+            const payout2nd = ed - (ed * haircut);
+            const remainder = tki - (payout2nd * winners2nd);
+            const payout1st = Math.min(800, Math.floor(remainder / winners1st));
+
+            return [payout1st, payout2nd];
+        }
+
+        function expectedValue(probability, odds, betType) {
+            const wager = betType === 'Max' ? 100 : 10;
+            if (betType === 'Zero') return probability * ((odds > 0 ? (odds/100) * 10 : (-100/odds) * 10));
+
+            const betWin = odds > 0 ? (odds / 100) * wager : (-100 / odds) * wager;
+            const loss = wager;
+            return probability * betWin - (1 - probability) * loss;
+        }
+
+        function getCombinations(n, locked) {
+            const teams = ['home', 'away'];
+            let allCombos = [];
+            
+            function generate(index, currentCombo) {
+                if (index === n) {
+                    allCombos.push(currentCombo);
+                    return;
+                }
+
+                if (locked[index]) {
+                     generate(index + 1, [...currentCombo, locked[index].team.toLowerCase()]);
+                } else {
+                    for (const team of teams) {
+                        generate(index + 1, [...currentCombo, team]);
+                    }
+                }
+            }
+
+            generate(0, []);
+            return allCombos;
+        }
+
+        async function optimizeWagers(numGames, gameData, lockedGames) {
+            return new Promise(resolve => {
+                setTimeout(() => { // Simulate async work
+                    const minVoteTotal = Math.min(...gameData.map(g => g.home_votes + g.away_votes));
+                    const [tki, participants] = calculateTki(participationRate, minVoteTotal);
+
+                    let bestCombination = null;
+                    let bestEv = -Infinity;
+                    let allResults = [];
+                    
+                    const picksCombinations = getCombinations(numGames, lockedGames);
+
+                    for (const picks of picksCombinations) {
+                        let correctProb = 1.0;
+                        let voteShareFactor = 1.0;
+                        for (let i = 0; i < picks.length; i++) {
+                            const pick = picks[i];
+                            correctProb *= gameData[i][`${pick}_prob`] / 100.0;
+                            voteShareFactor *= gameData[i][`${pick}_vote_share`] / 100.0;
+                        }
+
+                        const expectedWinners1st = Math.max(1, Math.round(participants * voteShareFactor));
+                        let expectedWinners2nd = 0;
+                        let secondPlaceProb = 0;
+                        
+                        if (numGames === 4) {
+                            for (let i = 0; i < numGames; i++) {
+                                const oppositePick = picks[i] === 'home' ? 'away' : 'home';
+                                const prob3of4 = (correctProb / (gameData[i][`${picks[i]}_prob`] / 100.0)) * (gameData[i][`${oppositePick}_prob`] / 100.0);
+                                secondPlaceProb += prob3of4;
+                            }
+                             expectedWinners2nd = Math.max(1, Math.floor(participants * secondPlaceProb));
+                        }
+                        
+                        const [payout1st, payout2nd] = calculatePayouts(tki, expectedWinners1st, expectedWinners2nd, numGames);
+                        let totalBetEv = 0;
+                        let betDecisions = [];
+                        
+                        for (let i = 0; i < picks.length; i++) {
+                            const game = gameData[i];
+                            const pick = picks[i];
+                            const odds = game[`${pick}_odds`];
+                            const probability = game[`${pick}_prob`] / 100;
+                            let betType, betEv;
+
+                            if (lockedGames[i]) {
+                                betType = lockedGames[i].bet;
+                                betEv = expectedValue(probability, odds, betType);
+                            } else {
+                                const evMax = expectedValue(probability, odds, 'Max');
+                                const evZero = expectedValue(probability, odds, 'Zero');
+                                if (zeroBetsAllowed === 'NO' || evMax > evZero) {
+                                    betType = 'Max';
+                                    betEv = evMax;
+                                } else {
+                                    betType = 'Zero';
+                                    betEv = evZero;
+                                }
+                            }
+                            
+                            betDecisions.push({ pick: pick, bet: betType, ev: betEv });
+                            totalBetEv += betEv;
+                        }
+                        
+                        let poolEv;
+                        if (numGames === 4) {
+                            poolEv = (correctProb * payout1st) + (secondPlaceProb * payout2nd) - 100;
+                        } else {
+                            poolEv = (correctProb * payout1st) - 100;
+                        }
+                        
+                        const totalEv = totalBetEv + poolEv;
+
+                        allResults.push({
+                            picks, totalEv, betEv: totalBetEv, poolEv, 
+                            details: { correctProb, winners1st: expectedWinners1st, winners2nd: expectedWinners2nd, payout1st, payout2nd, betDecisions }
+                        });
+                        
+                        if (totalEv > bestEv) {
+                            bestEv = totalEv;
+                            bestCombination = {
+                                picks, totalEv, betEv: totalBetEv, poolEv, details: { betDecisions }
+                            };
+                        }
+                    }
+                    
+                    allResults.sort((a, b) => b.totalEv - a.totalEv);
+
+                    resolve({ bestCombination, allResults });
+                }, 50);
+            });
+        }
+        
+        submitBtn.addEventListener('click', async () => {
+            const numGames = parseInt(numGamesSelect.value);
+            if(numGames === 0 || isNaN(numGames)) {
+                alert("Please select the number of games.");
+                return;
+            }
+
+            resultsContainer.classList.add('hidden');
+            loadingIndicator.classList.remove('hidden');
+
+            const gameData = [];
+            const lockedGames = {};
+
+            for (let i = 1; i <= numGames; i++) {
+                const homeVoteShare = parseFloat(document.getElementById(`home_vote_share_${i}`).value);
+                const homeVotes = parseInt(document.getElementById(`home_votes_${i}`).value);
+                const awayVotes = parseInt(document.getElementById(`away_votes_${i}`).value);
+                const homeVegasOdds = parseFloat(document.getElementById(`home_vegas_odds_${i}`).value);
+                const awayVegasOdds = parseFloat(document.getElementById(`away_vegas_odds_${i}`).value);
+                const homeAmericanOdds = parseInt(document.getElementById(`home_american_odds_${i}`).value);
+                const awayAmericanOdds = parseInt(document.getElementById(`away_american_odds_${i}`).value);
+
+                const homeProb = (1 / homeVegasOdds) / ((1 / homeVegasOdds) + (1 / awayVegasOdds)) * 100;
+
+                gameData.push({
+                    home_vote_share: homeVoteShare, away_vote_share: 100 - homeVoteShare,
+                    home_votes: homeVotes, away_votes: awayVotes,
+                    home_prob: homeProb, away_prob: 100 - homeProb,
+                    home_odds: homeAmericanOdds, away_odds: awayAmericanOdds
+                });
+                
+                const lockBtn = document.getElementById(`lock-btn-${i}`);
+                if (lockBtn && !document.getElementById(`locked-inputs-${i}`).classList.contains('hidden')) {
+                    lockedGames[i-1] = {
+                        team: document.getElementById(`team_chosen_${i}`).value,
+                        bet: document.getElementById(`bet_size_${i}`).value
+                    }
+                }
+            }
+
+            const { bestCombination, allResults } = await optimizeWagers(numGames, gameData, lockedGames);
+            
+            loadingIndicator.classList.add('hidden');
+            displayResults(bestCombination, allResults);
+        });
+        
+        function displayResults(best, all) {
+            resultsContainer.classList.remove('hidden');
+
+            // Display best result
+            let bestHtml = `<p class="text-lg"><strong>Best Total EV (Pool EV + Bet EV):</strong> <span class="font-bold text-indigo-700">${best.totalEv.toFixed(2)}</span></p>`;
+            bestHtml += `<p><strong>Pool EV:</strong> ${best.poolEv.toFixed(2)}, <strong>Bet EV:</strong> ${best.betEv.toFixed(2)}</p>`;
+            if (best.poolEv < 0) {
+                bestHtml += `<p class="mt-2 text-red-600 font-semibold">Do not enter the pool. The Pool EV for the best combination is negative.</p>`;
+            }
+            bestHtml += '<h4 class="font-bold mt-4 mb-2">Recommended Selections:</h4><div class="space-y-1">';
+            best.details.betDecisions.forEach((d, i) => {
+                bestHtml += `<div><strong>Game ${i + 1}:</strong> Pick <span class="font-semibold">${d.pick.toUpperCase()}</span>, Bet <span class="font-semibold">${d.bet.toUpperCase()}</span></div>`;
+            });
+            bestHtml += '</div>';
+            bestResultDiv.innerHTML = bestHtml;
+
+            // Display all results
+            allResultsDiv.innerHTML = '';
+            all.forEach(res => {
+                const card = document.createElement('div');
+                card.className = 'p-4 rounded-md results-card shadow-sm';
+                let detailsHtml = `<h4 class="font-bold text-lg">${res.picks.join(', ').toUpperCase()}</h4>`;
+                detailsHtml += `<p><strong>Total EV: ${res.totalEv.toFixed(2)}</strong> (Pool: ${res.poolEv.toFixed(2)}, Bet: ${res.betEv.toFixed(2)})</p>`;
+                detailsHtml += `<p class="text-sm text-gray-600">Win Prob: ${(res.details.correctProb * 100).toFixed(2)}% | 1st Place Winners: ${res.details.winners1st} | Payout: $${res.details.payout1st.toFixed(2)}</p>`;
+                
+                res.details.betDecisions.forEach((d, i) => {
+                    detailsHtml += `<p class="text-sm text-gray-500 ml-4">Game ${i + 1}: Pick ${d.pick.toUpperCase()}, Bet ${d.bet.toUpperCase()} (EV: ${d.ev.toFixed(2)})</p>`;
+                });
+                card.innerHTML = detailsHtml;
+                allResultsDiv.appendChild(card);
+            });
+        }
+        
+        // --- SAVE/LOAD FUNCTIONALITY ---
+        saveBtn.addEventListener('click', async () => {
+            if (!currentUserId) {
+                alert("You must be logged in to save data.");
+                return;
+            }
+            const numGames = parseInt(numGamesSelect.value);
+            if (numGames === 0 || isNaN(numGames)) {
+                alert("Please select number of games before saving.");
+                return;
+            }
+
+            const dataToSave = {
+                poolMode: poolModeSelect.value,
+                numGames: numGames,
+                games: []
+            };
+
+            for (let i = 1; i <= numGames; i++) {
+                const lockBtn = document.getElementById(`lock-btn-${i}`);
+                const isLocked = lockBtn && !document.getElementById(`locked-inputs-${i}`).classList.contains('hidden');
+                dataToSave.games.push({
+                    home_vote_share: document.getElementById(`home_vote_share_${i}`).value,
+                    home_votes: document.getElementById(`home_votes_${i}`).value,
+                    away_votes: document.getElementById(`away_votes_${i}`).value,
+                    home_vegas_odds: document.getElementById(`home_vegas_odds_${i}`).value,
+                    away_vegas_odds: document.getElementById(`away_vegas_odds_${i}`).value,
+                    home_american_odds: document.getElementById(`home_american_odds_${i}`).value,
+                    away_american_odds: document.getElementById(`away_american_odds_${i}`).value,
+                    isLocked: isLocked,
+                    team_chosen: isLocked ? document.getElementById(`team_chosen_${i}`).value : 'Home',
+                    bet_size: isLocked ? document.getElementById(`bet_size_${i}`).value : 'Zero'
+                });
+            }
+            try {
+                const docRef = db.collection("artifacts").doc(appId).collection("users").doc(currentUserId).collection("poolOptimizer").doc("savedInputs");
+                await docRef.set(dataToSave);
+                alert("Inputs saved successfully!");
+            } catch (error) {
+                console.error("Error saving data: ", error);
+                alert("Failed to save inputs.");
+            }
+        });
+        
+        loadBtn.addEventListener('click', async () => {
+            if (!currentUserId) {
+                alert("You must be logged in to load data.");
+                return;
+            }
+            try {
+                const docRef = db.collection("artifacts").doc(appId).collection("users").doc(currentUserId).collection("poolOptimizer").doc("savedInputs");
+                const docSnap = await docRef.get();
+
+                if (docSnap.exists) {
+                    const data = docSnap.data();
+                    poolModeSelect.value = data.poolMode;
+                    numGamesSelect.value = data.numGames;
+                    renderGameInputs(data.numGames);
+
+                    // Use a small timeout to ensure DOM is updated before populating
+                    setTimeout(() => {
+                        data.games.forEach((game, index) => {
+                            const i = index + 1;
+                            document.getElementById(`home_vote_share_${i}`).value = game.home_vote_share;
+                            document.getElementById(`home_votes_${i}`).value = game.home_votes;
+                            document.getElementById(`away_votes_${i}`).value = game.away_votes;
+                            document.getElementById(`home_vegas_odds_${i}`).value = game.home_vegas_odds;
+                            document.getElementById(`away_vegas_odds_${i}`).value = game.away_vegas_odds;
+                            document.getElementById(`home_american_odds_${i}`).value = game.home_american_odds;
+                            document.getElementById(`away_american_odds_${i}`).value = game.away_american_odds;
+                            
+                            const lockBtn = document.getElementById(`lock-btn-${i}`);
+                            if (game.isLocked && lockBtn) {
+                                lockBtn.click();
+                                document.getElementById(`team_chosen_${i}`).value = game.team_chosen;
+                                document.getElementById(`bet_size_${i}`).value = game.bet_size;
+                            }
+                        });
+                        alert("Inputs loaded successfully!");
+                    }, 100);
+
+                } else {
+                    alert("No saved data found.");
+                }
+            } catch (error) {
+                console.error("Error loading data: ", error);
+                alert("Failed to load inputs.");
+            }
+        });
+    </script>
+</body>
+</html>
