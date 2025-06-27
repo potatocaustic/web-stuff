@@ -40,33 +40,55 @@
         <div id="app" class="space-y-6">
             <!-- Controls -->
             <div class="bg-white p-6 rounded-lg shadow-md">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label for="pool-mode" class="block text-sm font-medium text-gray-700 mb-1">Pool Mode</label>
-                        <select id="pool-mode" class="w-full p-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                            <option value="Pregame">Pregame</option>
-                            <option value="Live">Live</option>
-                        </select>
+                        <h3 class="text-lg font-semibold mb-2">Setup</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="pool-mode" class="block text-sm font-medium text-gray-700 mb-1">Pool Mode</label>
+                                <select id="pool-mode" class="w-full p-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                    <option value="Pregame">Pregame</option>
+                                    <option value="Live">Live</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="num-games" class="block text-sm font-medium text-gray-700 mb-1">Number of Games</label>
+                                <select id="num-games" class="w-full p-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                    <option value="0" disabled selected>Select</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <button id="submit-btn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 shadow-sm">Run Optimizer</button>
+                        </div>
                     </div>
+
                     <div>
-                        <label for="num-games" class="block text-sm font-medium text-gray-700 mb-1">Number of Games</label>
-                        <select id="num-games" class="w-full p-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                            <option value="0" disabled selected>Select</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                        </select>
-                    </div>
-                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">&nbsp;</label>
-                        <div class="flex space-x-2">
-                             <button id="submit-btn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 shadow-sm">Run Optimizer</button>
-                             <button id="save-btn" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 shadow-sm">Save Inputs</button>
-                             <button id="load-btn" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 shadow-sm">Load Inputs</button>
+                        <h3 class="text-lg font-semibold mb-2">Save & Load Scenarios</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label for="save-name" class="block text-sm font-medium text-gray-700 mb-1">Save Name</label>
+                                <div class="flex space-x-2">
+                                    <input type="text" id="save-name" placeholder="e.g., 'Tuesday Night Slate'" class="w-full p-2 border rounded-md shadow-sm">
+                                    <button id="save-btn" class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 shadow-sm whitespace-nowrap">Save</button>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="saved-files-dropdown" class="block text-sm font-medium text-gray-700 mb-1">Load or Delete Saved File</label>
+                                <div class="flex space-x-2">
+                                    <select id="saved-files-dropdown" class="w-full p-2 border rounded-md shadow-sm"></select>
+                                    <button id="load-btn" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 shadow-sm">Load</button>
+                                    <button id="delete-btn" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 shadow-sm">Delete</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
 
             <!-- Game Inputs -->
             <div id="games-container" class="space-y-6"></div>
@@ -101,12 +123,39 @@
         const numGamesSelect = document.getElementById('num-games');
         const gamesContainer = document.getElementById('games-container');
         const submitBtn = document.getElementById('submit-btn');
+        const saveNameInput = document.getElementById('save-name');
         const saveBtn = document.getElementById('save-btn');
         const loadBtn = document.getElementById('load-btn');
+        const deleteBtn = document.getElementById('delete-btn');
+        const savedFilesDropdown = document.getElementById('saved-files-dropdown');
         const resultsContainer = document.getElementById('results-container');
         const bestResultDiv = document.getElementById('best-result');
         const allResultsDiv = document.getElementById('all-results');
         const loadingIndicator = document.getElementById('loading-indicator');
+        const STORAGE_PREFIX = 'poolOptimizer_';
+
+        function populateSavedFilesDropdown() {
+            savedFilesDropdown.innerHTML = '';
+            let hasFiles = false;
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith(STORAGE_PREFIX)) {
+                    hasFiles = true;
+                    const option = document.createElement('option');
+                    option.value = key;
+                    option.textContent = key.replace(STORAGE_PREFIX, '');
+                    savedFilesDropdown.appendChild(option);
+                }
+            }
+            if (!hasFiles) {
+                const option = document.createElement('option');
+                option.textContent = 'No saved files';
+                option.disabled = true;
+                savedFilesDropdown.appendChild(option);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', populateSavedFilesDropdown);
 
         numGamesSelect.addEventListener('change', () => {
             const numGames = parseInt(numGamesSelect.value);
@@ -191,6 +240,7 @@
 
         function calculatePayouts(tki, winners1st, winners2nd = 0, num_games) {
             if (winners1st === 0) return [0, 0];
+            if (winners1st > tki) winners1st = tki; // Cap winners to prevent payout issues
 
             if (winners2nd === 0) {
                  const maxPayout = num_games === 3 ? 600 : (num_games === 2 ? 400 : 800);
@@ -245,12 +295,12 @@
         async function optimizeWagers(numGames, gameData, lockedGames) {
             return new Promise(resolve => {
                 setTimeout(() => { // Simulate async work
-                    if (gameData.some(g => isNaN(g.home_votes) || isNaN(g.away_votes) || g.home_votes + g.away_votes === 0)) {
-                         resolve({ bestCombination: null, allResults: [] }); // Prevent division by zero
+                    if (gameData.some(g => isNaN(g.home_votes) || isNaN(g.away_votes))) {
+                         resolve({ bestCombination: null, allResults: [] }); 
                          return;
                     }
                     const minVoteTotal = Math.min(...gameData.map(g => g.home_votes + g.away_votes));
-                    if (minVoteTotal === 0) {
+                    if (minVoteTotal === 0 || isNaN(minVoteTotal)) {
                         resolve({ bestCombination: null, allResults: [] });
                         return;
                     }
@@ -437,9 +487,14 @@
 
         // --- SAVE/LOAD FUNCTIONALITY ---
         saveBtn.addEventListener('click', () => {
+            const saveName = saveNameInput.value.trim();
+            if (!saveName) {
+                alert("Please enter a name for your save file.");
+                return;
+            }
             const numGames = parseInt(numGamesSelect.value);
             if (numGames === 0 || isNaN(numGames)) {
-                alert("Please select number of games before saving.");
+                alert("Please select the number of games before saving.");
                 return;
             }
 
@@ -466,8 +521,9 @@
                 });
             }
             try {
-                localStorage.setItem('poolOptimizerInputs', JSON.stringify(dataToSave));
-                alert("Inputs saved to your browser's local storage!");
+                localStorage.setItem(STORAGE_PREFIX + saveName, JSON.stringify(dataToSave));
+                alert(`Inputs saved as "${saveName}"!`);
+                populateSavedFilesDropdown();
             } catch (error) {
                 console.error("Error saving data to localStorage: ", error);
                 alert("Failed to save inputs. Your browser might not support local storage or it might be full.");
@@ -475,8 +531,13 @@
         });
         
         loadBtn.addEventListener('click', () => {
+            const selectedFileKey = savedFilesDropdown.value;
+            if (!selectedFileKey || savedFilesDropdown.options[savedFilesDropdown.selectedIndex]?.disabled) {
+                alert("Please select a valid file to load.");
+                return;
+            }
             try {
-                const savedData = localStorage.getItem('poolOptimizerInputs');
+                const savedData = localStorage.getItem(selectedFileKey);
 
                 if (savedData) {
                     const data = JSON.parse(savedData);
@@ -484,7 +545,6 @@
                     numGamesSelect.value = data.numGames;
                     renderGameInputs(data.numGames);
 
-                    // Use a small timeout to ensure DOM is updated before populating
                     setTimeout(() => {
                         data.games.forEach((game, index) => {
                             const i = index + 1;
@@ -498,22 +558,42 @@
                             
                             const lockBtn = document.getElementById(`lock-btn-${i}`);
                             if (game.isLocked && lockBtn) {
-                                lockBtn.click();
+                                const lockedInputs = document.getElementById(`locked-inputs-${i}`);
+                                if (lockedInputs.classList.contains('hidden')) {
+                                   lockBtn.click();
+                                }
                                 document.getElementById(`team_chosen_${i}`).value = game.team_chosen;
                                 document.getElementById(`bet_size_${i}`).value = game.bet_size;
                             }
                         });
-                        alert("Inputs loaded successfully from your browser!");
+                         saveNameInput.value = selectedFileKey.replace(STORAGE_PREFIX, '');
+                        alert(`Inputs from "${selectedFileKey.replace(STORAGE_PREFIX, '')}" loaded successfully!`);
                     }, 100);
 
                 } else {
-                    alert("No saved data found in your browser.");
+                    alert("Could not find the selected file.");
+                    populateSavedFilesDropdown();
                 }
             } catch (error) {
                 console.error("Error loading data from localStorage: ", error);
                 alert("Failed to load inputs.");
             }
         });
+
+        deleteBtn.addEventListener('click', () => {
+            const selectedFileKey = savedFilesDropdown.value;
+            if (!selectedFileKey || savedFilesDropdown.options[savedFilesDropdown.selectedIndex]?.disabled) {
+                alert("Please select a valid file to delete.");
+                return;
+            }
+
+            if (confirm(`Are you sure you want to delete "${selectedFileKey.replace(STORAGE_PREFIX, '')}"? This cannot be undone.`)) {
+                localStorage.removeItem(selectedFileKey);
+                alert("File deleted.");
+                populateSavedFilesDropdown();
+            }
+        });
+
     </script>
 </body>
 </html>
