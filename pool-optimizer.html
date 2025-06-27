@@ -188,6 +188,7 @@
                         <!-- Away Team Column -->
                         <div class="space-y-4">
                             <h4 class="text-lg font-semibold text-center border-b pb-2">Away Team</h4>
+                            <div><label class="block text-sm">Away Vote Share (%)</label><input id="away_vote_share_${i}" type="number" class="w-full p-2 border rounded mt-1" value="50"></div>
                             <div><label class="block text-sm">Away Vote Total</label><input id="away_votes_${i}" type="number" class="w-full p-2 border rounded mt-1" value="1000"></div>
                             <div><label class="block text-sm">Away Vegas Odds (Decimal)</label><input id="away_vegas_odds_${i}" type="number" step="0.01" class="w-full p-2 border rounded mt-1" value="1.91"></div>
                             <div><label class="block text-sm">Away Betting Odds (American)</label><input id="away_american_odds_${i}" type="number" class="w-full p-2 border rounded mt-1" value="-110"></div>
@@ -418,6 +419,7 @@
 
             for (let i = 1; i <= numGames; i++) {
                 const homeVoteShare = parseFloat(document.getElementById(`home_vote_share_${i}`).value);
+                const awayVoteShare = parseFloat(document.getElementById(`away_vote_share_${i}`).value);
                 const homeVotes = parseInt(document.getElementById(`home_votes_${i}`).value);
                 const awayVotes = parseInt(document.getElementById(`away_votes_${i}`).value);
                 const homeVegasOdds = parseFloat(document.getElementById(`home_vegas_odds_${i}`).value);
@@ -434,7 +436,7 @@
                 const homeProb = (1 / homeVegasOdds) / ((1 / homeVegasOdds) + (1 / awayVegasOdds)) * 100;
 
                 gameData.push({
-                    home_vote_share: homeVoteShare, away_vote_share: 100 - homeVoteShare,
+                    home_vote_share: homeVoteShare, away_vote_share: awayVoteShare,
                     home_votes: homeVotes, away_votes: awayVotes,
                     home_prob: homeProb, away_prob: 100 - homeProb,
                     home_odds: homeAmericanOdds, away_odds: awayAmericanOdds
@@ -518,6 +520,7 @@
                 const isLocked = lockBtn && !document.getElementById(`locked-inputs-${i}`).classList.contains('hidden');
                 dataToSave.games.push({
                     home_vote_share: document.getElementById(`home_vote_share_${i}`).value,
+                    away_vote_share: document.getElementById(`away_vote_share_${i}`).value,
                     home_votes: document.getElementById(`home_votes_${i}`).value,
                     away_votes: document.getElementById(`away_votes_${i}`).value,
                     home_vegas_odds: document.getElementById(`home_vegas_odds_${i}`).value,
@@ -558,6 +561,7 @@
                         data.games.forEach((game, index) => {
                             const i = index + 1;
                             document.getElementById(`home_vote_share_${i}`).value = game.home_vote_share;
+                            document.getElementById(`away_vote_share_${i}`).value = game.away_vote_share;
                             document.getElementById(`home_votes_${i}`).value = game.home_votes;
                             document.getElementById(`away_votes_${i}`).value = game.away_votes;
                             document.getElementById(`home_vegas_odds_${i}`).value = game.home_vegas_odds;
