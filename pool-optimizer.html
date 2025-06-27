@@ -139,6 +139,8 @@
         const showSignup = document.getElementById('show-signup');
         const showLogin = document.getElementById('show-login');
 
+        const DUMMY_DOMAIN = "yourleague.local";
+
         showSignup.addEventListener('click', (e) => {
             e.preventDefault();
             loginForm.classList.add('hidden');
@@ -157,32 +159,70 @@
 
         const loginButton = document.getElementById('login-button');
         loginButton.addEventListener('click', async () => {
-            const email = document.getElementById('login-username').value + '@caustic.info';
+            const username = document.getElementById('login-username').value.trim();
             const password = document.getElementById('login-password').value;
+            const email = username + '@' + DUMMY_DOMAIN;
+            
+            if (!username || !password) {
+                authError.textContent = "Please enter username and password.";
+                return;
+            }
+
+            loginButton.disabled = true;
+            loginButton.textContent = 'Logging in...';
             try {
                 await auth.signInWithEmailAndPassword(email, password);
                 authError.textContent = '';
             } catch (error) {
-                authError.textContent = error.message;
+                 if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                    authError.textContent = "Invalid username or password.";
+                } else {
+                    authError.textContent = "Login failed. Please try again.";
+                }
+            } finally {
+                loginButton.disabled = false;
+                loginButton.textContent = 'Login';
             }
         });
 
         const signupButton = document.getElementById('signup-button');
         signupButton.addEventListener('click', async () => {
-            const email = document.getElementById('signup-username').value + '@caustic.info';
+            const username = document.getElementById('signup-username').value.trim();
             const password = document.getElementById('signup-password').value;
             const confirmPassword = document.getElementById('signup-confirm-password').value;
+            const email = username + '@' + DUMMY_DOMAIN;
 
             if (password !== confirmPassword) {
                 authError.textContent = "Passwords do not match.";
                 return;
             }
+             if (password.length < 6) {
+                authError.textContent = "Password should be at least 6 characters.";
+                return;
+            }
 
+            signupButton.disabled = true;
+            signupButton.textContent = 'Signing up...';
             try {
-                await auth.createUserWithEmailAndPassword(email, password);
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                // Optionally create a user document in Firestore
+                await db.collection('users').doc(user.uid).set({
+                    username: username,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
                 authError.textContent = '';
             } catch (error) {
-                authError.textContent = error.message;
+                 if (error.code === 'auth/email-already-in-use') {
+                    authError.textContent = "This username is already taken.";
+                } else if (error.code === 'auth/weak-password') {
+                    authError.textContent = "Password is too weak.";
+                } else {
+                    authError.textContent = "Signup failed. Please try again.";
+                }
+            } finally {
+                signupButton.disabled = false;
+                signupButton.textContent = 'Sign Up';
             }
         });
 
@@ -299,7 +339,7 @@
 
             if (winners2nd === 0) {
                  const maxPayout = num_games === 3 ? 600 : (num_games === 2 ? 400 : 800);
-                return [Math.min(maxPayout, tki / winners1st), 0];
+                return [Math.min(maxPayout, Math.floor(tki / winners1st)), 0];
             }
             
             // This is for 4-game pools with a 2nd place
@@ -311,7 +351,7 @@
             const haircut = winners1st / (winners1st + winners2nd);
             const payout2nd = ed - (ed * haircut);
             const remainder = tki - (payout2nd * winners2nd);
-            const payout1st = Math.min(800, remainder / winners1st);
+            const payout1st = Math.min(800, Math.floor(remainder / winners1st));
 
             return [payout1st, payout2nd];
         }
@@ -443,7 +483,7 @@
         
         submitBtn.addEventListener('click', async () => {
             const numGames = parseInt(numGamesSelect.value);
-            if(numGames === 0) {
+            if(numGames === 0 || isNaN(numGames)) {
                 alert("Please select the number of games.");
                 return;
             }
@@ -527,7 +567,7 @@
                 return;
             }
             const numGames = parseInt(numGamesSelect.value);
-            if (numGames === 0) {
+            if (numGames === 0 || isNaN(numGames)) {
                 alert("Please select number of games before saving.");
                 return;
             }
@@ -539,7 +579,8 @@
             };
 
             for (let i = 1; i <= numGames; i++) {
-                const isLocked = !document.getElementById(`locked-inputs-${i}`)?.classList.contains('hidden');
+                const lockBtn = document.getElementById(`lock-btn-${i}`);
+                const isLocked = lockBtn && !document.getElementById(`locked-inputs-${i}`).classList.contains('hidden');
                 dataToSave.games.push({
                     home_vote_share: document.getElementById(`home_vote_share_${i}`).value,
                     home_votes: document.getElementById(`home_votes_${i}`).value,
@@ -590,8 +631,9 @@
                             document.getElementById(`home_american_odds_${i}`).value = game.home_american_odds;
                             document.getElementById(`away_american_odds_${i}`).value = game.away_american_odds;
                             
-                            if (game.isLocked) {
-                                document.getElementById(`lock-btn-${i}`).click();
+                            const lockBtn = document.getElementById(`lock-btn-${i}`);
+                            if (game.isLocked && lockBtn) {
+                                lockBtn.click();
                                 document.getElementById(`team_chosen_${i}`).value = game.team_chosen;
                                 document.getElementById(`bet_size_${i}`).value = game.bet_size;
                             }
