@@ -390,7 +390,7 @@
                 }
             }
 
-            const { bestCombination, allResults } = await optimizeWagers(numGAMES, gameData, lockedGames);
+            const { bestCombination, allResults } = await optimizeWagers(numGames, gameData, lockedGames);
             
             loadingIndicator.classList.add('hidden');
             displayResults(bestCombination, allResults);
