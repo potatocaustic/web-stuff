@@ -184,14 +184,23 @@
                         <h3 class="text-xl font-bold text-gray-900">Game ${i}</h3>
                         ${isLiveMode ? `<button id="lock-btn-${i}" class="bg-gray-200 text-gray-800 py-1 px-3 rounded-md hover:bg-gray-300 text-sm">Lock Game</button>` : ''}
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div><label class="block text-sm">Home Vote Share (%)</label><input id="home_vote_share_${i}" type="number" class="w-full p-2 border rounded mt-1" value="50"></div>
-                        <div><label class="block text-sm">Home Vote Total</label><input id="home_votes_${i}" type="number" class="w-full p-2 border rounded mt-1" value="1000"></div>
-                        <div><label class="block text-sm">Away Vote Total</label><input id="away_votes_${i}" type="number" class="w-full p-2 border rounded mt-1" value="1000"></div>
-                        <div><label class="block text-sm">Home Vegas Odds (Decimal)</label><input id="home_vegas_odds_${i}" type="number" step="0.01" class="w-full p-2 border rounded mt-1" value="1.91"></div>
-                        <div><label class="block text-sm">Away Vegas Odds (Decimal)</label><input id="away_vegas_odds_${i}" type="number" step="0.01" class="w-full p-2 border rounded mt-1" value="1.91"></div>
-                        <div><label class="block text-sm">Home Betting Odds (American)</label><input id="home_american_odds_${i}" type="number" class="w-full p-2 border rounded mt-1" value="-110"></div>
-                        <div><label class="block text-sm">Away Betting Odds (American)</label><input id="away_american_odds_${i}" type="number" class="w-full p-2 border rounded mt-1" value="-110"></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                        <!-- Away Team Column -->
+                        <div class="space-y-4">
+                            <h4 class="text-lg font-semibold text-center border-b pb-2">Away Team</h4>
+                            <div><label class="block text-sm">Away Vote Total</label><input id="away_votes_${i}" type="number" class="w-full p-2 border rounded mt-1" value="1000"></div>
+                            <div><label class="block text-sm">Away Vegas Odds (Decimal)</label><input id="away_vegas_odds_${i}" type="number" step="0.01" class="w-full p-2 border rounded mt-1" value="1.91"></div>
+                            <div><label class="block text-sm">Away Betting Odds (American)</label><input id="away_american_odds_${i}" type="number" class="w-full p-2 border rounded mt-1" value="-110"></div>
+                        </div>
+
+                        <!-- Home Team Column -->
+                        <div class="space-y-4">
+                             <h4 class="text-lg font-semibold text-center border-b pb-2">Home Team</h4>
+                            <div><label class="block text-sm">Home Vote Share (%)</label><input id="home_vote_share_${i}" type="number" class="w-full p-2 border rounded mt-1" value="50"></div>
+                            <div><label class="block text-sm">Home Vote Total</label><input id="home_votes_${i}" type="number" class="w-full p-2 border rounded mt-1" value="1000"></div>
+                            <div><label class="block text-sm">Home Vegas Odds (Decimal)</label><input id="home_vegas_odds_${i}" type="number" step="0.01" class="w-full p-2 border rounded mt-1" value="1.91"></div>
+                            <div><label class="block text-sm">Home Betting Odds (American)</label><input id="home_american_odds_${i}" type="number" class="w-full p-2 border rounded mt-1" value="-110"></div>
+                        </div>
                     </div>
                     <div id="locked-inputs-${i}" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 hidden">
                          <div>
