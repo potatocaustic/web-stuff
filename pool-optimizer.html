@@ -36,25 +36,7 @@
         </nav>
     </header>
 
-    <div id="auth-container" class="p-8 max-w-md mx-auto my-8 bg-white rounded-lg shadow-md text-center">
-        <h2 id="auth-title" class="text-2xl font-bold mb-4">Login</h2>
-        <p id="auth-error" class="text-red-500 mb-4 min-h-[1.2em]"></p>
-        <div id="login-form">
-            <input type="text" id="login-username" placeholder="Username" class="w-full p-2 mb-4 border rounded">
-            <input type="password" id="login-password" placeholder="Password" class="w-full p-2 mb-4 border rounded">
-            <button id="login-button" class="bg-gray-800 text-white py-2 px-4 rounded hover:bg-gray-700 w-full">Login</button>
-            <p class="mt-4">Don't have an account? <a href="#" id="show-signup" class="text-blue-600 hover:underline">Sign Up</a></p>
-        </div>
-        <div id="signup-form" class="hidden">
-            <input type="text" id="signup-username" placeholder="Choose Username" class="w-full p-2 mb-4 border rounded">
-            <input type="password" id="signup-password" placeholder="Choose Password" class="w-full p-2 mb-4 border rounded">
-            <input type="password" id="signup-confirm-password" placeholder="Confirm Password" class="w-full p-2 mb-4 border rounded">
-            <button id="signup-button" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 w-full">Sign Up</button>
-            <p class="mt-4">Already have an account? <a href="#" id="show-login" class="text-blue-600 hover:underline">Login</a></p>
-        </div>
-    </div>
-
-    <main class="p-4 md:p-8 max-w-7xl mx-auto hidden">
+    <main class="p-4 md:p-8 max-w-7xl mx-auto">
         <div id="app" class="space-y-6">
             <!-- Controls -->
             <div class="bg-white p-6 rounded-lg shadow-md">
@@ -77,10 +59,8 @@
                     </div>
                      <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">&nbsp;</label>
-                        <div class="flex space-x-2">
+                        <div class="flex">
                              <button id="submit-btn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 shadow-sm">Run Optimizer</button>
-                            <button id="save-btn" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 shadow-sm">Save Inputs</button>
-                            <button id="load-btn" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 shadow-sm">Load Inputs</button>
                         </div>
                     </div>
                 </div>
@@ -113,141 +93,12 @@
         <p>&copy; caustic.info</p>
     </footer>
 
-    <!-- Firebase Compatibility Libraries -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-
     <script>
-        // --- FIREBASE CONFIG (WILL BE POPULATED) ---
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-pool-optimizer';
-
-        // --- FIREBASE INITIALIZATION (Compat style) ---
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        // --- AUTHENTICATION LOGIC (from auth.js) ---
-        const authContainer = document.getElementById('auth-container');
-        const mainContent = document.querySelector('main');
-        const loginForm = document.getElementById('login-form');
-        const signupForm = document.getElementById('signup-form');
-        const authTitle = document.getElementById('auth-title');
-        const authError = document.getElementById('auth-error');
-        
-        const showSignup = document.getElementById('show-signup');
-        const showLogin = document.getElementById('show-login');
-
-        const DUMMY_DOMAIN = "yourleague.local";
-
-        showSignup.addEventListener('click', (e) => {
-            e.preventDefault();
-            loginForm.classList.add('hidden');
-            signupForm.classList.remove('hidden');
-            authTitle.textContent = 'Sign Up';
-            authError.textContent = '';
-        });
-        
-        showLogin.addEventListener('click', (e) => {
-            e.preventDefault();
-            signupForm.classList.add('hidden');
-            loginForm.classList.remove('hidden');
-            authTitle.textContent = 'Login';
-            authError.textContent = '';
-        });
-
-        const loginButton = document.getElementById('login-button');
-        loginButton.addEventListener('click', async () => {
-            const username = document.getElementById('login-username').value.trim();
-            const password = document.getElementById('login-password').value;
-            const email = username + '@' + DUMMY_DOMAIN;
-            
-            if (!username || !password) {
-                authError.textContent = "Please enter username and password.";
-                return;
-            }
-
-            loginButton.disabled = true;
-            loginButton.textContent = 'Logging in...';
-            try {
-                await auth.signInWithEmailAndPassword(email, password);
-                authError.textContent = '';
-            } catch (error) {
-                 if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-                    authError.textContent = "Invalid username or password.";
-                } else {
-                    authError.textContent = "Login failed. Please try again.";
-                }
-            } finally {
-                loginButton.disabled = false;
-                loginButton.textContent = 'Login';
-            }
-        });
-
-        const signupButton = document.getElementById('signup-button');
-        signupButton.addEventListener('click', async () => {
-            const username = document.getElementById('signup-username').value.trim();
-            const password = document.getElementById('signup-password').value;
-            const confirmPassword = document.getElementById('signup-confirm-password').value;
-            const email = username + '@' + DUMMY_DOMAIN;
-
-            if (password !== confirmPassword) {
-                authError.textContent = "Passwords do not match.";
-                return;
-            }
-             if (password.length < 6) {
-                authError.textContent = "Password should be at least 6 characters.";
-                return;
-            }
-
-            signupButton.disabled = true;
-            signupButton.textContent = 'Signing up...';
-            try {
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-                // Optionally create a user document in Firestore
-                await db.collection('users').doc(user.uid).set({
-                    username: username,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                authError.textContent = '';
-            } catch (error) {
-                 if (error.code === 'auth/email-already-in-use') {
-                    authError.textContent = "This username is already taken.";
-                } else if (error.code === 'auth/weak-password') {
-                    authError.textContent = "Password is too weak.";
-                } else {
-                    authError.textContent = "Signup failed. Please try again.";
-                }
-            } finally {
-                signupButton.disabled = false;
-                signupButton.textContent = 'Sign Up';
-            }
-        });
-
-        let currentUserId = null;
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                authContainer.classList.add('hidden');
-                mainContent.classList.remove('hidden');
-                mainContent.classList.add('visible');
-                currentUserId = user.uid;
-            } else {
-                authContainer.classList.remove('hidden');
-                mainContent.classList.add('hidden');
-                mainContent.classList.remove('visible');
-                currentUserId = null;
-            }
-        });
-
         // --- APPLICATION LOGIC ---
         const poolModeSelect = document.getElementById('pool-mode');
         const numGamesSelect = document.getElementById('num-games');
         const gamesContainer = document.getElementById('games-container');
         const submitBtn = document.getElementById('submit-btn');
-        const saveBtn = document.getElementById('save-btn');
-        const loadBtn = document.getElementById('load-btn');
         const resultsContainer = document.getElementById('results-container');
         const bestResultDiv = document.getElementById('best-result');
         const allResultsDiv = document.getElementById('all-results');
@@ -342,7 +193,6 @@
                 return [Math.min(maxPayout, Math.floor(tki / winners1st)), 0];
             }
             
-            // This is for 4-game pools with a 2nd place
             const ed = tki / (winners1st + winners2nd);
             if (ed >= 600) {
                  return [800, 600];
@@ -559,96 +409,6 @@
                 allResultsDiv.appendChild(card);
             });
         }
-        
-        // --- SAVE/LOAD FUNCTIONALITY ---
-        saveBtn.addEventListener('click', async () => {
-            if (!currentUserId) {
-                alert("You must be logged in to save data.");
-                return;
-            }
-            const numGames = parseInt(numGamesSelect.value);
-            if (numGames === 0 || isNaN(numGames)) {
-                alert("Please select number of games before saving.");
-                return;
-            }
-
-            const dataToSave = {
-                poolMode: poolModeSelect.value,
-                numGames: numGames,
-                games: []
-            };
-
-            for (let i = 1; i <= numGames; i++) {
-                const lockBtn = document.getElementById(`lock-btn-${i}`);
-                const isLocked = lockBtn && !document.getElementById(`locked-inputs-${i}`).classList.contains('hidden');
-                dataToSave.games.push({
-                    home_vote_share: document.getElementById(`home_vote_share_${i}`).value,
-                    home_votes: document.getElementById(`home_votes_${i}`).value,
-                    away_votes: document.getElementById(`away_votes_${i}`).value,
-                    home_vegas_odds: document.getElementById(`home_vegas_odds_${i}`).value,
-                    away_vegas_odds: document.getElementById(`away_vegas_odds_${i}`).value,
-                    home_american_odds: document.getElementById(`home_american_odds_${i}`).value,
-                    away_american_odds: document.getElementById(`away_american_odds_${i}`).value,
-                    isLocked: isLocked,
-                    team_chosen: isLocked ? document.getElementById(`team_chosen_${i}`).value : 'Home',
-                    bet_size: isLocked ? document.getElementById(`bet_size_${i}`).value : 'Zero'
-                });
-            }
-            try {
-                const docRef = db.collection("artifacts").doc(appId).collection("users").doc(currentUserId).collection("poolOptimizer").doc("savedInputs");
-                await docRef.set(dataToSave);
-                alert("Inputs saved successfully!");
-            } catch (error) {
-                console.error("Error saving data: ", error);
-                alert("Failed to save inputs.");
-            }
-        });
-        
-        loadBtn.addEventListener('click', async () => {
-            if (!currentUserId) {
-                alert("You must be logged in to load data.");
-                return;
-            }
-            try {
-                const docRef = db.collection("artifacts").doc(appId).collection("users").doc(currentUserId).collection("poolOptimizer").doc("savedInputs");
-                const docSnap = await docRef.get();
-
-                if (docSnap.exists) {
-                    const data = docSnap.data();
-                    poolModeSelect.value = data.poolMode;
-                    numGamesSelect.value = data.numGames;
-                    renderGameInputs(data.numGames);
-
-                    // Use a small timeout to ensure DOM is updated before populating
-                    setTimeout(() => {
-                        data.games.forEach((game, index) => {
-                            const i = index + 1;
-                            document.getElementById(`home_vote_share_${i}`).value = game.home_vote_share;
-                            document.getElementById(`home_votes_${i}`).value = game.home_votes;
-                            document.getElementById(`away_votes_${i}`).value = game.away_votes;
-                            document.getElementById(`home_vegas_odds_${i}`).value = game.home_vegas_odds;
-                            document.getElementById(`away_vegas_odds_${i}`).value = game.away_vegas_odds;
-                            document.getElementById(`home_american_odds_${i}`).value = game.home_american_odds;
-                            document.getElementById(`away_american_odds_${i}`).value = game.away_american_odds;
-                            
-                            const lockBtn = document.getElementById(`lock-btn-${i}`);
-                            if (game.isLocked && lockBtn) {
-                                lockBtn.click();
-                                document.getElementById(`team_chosen_${i}`).value = game.team_chosen;
-                                document.getElementById(`bet_size_${i}`).value = game.bet_size;
-                            }
-                        });
-                        alert("Inputs loaded successfully!");
-                    }, 100);
-
-                } else {
-                    alert("No saved data found.");
-                }
-            } catch (error) {
-                console.error("Error loading data: ", error);
-                alert("Failed to load inputs.");
-            }
-        });
     </script>
 </body>
 </html>
