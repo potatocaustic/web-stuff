@@ -113,19 +113,20 @@
         <p>&copy; caustic.info</p>
     </footer>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
+    <!-- Firebase Compatibility Libraries -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+    <script>
         // --- FIREBASE CONFIG (WILL BE POPULATED) ---
         const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-pool-optimizer';
 
-        // --- FIREBASE INITIALIZATION ---
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        // --- FIREBASE INITIALIZATION (Compat style) ---
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
         // --- AUTHENTICATION LOGIC (from auth.js) ---
         const authContainer = document.getElementById('auth-container');
@@ -159,7 +160,7 @@
             const email = document.getElementById('login-username').value + '@caustic.info';
             const password = document.getElementById('login-password').value;
             try {
-                await signInWithEmailAndPassword(auth, email, password);
+                await auth.signInWithEmailAndPassword(email, password);
                 authError.textContent = '';
             } catch (error) {
                 authError.textContent = error.message;
@@ -178,7 +179,7 @@
             }
 
             try {
-                await createUserWithEmailAndPassword(auth, email, password);
+                await auth.createUserWithEmailAndPassword(email, password);
                 authError.textContent = '';
             } catch (error) {
                 authError.textContent = error.message;
@@ -186,7 +187,7 @@
         });
 
         let currentUserId = null;
-        onAuthStateChanged(auth, user => {
+        auth.onAuthStateChanged(user => {
             if (user) {
                 authContainer.classList.add('hidden');
                 mainContent.classList.remove('hidden');
@@ -553,8 +554,8 @@
                 });
             }
             try {
-                const docRef = doc(db, "artifacts", appId, "users", currentUserId, "poolOptimizer", "savedInputs");
-                await setDoc(docRef, dataToSave);
+                const docRef = db.collection("artifacts").doc(appId).collection("users").doc(currentUserId).collection("poolOptimizer").doc("savedInputs");
+                await docRef.set(dataToSave);
                 alert("Inputs saved successfully!");
             } catch (error) {
                 console.error("Error saving data: ", error);
@@ -568,10 +569,10 @@
                 return;
             }
             try {
-                const docRef = doc(db, "artifacts", appId, "users", currentUserId, "poolOptimizer", "savedInputs");
-                const docSnap = await getDoc(docRef);
+                const docRef = db.collection("artifacts").doc(appId).collection("users").doc(currentUserId).collection("poolOptimizer").doc("savedInputs");
+                const docSnap = await docRef.get();
 
-                if (docSnap.exists()) {
+                if (docSnap.exists) {
                     const data = docSnap.data();
                     poolModeSelect.value = data.poolMode;
                     numGamesSelect.value = data.numGames;
