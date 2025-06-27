@@ -59,8 +59,10 @@
                     </div>
                      <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">&nbsp;</label>
-                        <div class="flex">
+                        <div class="flex space-x-2">
                              <button id="submit-btn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 shadow-sm">Run Optimizer</button>
+                             <button id="save-btn" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 shadow-sm">Save Inputs</button>
+                             <button id="load-btn" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 shadow-sm">Load Inputs</button>
                         </div>
                     </div>
                 </div>
@@ -99,6 +101,8 @@
         const numGamesSelect = document.getElementById('num-games');
         const gamesContainer = document.getElementById('games-container');
         const submitBtn = document.getElementById('submit-btn');
+        const saveBtn = document.getElementById('save-btn');
+        const loadBtn = document.getElementById('load-btn');
         const resultsContainer = document.getElementById('results-container');
         const bestResultDiv = document.getElementById('best-result');
         const allResultsDiv = document.getElementById('all-results');
@@ -241,7 +245,16 @@
         async function optimizeWagers(numGames, gameData, lockedGames) {
             return new Promise(resolve => {
                 setTimeout(() => { // Simulate async work
+                    if (gameData.some(g => isNaN(g.home_votes) || isNaN(g.away_votes) || g.home_votes + g.away_votes === 0)) {
+                         resolve({ bestCombination: null, allResults: [] }); // Prevent division by zero
+                         return;
+                    }
                     const minVoteTotal = Math.min(...gameData.map(g => g.home_votes + g.away_votes));
+                    if (minVoteTotal === 0) {
+                        resolve({ bestCombination: null, allResults: [] });
+                        return;
+                    }
+
                     const [tki, participants] = calculateTki(participationRate, minVoteTotal);
 
                     let bestCombination = null;
@@ -353,6 +366,12 @@
                 const homeAmericanOdds = parseInt(document.getElementById(`home_american_odds_${i}`).value);
                 const awayAmericanOdds = parseInt(document.getElementById(`away_american_odds_${i}`).value);
 
+                if (isNaN(homeVegasOdds) || isNaN(awayVegasOdds) || homeVegasOdds <= 0 || awayVegasOdds <= 0) {
+                    alert(`Please enter valid decimal odds for Game ${i}.`);
+                    loadingIndicator.classList.add('hidden');
+                    return;
+                }
+
                 const homeProb = (1 / homeVegasOdds) / ((1 / homeVegasOdds) + (1 / awayVegasOdds)) * 100;
 
                 gameData.push({
@@ -371,13 +390,19 @@
                 }
             }
 
-            const { bestCombination, allResults } = await optimizeWagers(numGames, gameData, lockedGames);
+            const { bestCombination, allResults } = await optimizeWagers(numGAMES, gameData, lockedGames);
             
             loadingIndicator.classList.add('hidden');
             displayResults(bestCombination, allResults);
         });
         
         function displayResults(best, all) {
+            if (!best) {
+                bestResultDiv.innerHTML = `<p class="text-red-600 font-semibold">Could not calculate results. Please check your inputs, especially the vote totals.</p>`;
+                allResultsDiv.innerHTML = '';
+                resultsContainer.classList.remove('hidden');
+                return;
+            }
             resultsContainer.classList.remove('hidden');
 
             // Display best result
@@ -409,6 +434,86 @@
                 allResultsDiv.appendChild(card);
             });
         }
+
+        // --- SAVE/LOAD FUNCTIONALITY ---
+        saveBtn.addEventListener('click', () => {
+            const numGames = parseInt(numGamesSelect.value);
+            if (numGames === 0 || isNaN(numGames)) {
+                alert("Please select number of games before saving.");
+                return;
+            }
+
+            const dataToSave = {
+                poolMode: poolModeSelect.value,
+                numGames: numGames,
+                games: []
+            };
+
+            for (let i = 1; i <= numGames; i++) {
+                const lockBtn = document.getElementById(`lock-btn-${i}`);
+                const isLocked = lockBtn && !document.getElementById(`locked-inputs-${i}`).classList.contains('hidden');
+                dataToSave.games.push({
+                    home_vote_share: document.getElementById(`home_vote_share_${i}`).value,
+                    home_votes: document.getElementById(`home_votes_${i}`).value,
+                    away_votes: document.getElementById(`away_votes_${i}`).value,
+                    home_vegas_odds: document.getElementById(`home_vegas_odds_${i}`).value,
+                    away_vegas_odds: document.getElementById(`away_vegas_odds_${i}`).value,
+                    home_american_odds: document.getElementById(`home_american_odds_${i}`).value,
+                    away_american_odds: document.getElementById(`away_american_odds_${i}`).value,
+                    isLocked: isLocked,
+                    team_chosen: isLocked ? document.getElementById(`team_chosen_${i}`).value : 'Home',
+                    bet_size: isLocked ? document.getElementById(`bet_size_${i}`).value : 'Zero'
+                });
+            }
+            try {
+                localStorage.setItem('poolOptimizerInputs', JSON.stringify(dataToSave));
+                alert("Inputs saved to your browser's local storage!");
+            } catch (error) {
+                console.error("Error saving data to localStorage: ", error);
+                alert("Failed to save inputs. Your browser might not support local storage or it might be full.");
+            }
+        });
+        
+        loadBtn.addEventListener('click', () => {
+            try {
+                const savedData = localStorage.getItem('poolOptimizerInputs');
+
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    poolModeSelect.value = data.poolMode;
+                    numGamesSelect.value = data.numGames;
+                    renderGameInputs(data.numGames);
+
+                    // Use a small timeout to ensure DOM is updated before populating
+                    setTimeout(() => {
+                        data.games.forEach((game, index) => {
+                            const i = index + 1;
+                            document.getElementById(`home_vote_share_${i}`).value = game.home_vote_share;
+                            document.getElementById(`home_votes_${i}`).value = game.home_votes;
+                            document.getElementById(`away_votes_${i}`).value = game.away_votes;
+                            document.getElementById(`home_vegas_odds_${i}`).value = game.home_vegas_odds;
+                            document.getElementById(`away_vegas_odds_${i}`).value = game.away_vegas_odds;
+                            document.getElementById(`home_american_odds_${i}`).value = game.home_american_odds;
+                            document.getElementById(`away_american_odds_${i}`).value = game.away_american_odds;
+                            
+                            const lockBtn = document.getElementById(`lock-btn-${i}`);
+                            if (game.isLocked && lockBtn) {
+                                lockBtn.click();
+                                document.getElementById(`team_chosen_${i}`).value = game.team_chosen;
+                                document.getElementById(`bet_size_${i}`).value = game.bet_size;
+                            }
+                        });
+                        alert("Inputs loaded successfully from your browser!");
+                    }, 100);
+
+                } else {
+                    alert("No saved data found in your browser.");
+                }
+            } catch (error) {
+                console.error("Error loading data from localStorage: ", error);
+                alert("Failed to load inputs.");
+            }
+        });
     </script>
 </body>
 </html>
