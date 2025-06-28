@@ -161,7 +161,6 @@
     </div>
     <main class="p-4 md:p-8 max-w-7xl mx-auto">
         <div id="app" class="space-y-6">
-            <!-- Instructions Dropdown -->
             <div class="bg-white p-4 rounded-lg shadow-md">
                 <button id="instructions-toggle" class="w-full text-left font-semibold text-lg flex justify-between items-center">
                     <span>Instructions</span>
@@ -196,7 +195,6 @@
                 </div>
             </div>
 
-            <!-- Controls -->
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -255,14 +253,11 @@
             </div>
 
 
-            <!-- Game Inputs -->
             <div id="games-container" class="space-y-6"></div>
             
-            <!-- Results -->
             <div id="results-container" class="hidden">
                  <div id="optimal-strategies-container" class="space-y-6 mb-6">
-                    <!-- Optimal strategy cards will be injected here -->
-                 </div>
+                    </div>
                 <div class="bg-white p-6 rounded-lg shadow-md mt-6">
                     <h3 class="text-xl font-bold mb-4 text-gray-900">Detailed Results</h3>
                     <div id="all-results" class="space-y-4"></div>
@@ -444,6 +439,23 @@
                 `;
                 gamesContainer.appendChild(gameDiv);
                 
+                const awayVoteShareInput = document.getElementById(`away_vote_share_${i}`);
+                const homeVoteShareInput = document.getElementById(`home_vote_share_${i}`);
+
+                awayVoteShareInput.addEventListener('input', () => {
+                    const awayValue = parseFloat(awayVoteShareInput.value);
+                    if (!isNaN(awayValue) && awayValue >= 0 && awayValue <= 100) {
+                        homeVoteShareInput.value = 100 - awayValue;
+                    }
+                });
+
+                homeVoteShareInput.addEventListener('input', () => {
+                    const homeValue = parseFloat(homeVoteShareInput.value);
+                    if (!isNaN(homeValue) && homeValue >= 0 && homeValue <= 100) {
+                        awayVoteShareInput.value = 100 - homeValue;
+                    }
+                });
+                
                 document.getElementById(`lock-btn-${i}`).addEventListener('click', (e) => {
                     const lockedInputs = document.getElementById(`locked-inputs-${i}`);
                     e.target.closest('.info-card').classList.toggle('bg-blue-100');
@@ -506,22 +518,37 @@
         }
 
         function calculatePayouts(tki, winners1st, winners2nd = 0, num_games) {
+            // Handle edge case with no winners
             if (winners1st === 0) return [0, 0];
-            if (winners1st > tki) winners1st = tki;
-
-            if (winners2nd === 0) {
+            
+            // This part handles 2 and 3 game pools, which have no 2nd place payout.
+            // The logic remains the same for these.
+            if (winners2nd === 0 || num_games !== 4) {
                 const maxPayout = num_games === 3 ? 600 : (num_games === 2 ? 400 : 800);
                 return [Math.min(maxPayout, Math.floor(tki / winners1st)), 0];
             }
-            
-            const ed = tki / (winners1st + winners2nd);
-            if (ed >= 600) return [800, 600];
 
-            const haircut = winners1st / (winners1st + winners2nd);
-            const payout2nd = ed - (ed * haircut);
-            const remainder = tki - (payout2nd * winners2nd);
-            const payout1st = Math.min(800, Math.floor(remainder / winners1st));
-            return [payout1st, payout2nd];
+            // --- NEW SIMPLIFIED LOGIC FOR 4-GAME POOLS ---
+            // Based on the principle that Payout1st = 2 * Payout2nd
+            // and (Payout1st * winners1st) + (Payout2nd * winners2nd) = tki
+            // We can solve for Payout2nd: tki / (2 * winners1st + winners2nd)
+
+            const weightedWinnerTotal = (2 * winners1st) + winners2nd;
+            
+            // Avoid division by zero if there are no expected winners.
+            if (weightedWinnerTotal === 0) {
+                return [0, 0];
+            }
+
+            const payout2nd_ideal = tki / weightedWinnerTotal;
+            const payout1st_ideal = 2 * payout2nd_ideal;
+
+            // Apply the payout caps as requested.
+            const finalPayout1st = Math.min(800, payout1st_ideal);
+            const finalPayout2nd = Math.min(600, payout2nd_ideal);
+            
+            // Return the final, whole-number payouts.
+            return [Math.floor(finalPayout1st), Math.floor(finalPayout2nd)];
         }
 
         function expectedValue(probability, odds, betType) {
