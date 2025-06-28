@@ -300,7 +300,52 @@
 
         vegasOddsFormatSelect.addEventListener('change', () => {
             const numGames = parseInt(numGamesSelect.value);
-            if (numGames > 0) renderGameInputs(numGames);
+            if (numGames === 0) return;
+
+            const wasAmerican = vegasOddsFormatSelect.value !== 'American'; 
+            
+            // Store current values before re-rendering
+            const currentData = [];
+            for (let i = 1; i <= numGames; i++) {
+                const gameCard = document.getElementById(`game-${i}-card`);
+                if (!gameCard) continue;
+                currentData.push({
+                    away_vote_share: document.getElementById(`away_vote_share_${i}`).value,
+                    away_votes: document.getElementById(`away_votes_${i}`).value,
+                    away_american_odds: document.getElementById(`away_american_odds_${i}`).value,
+                    away_vegas_odds: document.getElementById(`away_vegas_odds_${i}`).value,
+                    home_vote_share: document.getElementById(`home_vote_share_${i}`).value,
+                    home_votes: document.getElementById(`home_votes_${i}`).value,
+                    home_american_odds: document.getElementById(`home_american_odds_${i}`).value,
+                    home_vegas_odds: document.getElementById(`home_vegas_odds_${i}`).value,
+                });
+            }
+
+            renderGameInputs(numGames);
+
+            // Restore values after re-rendering
+            for (let i = 1; i <= numGames; i++) {
+                const data = currentData[i-1];
+                if (!data) continue;
+                
+                document.getElementById(`away_vote_share_${i}`).value = data.away_vote_share;
+                document.getElementById(`away_votes_${i}`).value = data.away_votes;
+                document.getElementById(`away_american_odds_${i}`).value = data.away_american_odds;
+                document.getElementById(`home_vote_share_${i}`).value = data.home_vote_share;
+                document.getElementById(`home_votes_${i}`).value = data.home_votes;
+                document.getElementById(`home_american_odds_${i}`).value = data.home_american_odds;
+
+                const awayVegasInput = document.getElementById(`away_vegas_odds_${i}`);
+                const homeVegasInput = document.getElementById(`home_vegas_odds_${i}`);
+
+                if(wasAmerican) { // Was American, now Decimal
+                    awayVegasInput.value = (americanToDecimal(data.away_vegas_odds) || 0).toFixed(2);
+                    homeVegasInput.value = (americanToDecimal(data.home_vegas_odds) || 0).toFixed(2);
+                } else { // Was Decimal, now American
+                    awayVegasInput.value = Math.round(decimalToAmerican(data.away_vegas_odds)) || 0;
+                    homeVegasInput.value = Math.round(decimalToAmerican(data.home_vegas_odds)) || 0;
+                }
+            }
         });
 
         function renderGameInputs(numGames) {
@@ -372,10 +417,17 @@
         
         // --- Optimizer Logic & Helpers ---
         function americanToDecimal(american) {
-            const odds = parseInt(american);
+            const odds = parseFloat(american);
             if (isNaN(odds)) return 0;
             if (odds > 0) return (odds / 100) + 1;
             return (100 / Math.abs(odds)) + 1;
+        }
+
+        function decimalToAmerican(decimal) {
+            const odds = parseFloat(decimal);
+            if (isNaN(odds) || odds === 0) return 0;
+            if (odds >= 2.0) return (odds - 1) * 100;
+            return -100 / (odds - 1);
         }
 
         const participationRate = 50.0;
@@ -545,16 +597,23 @@
             displayResults(allResults);
         });
         
-        function createStrategyCard(combo, title) {
+        function createStrategyCard(combo, title, numGames) {
             const card = document.createElement('div');
             card.className = 'bg-white p-6 rounded-lg shadow-md';
             if (!combo) {
                 card.innerHTML = `<h2 class="text-xl font-bold mb-2 text-gray-900">${title}</h2><p>No suitable combination found.</p>`;
                 return card;
             }
+            
+            const payoutProbability = (numGames === 4) 
+                ? combo.details.correctProb + combo.details.secondPlaceProb
+                : combo.details.correctProb;
+
             let html = `<h2 class="text-xl font-bold mb-4 text-gray-900">${title}</h2>`;
             html += `<p class="text-lg"><strong>Total EV (Pool EV + Bet EV):</strong> <span class="font-bold text-indigo-700">${combo.totalEv.toFixed(2)}</span></p>`;
             html += `<p><strong>Pool EV:</strong> ${combo.poolEv.toFixed(2)}, <strong>Bet EV:</strong> ${combo.betEv.toFixed(2)}</p>`;
+            html += `<p><strong>Payout Probability:</strong> <span class="font-semibold">${(payoutProbability * 100).toFixed(2)}%</span></p>`
+
             if (combo.poolEv < 0) {
                 html += `<p class="mt-2 text-red-600 font-semibold">Warning: The Pool EV for this combination is negative.</p>`;
             }
@@ -577,6 +636,7 @@
                 return;
             }
 
+            const numGames = parseInt(numGamesSelect.value);
             // --- Find and Display Optimal Strategies ---
             const highestEvCombo = all[0];
             const positiveEvCombos = all.filter(res => res.totalEv > 0);
@@ -593,16 +653,15 @@
             const areSame = lowestRiskCombo && highestEvCombo.picks.join(',') === lowestRiskCombo.picks.join(',');
             
             if (areSame) {
-                optimalStrategiesContainer.appendChild(createStrategyCard(highestEvCombo, 'Highest EV & Lowest Risk Strategy'));
+                optimalStrategiesContainer.appendChild(createStrategyCard(highestEvCombo, 'Highest EV & Lowest Risk Strategy', numGames));
             } else {
-                optimalStrategiesContainer.appendChild(createStrategyCard(highestEvCombo, 'Highest EV Strategy'));
+                optimalStrategiesContainer.appendChild(createStrategyCard(highestEvCombo, 'Highest EV Strategy', numGames));
                 if (lowestRiskCombo) {
-                    optimalStrategiesContainer.appendChild(createStrategyCard(lowestRiskCombo, 'Lowest Risk Strategy (+EV)'));
+                    optimalStrategiesContainer.appendChild(createStrategyCard(lowestRiskCombo, 'Lowest Risk Strategy (+EV)', numGames));
                 }
             }
 
             // --- Display All Results Table ---
-            const numGames = parseInt(numGamesSelect.value);
             all.forEach(res => {
                 const card = document.createElement('div');
                 card.className = 'p-4 rounded-md results-card shadow-sm';
@@ -704,7 +763,6 @@
                             }
                         });
                         saveNameInput.value = selectedFileKey.replace(STORAGE_PREFIX, '');
-                        alert(`Inputs from "${selectedFileKey.replace(STORAGE_PREFIX, '')}" loaded successfully!`);
                     }, 100);
                 }
             } catch (error) {
