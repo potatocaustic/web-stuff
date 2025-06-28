@@ -29,7 +29,7 @@
         
         /* Matching Header/Footer Styles */
         header {
-            background-color: #333;
+            background-color: #333 !important;
             color: #fff;
             padding: 1rem;
             text-align: center;
@@ -39,6 +39,7 @@
             color: white !important;
             font-size: 1.5rem;
             margin: 0;
+            font-weight: bold; /* Added to counteract Tailwind's reset */
         }
         
         nav ul {
@@ -69,7 +70,7 @@
             text-align: center;
             margin-top: 2rem;
             padding: 1rem;
-            background-color: #333;
+            background-color: #333 !important;
             color: #fff;
         }
 
@@ -704,8 +705,8 @@
                             document.getElementById(`home_vote_share_${i}`).value = game.home_vote_share;
                             document.getElementById(`away_vote_share_${i}`).value = game.away_vote_share;
                             document.getElementById(`home_votes_${i}`).value = game.home_votes;
-                            document.getElementById(`away_votes_${i}`).value = game.home_vegas_odds;
-                            document.getElementById(`away_vegas_odds_${i}`).value = game.away_vegas_odds;
+                            document.getElementById(`away_votes_${i}`).value = game.away_vegas_odds;
+                            document.getElementById(`home_vegas_odds_${i}`).value = game.home_vegas_odds;
                             
                             const homeOddsInput = document.getElementById(`home_american_odds_${i}`);
                             if(homeOddsInput) homeOddsInput.value = game.home_american_odds;
