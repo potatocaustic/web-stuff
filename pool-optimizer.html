@@ -304,7 +304,6 @@
 
             const wasAmerican = vegasOddsFormatSelect.value !== 'American'; 
             
-            // Store current values before re-rendering
             const currentData = [];
             for (let i = 1; i <= numGames; i++) {
                 const gameCard = document.getElementById(`game-${i}-card`);
@@ -323,7 +322,6 @@
 
             renderGameInputs(numGames);
 
-            // Restore values after re-rendering
             for (let i = 1; i <= numGames; i++) {
                 const data = currentData[i-1];
                 if (!data) continue;
@@ -338,10 +336,10 @@
                 const awayVegasInput = document.getElementById(`away_vegas_odds_${i}`);
                 const homeVegasInput = document.getElementById(`home_vegas_odds_${i}`);
 
-                if(wasAmerican) { // Was American, now Decimal
+                if(wasAmerican) {
                     awayVegasInput.value = (americanToDecimal(data.away_vegas_odds) || 0).toFixed(2);
                     homeVegasInput.value = (americanToDecimal(data.home_vegas_odds) || 0).toFixed(2);
-                } else { // Was Decimal, now American
+                } else {
                     awayVegasInput.value = Math.round(decimalToAmerican(data.away_vegas_odds)) || 0;
                     homeVegasInput.value = Math.round(decimalToAmerican(data.home_vegas_odds)) || 0;
                 }
@@ -350,7 +348,6 @@
 
         function renderGameInputs(numGames) {
             gamesContainer.innerHTML = '';
-            const isLiveMode = true; 
             const isSpread = bettingTypeSelect.value === 'Spread';
             const isAmerican = vegasOddsFormatSelect.value === 'American';
             
@@ -372,10 +369,9 @@
                 gameDiv.innerHTML = `
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-xl font-bold text-gray-900">Game ${i}</h3>
-                        ${isLiveMode ? `<button id="lock-btn-${i}" class="bg-gray-200 text-gray-800 py-1 px-3 rounded-md hover:bg-gray-300 text-sm">Lock Game</button>` : ''}
+                        <button id="lock-btn-${i}" class="bg-gray-200 text-gray-800 py-1 px-3 rounded-md hover:bg-gray-300 text-sm">Lock Game</button>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                        <!-- Away Team Column -->
                         <div class="space-y-4">
                             <h4 class="text-lg font-semibold text-center border-b pb-2">Away Team</h4>
                             <div><label class="block text-sm">Away Vote Share (%)</label><input id="away_vote_share_${i}" type="number" class="w-full p-2 border rounded mt-1" value="50"></div>
@@ -383,8 +379,6 @@
                             ${awayBettingOddsHTML}
                             ${awayVegasOddsHTML}
                         </div>
-
-                        <!-- Home Team Column -->
                         <div class="space-y-4">
                              <h4 class="text-lg font-semibold text-center border-b pb-2">Home Team</h4>
                             <div><label class="block text-sm">Home Vote Share (%)</label><input id="home_vote_share_${i}" type="number" class="w-full p-2 border rounded mt-1" value="50"></div>
@@ -400,19 +394,42 @@
                 `;
                 gamesContainer.appendChild(gameDiv);
                 
-                if (isLiveMode) {
-                    document.getElementById(`lock-btn-${i}`).addEventListener('click', (e) => {
-                        const lockedInputs = document.getElementById(`locked-inputs-${i}`);
-                        const gameCard = document.getElementById(`game-${i}-card`);
-                        lockedInputs.classList.toggle('hidden');
-                        gameCard.classList.toggle('bg-blue-100');
-                        gameCard.classList.toggle('border-blue-400');
-                        e.target.textContent = lockedInputs.classList.contains('hidden') ? 'Lock Game' : 'Unlock Game';
-                        e.target.classList.toggle('bg-blue-500');
-                        e.target.classList.toggle('text-white');
-                    });
-                }
+                document.getElementById(`lock-btn-${i}`).addEventListener('click', (e) => {
+                    const lockedInputs = document.getElementById(`locked-inputs-${i}`);
+                    e.target.closest('.info-card').classList.toggle('bg-blue-100');
+                    lockedInputs.classList.toggle('hidden');
+                    e.target.textContent = lockedInputs.classList.contains('hidden') ? 'Lock Game' : 'Unlock Game';
+                    e.target.classList.toggle('bg-blue-500');
+                    e.target.classList.toggle('text-white');
+                });
             }
+
+            // Setup horizontal tabbing
+            const focusableInputs = [];
+            for (let i = 1; i <= numGames; i++) {
+                focusableInputs.push(document.getElementById(`away_vote_share_${i}`));
+                focusableInputs.push(document.getElementById(`home_vote_share_${i}`));
+                focusableInputs.push(document.getElementById(`away_votes_${i}`));
+                focusableInputs.push(document.getElementById(`home_votes_${i}`));
+                if (!isSpread) {
+                    focusableInputs.push(document.getElementById(`away_american_odds_${i}`));
+                    focusableInputs.push(document.getElementById(`home_american_odds_${i}`));
+                }
+                focusableInputs.push(document.getElementById(`away_vegas_odds_${i}`));
+                focusableInputs.push(document.getElementById(`home_vegas_odds_${i}`));
+            }
+
+            focusableInputs.forEach((input, index) => {
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Tab') {
+                        e.preventDefault();
+                        const nextIndex = e.shiftKey ? 
+                            (index - 1 + focusableInputs.length) % focusableInputs.length : 
+                            (index + 1) % focusableInputs.length;
+                        focusableInputs[nextIndex].focus();
+                    }
+                });
+            });
         }
         
         // --- Optimizer Logic & Helpers ---
@@ -605,14 +622,20 @@
                 return card;
             }
             
-            const payoutProbability = (numGames === 4) 
-                ? combo.details.correctProb + combo.details.secondPlaceProb
-                : combo.details.correctProb;
+            let payoutHtml;
+            const firstProb = (combo.details.correctProb * 100);
+            if (numGames === 4) {
+                const secondProb = (combo.details.secondPlaceProb * 100);
+                const totalProb = firstProb + secondProb;
+                payoutHtml = `<strong>Payout Probability:</strong> <span class="font-semibold">${totalProb.toFixed(2)}% (${firstProb.toFixed(2)}% 1st + ${secondProb.toFixed(2)}% 2nd)</span>`;
+            } else {
+                payoutHtml = `<strong>Payout Probability:</strong> <span class="font-semibold">${firstProb.toFixed(2)}% (1st Place)</span>`;
+            }
 
             let html = `<h2 class="text-xl font-bold mb-4 text-gray-900">${title}</h2>`;
             html += `<p class="text-lg"><strong>Total EV (Pool EV + Bet EV):</strong> <span class="font-bold text-indigo-700">${combo.totalEv.toFixed(2)}</span></p>`;
             html += `<p><strong>Pool EV:</strong> ${combo.poolEv.toFixed(2)}, <strong>Bet EV:</strong> ${combo.betEv.toFixed(2)}</p>`;
-            html += `<p><strong>Payout Probability:</strong> <span class="font-semibold">${(payoutProbability * 100).toFixed(2)}%</span></p>`
+            html += `<p>${payoutHtml}</p>`;
 
             if (combo.poolEv < 0) {
                 html += `<p class="mt-2 text-red-600 font-semibold">Warning: The Pool EV for this combination is negative.</p>`;
@@ -637,7 +660,6 @@
             }
 
             const numGames = parseInt(numGamesSelect.value);
-            // --- Find and Display Optimal Strategies ---
             const highestEvCombo = all[0];
             const positiveEvCombos = all.filter(res => res.totalEv > 0);
             let lowestRiskCombo = null;
@@ -661,7 +683,6 @@
                 }
             }
 
-            // --- Display All Results Table ---
             all.forEach(res => {
                 const card = document.createElement('div');
                 card.className = 'p-4 rounded-md results-card shadow-sm';
