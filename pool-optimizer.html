@@ -5,43 +5,216 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pool Optimizer - caustic.info</title>
     <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .info-card {
-            background-color: #f9f9f9;
-            border: 1px solid #eee;
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .results-card {
-            background-color: #ffffff;
-            border: 1px solid #e2e8f0;
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
         }
+        
+        h1, h2, h3, h4 {
+            color: #333;
+        }
+
+        /* Header and Navigation */
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        header h1 {
+            color: white !important;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+        
+        nav ul {
+          display: flex;
+          justify-content: center;
+          list-style: none;
+          margin-top: 1rem;
+          flex-wrap: wrap;
+        }
+        
+        nav ul li {
+          margin: 0.5rem 1rem;
+        }
+        
+        nav ul li a {
+          color: #fff;
+          text-decoration: none;
+          font-size: 1.1rem;
+          transition: color 0.3s ease;
+          white-space: nowrap;
+        }
+        
+        nav ul li a:hover {
+          color: #ccc;
+        }
+        
+        /* Mobile navigation styles */
+        @media (max-width: 600px) {
+          nav {
+            width: 100%;
+            padding: 0;
+          }
+          
+          nav ul {
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0;
+            width: 100%;
+            margin-left: 0;
+            margin-right: 0;
+          }
+          
+          nav ul li {
+            margin: 0.2rem 0;
+            width: 100%;
+            text-align: center;
+          }
+          
+          nav ul li a {
+            display: block;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            margin: 0 auto;
+          }
+          
+          nav ul li:last-child a {
+            border-bottom: none;
+          }
+        }
+
+        /* Main Content */
         main {
-        padding: 2rem;
-        max-width: 1200px;
-        margin: 0 auto;
-        display: none; /* Hide main content initially for auth */
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: none; /* Hide main content initially for auth */
         }
 
         main.visible { /* Class to show main content, added by auth.js */
-        display: block;
-        }    
+            display: block;
+        }
+        
+        /* Card Styles */
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        .input, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* Button Styles */
+        .button {
+            display: inline-block;
+            background-color: #333;
+            color: #fff;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .button:hover {
+            background-color: #555;
+        }
+
+        .button-secondary {
+            background-color: #6c757d;
+        }
+
+        .button-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .button-danger {
+            background-color: #dc3545;
+        }
+        
+        .button-danger:hover {
+            background-color: #c82333;
+        }
+
+        /* Results */
+        #results-container {
+            margin-top: 2rem;
+        }
+
+        #best-result {
+            background-color: #e6f7ff;
+            border-left: 4px solid #1890ff;
+            padding: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #333;
+            color: #fff;
+        }
     </style>
-     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="bg-gray-100 text-gray-800">
-    <header class="bg-gray-800 text-white p-4 text-center">
-        <h1 class="text-2xl font-bold">Pool Optimizer</h1>
-        <nav class="mt-2">
-            <ul class="flex justify-center space-x-4 flex-wrap">
-                <li><a href="index.html" class="hover:text-gray-300">Home</a></li>
-                <li><a href="../RKL/rkl-stats.html" class="hover:text-gray-300">Jammers Stats</a></li>
-                <li><a href="PSPs/mlb-psp.html" class="hover:text-gray-300">MLB PSP Database</a></li>
-                <li><a href="PSPs-WNBA/wnba-psp.html" class="hover:text-gray-300">WNBA PSP Database</a></li>
-                <li><a href="karma-calculator.html" class="hover:text-gray-300">Karma EV Calculator</a></li>
-                <li><a href="pool-optimizer.html" class="hover:text-gray-300">Pool Optimizer</a></li>
+    <header>
+        <h1>Pool Optimizer</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="../RKL/rkl-stats.html">Jammers Stats</a></li>
+                <li><a href="PSPs/mlb-psp.html">MLB PSP Database</a></li>
+                <li><a href="PSPs-WNBA/wnba-psp.html">WNBA PSP Database</a></li>
+                <li><a href="karma-calculator.html">Karma EV Calculator</a></li>
+                <li><a href="pool-optimizer.html">Pool Optimizer</a></li>
             </ul>
         </nav>
     </header>
@@ -52,7 +225,7 @@
       <div id="login-form">
         <input type="text" id="login-username" placeholder="Username" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
         <input type="password" id="login-password" placeholder="Password" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
-        <button id="login-button" style="background-color: #333; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; width: 100%;">Login</button>
+        <button id="login-button" class="button">Login</button>
         <p style="margin-top: 1rem;">Don't have an account? <a href="#" id="show-signup">Sign Up</a></p>
       </div>
 
@@ -60,91 +233,80 @@
         <input type="text" id="signup-username" placeholder="Choose Username" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
         <input type="password" id="signup-password" placeholder="Choose Password" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
         <input type="password" id="signup-confirm-password" placeholder="Confirm Password" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
-        <button id="signup-button" style="background-color: #5cb85c; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; width: 100%;">Sign Up</button>
+        <button id="signup-button" class="button" style="background-color: #5cb85c;">Sign Up</button>
         <p style="margin-top: 1rem;">Already have an account? <a href="#" id="show-login">Login</a></p>
       </div>
     </div>
-    <main class="p-4 md:p-8 max-w-7xl mx-auto">
-        <div id="app" class="space-y-6">
-            <!-- Controls -->
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <main>
+        <div id="app">
+            <div class="card">
+                <div class="grid-container">
                     <div>
-                        <h3 class="text-lg font-semibold mb-2">Setup</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div>
-                                <label for="betting-type" class="block text-sm font-medium text-gray-700 mb-1">Betting Type</label>
-                                <select id="betting-type" class="w-full p-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                                    <option value="ML">ML</option>
-                                    <option value="Spread">Spread</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="pool-mode" class="block text-sm font-medium text-gray-700 mb-1">Pool Mode</label>
-                                <select id="pool-mode" class="w-full p-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                                    <option value="Pregame">Pregame</option>
-                                    <option value="Live">Live</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="num-games" class="block text-sm font-medium text-gray-700 mb-1">Number of Games</label>
-                                <select id="num-games" class="w-full p-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                                    <option value="0" disabled selected>Select</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                </select>
-                            </div>
+                        <h3>Setup</h3>
+                        <div class="input-group">
+                            <label for="betting-type" class="label">Betting Type</label>
+                            <select id="betting-type" class="input">
+                                <option value="ML">ML</option>
+                                <option value="Spread">Spread</option>
+                            </select>
                         </div>
-                        <div class="mt-4">
-                            <button id="submit-btn" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 shadow-sm">Run Optimizer</button>
+                        <div class="input-group">
+                            <label for="pool-mode" class="label">Pool Mode</label>
+                            <select id="pool-mode" class="input">
+                                <option value="Pregame">Pregame</option>
+                                <option value="Live">Live</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="num-games" class="label">Number of Games</label>
+                            <select id="num-games" class="input">
+                                <option value="0" disabled selected>Select</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <button id="submit-btn" class="button">Run Optimizer</button>
                         </div>
                     </div>
 
                     <div>
-                        <h3 class="text-lg font-semibold mb-2">Save & Load Scenarios</h3>
-                        <div class="space-y-3">
-                            <div>
-                                <label for="save-name" class="block text-sm font-medium text-gray-700 mb-1">Save Name</label>
-                                <div class="flex space-x-2">
-                                    <input type="text" id="save-name" placeholder="e.g., 'Tuesday Night Slate'" class="w-full p-2 border rounded-md shadow-sm">
-                                    <button id="save-btn" class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 shadow-sm whitespace-nowrap">Save</button>
-                                </div>
-                            </div>
-                            <div>
-                                <label for="saved-files-dropdown" class="block text-sm font-medium text-gray-700 mb-1">Load or Delete Saved File</label>
-                                <div class="flex space-x-2">
-                                    <select id="saved-files-dropdown" class="w-full p-2 border rounded-md shadow-sm"></select>
-                                    <button id="load-btn" class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 shadow-sm">Load</button>
-                                    <button id="delete-btn" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 shadow-sm">Delete</button>
-                                </div>
-                            </div>
+                        <h3>Save & Load Scenarios</h3>
+                        <div class="input-group">
+                            <label for="save-name" class="label">Save Name</label>
+                            <input type="text" id="save-name" placeholder="e.g., 'Tuesday Night Slate'" class="input">
+                        </div>
+                        <div class="input-group">
+                            <button id="save-btn" class="button button-secondary">Save</button>
+                        </div>
+                        <div class="input-group">
+                            <label for="saved-files-dropdown" class="label">Load or Delete Saved File</label>
+                            <select id="saved-files-dropdown" class="input"></select>
+                        </div>
+                        <div class="grid-container" style="grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <button id="load-btn" class="button button-secondary">Load</button>
+                            <button id="delete-btn" class="button button-danger">Delete</button>
                         </div>
                     </div>
                 </div>
             </div>
 
 
-            <!-- Game Inputs -->
-            <div id="games-container" class="space-y-6"></div>
+            <div id="games-container"></div>
             
-            <!-- Results -->
             <div id="results-container" class="hidden">
-                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-2xl font-bold mb-4 text-gray-900">Optimal Strategy</h2>
-                    <div id="best-result" class="p-4 rounded-md bg-indigo-50 border border-indigo-200"></div>
+                 <div class="card">
+                    <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;">Optimal Strategy</h2>
+                    <div id="best-result"></div>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-md mt-6">
-                    <h3 class="text-xl font-bold mb-4 text-gray-900">Detailed Results</h3>
-                    <div id="all-results" class="space-y-4"></div>
+                <div class="card">
+                    <h3 style="font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem;">Detailed Results</h3>
+                    <div id="all-results"></div>
                 </div>
             </div>
              <div id="loading-indicator" class="hidden text-center p-8">
-                <svg class="animate-spin h-8 w-8 text-indigo-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <p class="mt-4 text-lg font-semibold">Calculating optimal strategies...</p>
+                <p style="font-size: 1.25rem;">Calculating optimal strategies...</p>
             </div>
         </div>
     </main>
@@ -230,47 +392,44 @@
             for (let i = 1; i <= numGames; i++) {
                 const gameDiv = document.createElement('div');
                 gameDiv.id = `game-${i}-card`;
-                gameDiv.className = 'p-6 rounded-lg shadow-md info-card';
+                gameDiv.className = 'card';
                 
-                // Conditionally create the betting odds HTML
-                const awayBettingOddsHTML = !isSpread ? `<div><label class="block text-sm">Away Betting Odds (American)</label><input id="away_american_odds_${i}" type="number" class="w-full p-2 border rounded mt-1" value="-110"></div>` : `<input type="hidden" id="away_american_odds_${i}" value="100">`;
-                const homeBettingOddsHTML = !isSpread ? `<div><label class="block text-sm">Home Betting Odds (American)</label><input id="home_american_odds_${i}" type="number" class="w-full p-2 border rounded mt-1" value="-110"></div>` : `<input type="hidden" id="home_american_odds_${i}" value="100">`;
+                const awayBettingOddsHTML = !isSpread ? `<div><label class="label">Away Betting Odds (American)</label><input id="away_american_odds_${i}" type="number" class="input" value="-110"></div>` : `<input type="hidden" id="away_american_odds_${i}" value="100">`;
+                const homeBettingOddsHTML = !isSpread ? `<div><label class="label">Home Betting Odds (American)</label><input id="home_american_odds_${i}" type="number" class="input" value="-110"></div>` : `<input type="hidden" id="home_american_odds_${i}" value="100">`;
 
                 gameDiv.innerHTML = `
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-bold text-gray-900">Game ${i}</h3>
-                        ${isLiveMode ? `<button id="lock-btn-${i}" class="bg-gray-200 text-gray-800 py-1 px-3 rounded-md hover:bg-gray-300 text-sm">Lock Game</button>` : ''}
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="font-size: 1.25rem; font-weight: bold;">Game ${i}</h3>
+                        ${isLiveMode ? `<button id="lock-btn-${i}" class="button button-secondary" style="width: auto; padding: 0.5rem 1rem;">Lock Game</button>` : ''}
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                        <!-- Away Team Column -->
-                        <div class="space-y-4">
-                            <h4 class="text-lg font-semibold text-center border-b pb-2">Away Team</h4>
-                            <div><label class="block text-sm">Away Vote Share (%)</label><input id="away_vote_share_${i}" type="number" class="w-full p-2 border rounded mt-1" value="50"></div>
-                            <div><label class="block text-sm">Away Vote Total</label><input id="away_votes_${i}" type="number" class="w-full p-2 border rounded mt-1" value="1000"></div>
+                    <div class="grid-container">
+                        <div>
+                            <h4 style="text-align: center; font-weight: bold; border-bottom: 1px solid #ddd; padding-bottom: 0.5rem; margin-bottom: 1rem;">Away Team</h4>
+                            <div class="input-group"><label class="label">Away Vote Share (%)</label><input id="away_vote_share_${i}" type="number" class="input" value="50"></div>
+                            <div class="input-group"><label class="label">Away Vote Total</label><input id="away_votes_${i}" type="number" class="input" value="1000"></div>
                             ${awayBettingOddsHTML}
-                            <div><label class="block text-sm">Away Vegas Odds (Decimal)</label><input id="away_vegas_odds_${i}" type="number" step="0.01" class="w-full p-2 border rounded mt-1" value="1.91"></div>
+                            <div class="input-group"><label class="label">Away Vegas Odds (Decimal)</label><input id="away_vegas_odds_${i}" type="number" step="0.01" class="input" value="1.91"></div>
                         </div>
 
-                        <!-- Home Team Column -->
-                        <div class="space-y-4">
-                             <h4 class="text-lg font-semibold text-center border-b pb-2">Home Team</h4>
-                            <div><label class="block text-sm">Home Vote Share (%)</label><input id="home_vote_share_${i}" type="number" class="w-full p-2 border rounded mt-1" value="50"></div>
-                            <div><label class="block text-sm">Home Vote Total</label><input id="home_votes_${i}" type="number" class="w-full p-2 border rounded mt-1" value="1000"></div>
+                        <div>
+                             <h4 style="text-align: center; font-weight: bold; border-bottom: 1px solid #ddd; padding-bottom: 0.5rem; margin-bottom: 1rem;">Home Team</h4>
+                            <div class="input-group"><label class="label">Home Vote Share (%)</label><input id="home_vote_share_${i}" type="number" class="input" value="50"></div>
+                            <div class="input-group"><label class="label">Home Vote Total</label><input id="home_votes_${i}" type="number" class="input" value="1000"></div>
                             ${homeBettingOddsHTML}
-                            <div><label class="block text-sm">Home Vegas Odds (Decimal)</label><input id="home_vegas_odds_${i}" type="number" step="0.01" class="w-full p-2 border rounded mt-1" value="1.91"></div>
+                            <div class="input-group"><label class="label">Home Vegas Odds (Decimal)</label><input id="home_vegas_odds_${i}" type="number" step="0.01" class="input" value="1.91"></div>
                         </div>
                     </div>
-                    <div id="locked-inputs-${i}" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 hidden">
-                         <div>
-                            <label class="block text-sm">Team Chosen</label>
-                            <select id="team_chosen_${i}" class="w-full p-2 border rounded mt-1">
+                    <div id="locked-inputs-${i}" class="grid-container hidden" style="margin-top: 1rem;">
+                         <div class="input-group">
+                            <label class="label">Team Chosen</label>
+                            <select id="team_chosen_${i}" class="input">
                                 <option value="Home">Home</option>
                                 <option value="Away">Away</option>
                             </select>
                         </div>
-                        <div>
-                            <label class="block text-sm">Bet Size</label>
-                            <select id="bet_size_${i}" class="w-full p-2 border rounded mt-1">
+                        <div class="input-group">
+                            <label class="label">Bet Size</label>
+                            <select id="bet_size_${i}" class="input">
                                 <option value="Zero">Zero (10)</option>
                                 <option value="Max">Max (100)</option>
                             </select>
@@ -286,11 +445,8 @@
 
                     lockBtn.addEventListener('click', () => {
                         lockedInputs.classList.toggle('hidden');
-                        gameCard.classList.toggle('bg-blue-100');
-                        gameCard.classList.toggle('border-blue-400');
+                        gameCard.style.backgroundColor = lockedInputs.classList.contains('hidden') ? '#fff' : '#e6f7ff';
                         lockBtn.textContent = lockedInputs.classList.contains('hidden') ? 'Lock Game' : 'Unlock Game';
-                        lockBtn.classList.toggle('bg-blue-500');
-                        lockBtn.classList.toggle('text-white');
                     });
                 }
             }
@@ -307,7 +463,7 @@
 
         function calculatePayouts(tki, winners1st, winners2nd = 0, num_games) {
             if (winners1st === 0) return [0, 0];
-            if (winners1st > tki) winners1st = tki; // Cap winners to prevent payout issues
+            if (winners1st > tki) winners1st = tki;
 
             if (winners2nd === 0) {
                  const maxPayout = num_games === 3 ? 600 : (num_games === 2 ? 400 : 800);
@@ -361,7 +517,7 @@
 
         async function optimizeWagers(numGames, gameData, lockedGames) {
             return new Promise(resolve => {
-                setTimeout(() => { // Simulate async work
+                setTimeout(() => { 
                     if (gameData.some(g => isNaN(g.home_votes) || isNaN(g.away_votes))) {
                          resolve({ bestCombination: null, allResults: [] }); 
                          return;
@@ -516,37 +672,36 @@
         
         function displayResults(best, all) {
             if (!best) {
-                bestResultDiv.innerHTML = `<p class="text-red-600 font-semibold">Could not calculate results. Please check your inputs, especially the vote totals.</p>`;
+                bestResultDiv.innerHTML = `<p style="color: #dc3545; font-weight: bold;">Could not calculate results. Please check your inputs, especially the vote totals.</p>`;
                 allResultsDiv.innerHTML = '';
                 resultsContainer.classList.remove('hidden');
                 return;
             }
             resultsContainer.classList.remove('hidden');
 
-            // Display best result
-            let bestHtml = `<p class="text-lg"><strong>Best Total EV (Pool EV + Bet EV):</strong> <span class="font-bold text-indigo-700">${best.totalEv.toFixed(2)}</span></p>`;
+            let bestHtml = `<p><strong>Best Total EV (Pool EV + Bet EV):</strong> <span style="font-weight: bold; color: #1890ff;">${best.totalEv.toFixed(2)}</span></p>`;
             bestHtml += `<p><strong>Pool EV:</strong> ${best.poolEv.toFixed(2)}, <strong>Bet EV:</strong> ${best.betEv.toFixed(2)}</p>`;
             if (best.poolEv < 0) {
-                bestHtml += `<p class="mt-2 text-red-600 font-semibold">Do not enter the pool. The Pool EV for the best combination is negative.</p>`;
+                bestHtml += `<p style="margin-top: 0.5rem; color: #dc3545; font-weight: bold;">Do not enter the pool. The Pool EV for the best combination is negative.</p>`;
             }
-            bestHtml += '<h4 class="font-bold mt-4 mb-2">Recommended Selections:</h4><div class="space-y-1">';
+            bestHtml += '<h4 style="font-weight: bold; margin-top: 1rem; margin-bottom: 0.5rem;">Recommended Selections:</h4>';
             best.details.betDecisions.forEach((d, i) => {
-                bestHtml += `<div><strong>Game ${i + 1}:</strong> Pick <span class="font-semibold">${d.pick.toUpperCase()}</span>, Bet <span class="font-semibold">${d.bet.toUpperCase()}</span></div>`;
+                bestHtml += `<div><strong>Game ${i + 1}:</strong> Pick <span style="font-weight: bold;">${d.pick.toUpperCase()}</span>, Bet <span style="font-weight: bold;">${d.bet.toUpperCase()}</span></div>`;
             });
-            bestHtml += '</div>';
             bestResultDiv.innerHTML = bestHtml;
 
-            // Display all results
             allResultsDiv.innerHTML = '';
             all.forEach(res => {
                 const card = document.createElement('div');
-                card.className = 'p-4 rounded-md results-card shadow-sm';
-                let detailsHtml = `<h4 class="font-bold text-lg">${res.picks.join(', ').toUpperCase()}</h4>`;
+                card.className = 'card';
+                card.style.padding = '1rem';
+                card.style.marginBottom = '1rem';
+                let detailsHtml = `<h4 style="font-weight: bold; font-size: 1.1rem;">${res.picks.join(', ').toUpperCase()}</h4>`;
                 detailsHtml += `<p><strong>Total EV: ${res.totalEv.toFixed(2)}</strong> (Pool: ${res.poolEv.toFixed(2)}, Bet: ${res.betEv.toFixed(2)})</p>`;
-                detailsHtml += `<p class="text-sm text-gray-600">Win Prob: ${(res.details.correctProb * 100).toFixed(2)}% | 1st Place Winners: ${res.details.winners1st} | Payout: $${res.details.payout1st.toFixed(2)}</p>`;
+                detailsHtml += `<p style="font-size: 0.9rem; color: #666;">Win Prob: ${(res.details.correctProb * 100).toFixed(2)}% | 1st Place Winners: ${res.details.winners1st} | Payout: $${res.details.payout1st.toFixed(2)}</p>`;
                 
                 res.details.betDecisions.forEach((d, i) => {
-                    detailsHtml += `<p class="text-sm text-gray-500 ml-4">Game ${i + 1}: Pick ${d.pick.toUpperCase()}, Bet ${d.bet.toUpperCase()} (EV: ${d.ev.toFixed(2)})</p>`;
+                    detailsHtml += `<p style="font-size: 0.9rem; color: #888; margin-left: 1rem;">Game ${i + 1}: Pick ${d.pick.toUpperCase()}, Bet ${d.bet.toUpperCase()} (EV: ${d.ev.toFixed(2)})</p>`;
                 });
                 card.innerHTML = detailsHtml;
                 allResultsDiv.appendChild(card);
@@ -622,8 +777,7 @@
                             document.getElementById(`home_vote_share_${i}`).value = game.home_vote_share;
                             document.getElementById(`away_vote_share_${i}`).value = game.away_vote_share;
                             document.getElementById(`home_votes_${i}`).value = game.home_votes;
-                            document.getElementById(`away_votes_${i}`).value = game.away_votes;
-                            document.getElementById(`home_vegas_odds_${i}`).value = game.home_vegas_odds;
+                            document.getElementById(`away_votes_${i}`).value = game.home_vegas_odds_${i}`).value = game.home_vegas_odds;
                             document.getElementById(`away_vegas_odds_${i}`).value = game.away_vegas_odds;
                             
                             const homeOddsInput = document.getElementById(`home_american_odds_${i}`);
