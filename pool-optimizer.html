@@ -114,6 +114,13 @@
                 font-size: 2rem;
             }
         }
+        #instructions-content ul {
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+        #instructions-content li {
+            margin-bottom: 0.5rem;
+        }
     </style>
      <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -154,6 +161,41 @@
     </div>
     <main class="p-4 md:p-8 max-w-7xl mx-auto">
         <div id="app" class="space-y-6">
+            <!-- Instructions Dropdown -->
+            <div class="bg-white p-4 rounded-lg shadow-md">
+                <button id="instructions-toggle" class="w-full text-left font-semibold text-lg flex justify-between items-center">
+                    <span>Instructions</span>
+                    <svg id="instructions-arrow" class="w-5 h-5 transition-transform transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div id="instructions-content" class="hidden mt-4 text-gray-700 space-y-2">
+                    <p>This tool helps you find the optimal combination of picks for sports betting pools to maximize your expected value (EV).</p>
+                    <h4 class="font-semibold pt-2">Setup:</h4>
+                    <ul>
+                        <li><strong>Betting Type:</strong> Choose 'ML' (Moneyline) or 'Spread'. If you choose Spread, the "Real App Odds" fields will disappear and default to +100 for each side.</li>
+                        <li><strong>Number of Games:</strong> Select how many games are in the pool (2, 3, or 4).</li>
+                        <li><strong>Vegas Odds Format:</strong> Choose whether you want to input the Vegas odds in American or Decimal format.</li>
+                    </ul>
+                    <h4 class="font-semibold pt-2">Game Inputs:</h4>
+                    <ul>
+                        <li>For each game, input the required data for both the Away and Home teams.</li>
+                        <li><strong>Vote Share (%):</strong> The percentage of users who have picked that team in the pool.</li>
+                        <li><strong>Vote Total:</strong> The total number of votes on that side of the pool.</li>
+                        <li><strong>Real App Odds:</strong> The American-style odds offered for the bet on Real (only for ML).</li>
+                        <li><strong>Vegas Odds:</strong> The true market odds from a sportsbook. This is used to calculate the real win probability for each team.</li>
+                        <li><strong>Lock Game:</strong> If a game has already started, you can "lock" it. This forces the optimizer to include your chosen team and bet size in its calculations.</li>
+                    </ul>
+                     <h4 class="font-semibold pt-2">Results:</h4>
+                    <ul>
+                        <li>After clicking "Run Optimizer", the tool will display the best strategies.</li>
+                        <li><strong>Highest EV Strategy:</strong> The combination of picks that provides the absolute highest total expected value.</li>
+                        <li><strong>Lowest Risk Strategy (+EV):</strong> The combination with the highest chance of winning *any* payout (1st or 2nd place) that still has a positive total expected value. This may appear if it's different from the highest EV strategy.</li>
+                        <li><strong>Detailed Results:</strong> A table showing the EV and other details for every possible combination of picks.</li>
+                    </ul>
+                </div>
+            </div>
+
             <!-- Controls -->
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -263,7 +305,15 @@
         const optimalStrategiesContainer = document.getElementById('optimal-strategies-container');
         const allResultsDiv = document.getElementById('all-results');
         const loadingIndicator = document.getElementById('loading-indicator');
+        const instructionsToggle = document.getElementById('instructions-toggle');
+        const instructionsContent = document.getElementById('instructions-content');
+        const instructionsArrow = document.getElementById('instructions-arrow');
         const STORAGE_PREFIX = 'poolOptimizer_';
+
+        instructionsToggle.addEventListener('click', () => {
+            instructionsContent.classList.toggle('hidden');
+            instructionsArrow.classList.toggle('rotate-180');
+        });
 
         function populateSavedFilesDropdown() {
             savedFilesDropdown.innerHTML = '';
