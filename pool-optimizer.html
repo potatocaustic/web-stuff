@@ -159,7 +159,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <h3 class="text-lg font-semibold mb-2">Setup</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div>
                                 <label for="betting-type" class="block text-sm font-medium text-gray-700 mb-1">Betting Type</label>
                                 <select id="betting-type" class="w-full p-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
@@ -174,6 +174,13 @@
                                     <option value="2">2</option>
                                     <option value="3">3</option>
                                     <option value="4">4</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="vegas-odds-format" class="block text-sm font-medium text-gray-700 mb-1">Vegas Odds Format</label>
+                                <select id="vegas-odds-format" class="w-full p-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                    <option value="American">American</option>
+                                    <option value="Decimal">Decimal</option>
                                 </select>
                             </div>
                         </div>
@@ -211,10 +218,9 @@
             
             <!-- Results -->
             <div id="results-container" class="hidden">
-                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <h2 class="text-2xl font-bold mb-4 text-gray-900">Optimal Strategy</h2>
-                    <div id="best-result" class="p-4 rounded-md bg-indigo-50 border border-indigo-200"></div>
-                </div>
+                 <div id="optimal-strategies-container" class="space-y-6 mb-6">
+                    <!-- Optimal strategy cards will be injected here -->
+                 </div>
                 <div class="bg-white p-6 rounded-lg shadow-md mt-6">
                     <h3 class="text-xl font-bold mb-4 text-gray-900">Detailed Results</h3>
                     <div id="all-results" class="space-y-4"></div>
@@ -245,6 +251,7 @@
         // --- APPLICATION LOGIC ---
         const bettingTypeSelect = document.getElementById('betting-type');
         const numGamesSelect = document.getElementById('num-games');
+        const vegasOddsFormatSelect = document.getElementById('vegas-odds-format');
         const gamesContainer = document.getElementById('games-container');
         const submitBtn = document.getElementById('submit-btn');
         const saveNameInput = document.getElementById('save-name');
@@ -253,7 +260,7 @@
         const deleteBtn = document.getElementById('delete-btn');
         const savedFilesDropdown = document.getElementById('saved-files-dropdown');
         const resultsContainer = document.getElementById('results-container');
-        const bestResultDiv = document.getElementById('best-result');
+        const optimalStrategiesContainer = document.getElementById('optimal-strategies-container');
         const allResultsDiv = document.getElementById('all-results');
         const loadingIndicator = document.getElementById('loading-indicator');
         const STORAGE_PREFIX = 'poolOptimizer_';
@@ -283,32 +290,39 @@
 
         numGamesSelect.addEventListener('change', () => {
             const numGames = parseInt(numGamesSelect.value);
-            if (numGames > 0) {
-                renderGameInputs(numGames);
-            }
+            if (numGames > 0) renderGameInputs(numGames);
         });
         
         bettingTypeSelect.addEventListener('change', () => {
             const numGames = parseInt(numGamesSelect.value);
-             if (numGames > 0) {
-                renderGameInputs(numGames);
-             }
+             if (numGames > 0) renderGameInputs(numGames);
+        });
+
+        vegasOddsFormatSelect.addEventListener('change', () => {
+            const numGames = parseInt(numGamesSelect.value);
+            if (numGames > 0) renderGameInputs(numGames);
         });
 
         function renderGameInputs(numGames) {
             gamesContainer.innerHTML = '';
-            // Live mode is now the only mode, so isLiveMode is always true.
             const isLiveMode = true; 
             const isSpread = bettingTypeSelect.value === 'Spread';
+            const isAmerican = vegasOddsFormatSelect.value === 'American';
+            
+            const oddsStep = isAmerican ? '1' : '0.01';
+            const awayVegasValue = isAmerican ? '-110' : '1.91';
+            const homeVegasValue = isAmerican ? '-110' : '1.91';
 
             for (let i = 1; i <= numGames; i++) {
                 const gameDiv = document.createElement('div');
                 gameDiv.id = `game-${i}-card`;
                 gameDiv.className = 'p-6 rounded-lg shadow-md info-card';
                 
-                // Conditionally create the betting odds HTML and update labels
                 const awayBettingOddsHTML = !isSpread ? `<div><label class="block text-sm">Away Real App odds</label><input id="away_american_odds_${i}" type="number" class="w-full p-2 border rounded mt-1" value="-110"></div>` : `<input type="hidden" id="away_american_odds_${i}" value="100">`;
                 const homeBettingOddsHTML = !isSpread ? `<div><label class="block text-sm">Home Real App odds</label><input id="home_american_odds_${i}" type="number" class="w-full p-2 border rounded mt-1" value="-110"></div>` : `<input type="hidden" id="home_american_odds_${i}" value="100">`;
+                
+                const awayVegasOddsHTML = `<div><label class="block text-sm">Away Vegas Odds</label><input id="away_vegas_odds_${i}" type="number" step="${oddsStep}" class="w-full p-2 border rounded mt-1" value="${awayVegasValue}"></div>`;
+                const homeVegasOddsHTML = `<div><label class="block text-sm">Home Vegas Odds</label><input id="home_vegas_odds_${i}" type="number" step="${oddsStep}" class="w-full p-2 border rounded mt-1" value="${homeVegasValue}"></div>`;
 
                 gameDiv.innerHTML = `
                     <div class="flex justify-between items-center mb-4">
@@ -322,7 +336,7 @@
                             <div><label class="block text-sm">Away Vote Share (%)</label><input id="away_vote_share_${i}" type="number" class="w-full p-2 border rounded mt-1" value="50"></div>
                             <div><label class="block text-sm">Away Vote Total</label><input id="away_votes_${i}" type="number" class="w-full p-2 border rounded mt-1" value="1000"></div>
                             ${awayBettingOddsHTML}
-                            <div><label class="block text-sm">Away Vegas Odds (Decimal)</label><input id="away_vegas_odds_${i}" type="number" step="0.01" class="w-full p-2 border rounded mt-1" value="1.91"></div>
+                            ${awayVegasOddsHTML}
                         </div>
 
                         <!-- Home Team Column -->
@@ -331,46 +345,39 @@
                             <div><label class="block text-sm">Home Vote Share (%)</label><input id="home_vote_share_${i}" type="number" class="w-full p-2 border rounded mt-1" value="50"></div>
                             <div><label class="block text-sm">Home Vote Total</label><input id="home_votes_${i}" type="number" class="w-full p-2 border rounded mt-1" value="1000"></div>
                             ${homeBettingOddsHTML}
-                            <div><label class="block text-sm">Home Vegas Odds (Decimal)</label><input id="home_vegas_odds_${i}" type="number" step="0.01" class="w-full p-2 border rounded mt-1" value="1.91"></div>
+                            ${homeVegasOddsHTML}
                         </div>
                     </div>
                     <div id="locked-inputs-${i}" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 hidden">
-                         <div>
-                            <label class="block text-sm">Team Chosen</label>
-                            <select id="team_chosen_${i}" class="w-full p-2 border rounded mt-1">
-                                <option value="Home">Home</option>
-                                <option value="Away">Away</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm">Bet Size</label>
-                            <select id="bet_size_${i}" class="w-full p-2 border rounded mt-1">
-                                <option value="Zero">Zero (10)</option>
-                                <option value="Max">Max (100)</option>
-                            </select>
-                        </div>
+                         <div><label class="block text-sm">Team Chosen</label><select id="team_chosen_${i}" class="w-full p-2 border rounded mt-1"><option value="Home">Home</option><option value="Away">Away</option></select></div>
+                         <div><label class="block text-sm">Bet Size</label><select id="bet_size_${i}" class="w-full p-2 border rounded mt-1"><option value="Zero">Zero (10)</option><option value="Max">Max (100)</option></select></div>
                     </div>
                 `;
                 gamesContainer.appendChild(gameDiv);
                 
                 if (isLiveMode) {
-                    const lockBtn = document.getElementById(`lock-btn-${i}`);
-                    const lockedInputs = document.getElementById(`locked-inputs-${i}`);
-                    const gameCard = document.getElementById(`game-${i}-card`);
-
-                    lockBtn.addEventListener('click', () => {
+                    document.getElementById(`lock-btn-${i}`).addEventListener('click', (e) => {
+                        const lockedInputs = document.getElementById(`locked-inputs-${i}`);
+                        const gameCard = document.getElementById(`game-${i}-card`);
                         lockedInputs.classList.toggle('hidden');
                         gameCard.classList.toggle('bg-blue-100');
                         gameCard.classList.toggle('border-blue-400');
-                        lockBtn.textContent = lockedInputs.classList.contains('hidden') ? 'Lock Game' : 'Unlock Game';
-                        lockBtn.classList.toggle('bg-blue-500');
-                        lockBtn.classList.toggle('text-white');
+                        e.target.textContent = lockedInputs.classList.contains('hidden') ? 'Lock Game' : 'Unlock Game';
+                        e.target.classList.toggle('bg-blue-500');
+                        e.target.classList.toggle('text-white');
                     });
                 }
             }
         }
         
-        // --- Optimizer Logic (Ported from Python) ---
+        // --- Optimizer Logic & Helpers ---
+        function americanToDecimal(american) {
+            const odds = parseInt(american);
+            if (isNaN(odds)) return 0;
+            if (odds > 0) return (odds / 100) + 1;
+            return (100 / Math.abs(odds)) + 1;
+        }
+
         const participationRate = 50.0;
         const zeroBetsAllowed = 'YES';
 
@@ -381,196 +388,147 @@
 
         function calculatePayouts(tki, winners1st, winners2nd = 0, num_games) {
             if (winners1st === 0) return [0, 0];
-            if (winners1st > tki) winners1st = tki; // Cap winners to prevent payout issues
+            if (winners1st > tki) winners1st = tki;
 
             if (winners2nd === 0) {
-                 const maxPayout = num_games === 3 ? 600 : (num_games === 2 ? 400 : 800);
+                const maxPayout = num_games === 3 ? 600 : (num_games === 2 ? 400 : 800);
                 return [Math.min(maxPayout, Math.floor(tki / winners1st)), 0];
             }
             
             const ed = tki / (winners1st + winners2nd);
-            if (ed >= 600) {
-                 return [800, 600];
-            }
+            if (ed >= 600) return [800, 600];
 
             const haircut = winners1st / (winners1st + winners2nd);
             const payout2nd = ed - (ed * haircut);
             const remainder = tki - (payout2nd * winners2nd);
             const payout1st = Math.min(800, Math.floor(remainder / winners1st));
-
             return [payout1st, payout2nd];
         }
 
         function expectedValue(probability, odds, betType) {
             const wager = betType === 'Max' ? 100 : 10;
             if (betType === 'Zero') return probability * ((odds > 0 ? (odds/100) * 10 : (-100/odds) * 10));
-
             const betWin = odds > 0 ? (odds / 100) * wager : (-100 / odds) * wager;
-            const loss = wager;
-            return probability * betWin - (1 - probability) * loss;
+            return probability * betWin - (1 - probability) * wager;
         }
 
         function getCombinations(n, locked) {
             const teams = ['home', 'away'];
             let allCombos = [];
-            
             function generate(index, currentCombo) {
                 if (index === n) {
                     allCombos.push(currentCombo);
                     return;
                 }
-
                 if (locked[index]) {
                      generate(index + 1, [...currentCombo, locked[index].team.toLowerCase()]);
                 } else {
-                    for (const team of teams) {
-                        generate(index + 1, [...currentCombo, team]);
-                    }
+                    teams.forEach(team => generate(index + 1, [...currentCombo, team]));
                 }
             }
-
             generate(0, []);
             return allCombos;
         }
 
         async function optimizeWagers(numGames, gameData, lockedGames) {
             return new Promise(resolve => {
-                setTimeout(() => { // Simulate async work
+                setTimeout(() => { 
                     if (gameData.some(g => isNaN(g.home_votes) || isNaN(g.away_votes))) {
-                         resolve({ bestCombination: null, allResults: [] }); 
+                         resolve({ allResults: [] }); 
                          return;
                     }
                     const minVoteTotal = Math.min(...gameData.map(g => g.home_votes + g.away_votes));
                     if (minVoteTotal === 0 || isNaN(minVoteTotal)) {
-                        resolve({ bestCombination: null, allResults: [] });
+                        resolve({ allResults: [] });
                         return;
                     }
-
                     const [tki, participants] = calculateTki(participationRate, minVoteTotal);
-
-                    let bestCombination = null;
-                    let bestEv = -Infinity;
                     let allResults = [];
-                    
                     const picksCombinations = getCombinations(numGames, lockedGames);
 
                     for (const picks of picksCombinations) {
-                        let correctProb = 1.0;
-                        let voteShareFactor = 1.0;
-                        for (let i = 0; i < picks.length; i++) {
-                            const pick = picks[i];
+                        let correctProb = 1.0, voteShareFactor = 1.0;
+                        picks.forEach((pick, i) => {
                             correctProb *= gameData[i][`${pick}_prob`] / 100.0;
                             voteShareFactor *= gameData[i][`${pick}_vote_share`] / 100.0;
-                        }
+                        });
 
                         const expectedWinners1st = Math.max(1, Math.round(participants * voteShareFactor));
-                        let expectedWinners2nd = 0;
-                        let secondPlaceProb = 0;
+                        let expectedWinners2nd = 0, secondPlaceProb = 0;
                         
                         if (numGames === 4) {
                             for (let i = 0; i < numGames; i++) {
                                 const oppositePick = picks[i] === 'home' ? 'away' : 'home';
-                                const prob3of4 = (correctProb / (gameData[i][`${picks[i]}_prob`] / 100.0)) * (gameData[i][`${oppositePick}_prob`] / 100.0);
-                                secondPlaceProb += prob3of4;
+                                secondPlaceProb += (correctProb / (gameData[i][`${picks[i]}_prob`] / 100.0)) * (gameData[i][`${oppositePick}_prob`] / 100.0);
                             }
-                             expectedWinners2nd = Math.max(1, Math.floor(participants * secondPlaceProb));
+                            expectedWinners2nd = Math.max(1, Math.floor(participants * secondPlaceProb));
                         }
                         
                         const [payout1st, payout2nd] = calculatePayouts(tki, expectedWinners1st, expectedWinners2nd, numGames);
-                        let totalBetEv = 0;
-                        let betDecisions = [];
+                        let totalBetEv = 0, betDecisions = [];
                         
                         for (let i = 0; i < picks.length; i++) {
-                            const game = gameData[i];
-                            const pick = picks[i];
-                            const odds = game[`${pick}_odds`];
-                            const probability = game[`${pick}_prob`] / 100;
+                            const { [`${picks[i]}_prob`]: probability, [`${picks[i]}_odds`]: odds } = gameData[i];
                             let betType, betEv;
-
                             if (lockedGames[i]) {
                                 betType = lockedGames[i].bet;
-                                betEv = expectedValue(probability, odds, betType);
+                                betEv = expectedValue(probability / 100, odds, betType);
                             } else {
-                                const evMax = expectedValue(probability, odds, 'Max');
-                                const evZero = expectedValue(probability, odds, 'Zero');
-                                if (zeroBetsAllowed === 'NO' || evMax > evZero) {
-                                    betType = 'Max';
-                                    betEv = evMax;
-                                } else {
-                                    betType = 'Zero';
-                                    betEv = evZero;
-                                }
+                                const evMax = expectedValue(probability / 100, odds, 'Max');
+                                const evZero = expectedValue(probability / 100, odds, 'Zero');
+                                betType = (zeroBetsAllowed === 'NO' || evMax > evZero) ? 'Max' : 'Zero';
+                                betEv = (betType === 'Max') ? evMax : evZero;
                             }
-                            
-                            betDecisions.push({ pick: pick, bet: betType, ev: betEv });
+                            betDecisions.push({ pick: picks[i], bet: betType, ev: betEv });
                             totalBetEv += betEv;
                         }
                         
-                        let poolEv;
-                        if (numGames === 4) {
-                            poolEv = (correctProb * payout1st) + (secondPlaceProb * payout2nd) - 100;
-                        } else {
-                            poolEv = (correctProb * payout1st) - 100;
-                        }
+                        const poolEv = (numGames === 4) 
+                            ? (correctProb * payout1st) + (secondPlaceProb * payout2nd) - 100 
+                            : (correctProb * payout1st) - 100;
                         
-                        const totalEv = totalBetEv + poolEv;
-
                         allResults.push({
-                            picks, totalEv, betEv: totalBetEv, poolEv, 
-                            details: { correctProb, winners1st: expectedWinners1st, winners2nd: expectedWinners2nd, payout1st, payout2nd, betDecisions, secondPlaceProb }
+                            picks, totalEv: totalBetEv + poolEv, betEv: totalBetEv, poolEv, 
+                            details: { correctProb, secondPlaceProb, payout1st, payout2nd, betDecisions }
                         });
-                        
-                        if (totalEv > bestEv) {
-                            bestEv = totalEv;
-                            bestCombination = {
-                                picks, totalEv, betEv: totalBetEv, poolEv, details: { betDecisions }
-                            };
-                        }
                     }
-                    
                     allResults.sort((a, b) => b.totalEv - a.totalEv);
-
-                    resolve({ bestCombination, allResults });
+                    resolve({ allResults });
                 }, 50);
             });
         }
         
         submitBtn.addEventListener('click', async () => {
             const numGames = parseInt(numGamesSelect.value);
-            if(numGames === 0 || isNaN(numGames)) {
-                alert("Please select the number of games.");
-                return;
-            }
+            if(numGames === 0 || isNaN(numGames)) return alert("Please select the number of games.");
 
             resultsContainer.classList.add('hidden');
             loadingIndicator.classList.remove('hidden');
 
-            const gameData = [];
-            const lockedGames = {};
+            const gameData = [], lockedGames = {};
+            const isAmerican = vegasOddsFormatSelect.value === 'American';
 
             for (let i = 1; i <= numGames; i++) {
-                const homeVoteShare = parseFloat(document.getElementById(`home_vote_share_${i}`).value);
-                const awayVoteShare = parseFloat(document.getElementById(`away_vote_share_${i}`).value);
-                const homeVotes = parseInt(document.getElementById(`home_votes_${i}`).value);
-                const awayVotes = parseInt(document.getElementById(`away_votes_${i}`).value);
-                const homeVegasOdds = parseFloat(document.getElementById(`home_vegas_odds_${i}`).value);
-                const awayVegasOdds = parseFloat(document.getElementById(`away_vegas_odds_${i}`).value);
-                const homeAmericanOdds = parseInt(document.getElementById(`home_american_odds_${i}`).value);
-                const awayAmericanOdds = parseInt(document.getElementById(`away_american_odds_${i}`).value);
-
+                const homeVegasInput = parseFloat(document.getElementById(`home_vegas_odds_${i}`).value);
+                const awayVegasInput = parseFloat(document.getElementById(`away_vegas_odds_${i}`).value);
+                const homeVegasOdds = isAmerican ? americanToDecimal(homeVegasInput) : homeVegasInput;
+                const awayVegasOdds = isAmerican ? americanToDecimal(awayVegasInput) : awayVegasInput;
+                
                 if (isNaN(homeVegasOdds) || isNaN(awayVegasOdds) || homeVegasOdds <= 0 || awayVegasOdds <= 0) {
-                    alert(`Please enter valid decimal odds for Game ${i}.`);
                     loadingIndicator.classList.add('hidden');
-                    return;
+                    return alert(`Please enter valid Vegas odds for Game ${i}.`);
                 }
 
                 const homeProb = (1 / homeVegasOdds) / ((1 / homeVegasOdds) + (1 / awayVegasOdds)) * 100;
 
                 gameData.push({
-                    home_vote_share: homeVoteShare, away_vote_share: awayVoteShare,
-                    home_votes: homeVotes, away_votes: awayVotes,
+                    home_vote_share: parseFloat(document.getElementById(`home_vote_share_${i}`).value),
+                    away_vote_share: parseFloat(document.getElementById(`away_vote_share_${i}`).value),
+                    home_votes: parseInt(document.getElementById(`home_votes_${i}`).value),
+                    away_votes: parseInt(document.getElementById(`away_votes_${i}`).value),
                     home_prob: homeProb, away_prob: 100 - homeProb,
-                    home_odds: homeAmericanOdds, away_odds: awayAmericanOdds
+                    home_odds: parseInt(document.getElementById(`home_american_odds_${i}`).value),
+                    away_odds: parseInt(document.getElementById(`away_american_odds_${i}`).value)
                 });
                 
                 const lockBtn = document.getElementById(`lock-btn-${i}`);
@@ -578,80 +536,106 @@
                     lockedGames[i-1] = {
                         team: document.getElementById(`team_chosen_${i}`).value,
                         bet: document.getElementById(`bet_size_${i}`).value
-                    }
+                    };
                 }
             }
 
-            const { bestCombination, allResults } = await optimizeWagers(numGames, gameData, lockedGames);
-            
+            const { allResults } = await optimizeWagers(numGames, gameData, lockedGames);
             loadingIndicator.classList.add('hidden');
-            displayResults(bestCombination, allResults);
+            displayResults(allResults);
         });
         
-        function displayResults(best, all) {
-            if (!best) {
-                bestResultDiv.innerHTML = `<p class="text-red-600 font-semibold">Could not calculate results. Please check your inputs, especially the vote totals.</p>`;
-                allResultsDiv.innerHTML = '';
+        function createStrategyCard(combo, title) {
+            const card = document.createElement('div');
+            card.className = 'bg-white p-6 rounded-lg shadow-md';
+            if (!combo) {
+                card.innerHTML = `<h2 class="text-xl font-bold mb-2 text-gray-900">${title}</h2><p>No suitable combination found.</p>`;
+                return card;
+            }
+            let html = `<h2 class="text-xl font-bold mb-4 text-gray-900">${title}</h2>`;
+            html += `<p class="text-lg"><strong>Total EV (Pool EV + Bet EV):</strong> <span class="font-bold text-indigo-700">${combo.totalEv.toFixed(2)}</span></p>`;
+            html += `<p><strong>Pool EV:</strong> ${combo.poolEv.toFixed(2)}, <strong>Bet EV:</strong> ${combo.betEv.toFixed(2)}</p>`;
+            if (combo.poolEv < 0) {
+                html += `<p class="mt-2 text-red-600 font-semibold">Warning: The Pool EV for this combination is negative.</p>`;
+            }
+            html += '<h4 class="font-bold mt-4 mb-2">Recommended Selections:</h4><div class="space-y-1">';
+            combo.details.betDecisions.forEach((d, i) => {
+                html += `<div><strong>Game ${i + 1}:</strong> Pick <span class="font-semibold">${d.pick.toUpperCase()}</span>, Bet <span class="font-semibold">${d.bet.toUpperCase()}</span></div>`;
+            });
+            html += '</div>';
+            card.innerHTML = html;
+            return card;
+        }
+
+        function displayResults(all) {
+            optimalStrategiesContainer.innerHTML = '';
+            allResultsDiv.innerHTML = '';
+
+            if (!all || all.length === 0) {
+                optimalStrategiesContainer.innerHTML = `<p class="text-red-600 font-semibold">Could not calculate results. Please check your inputs, especially the vote totals.</p>`;
                 resultsContainer.classList.remove('hidden');
                 return;
             }
-            resultsContainer.classList.remove('hidden');
 
-            // Display best result
-            let bestHtml = `<p class="text-lg"><strong>Best Total EV (Pool EV + Bet EV):</strong> <span class="font-bold text-indigo-700">${best.totalEv.toFixed(2)}</span></p>`;
-            bestHtml += `<p><strong>Pool EV:</strong> ${best.poolEv.toFixed(2)}, <strong>Bet EV:</strong> ${best.betEv.toFixed(2)}</p>`;
-            if (best.poolEv < 0) {
-                bestHtml += `<p class="mt-2 text-red-600 font-semibold">Do not enter the pool. The Pool EV for the best combination is negative.</p>`;
+            // --- Find and Display Optimal Strategies ---
+            const highestEvCombo = all[0];
+            const positiveEvCombos = all.filter(res => res.totalEv > 0);
+            let lowestRiskCombo = null;
+
+            if (positiveEvCombos.length > 0) {
+                lowestRiskCombo = positiveEvCombos.reduce((prev, current) => {
+                    const prevProb = prev.details.correctProb + (prev.details.secondPlaceProb || 0);
+                    const currentProb = current.details.correctProb + (current.details.secondPlaceProb || 0);
+                    return currentProb > prevProb ? current : prev;
+                });
             }
-            bestHtml += '<h4 class="font-bold mt-4 mb-2">Recommended Selections:</h4><div class="space-y-1">';
-            best.details.betDecisions.forEach((d, i) => {
-                bestHtml += `<div><strong>Game ${i + 1}:</strong> Pick <span class="font-semibold">${d.pick.toUpperCase()}</span>, Bet <span class="font-semibold">${d.bet.toUpperCase()}</span></div>`;
-            });
-            bestHtml += '</div>';
-            bestResultDiv.innerHTML = bestHtml;
 
-            // Display all results
+            const areSame = lowestRiskCombo && highestEvCombo.picks.join(',') === lowestRiskCombo.picks.join(',');
+            
+            if (areSame) {
+                optimalStrategiesContainer.appendChild(createStrategyCard(highestEvCombo, 'Highest EV & Lowest Risk Strategy'));
+            } else {
+                optimalStrategiesContainer.appendChild(createStrategyCard(highestEvCombo, 'Highest EV Strategy'));
+                if (lowestRiskCombo) {
+                    optimalStrategiesContainer.appendChild(createStrategyCard(lowestRiskCombo, 'Lowest Risk Strategy (+EV)'));
+                }
+            }
+
+            // --- Display All Results Table ---
             const numGames = parseInt(numGamesSelect.value);
-            allResultsDiv.innerHTML = '';
             all.forEach(res => {
                 const card = document.createElement('div');
                 card.className = 'p-4 rounded-md results-card shadow-sm';
-                let detailsHtml = `<h4 class="font-bold text-lg">${res.picks.join(', ').toUpperCase()}</h4>`;
-                detailsHtml += `<p><strong>Total EV: ${res.totalEv.toFixed(2)}</strong> (Pool: ${res.poolEv.toFixed(2)}, Bet: ${res.betEv.toFixed(2)})</p>`;
-                
-                // Construct the detailed results string based on the new requirements
                 let detailsText = `Win Prob: ${(res.details.correctProb * 100).toFixed(2)}%`;
-                if (numGames === 4 && res.details.secondPlaceProb) {
+                if (numGames === 4) {
                     detailsText += ` | 2nd Place Prob: ${(res.details.secondPlaceProb * 100).toFixed(2)}%`;
                 }
                 detailsText += ` | 1st place payout: ${Math.round(res.details.payout1st)}`;
 
+                let detailsHtml = `<h4 class="font-bold text-lg">${res.picks.join(', ').toUpperCase()}</h4>`;
+                detailsHtml += `<p><strong>Total EV: ${res.totalEv.toFixed(2)}</strong> (Pool: ${res.poolEv.toFixed(2)}, Bet: ${res.betEv.toFixed(2)})</p>`;
                 detailsHtml += `<p class="text-sm text-gray-600">${detailsText}</p>`;
-                
                 res.details.betDecisions.forEach((d, i) => {
                     detailsHtml += `<p class="text-sm text-gray-500 ml-4">Game ${i + 1}: Pick ${d.pick.toUpperCase()}, Bet ${d.bet.toUpperCase()} (EV: ${d.ev.toFixed(2)})</p>`;
                 });
                 card.innerHTML = detailsHtml;
                 allResultsDiv.appendChild(card);
             });
+            
+            resultsContainer.classList.remove('hidden');
         }
 
         // --- SAVE/LOAD FUNCTIONALITY ---
         saveBtn.addEventListener('click', () => {
             const saveName = saveNameInput.value.trim();
-            if (!saveName) {
-                alert("Please enter a name for your save file.");
-                return;
-            }
+            if (!saveName) return alert("Please enter a name for your save file.");
+            
             const numGames = parseInt(numGamesSelect.value);
-            if (numGames === 0 || isNaN(numGames)) {
-                alert("Please select the number of games before saving.");
-                return;
-            }
+            if (numGames === 0 || isNaN(numGames)) return alert("Please select the number of games before saving.");
 
             const dataToSave = {
                 bettingType: bettingTypeSelect.value,
-                poolMode: 'Live', // Hardcoded as Live is the only mode
+                vegasOddsFormat: vegasOddsFormatSelect.value,
                 numGames: numGames,
                 games: []
             };
@@ -678,29 +662,26 @@
                 alert(`Inputs saved as "${saveName}"!`);
                 populateSavedFilesDropdown();
             } catch (error) {
-                console.error("Error saving data to localStorage: ", error);
-                alert("Failed to save inputs. Your browser might not support local storage or it might be full.");
+                console.error("Error saving data:", error);
+                alert("Failed to save inputs.");
             }
         });
         
         loadBtn.addEventListener('click', () => {
             const selectedFileKey = savedFilesDropdown.value;
             if (!selectedFileKey || savedFilesDropdown.options[savedFilesDropdown.selectedIndex]?.disabled) {
-                alert("Please select a valid file to load.");
-                return;
+                return alert("Please select a valid file to load.");
             }
             try {
-                const savedData = localStorage.getItem(selectedFileKey);
-
+                const savedData = JSON.parse(localStorage.getItem(selectedFileKey));
                 if (savedData) {
-                    const data = JSON.parse(savedData);
-                    bettingTypeSelect.value = data.bettingType;
-                    // poolModeSelect is removed, so no need to set it.
-                    numGamesSelect.value = data.numGames;
-                    renderGameInputs(data.numGames);
+                    bettingTypeSelect.value = savedData.bettingType;
+                    vegasOddsFormatSelect.value = savedData.vegasOddsFormat || 'American';
+                    numGamesSelect.value = savedData.numGames;
+                    renderGameInputs(savedData.numGames);
 
                     setTimeout(() => {
-                        data.games.forEach((game, index) => {
+                        savedData.games.forEach((game, index) => {
                             const i = index + 1;
                             document.getElementById(`home_vote_share_${i}`).value = game.home_vote_share;
                             document.getElementById(`away_vote_share_${i}`).value = game.away_vote_share;
@@ -717,24 +698,17 @@
                             
                             const lockBtn = document.getElementById(`lock-btn-${i}`);
                             if (game.isLocked && lockBtn) {
-                                const lockedInputs = document.getElementById(`locked-inputs-${i}`);
-                                if (lockedInputs.classList.contains('hidden')) {
-                                   lockBtn.click();
-                                }
+                                lockBtn.click();
                                 document.getElementById(`team_chosen_${i}`).value = game.team_chosen;
                                 document.getElementById(`bet_size_${i}`).value = game.bet_size;
                             }
                         });
-                         saveNameInput.value = selectedFileKey.replace(STORAGE_PREFIX, '');
+                        saveNameInput.value = selectedFileKey.replace(STORAGE_PREFIX, '');
                         alert(`Inputs from "${selectedFileKey.replace(STORAGE_PREFIX, '')}" loaded successfully!`);
                     }, 100);
-
-                } else {
-                    alert("Could not find the selected file.");
-                    populateSavedFilesDropdown();
                 }
             } catch (error) {
-                console.error("Error loading data from localStorage: ", error);
+                console.error("Error loading data:", error);
                 alert("Failed to load inputs.");
             }
         });
@@ -742,17 +716,14 @@
         deleteBtn.addEventListener('click', () => {
             const selectedFileKey = savedFilesDropdown.value;
             if (!selectedFileKey || savedFilesDropdown.options[savedFilesDropdown.selectedIndex]?.disabled) {
-                alert("Please select a valid file to delete.");
-                return;
+                return alert("Please select a valid file to delete.");
             }
-
-            if (confirm(`Are you sure you want to delete "${selectedFileKey.replace(STORAGE_PREFIX, '')}"? This cannot be undone.`)) {
+            if (confirm(`Are you sure you want to delete "${selectedFileKey.replace(STORAGE_PREFIX, '')}"?`)) {
                 localStorage.removeItem(selectedFileKey);
                 alert("File deleted.");
                 populateSavedFilesDropdown();
             }
         });
-
     </script>
 </body>
 </html>
