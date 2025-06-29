@@ -753,8 +753,8 @@
         }
         
         const allstarGames = allstarScheduleData ? allstarScheduleData.map(g => ({...g, week: 'ALLSTAR'})) : [];
-        const postGames = postScheduleData || [];
-        allGames = allGames.concat(scheduleData, allstarGames, postGames);
+        const postGames = (postScheduleData || []).filter(g => g.team1_id && g.team1_id.trim() !== '' && g.team2_id && g.team2_id.trim() !== '');
+        allGames = [].concat(scheduleData, allstarGames, postGames);
 
         allTeams = teamsData;
         allPlayers = playersData;
@@ -789,14 +789,16 @@
       function getCanonicalWeekOrder() {
           const numericWeeks = [...new Set(allGames.map(game => parseInt(game.week)).filter(w => !isNaN(w)))].sort((a, b) => a - b);
           const hasAllstarWeek = allGames.some(g => g.week === 'ALLSTAR');
-          const postseasonWeeksInSchedule = POSTSEASON_WEEK_IDS.filter(pid => allGames.some(g => g.week === pid));
-
+          
           let allAvailableWeeks = [...numericWeeks];
           if (hasAllstarWeek) {
               const allstarBreakIndex = allAvailableWeeks.indexOf(8) + 1;
               allAvailableWeeks.splice(allstarBreakIndex, 0, 'ALLSTAR');
           }
+
+          const postseasonWeeksInSchedule = POSTSEASON_WEEK_IDS.filter(pid => allGames.some(g => g.week === pid));
           allAvailableWeeks = allAvailableWeeks.concat(postseasonWeeksInSchedule);
+
           return allAvailableWeeks;
       }
 
@@ -864,8 +866,29 @@
         const weekStandoutsSection = document.getElementById('week-standouts-section');
         const weekSummarySection = document.getElementById('week-summary');
         
+        const isPostseason = POSTSEASON_WEEK_IDS.includes(String(week));
+        let playoffWeekRecords = {};
+
+        if (isPostseason) {
+            weekGames.forEach(game => {
+                if (game.team1_id) playoffWeekRecords[game.team1_id] = { wins: 0, losses: 0 };
+                if (game.team2_id) playoffWeekRecords[game.team2_id] = { wins: 0, losses: 0 };
+            });
+            const completedGamesThisWeek = weekGames.filter(game => game.completed === 'TRUE');
+            completedGamesThisWeek.forEach(game => {
+                const winnerId = game.winner;
+                const loserId = winnerId === game.team1_id ? game.team2_id : game.team1_id;
+                if (winnerId && playoffWeekRecords[winnerId]) {
+                    playoffWeekRecords[winnerId].wins++;
+                }
+                if (loserId && playoffWeekRecords[loserId]) {
+                    playoffWeekRecords[loserId].losses++;
+                }
+            });
+        }
+        
         let weekTitle;
-        if (POSTSEASON_WEEK_IDS.includes(String(week))) {
+        if (isPostseason) {
             weekTitle = `${String(week)}`;
         } else if (week === 'ALLSTAR') {
             weekTitle = 'All-Star Week';
@@ -874,7 +897,7 @@
         }
         document.getElementById('games-title').textContent = `${weekTitle} Games`;
         
-        const isRegularSeasonWeek = !POSTSEASON_WEEK_IDS.includes(String(week)) && week !== 'ALLSTAR';
+        const isRegularSeasonWeek = !isPostseason && week !== 'ALLSTAR';
 
         if (!isRegularSeasonWeek) {
             weekStandoutsSection.style.display = 'none';
@@ -944,10 +967,21 @@
               const team1Score = parseNumber(game.team1_score);
               const team2Score = parseNumber(game.team2_score);
               const winner = game.winner;
+
               const team1Data = allTeams.find(t => t.team_id === game.team1_id);
               const team2Data = allTeams.find(t => t.team_id === game.team2_id);
-              const team1Record = team1Data ? `${team1Data.wins || 0}-${team1Data.losses || 0}` : '';
-              const team2Record = team2Data ? `${team2Data.wins || 0}-${team2Data.losses || 0}` : '';
+              let team1Record = '';
+              let team2Record = '';
+
+              if (isPostseason) {
+                  const rec1 = playoffWeekRecords[game.team1_id] || { wins: 0, losses: 0 };
+                  const rec2 = playoffWeekRecords[game.team2_id] || { wins: 0, losses: 0 };
+                  team1Record = `${rec1.wins}-${rec1.losses}`;
+                  team2Record = `${rec2.wins}-${rec2.losses}`;
+              } else {
+                  team1Record = team1Data ? `${team1Data.wins || 0}-${team1Data.losses || 0}` : '';
+                  team2Record = team2Data ? `${team2Data.wins || 0}-${team2Data.losses || 0}` : '';
+              }
               
               const clickHandler = isCompleted ? `onclick="showGameDetails('${escapeHTML(game.team1_id)}', '${escapeHTML(game.team2_id)}', '${escapeHTML(game.date)}')" ` : '';
 
