@@ -373,7 +373,8 @@
         function createTeamHTML(teamId, series) {
             const teamData = getTeam(teamId);
             const isWinner = series?.winner === teamId;
-            const teamWins = (series?.team1_id === teamId) ? series.team1_wins : series?.team2_wins;
+            // The corrected line is below:
+            const teamWins = (series?.team1_id === teamId) ? series?.team1_wins : series?.team2_wins;
             const isTBD = !teamId || teamId === "TBD";
             const teamHref = isTBD ? 'javascript:void(0);' : `team.html?id=${teamData.team_id}`;
 
