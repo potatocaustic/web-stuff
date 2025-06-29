@@ -325,6 +325,12 @@
         overflow: hidden;
         text-overflow: ellipsis;
       }
+      
+      .team-seed {
+        color: #666;
+        font-weight: 400;
+        font-size: 0.9em;
+      }
 
       .team-record {
         font-size: 0.8rem;
@@ -437,7 +443,7 @@
         background-color: #2c2c2c;
       }
       .dark-mode .stat-number, .dark-mode .date-header { color: #f5f5f5; }
-      .dark-mode .stat-label, .dark-mode .team-record, .dark-mode .game-status, .dark-mode .standout-item .meta-info { color: #aaa; }
+      .dark-mode .stat-label, .dark-mode .team-record, .dark-mode .game-status, .dark-mode .standout-item .meta-info, .dark-mode .team-seed { color: #aaa; }
       .dark-mode .week-standouts-section { background-color: #1a2333; border-color: #2c3a56; }
       .dark-mode .week-standouts-section h4 { color: #8ab4f8; }
       .dark-mode .standout-item { border-color: #333; }
@@ -983,6 +989,9 @@
                   team2Record = team2Data ? `${team2Data.wins || 0}-${team2Data.losses || 0}` : '';
               }
               
+              const team1SeedHtml = isPostseason && game.team1_seed ? `<span class="team-seed">(${game.team1_seed})</span> ` : '';
+              const team2SeedHtml = isPostseason && game.team2_seed ? `<span class="team-seed">(${game.team2_seed})</span> ` : '';
+
               const clickHandler = isCompleted ? `onclick="showGameDetails('${escapeHTML(game.team1_id)}', '${escapeHTML(game.team2_id)}', '${escapeHTML(game.date)}')" ` : '';
 
               return `
@@ -992,7 +1001,7 @@
                       <div class="team-left">
                         <img src="icons/${escapeHTML(game.team1_id)}.${logoExt}" alt="${escapeHTML(getTeamName(game.team1_id))}" class="${logoClass}" onerror="this.onerror=null; this.src='icons/FA.webp';">
                         <div class="team-info">
-                          <div class="team-name">${escapeHTML(getTeamName(game.team1_id))}</div>
+                          <div class="team-name">${team1SeedHtml}${escapeHTML(getTeamName(game.team1_id))}</div>
                           <div class="team-record">${escapeHTML(team1Record)}</div>
                         </div>
                       </div>
@@ -1002,7 +1011,7 @@
                       <div class="team-left">
                         <img src="icons/${escapeHTML(game.team2_id)}.${logoExt}" alt="${escapeHTML(getTeamName(game.team2_id))}" class="${logoClass}" onerror="this.onerror=null; this.src='icons/FA.webp';">
                         <div class="team-info">
-                          <div class="team-name">${escapeHTML(getTeamName(game.team2_id))}</div>
+                          <div class="team-name">${team2SeedHtml}${escapeHTML(getTeamName(game.team2_id))}</div>
                           <div class="team-record">${escapeHTML(team2Record)}</div>
                         </div>
                       </div>
