@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RKL Season 7 Playoff Bracket</title>
+    <link rel="stylesheet" href="../css/global-styles.css" />
+    <link rel="icon" href="../rklfavicon.ico" type="image/x-icon" />
+    <script>
+        // Apply theme from local storage before page loads to prevent flashing
+        (function() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark-mode');
+            }
+        })();
+    </script>
+    <style>
+        /* Page-specific styles for playoff-bracket.html */
+        :root {
+            --bracket-border-color: #ddd;
+            --bracket-bg-color: #f8f9fa;
+            --connector-color: #ccc;
+            --winner-color: #28a745;
+            --winner-bg: #e8f5e8;
+            --team-hover-bg: #e9ecef;
+        }
+
+        .dark-mode {
+            --bracket-border-color: #444;
+            --bracket-bg-color: #2c2c2c;
+            --connector-color: #555;
+            --winner-color: #66bb6a;
+            --winner-bg: #3a4a3a;
+            --team-hover-bg: #383838;
+        }
+
+        .bracket-container {
+            width: 100%;
+            overflow-x: auto; /* Enable horizontal scrolling on smaller screens */
+            padding: 1rem 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .bracket {
+            display: flex;
+            min-width: 1400px; /* Minimum width to prevent collapsing, adjust as needed */
+        }
+
+        .conference, .final-round {
+            display: flex;
+            flex: 1;
+        }
+
+        .round {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            flex-grow: 1;
+            padding: 0 10px;
+        }
+        
+        .round-title {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .dark-mode .round-title {
+            color: #f5f5f5;
+        }
+
+        .matchup {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            margin-bottom: 3rem;
+        }
+
+        .round:first-child .matchup { margin: 0; }
+        .round:not(:first-child) { margin-top: 30px; }
+        .round.round-2 { margin-top: 80px; }
+        .round.round-3 { margin-top: 190px; }
+        .round.round-finals { margin-top: 410px; }
+
+        .team {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            background-color: var(--bracket-bg-color);
+            border: 1px solid var(--bracket-border-color);
+            border-radius: 4px;
+            width: 200px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .team:hover {
+            background-color: var(--team-hover-bg);
+            border-color: #007bff;
+        }
+
+        .team:first-of-type {
+            margin-bottom: 1rem;
+        }
+
+        .team.winner {
+            font-weight: bold;
+            border-color: var(--winner-color);
+            background-color: var(--winner-bg);
+        }
+        
+        .team.tbd {
+            font-style: italic;
+            color: #777;
+        }
+        
+        .dark-mode .team.tbd {
+            color: #aaa;
+        }
+
+        .team-logo {
+            width: 24px;
+            height: 24px;
+            margin-right: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .team-info {
+            display: flex;
+            justify-content: space-between;
+            flex-grow: 1;
+            align-items: center;
+        }
+        
+        .team-seed {
+            font-weight: bold;
+            margin-right: 0.5rem;
+            color: #666;
+            min-width: 20px;
+        }
+        .dark-mode .team-seed { color: #bbb; }
+
+        .team-name {
+            font-size: 0.9rem;
+            flex-grow: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .series-score {
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .team.winner .series-score {
+            color: var(--winner-color);
+        }
+
+        /* Connectors */
+        .matchup-connector {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 2px;
+            background-color: var(--connector-color);
+        }
+
+        .east .matchup-connector { left: 100%; }
+        .west .matchup-connector { right: 100%; }
+        
+        .vertical-connector {
+            position: absolute;
+            width: 2px;
+            background-color: var(--connector-color);
+            top: 25%;
+            height: 50%;
+        }
+
+        .east .vertical-connector { left: calc(100% + 20px); }
+        .west .vertical-connector { right: calc(100% + 20px); }
+
+        .play-in-container {
+            padding: 1rem;
+            background-color: var(--bracket-bg-color);
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--bracket-border-color);
+        }
+
+        .play-in-container h4 {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+        
+        .final-round {
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .finals-champion {
+            text-align: center;
+        }
+        
+        .champion-box {
+            background-color: var(--bracket-bg-color);
+            border: 2px solid gold;
+            padding: 1.5rem;
+            border-radius: 8px;
+            display: inline-block;
+            box-shadow: 0 0 15px gold;
+        }
+        
+        .champion-box .team-logo {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 1rem;
+        }
+        
+        .champion-box h3 {
+            font-size: 1.5rem;
+            color: #333;
+        }
+        .dark-mode .champion-box h3 {
+            color: #f5f5f5;
+        }
+
+        @media (max-width: 1399px) {
+            .page-header p {
+                display: none;
+            }
+        }
+        @media (max-width: 768px) {
+            .page-header h2 {
+                font-size: 1.8rem;
+            }
+             main {
+                padding: 1rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <button id="theme-toggle-btn" aria-label="Toggle Theme">
+            <span class="sun-icon">☀️</span>
+            <span class="moon-icon">🌙</span>
+        </button>
+        <h1>
+            <img src="icons/RKL.webp" alt="RKL Logo" class="header-logo" onerror="this.style.display='none'">
+            <span class="header-text">Real Karma League</span>
+        </h1>
+        <nav>
+            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">&#9776;</button>
+            <ul id="nav-menu">
+                <li><a href="RKL-S7.html">S7 Home</a></li>
+                <li><a href="standings.html">Standings & Rankings</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0);" class="dropbtn">Stats Hub &#9662;</a>
+                    <div class="dropdown-content">
+                        <a href="leaderboards.html">Leaderboards</a>
+                        <a href="compare.html">Comparison Tool</a>
+                    </div>
+                </li>
+                <li><a href="schedule.html">Schedule</a></li>
+                <li><a href="playoff-bracket.html">Playoffs</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0);" class="dropbtn">Draft Central &#9662;</a>
+                    <div class="dropdown-content">
+                        <a href="draft-capital.html">Draft Capital</a>
+                        <a href="draft-results.html">Draft Results</a>
+                        <a href="draft-lottery.html">Draft Lottery</a>
+                    </div>
+                </li>
+                <li><a href="transactions.html">Transactions</a></li>
+                <li><a href="teams.html">Teams</a></li>
+                <li><a href="trophy-case.html">Trophy Case</a></li>
+                <li><a href="changelog.html">Changelog</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <div class="page-header">
+            <h2>Season 7 Playoffs</h2>
+            <p>The official playoff bracket. Series are best-of-3 in Rounds 1 & 2, best-of-5 in Conference Finals, and best-of-7 in the Finals.</p>
+        </div>
+
+        <div class="bracket-container" id="bracket-container">
+            <div class="loading">Loading Playoff Bracket...</div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>@caustic on Real</p>
+        <a href="trade-block.html">GM Portal</a>
+    </footer>
+
+    <script src="../js/main.js" defer></script>
+    <script>
+        const SHEET_ID = '12EembQnztbdKx2-buv00--VDkEFSTuSXTRdOnTnRxq4'; 
+        const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
+        
+        let allTeams = [];
+        let allPlayoffGames = [];
+
+        async function fetchSheetData(sheetName) {
+            try {
+                const response = await fetch(BASE_URL + encodeURIComponent(sheetName));
+                const csvText = await response.text();
+                return parseCSV(csvText);
+            } catch (error) {
+                console.error(`Error fetching ${sheetName}:`, error);
+                document.getElementById('bracket-container').innerHTML = `<div class="error">Could not load required data from sheet: ${sheetName}.</div>`;
+                return null;
+            }
+        }
+      
+        function parseCSV(csvText) { 
+            const lines = csvText.trim().split('\n');
+            if (lines.length < 1) return []; 
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            const data = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i].trim() === "") continue;
+                const values = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(v => v.trim().replace(/"/g, ''));
+                if (values.length === headers.length) {
+                    const row = {};
+                    headers.forEach((header, index) => {
+                        row[header] = values[index] || '';
+                    });
+                    data.push(row);
+                }
+            }
+            return data;
+        }
+
+        function getTeam(teamId) {
+            if (!teamId || teamId === "TBD") return { team_id: "TBD", team_name: "TBD", postseed: '' };
+            return allTeams.find(t => t.team_id === teamId) || { team_id: teamId, team_name: teamId, postseed: '' };
+        }
+
+        function createTeamHTML(team, series, isWinner) {
+            const teamData = getTeam(team.id);
+            const teamWins = team.wins || 0;
+            const isTBD = !team.id || team.id === "TBD";
+            const teamHref = isTBD ? '#' : `team.html?id=${teamData.team_id}`;
+
+            return `
+                <a href="${teamHref}" class="team ${isWinner ? 'winner' : ''} ${isTBD ? 'tbd' : ''}">
+                    <span class="team-seed">${teamData.postseed || ''}</span>
+                    <img src="icons/${isTBD ? 'FA' : teamData.team_id}.webp" alt="${teamData.team_name}" class="team-logo" onerror="this.src='icons/RKL.webp';">
+                    <div class="team-info">
+                        <span class="team-name">${teamData.team_name}</span>
+                        ${series && series.winner ? `<span class="series-score">${teamWins}</span>` : ''}
+                    </div>
+                </a>`;
+        }
+        
+        function createMatchupHTML(series, highSeed, lowSeed) {
+            if (!series) {
+                const team1 = getTeam(highSeed);
+                const team2 = getTeam(lowSeed);
+                 return `
+                    <div class="matchup">
+                        ${createTeamHTML({ id: team1.team_id }, null, false)}
+                        ${createTeamHTML({ id: team2.team_id }, null, false)}
+                    </div>`;
+            }
+            
+            const team1 = { id: series.team1_id, wins: series.team1_wins };
+            const team2 = { id: series.team2_id, wins: series.team2_wins };
+            const winnerId = series.winner;
+
+            return `
+                <div class="matchup">
+                    ${createTeamHTML(team1, series, winnerId === team1.id)}
+                    ${createTeamHTML(team2, series, winnerId === team2.id)}
+                    <div class="matchup-connector"></div>
+                </div>`;
+        }
+        
+        function getSeries(seriesId) {
+            return allPlayoffGames.find(g => g.series_id === seriesId);
+        }
+
+        async function renderBracket() {
+            const container = document.getElementById('bracket-container');
+            container.innerHTML = `<div class="loading">Building bracket...</div>`;
+
+            const [teamsData, playoffGamesData] = await Promise.all([
+                fetchSheetData('Teams'),
+                fetchSheetData('Playoff_Schedule')
+            ]);
+            
+            if (!teamsData || !playoffGamesData) return;
+
+            allTeams = teamsData.filter(t => t.postseed).sort((a,b) => a.postseed - b.postseed);
+            allPlayoffGames = playoffGamesData;
+
+            const westTeams = allTeams.filter(t => t.conference === 'West');
+            const eastTeams = allTeams.filter(t => t.conference === 'East');
+
+            // --- Determine Play-in Results ---
+            const playIn78W = getSeries('W-PI-7v8');
+            const playIn910W = getSeries('W-PI-9v10');
+            const playInFinalW = getSeries('W-PI-L78vW910');
+            const west7thSeed = playIn78W ? playIn78W.winner : westTeams.find(t => t.postseed === '7')?.team_id;
+            const west8thSeed = playInFinalW ? playInFinalW.winner : westTeams.find(t => t.postseed === '8')?.team_id;
+            
+            const playIn78E = getSeries('E-PI-7v8');
+            const playIn910E = getSeries('E-PI-9v10');
+            const playInFinalE = getSeries('E-PI-L78vW910');
+            const east7thSeed = playIn78E ? playIn78E.winner : eastTeams.find(t => t.postseed === '7')?.team_id;
+            const east8thSeed = playInFinalE ? playInFinalE.winner : eastTeams.find(t => t.postseed === '8')?.team_id;
+
+
+            // --- Get Series Data ---
+            const W_R1_1v8 = getSeries('W-R1-1v8');
+            const W_R1_4v5 = getSeries('W-R1-4v5');
+            const W_R1_3v6 = getSeries('W-R1-3v6');
+            const W_R1_2v7 = getSeries('W-R1-2v7');
+
+            const W_R2_Top = getSeries('W-R2-T');
+            const W_R2_Bot = getSeries('W-R2-B');
+            
+            const W_CF = getSeries('W-CF');
+
+            const E_R1_1v8 = getSeries('E-R1-1v8');
+            const E_R1_4v5 = getSeries('E-R1-4v5');
+            const E_R1_3v6 = getSeries('E-R1-3v6');
+            const E_R1_2v7 = getSeries('E-R1-2v7');
+
+            const E_R2_Top = getSeries('E-R2-T');
+            const E_R2_Bot = getSeries('E-R2-B');
+
+            const E_CF = getSeries('E-CF');
+            
+            const Finals = getSeries('FINALS');
+            const Champion = Finals?.winner ? getTeam(Finals.winner) : null;
+
+            let bracketHTML = `
+            <div class="bracket">
+                <!-- Western Conference -->
+                <div class="conference west">
+                    <div class="round round-1">
+                        <div class="round-title">West Round 1</div>
+                        ${createMatchupHTML(W_R1_1v8, westTeams.find(t=>t.postseed==='1')?.team_id, west8thSeed || 'TBD')}
+                        ${createMatchupHTML(W_R1_4v5, westTeams.find(t=>t.postseed==='4')?.team_id, westTeams.find(t=>t.postseed==='5')?.team_id)}
+                        <br><br><br><br>
+                        ${createMatchupHTML(W_R1_3v6, westTeams.find(t=>t.postseed==='3')?.team_id, westTeams.find(t=>t.postseed==='6')?.team_id)}
+                        ${createMatchupHTML(W_R1_2v7, westTeams.find(t=>t.postseed==='2')?.team_id, west7thSeed || 'TBD')}
+                    </div>
+                    <div class="round round-2">
+                        <div class="round-title">West Semis</div>
+                         ${createMatchupHTML(W_R2_Top, W_R1_1v8?.winner, W_R1_4v5?.winner)}
+                         <br><br><br><br><br><br><br><br>
+                         ${createMatchupHTML(W_R2_Bot, W_R1_3v6?.winner, W_R1_2v7?.winner)}
+                    </div>
+                    <div class="round round-3">
+                        <div class="round-title">West Finals</div>
+                        ${createMatchupHTML(W_CF, W_R2_Top?.winner, W_R2_Bot?.winner)}
+                    </div>
+                </div>
+                <!-- Finals -->
+                <div class="final-round">
+                    ${ Champion ? `
+                        <div class="finals-champion">
+                            <div class="champion-box">
+                                <h3>🏆 RKL Champion 🏆</h3>
+                                <img src="icons/${Champion.team_id}.webp" alt="${Champion.team_name}" class="team-logo" onerror="this.src='icons/RKL.webp';">
+                                <h4>${Champion.team_name}</h4>
+                            </div>
+                        </div>
+                    ` : `
+                        <div class="round round-finals">
+                            <div class="round-title">RKL Finals</div>
+                            ${createMatchupHTML(Finals, W_CF?.winner, E_CF?.winner)}
+                        </div>
+                    `}
+                </div>
+                <!-- Eastern Conference -->
+                <div class="conference east">
+                    <div class="round round-3">
+                        <div class="round-title">East Finals</div>
+                        ${createMatchupHTML(E_CF, E_R2_Top?.winner, E_R2_Bot?.winner)}
+                    </div>
+                     <div class="round round-2">
+                        <div class="round-title">East Semis</div>
+                         ${createMatchupHTML(E_R2_Top, E_R1_1v8?.winner, E_R1_4v5?.winner)}
+                         <br><br><br><br><br><br><br><br>
+                         ${createMatchupHTML(E_R2_Bot, E_R1_3v6?.winner, E_R1_2v7?.winner)}
+                    </div>
+                    <div class="round round-1">
+                        <div class="round-title">East Round 1</div>
+                        ${createMatchupHTML(E_R1_1v8, eastTeams.find(t=>t.postseed==='1')?.team_id, east8thSeed || 'TBD')}
+                        ${createMatchupHTML(E_R1_4v5, eastTeams.find(t=>t.postseed==='4')?.team_id, eastTeams.find(t=>t.postseed==='5')?.team_id)}
+                        <br><br><br><br>
+                        ${createMatchupHTML(E_R1_3v6, eastTeams.find(t=>t.postseed==='3')?.team_id, eastTeams.find(t=>t.postseed==='6')?.team_id)}
+                        ${createMatchupHTML(E_R1_2v7, eastTeams.find(t=>t.postseed==='2')?.team_id, east7thSeed || 'TBD')}
+                    </div>
+                </div>
+            </div>`;
+            
+            container.innerHTML = bracketHTML;
+
+        }
+
+        document.addEventListener('DOMContentLoaded', renderBracket);
+    </script>
+</body>
+</html>
