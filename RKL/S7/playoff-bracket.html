@@ -163,11 +163,9 @@
             color: #aaa;
         }
 
-        /* START OF CHANGE: This class prevents hover/click events on team tiles within a completed matchup. */
         .team.non-interactive {
             pointer-events: none;
         }
-        /* END OF CHANGE */
 
         .team-logo {
             width: 24px;
@@ -390,7 +388,6 @@
             return allPlayoffGames.find(g => g.series_id === seriesId);
         }
 
-        // START OF CHANGE: Added non-interactive class to disable hover on teams in completed matchups.
         function createTeamHTML(teamId, series, weekLink = null) {
             const teamData = getTeam(teamId);
             const isWinner = series?.winner === teamId;
@@ -412,15 +409,16 @@
                 </a>`;
         }
         
+        // START OF CHANGE: The 'isComplete' variable now correctly checks for a winner.
         function createMatchupHTML(seriesId, defaultTeam1Id, defaultTeam2Id) {
             const series = getSeries(seriesId);
             const team1Id = series?.team1_id || defaultTeam1Id;
             const team2Id = series?.team2_id || defaultTeam2Id;
         
-            const hasStarted = series && series.team1_id && series.team2_id;
-            const weekLink = hasStarted ? `schedule.html#week-${encodeURIComponent(getWeekNameFromSeriesId(seriesId))}` : null;
-            const matchupClass = hasStarted ? 'matchup is-clickable' : 'matchup';
-            const clickHandler = hasStarted ? `onclick="window.location.href='${weekLink}'"` : '';
+            const isComplete = series && series.winner; // A series is complete only if it has a winner.
+            const weekLink = isComplete ? `schedule.html#week-${encodeURIComponent(getWeekNameFromSeriesId(seriesId))}` : null;
+            const matchupClass = isComplete ? 'matchup is-clickable' : 'matchup';
+            const clickHandler = isComplete ? `onclick="window.location.href='${weekLink}'"` : '';
         
             let html = `<div class="${matchupClass}" ${clickHandler}> 
                 ${createTeamHTML(team1Id, series, weekLink)}
@@ -446,10 +444,10 @@
                  }
              }
              
-             const hasStarted = series && series.team1_id && series.team2_id;
-             const weekLink = hasStarted ? `schedule.html#week-${encodeURIComponent(getWeekNameFromSeriesId(seriesId))}` : null;
-             const matchupClass = hasStarted ? 'play-in-matchup is-clickable' : 'play-in-matchup';
-             const clickHandler = hasStarted ? `onclick="window.location.href='${weekLink}'"` : '';
+            const isComplete = series && series.winner; // A series is complete only if it has a winner.
+            const weekLink = isComplete ? `schedule.html#week-${encodeURIComponent(getWeekNameFromSeriesId(seriesId))}` : null;
+            const matchupClass = isComplete ? 'play-in-matchup is-clickable' : 'play-in-matchup';
+            const clickHandler = isComplete ? `onclick="window.location.href='${weekLink}'"` : '';
         
              return `
                 <div class="${matchupClass}" ${clickHandler}> 
@@ -459,6 +457,7 @@
                 </div>
             `;
         }
+        // END OF CHANGE
 
         function renderPlayInTournament(westTeams, eastTeams) {
             const playInSection = document.getElementById('play-in-section');
@@ -521,7 +520,6 @@
             const w5 = westTeams.find(t=>t.postseed==='5')?.team_id;
             const w6 = westTeams.find(t=>t.postseed==='6')?.team_id;
             
-            // START OF CHANGE: Updated logic to show TBD until play-in games are complete.
             const w7_final = getSeries('W-PI-7v8')?.winner || 'TBD';
             const w8_final = getSeries('W-PI-L78vW910')?.winner || 'TBD';
 
@@ -533,7 +531,6 @@
             const e6 = eastTeams.find(t=>t.postseed==='6')?.team_id;
             const e7_final = getSeries('E-PI-7v8')?.winner || 'TBD';
             const e8_final = getSeries('E-PI-L78vW910')?.winner || 'TBD';
-            // END OF CHANGE
 
             // --- Determine Winners for Next Rounds ---
             const W_R1_1v8_W = getSeries('W-R1-1v8')?.winner;
