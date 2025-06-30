@@ -376,7 +376,7 @@
             if (seriesId.includes('-R2-')) return 'Round 2';
             if (seriesId.includes('-CF')) return 'Conference Finals';
             if (seriesId.includes('FINALS')) return 'Finals';
-            return ''; // Default fallback
+            return '';
         }        
 
         function getTeam(teamId) {
@@ -388,10 +388,36 @@
             return allPlayoffGames.find(g => g.series_id === seriesId);
         }
 
-        // START OF CHANGE: Added a 'displaySeed' parameter to override the default seed.
-        function createTeamHTML(teamId, series, weekLink = null, displaySeed = null) {
+        // START OF CHANGE: New function to determine a series winner based on win counts.
+        function getSeriesWinner(seriesId) {
+            const series = getSeries(seriesId);
+            if (!series) return null;
+
+            const week = getWeekNameFromSeriesId(seriesId);
+            const team1Wins = parseInt(series.team1_wins, 10) || 0;
+            const team2Wins = parseInt(series.team2_wins, 10) || 0;
+
+            // Play-In games are single-elimination.
+            if (week === 'Play-In') {
+                return series.winner || null;
+            }
+
+            // For multi-game series, check for the win condition.
+            let win_condition = 0;
+            if (week === 'Round 1' || week === 'Round 2') win_condition = 2;
+            else if (week === 'Conference Finals') win_condition = 3;
+            else if (week === 'Finals') win_condition = 4;
+
+            if (team1Wins === win_condition) return series.team1_id;
+            if (team2Wins === win_condition) return series.team2_id;
+            
+            return null; // Series is not complete.
+        }
+
+        // START OF CHANGE: Updated createTeamHTML to accept seriesWinner for styling.
+        function createTeamHTML(teamId, series, weekLink = null, displaySeed = null, seriesWinner = null) {
             const teamData = getTeam(teamId);
-            const isWinner = series?.winner === teamId;
+            const isWinner = seriesWinner === teamId; // Use the explicitly passed series winner
             const teamWins = (series?.team1_id === teamId) ? series?.team1_wins : series?.team2_wins;
             const isTBD = !teamId || teamId === "TBD";
             const nonInteractiveClass = weekLink ? 'non-interactive' : '';
@@ -399,7 +425,6 @@
             const teamHref = weekLink ? 'javascript:void(0);' : (isTBD ? 'javascript:void(0);' : `team.html?id=${teamData.team_id}`);
             const style = weekLink ? 'style="cursor: inherit;"' : '';
             
-            // Use the override seed if provided, otherwise use the team's default postseed.
             const seedToShow = displaySeed || teamData.postseed || '';
         
             return `
@@ -408,25 +433,26 @@
                     <img src="icons/${isTBD ? 'RKL' : teamData.team_id}.webp" alt="${teamData.team_name}" class="team-logo" onerror="this.onerror=null; this.src='icons/RKL.webp';">
                     <div class="team-info">
                         <span class="team-name">${teamData.team_name}</span>
-                        ${series && series.winner ? `<span class="series-score">${teamWins || 0}</span>` : ''}
+                        ${series && (series.team1_wins > 0 || series.team2_wins > 0) ? `<span class="series-score">${teamWins || 0}</span>` : ''}
                     </div>
                 </a>`;
         }
         
-        // START OF CHANGE: Added parameters to pass display seeds down to createTeamHTML.
+        // START OF CHANGE: Updated createMatchupHTML to use the new winner logic.
         function createMatchupHTML(seriesId, defaultTeam1Id, defaultTeam2Id, team1DisplaySeed = null, team2DisplaySeed = null) {
             const series = getSeries(seriesId);
+            const seriesWinner = getSeriesWinner(seriesId);
             const team1Id = series?.team1_id || defaultTeam1Id;
             const team2Id = series?.team2_id || defaultTeam2Id;
         
-            const isComplete = series && series.winner;
+            const isComplete = !!seriesWinner;
             const weekLink = isComplete ? `schedule.html#week-${encodeURIComponent(getWeekNameFromSeriesId(seriesId))}` : null;
             const matchupClass = isComplete ? 'matchup is-clickable' : 'matchup';
             const clickHandler = isComplete ? `onclick="window.location.href='${weekLink}'"` : '';
         
             let html = `<div class="${matchupClass}" ${clickHandler}> 
-                ${createTeamHTML(team1Id, series, weekLink, team1DisplaySeed)}
-                ${createTeamHTML(team2Id, series, weekLink, team2DisplaySeed)}`;
+                ${createTeamHTML(team1Id, series, weekLink, team1DisplaySeed, seriesWinner)}
+                ${createTeamHTML(team2Id, series, weekLink, team2DisplaySeed, seriesWinner)}`;
             if(series) {
                  html += `<div class="matchup-connector"></div>`;
             }
@@ -436,19 +462,21 @@
 
         function createPlayInMatchupHTML(label, seriesId, defaultTeam1Id, defaultTeam2Id) {
              const series = getSeries(seriesId);
+             const seriesWinner = getSeriesWinner(seriesId);
              const team1Id = series?.team1_id || defaultTeam1Id;
              const team2Id = series?.team2_id || defaultTeam2Id;
         
              let loserOf7v8Id = null;
              if (seriesId.includes("-PI-L78vW910")) {
                  const game7v8Id = seriesId.replace("-PI-L78vW910", "-PI-7v8");
-                 const game7v8 = getSeries(game7v8Id);
-                 if (game7v8 && game7v8.winner) {
-                     loserOf7v8Id = (game7v8.team1_id === game7v8.winner) ? game7v8.team2_id : game7v8.team1_id;
+                 const game7v8Winner = getSeriesWinner(game7v8Id);
+                 const game7v8Series = getSeries(game7v8Id);
+                 if (game7v8Winner && game7v8Series) {
+                     loserOf7v8Id = (game7v8Series.team1_id === game7v8Winner) ? game7v8Series.team2_id : game7v8Series.team1_id;
                  }
              }
              
-            const isComplete = series && series.winner;
+            const isComplete = !!seriesWinner;
             const weekLink = isComplete ? `schedule.html#week-${encodeURIComponent(getWeekNameFromSeriesId(seriesId))}` : null;
             const matchupClass = isComplete ? 'play-in-matchup is-clickable' : 'play-in-matchup';
             const clickHandler = isComplete ? `onclick="window.location.href='${weekLink}'"` : '';
@@ -456,11 +484,12 @@
              return `
                 <div class="${matchupClass}" ${clickHandler}> 
                     <div class="matchup-label">${label}</div>
-                    ${createTeamHTML(loserOf7v8Id || team1Id, series, weekLink)}
-                    ${createTeamHTML(team2Id, series, weekLink)}
+                    ${createTeamHTML(loserOf7v8Id || team1Id, series, weekLink, null, seriesWinner)}
+                    ${createTeamHTML(team2Id, series, weekLink, null, seriesWinner)}
                 </div>
             `;
         }
+        // END OF CHANGE
 
         function renderPlayInTournament(westTeams, eastTeams) {
             const playInSection = document.getElementById('play-in-section');
@@ -469,13 +498,13 @@
             const w8 = westTeams.find(t=>t.postseed === '8')?.team_id;
             const w9 = westTeams.find(t=>t.postseed === '9')?.team_id;
             const w10 = westTeams.find(t=>t.postseed === '10')?.team_id;
-            const winnerW9v10 = getSeries('W-PI-9v10')?.winner;
+            const winnerW9v10 = getSeriesWinner('W-PI-9v10');
 
             const e7 = eastTeams.find(t=>t.postseed === '7')?.team_id;
             const e8 = eastTeams.find(t=>t.postseed === '8')?.team_id;
             const e9 = eastTeams.find(t=>t.postseed === '9')?.team_id;
             const e10 = eastTeams.find(t=>t.postseed === '10')?.team_id;
-            const winnerE9v10 = getSeries('E-PI-9v10')?.winner;
+            const winnerE9v10 = getSeriesWinner('E-PI-9v10');
 
             const westHTML = `
                 <div class="play-in-conference">
@@ -522,8 +551,8 @@
             const w5 = westTeams.find(t=>t.postseed==='5')?.team_id;
             const w6 = westTeams.find(t=>t.postseed==='6')?.team_id;
             
-            const w7_final = getSeries('W-PI-7v8')?.winner || 'TBD';
-            const w8_final = getSeries('W-PI-L78vW910')?.winner || 'TBD';
+            const w7_final = getSeriesWinner('W-PI-7v8') || 'TBD';
+            const w8_final = getSeriesWinner('W-PI-L78vW910') || 'TBD';
 
             const e1 = eastTeams.find(t=>t.postseed==='1')?.team_id;
             const e2 = eastTeams.find(t=>t.postseed==='2')?.team_id;
@@ -531,28 +560,27 @@
             const e4 = eastTeams.find(t=>t.postseed==='4')?.team_id;
             const e5 = eastTeams.find(t=>t.postseed==='5')?.team_id;
             const e6 = eastTeams.find(t=>t.postseed==='6')?.team_id;
-            const e7_final = getSeries('E-PI-7v8')?.winner || 'TBD';
-            const e8_final = getSeries('E-PI-L78vW910')?.winner || 'TBD';
+            const e7_final = getSeriesWinner('E-PI-7v8') || 'TBD';
+            const e8_final = getSeriesWinner('E-PI-L78vW910') || 'TBD';
 
-            const W_R1_1v8_W = getSeries('W-R1-1v8')?.winner;
-            const W_R1_4v5_W = getSeries('W-R1-4v5')?.winner;
-            const W_R1_3v6_W = getSeries('W-R1-3v6')?.winner;
-            const W_R1_2v7_W = getSeries('W-R1-2v7')?.winner;
-            const W_R2_T_W = getSeries('W-R2-T')?.winner;
-            const W_R2_B_W = getSeries('W-R2-B')?.winner;
-            const W_CF_W = getSeries('W-CF')?.winner;
+            const W_R1_1v8_W = getSeriesWinner('W-R1-1v8');
+            const W_R1_4v5_W = getSeriesWinner('W-R1-4v5');
+            const W_R1_3v6_W = getSeriesWinner('W-R1-3v6');
+            const W_R1_2v7_W = getSeriesWinner('W-R1-2v7');
+            const W_R2_T_W = getSeriesWinner('W-R2-T');
+            const W_R2_B_W = getSeriesWinner('W-R2-B');
+            const W_CF_W = getSeriesWinner('W-CF');
 
-            const E_R1_1v8_W = getSeries('E-R1-1v8')?.winner;
-            const E_R1_4v5_W = getSeries('E-R1-4v5')?.winner;
-            const E_R1_3v6_W = getSeries('E-R1-3v6')?.winner;
-            const E_R1_2v7_W = getSeries('E-R1-2v7')?.winner;
-            const E_R2_T_W = getSeries('E-R2-T')?.winner;
-            const E_R2_B_W = getSeries('E-R2-B')?.winner;
-            const E_CF_W = getSeries('E-CF')?.winner;
+            const E_R1_1v8_W = getSeriesWinner('E-R1-1v8');
+            const E_R1_4v5_W = getSeriesWinner('E-R1-4v5');
+            const E_R1_3v6_W = getSeriesWinner('E-R1-3v6');
+            const E_R1_2v7_W = getSeriesWinner('E-R1-2v7');
+            const E_R2_T_W = getSeriesWinner('E-R2-T');
+            const E_R2_B_W = getSeriesWinner('E-R2-B');
+            const E_CF_W = getSeriesWinner('E-CF');
             
-            const Champion = getSeries('FINALS')?.winner;
+            const Champion = getSeriesWinner('FINALS');
 
-            // START OF CHANGE: Pass the hardcoded display seeds '7' and '8' to the 1v8 and 2v7 matchups.
             let bracketHTML = `
             <div class="bracket">
                 <div class="conference west">
@@ -578,7 +606,7 @@
                         <div class="finals-champion">
                             <div class="champion-box">
                                 <h3>🏆 RKL Champion 🏆</h3>
-                                ${createTeamHTML(Champion, getSeries('FINALS'), null)}
+                                ${createTeamHTML(Champion, getSeries('FINALS'), null, null, Champion)}
                             </div>
                         </div>
                     ` : `
@@ -607,7 +635,6 @@
                     </div>
                 </div>
             </div>`;
-            // END OF CHANGE
             
             container.innerHTML = bracketHTML;
         }
