@@ -646,7 +646,8 @@
       let allTeams = [];
       let allPlayers = [];
       let allLineups = [];
-      let weeklyScoresData = []; 
+      let weeklyAverages = [];
+      let weeklyScores = [];
       let dateToMedianTeamScoreMap = {}; 
       let dateToWeekMap = {}; 
       let allstarRosters = [];
@@ -738,7 +739,7 @@
       }
       
       async function loadData() {
-        const [scheduleData, allstarScheduleData, postScheduleData, teamsData, playersData, lineupsData, allstarLineupsData, postLineupsData, weeklyAveragesData, fetchedWeeklyScores, allstarRostersData] = await Promise.all([
+        const [scheduleData, allstarScheduleData, postScheduleData, teamsData, playersData, lineupsData, allstarLineupsData, postLineupsData, fetchedWeeklyAverages, fetchedWeeklyScores, allstarRostersData] = await Promise.all([
           fetchSheetData('Schedule'),
           fetchSheetData('Allstar_Schedule'),
           fetchSheetData('Post_Schedule'),
@@ -770,18 +771,18 @@
         if(allstarLineupsData) allLineups = allLineups.concat(allstarLineupsData);
         if(postLineupsData) allLineups = allLineups.concat(postLineupsData);
 
-        const localWeeklyAverages = weeklyAveragesData || []; 
-        weeklyScoresData = fetchedWeeklyScores || [];
+        weeklyAverages = fetchedWeeklyAverages || [];
+        weeklyScores = fetchedWeeklyScores || [];
 
         dateToWeekMap = {}; 
-        localWeeklyAverages.forEach(wa => {
+        weeklyAverages.forEach(wa => {
           if (wa.date && wa.week !== undefined && wa.week !== '') {
             dateToWeekMap[wa.date] = String(wa.week).trim();
           }
         });
 
         dateToMedianTeamScoreMap = {}; 
-        weeklyScoresData.forEach(ws => {
+        weeklyScores.forEach(ws => {
           if (ws.date && ws.daily_median !== undefined && ws.daily_median !== '') {
             dateToMedianTeamScoreMap[ws.date] = parseNumber(ws.daily_median);
           }
@@ -1018,8 +1019,8 @@
                   team1Record = game.team1_record_snapshot || '0-0';
                   team2Record = game.team2_record_snapshot || '0-0';
               } else if (isRegularSeasonWeek) {
-                  const team1WeekRecord = weeklyScoresData.find(r => r.team_id === game.team1_id && r.week == week);
-                  const team2WeekRecord = weeklyScoresData.find(r => r.team_id === game.team2_id && r.week == week);
+                  const team1WeekRecord = weeklyAverages.find(r => r.team_id === game.team1_id && String(r.week) === String(week));
+                  const team2WeekRecord = weeklyAverages.find(r => r.team_id === game.team2_id && String(r.week) === String(week));
                   team1Record = team1WeekRecord ? `${team1WeekRecord.wins_after_week}-${team1WeekRecord.losses_after_week}` : '0-0';
                   team2Record = team2WeekRecord ? `${team2WeekRecord.wins_after_week}-${team2WeekRecord.losses_after_week}` : '0-0';
               } else {
