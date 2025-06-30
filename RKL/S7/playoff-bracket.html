@@ -163,6 +163,12 @@
             color: #aaa;
         }
 
+        /* START OF CHANGE: This class prevents hover/click events on team tiles within a completed matchup. */
+        .team.non-interactive {
+            pointer-events: none;
+        }
+        /* END OF CHANGE */
+
         .team-logo {
             width: 24px;
             height: 24px;
@@ -384,21 +390,19 @@
             return allPlayoffGames.find(g => g.series_id === seriesId);
         }
 
-        // START OF CHANGE: Updated createTeamHTML to disable team links when a matchup is complete.
+        // START OF CHANGE: Added non-interactive class to disable hover on teams in completed matchups.
         function createTeamHTML(teamId, series, weekLink = null) {
             const teamData = getTeam(teamId);
             const isWinner = series?.winner === teamId;
             const teamWins = (series?.team1_id === teamId) ? series?.team1_wins : series?.team2_wins;
             const isTBD = !teamId || teamId === "TBD";
-        
-            // If a weekLink exists, the parent div is clickable, so disable this link.
-            // Otherwise, link to the team page.
+            const nonInteractiveClass = weekLink ? 'non-interactive' : '';
+
             const teamHref = weekLink ? 'javascript:void(0);' : (isTBD ? 'javascript:void(0);' : `team.html?id=${teamData.team_id}`);
-            // If the link is disabled, change the cursor to show it's not a separate link.
             const style = weekLink ? 'style="cursor: inherit;"' : '';
         
             return `
-                <a href="${teamHref}" class="team ${isWinner ? 'winner' : ''} ${isTBD ? 'tbd' : ''}" ${style}>
+                <a href="${teamHref}" class="team ${isWinner ? 'winner' : ''} ${isTBD ? 'tbd' : ''} ${nonInteractiveClass}" ${style}>
                     <span class="team-seed">${teamData.postseed || ''}</span>
                     <img src="icons/${isTBD ? 'RKL' : teamData.team_id}.webp" alt="${teamData.team_name}" class="team-logo" onerror="this.onerror=null; this.src='icons/RKL.webp';">
                     <div class="team-info">
@@ -408,7 +412,6 @@
                 </a>`;
         }
         
-        // START OF CHANGE: Updated createMatchupHTML to pass the weekLink to its children.
         function createMatchupHTML(seriesId, defaultTeam1Id, defaultTeam2Id) {
             const series = getSeries(seriesId);
             const team1Id = series?.team1_id || defaultTeam1Id;
@@ -429,7 +432,6 @@
             return html;
         }
 
-        // START OF CHANGE: Updated createPlayInMatchupHTML to pass the weekLink to its children.
         function createPlayInMatchupHTML(label, seriesId, defaultTeam1Id, defaultTeam2Id) {
              const series = getSeries(seriesId);
              const team1Id = series?.team1_id || defaultTeam1Id;
@@ -457,7 +459,6 @@
                 </div>
             `;
         }
-        // END OF CHANGES
 
         function renderPlayInTournament(westTeams, eastTeams) {
             const playInSection = document.getElementById('play-in-section');
@@ -519,8 +520,10 @@
             const w4 = westTeams.find(t=>t.postseed==='4')?.team_id;
             const w5 = westTeams.find(t=>t.postseed==='5')?.team_id;
             const w6 = westTeams.find(t=>t.postseed==='6')?.team_id;
-            const w7_final = getSeries('W-PI-7v8')?.winner || westTeams.find(t=>t.postseed === '7')?.team_id;
-            const w8_final = getSeries('W-PI-L78vW910')?.winner || westTeams.find(t=>t.postseed === '8')?.team_id;
+            
+            // START OF CHANGE: Updated logic to show TBD until play-in games are complete.
+            const w7_final = getSeries('W-PI-7v8')?.winner || 'TBD';
+            const w8_final = getSeries('W-PI-L78vW910')?.winner || 'TBD';
 
             const e1 = eastTeams.find(t=>t.postseed==='1')?.team_id;
             const e2 = eastTeams.find(t=>t.postseed==='2')?.team_id;
@@ -528,8 +531,9 @@
             const e4 = eastTeams.find(t=>t.postseed==='4')?.team_id;
             const e5 = eastTeams.find(t=>t.postseed==='5')?.team_id;
             const e6 = eastTeams.find(t=>t.postseed==='6')?.team_id;
-            const e7_final = getSeries('E-PI-7v8')?.winner || eastTeams.find(t=>t.postseed === '7')?.team_id;
-            const e8_final = getSeries('E-PI-L78vW910')?.winner || eastTeams.find(t=>t.postseed === '8')?.team_id;
+            const e7_final = getSeries('E-PI-7v8')?.winner || 'TBD';
+            const e8_final = getSeries('E-PI-L78vW910')?.winner || 'TBD';
+            // END OF CHANGE
 
             // --- Determine Winners for Next Rounds ---
             const W_R1_1v8_W = getSeries('W-R1-1v8')?.winner;
