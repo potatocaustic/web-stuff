@@ -476,8 +476,8 @@
             allTeams = teamsData.filter(t => t.team_id).sort((a,b) => parseInt(a.postseed) - parseInt(b.postseed));
             allPlayoffGames = playoffGamesData;
 
-            const westTeams = allTeams.filter(t => t.conference === 'West');
-            const eastTeams = allTeams.filter(t => t.conference === 'East');
+            const westTeams = allTeams.filter(t => t.conference === 'Western');
+            const eastTeams = allTeams.filter(t => t.conference === 'Eastern');
             
             renderPlayInTournament(westTeams, eastTeams);
 
