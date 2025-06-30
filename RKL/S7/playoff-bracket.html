@@ -468,7 +468,7 @@
 
             const [teamsData, playoffGamesData] = await Promise.all([
                 fetchSheetData('Teams'),
-                fetchSheetData('Playoff_Schedule')
+                fetchSheetData('Post_Schedule')
             ]);
             
             if (!teamsData || !playoffGamesData) return;
