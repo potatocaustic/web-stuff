@@ -423,7 +423,7 @@
              const series = getSeries(seriesId);
              const team1Id = series?.team1_id || defaultTeam1Id;
              const team2Id = series?.team2_id || defaultTeam2Id;
-
+        
              // Determine who lost the 7v8 game
              let loserOf7v8Id = null;
              if (seriesId.includes("-PI-L78vW910")) {
@@ -433,12 +433,16 @@
                      loserOf7v8Id = (game7v8.team1_id === game7v8.winner) ? game7v8.team2_id : game7v8.team1_id;
                  }
              }
-
+             
+             // This is the new logic that was missing before
+             const hasStarted = series && series.team1_id && series.team2_id;
+             const weekLink = hasStarted ? `schedule.html#week-${getWeekNameFromSeriesId(seriesId).replace(' ', '-')}` : null;
+        
              return `
                 <div class="play-in-matchup">
                     <div class="matchup-label">${label}</div>
-                    ${createTeamHTML(loserOf7v8Id || team1Id, series)}
-                    ${createTeamHTML(team2Id, series)}
+                    ${createTeamHTML(loserOf7v8Id || team1Id, series, weekLink)}
+                    ${createTeamHTML(team2Id, series, weekLink)}
                 </div>
             `;
         }
