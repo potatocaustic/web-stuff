@@ -122,7 +122,15 @@
         .conference-group {
             display: flex;
             flex-direction: column;
-            justify-content: space-around;
+            justify-content: center; /* This will center the subgroups or single R3 matchup */
+            flex: 1;
+        }
+
+        /* NEW: Subgroup for alignment */
+        .matchup-subgroup {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around; /* This spaces out the matchups within */
             flex: 1;
         }
 
@@ -235,22 +243,12 @@
 
         /* Connectors */
         .matchup-connector {
-            position: absolute;
-            top: 50%;
-            left: 100%;
-            transform: translateY(-50%);
-            width: 2rem; /* Adjust space between columns */
-            height: 2px;
-            background-color: var(--connector-color);
-            z-index: 1;
+            display: none; /* Removed connector lines as requested */
         }
         
         .final-round {
             justify-content: center;
             align-items: center;
-        }
-        .final-round .matchup-connector {
-            display: none;
         }
         
         .finals-champion { text-align: center; }
@@ -620,17 +618,25 @@
                     <div class="round-title">Round 1</div>
                     <div class="conference-group">
                         <h3 class="conference-subtitle">West</h3>
-                        ${createMatchupHTML('W-R1-1v8', w1, w8_final, '1', '8')}
-                        ${createMatchupHTML('W-R1-4v5', w4, w5, '4', '5')}
-                        ${createMatchupHTML('W-R1-3v6', w3, w6, '3', '6')}
-                        ${createMatchupHTML('W-R1-2v7', w2, w7_final, '2', '7')}
+                        <div class="matchup-subgroup">
+                            ${createMatchupHTML('W-R1-1v8', w1, w8_final, '1', '8')}
+                            ${createMatchupHTML('W-R1-4v5', w4, w5, '4', '5')}
+                        </div>
+                        <div class="matchup-subgroup">
+                            ${createMatchupHTML('W-R1-3v6', w3, w6, '3', '6')}
+                            ${createMatchupHTML('W-R1-2v7', w2, w7_final, '2', '7')}
+                        </div>
                     </div>
                     <div class="conference-group">
                         <h3 class="conference-subtitle">East</h3>
-                        ${createMatchupHTML('E-R1-1v8', e1, e8_final, '1', '8')}
-                        ${createMatchupHTML('E-R1-4v5', e4, e5, '4', '5')}
-                        ${createMatchupHTML('E-R1-3v6', e3, e6, '3', '6')}
-                        ${createMatchupHTML('E-R1-2v7', e2, e7_final, '2', '7')}
+                        <div class="matchup-subgroup">
+                            ${createMatchupHTML('E-R1-1v8', e1, e8_final, '1', '8')}
+                            ${createMatchupHTML('E-R1-4v5', e4, e5, '4', '5')}
+                        </div>
+                        <div class="matchup-subgroup">
+                            ${createMatchupHTML('E-R1-3v6', e3, e6, '3', '6')}
+                            ${createMatchupHTML('E-R1-2v7', e2, e7_final, '2', '7')}
+                        </div>
                     </div>
                 </div>
 
@@ -639,13 +645,21 @@
                     <div class="round-title">Conference Semis</div>
                     <div class="conference-group">
                         <h3 class="conference-subtitle">West</h3>
-                        ${createMatchupHTML('W-R2-T', W_R1_1v8_W, W_R1_4v5_W)}
-                        ${createMatchupHTML('W-R2-B', W_R1_3v6_W, W_R1_2v7_W)}
+                        <div class="matchup-subgroup">
+                            ${createMatchupHTML('W-R2-T', W_R1_1v8_W, W_R1_4v5_W)}
+                        </div>
+                        <div class="matchup-subgroup">
+                            ${createMatchupHTML('W-R2-B', W_R1_3v6_W, W_R1_2v7_W)}
+                        </div>
                     </div>
                     <div class="conference-group">
                         <h3 class="conference-subtitle">East</h3>
-                        ${createMatchupHTML('E-R2-T', E_R1_1v8_W, E_R1_4v5_W)}
-                        ${createMatchupHTML('E-R2-B', E_R1_3v6_W, E_R1_2v7_W)}
+                        <div class="matchup-subgroup">
+                            ${createMatchupHTML('E-R2-T', E_R1_1v8_W, E_R1_4v5_W)}
+                        </div>
+                        <div class="matchup-subgroup">
+                            ${createMatchupHTML('E-R2-B', E_R1_3v6_W, E_R1_2v7_W)}
+                        </div>
                     </div>
                 </div>
 
@@ -654,11 +668,13 @@
                     <div class="round-title">Conference Finals</div>
                      <div class="conference-group">
                         <h3 class="conference-subtitle">West</h3>
-                        ${createMatchupHTML('W-CF', W_R2_T_W, W_R2_B_W)}
+                        <!-- FIX: Using E-CF seriesId to display the correct West teams, as the data source seems to have them swapped. -->
+                        ${createMatchupHTML('E-CF', W_R2_T_W, W_R2_B_W)}
                     </div>
                     <div class="conference-group">
                         <h3 class="conference-subtitle">East</h3>
-                        ${createMatchupHTML('E-CF', E_R2_T_W, E_R2_B_W)}
+                        <!-- FIX: Using W-CF seriesId to display the correct East teams. -->
+                        ${createMatchupHTML('W-CF', E_R2_T_W, E_R2_B_W)}
                     </div>
                 </div>
 
