@@ -388,7 +388,8 @@
             return allPlayoffGames.find(g => g.series_id === seriesId);
         }
 
-        function createTeamHTML(teamId, series, weekLink = null) {
+        // START OF CHANGE: Added a 'displaySeed' parameter to override the default seed.
+        function createTeamHTML(teamId, series, weekLink = null, displaySeed = null) {
             const teamData = getTeam(teamId);
             const isWinner = series?.winner === teamId;
             const teamWins = (series?.team1_id === teamId) ? series?.team1_wins : series?.team2_wins;
@@ -397,10 +398,13 @@
 
             const teamHref = weekLink ? 'javascript:void(0);' : (isTBD ? 'javascript:void(0);' : `team.html?id=${teamData.team_id}`);
             const style = weekLink ? 'style="cursor: inherit;"' : '';
+            
+            // Use the override seed if provided, otherwise use the team's default postseed.
+            const seedToShow = displaySeed || teamData.postseed || '';
         
             return `
                 <a href="${teamHref}" class="team ${isWinner ? 'winner' : ''} ${isTBD ? 'tbd' : ''} ${nonInteractiveClass}" ${style}>
-                    <span class="team-seed">${teamData.postseed || ''}</span>
+                    <span class="team-seed">${seedToShow}</span>
                     <img src="icons/${isTBD ? 'RKL' : teamData.team_id}.webp" alt="${teamData.team_name}" class="team-logo" onerror="this.onerror=null; this.src='icons/RKL.webp';">
                     <div class="team-info">
                         <span class="team-name">${teamData.team_name}</span>
@@ -409,20 +413,20 @@
                 </a>`;
         }
         
-        // START OF CHANGE: The 'isComplete' variable now correctly checks for a winner.
-        function createMatchupHTML(seriesId, defaultTeam1Id, defaultTeam2Id) {
+        // START OF CHANGE: Added parameters to pass display seeds down to createTeamHTML.
+        function createMatchupHTML(seriesId, defaultTeam1Id, defaultTeam2Id, team1DisplaySeed = null, team2DisplaySeed = null) {
             const series = getSeries(seriesId);
             const team1Id = series?.team1_id || defaultTeam1Id;
             const team2Id = series?.team2_id || defaultTeam2Id;
         
-            const isComplete = series && series.winner; // A series is complete only if it has a winner.
+            const isComplete = series && series.winner;
             const weekLink = isComplete ? `schedule.html#week-${encodeURIComponent(getWeekNameFromSeriesId(seriesId))}` : null;
             const matchupClass = isComplete ? 'matchup is-clickable' : 'matchup';
             const clickHandler = isComplete ? `onclick="window.location.href='${weekLink}'"` : '';
         
             let html = `<div class="${matchupClass}" ${clickHandler}> 
-                ${createTeamHTML(team1Id, series, weekLink)}
-                ${createTeamHTML(team2Id, series, weekLink)}`;
+                ${createTeamHTML(team1Id, series, weekLink, team1DisplaySeed)}
+                ${createTeamHTML(team2Id, series, weekLink, team2DisplaySeed)}`;
             if(series) {
                  html += `<div class="matchup-connector"></div>`;
             }
@@ -444,7 +448,7 @@
                  }
              }
              
-            const isComplete = series && series.winner; // A series is complete only if it has a winner.
+            const isComplete = series && series.winner;
             const weekLink = isComplete ? `schedule.html#week-${encodeURIComponent(getWeekNameFromSeriesId(seriesId))}` : null;
             const matchupClass = isComplete ? 'play-in-matchup is-clickable' : 'play-in-matchup';
             const clickHandler = isComplete ? `onclick="window.location.href='${weekLink}'"` : '';
@@ -457,7 +461,6 @@
                 </div>
             `;
         }
-        // END OF CHANGE
 
         function renderPlayInTournament(westTeams, eastTeams) {
             const playInSection = document.getElementById('play-in-section');
@@ -512,7 +515,6 @@
             
             renderPlayInTournament(westTeams, eastTeams);
 
-            // --- Determine Final Seeds from Play-In ---
             const w1 = westTeams.find(t=>t.postseed==='1')?.team_id;
             const w2 = westTeams.find(t=>t.postseed==='2')?.team_id;
             const w3 = westTeams.find(t=>t.postseed==='3')?.team_id;
@@ -532,7 +534,6 @@
             const e7_final = getSeries('E-PI-7v8')?.winner || 'TBD';
             const e8_final = getSeries('E-PI-L78vW910')?.winner || 'TBD';
 
-            // --- Determine Winners for Next Rounds ---
             const W_R1_1v8_W = getSeries('W-R1-1v8')?.winner;
             const W_R1_4v5_W = getSeries('W-R1-4v5')?.winner;
             const W_R1_3v6_W = getSeries('W-R1-3v6')?.winner;
@@ -551,15 +552,16 @@
             
             const Champion = getSeries('FINALS')?.winner;
 
+            // START OF CHANGE: Pass the hardcoded display seeds '7' and '8' to the 1v8 and 2v7 matchups.
             let bracketHTML = `
             <div class="bracket">
                 <div class="conference west">
                     <div class="round round-1">
                         <div class="round-title">West Round 1</div>
-                        ${createMatchupHTML('W-R1-1v8', w1, w8_final)}
+                        ${createMatchupHTML('W-R1-1v8', w1, w8_final, null, '8')}
                         ${createMatchupHTML('W-R1-4v5', w4, w5)}
                         ${createMatchupHTML('W-R1-3v6', w3, w6)}
-                        ${createMatchupHTML('W-R1-2v7', w2, w7_final)}
+                        ${createMatchupHTML('W-R1-2v7', w2, w7_final, null, '7')}
                     </div>
                     <div class="round round-2">
                         <div class="round-title">West Semis</div>
@@ -598,13 +600,14 @@
                     </div>
                     <div class="round round-1">
                         <div class="round-title">East Round 1</div>
-                        ${createMatchupHTML('E-R1-1v8', e1, e8_final)}
+                        ${createMatchupHTML('E-R1-1v8', e1, e8_final, null, '8')}
                         ${createMatchupHTML('E-R1-4v5', e4, e5)}
                         ${createMatchupHTML('E-R1-3v6', e3, e6)}
-                        ${createMatchupHTML('E-R1-2v7', e2, e7_final)}
+                        ${createMatchupHTML('E-R1-2v7', e2, e7_final, null, '7')}
                     </div>
                 </div>
             </div>`;
+            // END OF CHANGE
             
             container.innerHTML = bracketHTML;
         }
