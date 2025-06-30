@@ -95,7 +95,7 @@
             display: grid;
             grid-template-areas: "titles" "body";
             grid-template-rows: auto 1fr;
-            min-width: 1200px;
+            min-width: 1180px;
         }
 
         .bracket-header-row {
@@ -169,7 +169,7 @@
             background-color: var(--bracket-bg-color);
             border: 1px solid var(--bracket-border-color);
             border-radius: 4px;
-            width: 220px;
+            width: 215px;
             transition: all 0.2s ease;
             text-decoration: none;
             color: inherit;
@@ -231,6 +231,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            min-width: 0;
         }
 
         .series-score {
@@ -267,9 +268,9 @@
         .champion-box h3 { font-size: 1.5rem; }
         .champion-box h4 { font-size: 1.2rem; margin-top: 0.5rem; }
 
-        @media (max-width: 1200px) {
-             .bracket { min-width: 1100px; }
-             .team { width: 200px; }
+        @media (max-width: 1180px) {
+             .bracket { min-width: 1080px; }
+             .team { width: 195px; }
         }
         @media (max-width: 768px) {
             .page-header h2 { font-size: 1.8rem; }
@@ -326,8 +327,7 @@
         </div>
 
         <div id="play-in-section" class="play-in-section">
-             <!-- Play-In Tournament is rendered here by JS -->
-        </div>
+             </div>
         
         <div class="bracket-container" id="bracket-container">
             <div class="loading">Loading Playoff Bracket...</div>
@@ -617,7 +617,6 @@
                     <div class="round-title">RKL Finals</div>
                 </div>
                 <div class="bracket-body-row">
-                    <!-- Round 1 Column -->
                     <div class="round-column">
                         <div class="conference-section">
                             <h3 class="conference-subtitle">West</h3>
@@ -647,7 +646,6 @@
                         </div>
                     </div>
 
-                    <!-- Round 2 / Semis -->
                     <div class="round-column">
                         <div class="conference-section">
                             <h3 class="conference-subtitle">West</h3>
@@ -673,7 +671,6 @@
                         </div>
                     </div>
 
-                    <!-- Round 3 / Conf Finals -->
                     <div class="round-column">
                         <div class="conference-section">
                             <h3 class="conference-subtitle">West</h3>
@@ -689,7 +686,6 @@
                         </div>
                     </div>
 
-                    <!-- Round 4 / Finals -->
                     <div class="round-column final-round">
                         ${ Champion ? `
                             <div class="finals-champion">
