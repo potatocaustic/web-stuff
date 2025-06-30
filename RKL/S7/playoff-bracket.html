@@ -403,7 +403,7 @@
             if (seriesId.includes('-PI-')) return 'Play-In';
             if (seriesId.includes('-R1-')) return 'Round 1';
             if (seriesId.includes('-R2-')) return 'Round 2';
-            if (seriesId.includes('-CF')) return 'Conference Finals';
+            if (seriesId.includes('-CF')) return 'Conf Finals';
             if (seriesId.includes('FINALS')) return 'Finals';
             return '';
         }        
@@ -431,7 +431,7 @@
 
             let win_condition = 0;
             if (week === 'Round 1' || week === 'Round 2') win_condition = 2;
-            else if (week === 'Conference Finals') win_condition = 3;
+            else if (week === 'Conf Finals') win_condition = 3;
             else if (week === 'Finals') win_condition = 4;
 
             if (team1Wins === win_condition) return series.team1_id;
