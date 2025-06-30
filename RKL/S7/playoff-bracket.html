@@ -201,6 +201,12 @@
             color: var(--winner-color);
         }
 
+        .matchup-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }           
+
         /* Connectors */
         .matchup-connector {
             position: absolute;
@@ -242,7 +248,7 @@
             .page-header h2 { font-size: 1.8rem; }
              main { padding: 1rem; }
             .play-in-section { flex-direction: column; gap: 1rem; }
-        }
+        }     
 
     </style>
 </head>
@@ -361,6 +367,15 @@
             return data; 
         }
 
+        function getWeekNameFromSeriesId(seriesId) {
+            if (seriesId.includes('-PI-')) return 'Play-In';
+            if (seriesId.includes('-R1-')) return 'Round 1';
+            if (seriesId.includes('-R2-')) return 'Round 2';
+            if (seriesId.includes('-CF')) return 'Conference Finals';
+            if (seriesId.includes('FINALS')) return 'Finals';
+            return ''; // Default fallback
+        }        
+
         function getTeam(teamId) {
             if (!teamId || teamId === "TBD") return { team_id: "TBD", team_name: "TBD", postseed: '' };
             return allTeams.find(t => t.team_id === teamId) || { team_id: teamId, team_name: teamId, postseed: '' };
@@ -393,14 +408,19 @@
             const series = getSeries(seriesId);
             const team1Id = series?.team1_id || defaultTeam1Id;
             const team2Id = series?.team2_id || defaultTeam2Id;
+            const weekName = getWeekNameFromSeriesId(seriesId);
             
-            let html = `<div class="matchup">
-                ${createTeamHTML(team1Id, series)}
-                ${createTeamHTML(team2Id, series)}`;
-            if(series) {
-                 html += `<div class="matchup-connector"></div>`;
-            }
-            html += `</div>`;
+            // Only add the link if the matchup has started (i.e., a series object exists)
+            const hasStarted = series && series.team1_id && series.team2_id;
+            const linkHref = hasStarted ? `schedule.html#week-${weekName.replace(' ', '-')}` : 'javascript:void(0);';
+        
+            let html = `<a href="${linkHref}" class="matchup-link">
+                <div class="matchup">
+                    ${createTeamHTML(team1Id, series)}
+                    ${createTeamHTML(team2Id, series)}
+                    <div class="matchup-connector"></div>
+                </div>
+            </a>`;
             return html;
         }
 
