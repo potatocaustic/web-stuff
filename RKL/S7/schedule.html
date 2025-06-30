@@ -613,7 +613,7 @@
       <p>@caustic on Real</p>
       <a href="trade-block.html">GM Portal</a>
     </footer>
-
+    
     <script src="../js/main.js" defer></script>
     <script>
       const SHEET_ID = '1zb1x8r4OlRTVg9W5WMZF-ootyfsMg2yx2_3rcUhmIrc'; 
@@ -787,16 +787,16 @@
           }
         });
         
-        // START OF CHANGE: This section replaces the old script and correctly handles the URL hash.
         let initialWeek = determineCurrentWeek(allGames);
         const allAvailableWeeks = getCanonicalWeekOrder();
 
-        if (window.location.hash) {
+        // START OF CHANGE: Updated URL hash parsing logic to be more robust.
+        const hashPrefix = '#week-';
+        if (window.location.hash.startsWith(hashPrefix)) {
             try {
-                // Parses a hash like #week-Round-1 into "Round 1"
-                const weekFromHash = decodeURIComponent(window.location.hash.substring(1).split('-').slice(1).join(' '));
+                // Decodes a hash like #week-Play-In into "Play-In" or #week-Round%201 into "Round 1"
+                const weekFromHash = decodeURIComponent(window.location.hash.substring(hashPrefix.length));
                 
-                // Checks if the parsed week name is a valid, existing week
                 if (weekFromHash && allAvailableWeeks.map(String).includes(weekFromHash)) {
                     initialWeek = weekFromHash;
                 }
@@ -804,11 +804,11 @@
                 console.error('Error processing week from URL hash:', e);
             }
         }
+        // END OF CHANGE
 
         currentWeek = initialWeek;
         setupWeekSelector(); 
         displayWeek(currentWeek); 
-        // END OF CHANGE
       }
       
       function getCanonicalWeekOrder() {
