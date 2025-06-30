@@ -614,34 +614,6 @@
       <a href="trade-block.html">GM Portal</a>
     </footer>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        // Check if the URL has a hash (e.g., #week-Play-In)
-        if (window.location.hash) {
-          try {
-            // Extract the week name from the hash, replacing '-' with a space
-            // e.g., "#week-Play-In" becomes "Play-In"
-            const weekName = window.location.hash.substring(1).split('-').slice(1).join(' ');
-            
-            // Assuming your schedule page has a function to show a specific week
-            // and week containers have an ID like "week-container-Play-In"
-            if (weekName) {
-              const targetElement = document.getElementById(`week-container-${weekName.replace(' ', '-')}`);
-              if (targetElement) {
-                // Hide all week containers
-                document.querySelectorAll('.week-container').forEach(container => {
-                    container.style.display = 'none';
-                });
-                // Show the target week container
-                targetElement.style.display = 'block';
-              }
-            }
-          } catch (e) {
-            console.error('Error navigating to week from URL hash:', e);
-          }
-        }
-      });
-    </script>    
     <script src="../js/main.js" defer></script>
     <script>
       const SHEET_ID = '1zb1x8r4OlRTVg9W5WMZF-ootyfsMg2yx2_3rcUhmIrc'; 
@@ -815,9 +787,28 @@
           }
         });
         
-        currentWeek = determineCurrentWeek(allGames); 
+        // START OF CHANGE: This section replaces the old script and correctly handles the URL hash.
+        let initialWeek = determineCurrentWeek(allGames);
+        const allAvailableWeeks = getCanonicalWeekOrder();
+
+        if (window.location.hash) {
+            try {
+                // Parses a hash like #week-Round-1 into "Round 1"
+                const weekFromHash = decodeURIComponent(window.location.hash.substring(1).split('-').slice(1).join(' '));
+                
+                // Checks if the parsed week name is a valid, existing week
+                if (weekFromHash && allAvailableWeeks.map(String).includes(weekFromHash)) {
+                    initialWeek = weekFromHash;
+                }
+            } catch (e) {
+                console.error('Error processing week from URL hash:', e);
+            }
+        }
+
+        currentWeek = initialWeek;
         setupWeekSelector(); 
         displayWeek(currentWeek); 
+        // END OF CHANGE
       }
       
       function getCanonicalWeekOrder() {
