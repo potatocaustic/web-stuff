@@ -199,7 +199,13 @@
         }
         .team.winner .series-score {
             color: var(--winner-color);
-        }    
+        }
+
+        .is-clickable:hover {
+            outline: 2px solid gold;
+            border-radius: 8px; /* Optional: rounds the corners of the outline */
+            cursor: pointer;
+        }        
 
         /* Connectors */
         .matchup-connector {
@@ -404,12 +410,12 @@
             const team1Id = series?.team1_id || defaultTeam1Id;
             const team2Id = series?.team2_id || defaultTeam2Id;
         
-            // Determine if the matchup has started and generate the correct schedule link
             const hasStarted = series && series.team1_id && series.team2_id;
             const weekLink = hasStarted ? `schedule.html#week-${getWeekNameFromSeriesId(seriesId).replace(' ', '-')}` : null;
+            const matchupClass = hasStarted ? 'matchup is-clickable' : 'matchup'; // Add this line
         
-            // The outer <a> tag is removed. The weekLink is now passed to createTeamHTML.
-            let html = `<div class="matchup">
+            // Use the new matchupClass variable here
+            let html = `<div class="${matchupClass}"> 
                 ${createTeamHTML(team1Id, series, weekLink)}
                 ${createTeamHTML(team2Id, series, weekLink)}`;
             if(series) {
@@ -424,7 +430,6 @@
              const team1Id = series?.team1_id || defaultTeam1Id;
              const team2Id = series?.team2_id || defaultTeam2Id;
         
-             // Determine who lost the 7v8 game
              let loserOf7v8Id = null;
              if (seriesId.includes("-PI-L78vW910")) {
                  const game7v8Id = seriesId.replace("-PI-L78vW910", "-PI-7v8");
@@ -434,12 +439,13 @@
                  }
              }
              
-             // This is the new logic that was missing before
              const hasStarted = series && series.team1_id && series.team2_id;
              const weekLink = hasStarted ? `schedule.html#week-${getWeekNameFromSeriesId(seriesId).replace(' ', '-')}` : null;
+             const matchupClass = hasStarted ? 'play-in-matchup is-clickable' : 'play-in-matchup'; // Add this line
         
+             // Use the new matchupClass variable here
              return `
-                <div class="play-in-matchup">
+                <div class="${matchupClass}"> 
                     <div class="matchup-label">${label}</div>
                     ${createTeamHTML(loserOf7v8Id || team1Id, series, weekLink)}
                     ${createTeamHTML(team2Id, series, weekLink)}
