@@ -102,7 +102,6 @@
         .round-column {
             display: flex;
             flex-direction: column;
-            justify-content: space-around;
             flex: 1;
             padding: 0 1rem;
         }
@@ -117,6 +116,14 @@
             background: var(--bg-color);
             padding: 0.5rem 0;
             z-index: 2;
+        }
+
+        /* FIX: This group ensures matchups are aligned correctly between rounds */
+        .conference-group {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            flex: 1;
         }
 
         .conference-subtitle {
