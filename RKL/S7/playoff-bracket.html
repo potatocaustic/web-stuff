@@ -20,7 +20,6 @@
         :root {
             --bracket-border-color: #ddd;
             --bracket-bg-color: #f8f9fa;
-            --connector-color: #ccc;
             --winner-color: #28a745;
             --winner-bg: #e8f5e8;
             --team-hover-bg: #e9ecef;
@@ -31,7 +30,6 @@
         .dark-mode {
             --bracket-border-color: #444;
             --bracket-bg-color: #2c2c2c;
-            --connector-color: #555;
             --winner-color: #66bb6a;
             --winner-bg: #3a4a3a;
             --team-hover-bg: #383838;
@@ -92,45 +90,42 @@
             -webkit-overflow-scrolling: touch;
         }
         
+        /* FIX: Using grid for overall structure to align headers */
         .bracket {
-            display: flex;
-            justify-content: center;
-            align-items: stretch;
-            min-width: 1200px; /* Adjust as needed for readability */
+            display: grid;
+            grid-template-areas: "titles" "body";
+            grid-template-rows: auto 1fr;
+            min-width: 1200px;
+        }
+
+        .bracket-header-row {
+            grid-area: titles;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .bracket-body-row {
+            grid-area: body;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .round-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            padding: 0.5rem 1rem;
         }
 
         .round-column {
             display: flex;
             flex-direction: column;
-            flex: 1;
             padding: 0 1rem;
         }
         
-        .round-title {
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 2rem;
-            font-size: 1.2rem;
-            position: sticky;
-            top: 0;
-            background: var(--bg-color);
-            padding: 0.5rem 0;
-            z-index: 2;
-        }
-
-        /* FIX: This group ensures matchups are aligned correctly between rounds */
-        .conference-group {
+        .conference-section {
             display: flex;
             flex-direction: column;
-            justify-content: center; /* This will center the subgroups or single R3 matchup */
-            flex: 1;
-        }
-
-        /* NEW: Subgroup for alignment */
-        .matchup-subgroup {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around; /* This spaces out the matchups within */
             flex: 1;
         }
 
@@ -139,14 +134,25 @@
             font-weight: bold;
             font-size: 1.1rem;
             color: #6c757d;
-            margin-top: 2rem;
+            margin-top: 1rem;
             margin-bottom: 1rem;
         }
         .dark-mode .conference-subtitle {
             color: #adb5bd;
         }
-        .round-column .conference-group:first-of-type .conference-subtitle {
-             margin-top: 0;
+
+        .conference-group {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-grow: 1;
+        }
+
+        .matchup-subgroup {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            flex-grow: 1;
         }
 
         .matchup {
@@ -241,11 +247,6 @@
             cursor: pointer;
         }        
 
-        /* Connectors */
-        .matchup-connector {
-            display: none; /* Removed connector lines as requested */
-        }
-        
         .final-round {
             justify-content: center;
             align-items: center;
@@ -479,14 +480,10 @@
             const matchupClass = isClickable ? 'matchup is-clickable' : 'matchup';
             const clickHandler = isClickable ? `onclick="window.location.href='${weekLink}'"` : '';
         
-            let html = `<div class="${matchupClass}" ${clickHandler}> 
+            return `<div class="${matchupClass}" ${clickHandler}> 
                 ${createTeamHTML(team1Id, series, weekLink, team1DisplaySeed, seriesWinner)}
-                ${createTeamHTML(team2Id, series, weekLink, team2DisplaySeed, seriesWinner)}`;
-            if(series && !seriesId.includes('FINALS')) {
-                 html += `<div class="matchup-connector"></div>`;
-            }
-            html += `</div>`;
-            return html;
+                ${createTeamHTML(team2Id, series, weekLink, team2DisplaySeed, seriesWinner)}
+            </div>`;
         }
 
         function createPlayInMatchupHTML(label, seriesId, defaultTeam1Id, defaultTeam2Id) {
@@ -613,84 +610,100 @@
             // Column-based HTML structure for the main bracket
             let bracketHTML = `
             <div class="bracket">
-                <!-- Round 1 -->
-                <div class="round-column">
+                <div class="bracket-header-row">
                     <div class="round-title">Round 1</div>
-                    <div class="conference-group">
-                        <h3 class="conference-subtitle">West</h3>
-                        <div class="matchup-subgroup">
-                            ${createMatchupHTML('W-R1-1v8', w1, w8_final, '1', '8')}
-                            ${createMatchupHTML('W-R1-4v5', w4, w5, '4', '5')}
-                        </div>
-                        <div class="matchup-subgroup">
-                            ${createMatchupHTML('W-R1-3v6', w3, w6, '3', '6')}
-                            ${createMatchupHTML('W-R1-2v7', w2, w7_final, '2', '7')}
-                        </div>
-                    </div>
-                    <div class="conference-group">
-                        <h3 class="conference-subtitle">East</h3>
-                        <div class="matchup-subgroup">
-                            ${createMatchupHTML('E-R1-1v8', e1, e8_final, '1', '8')}
-                            ${createMatchupHTML('E-R1-4v5', e4, e5, '4', '5')}
-                        </div>
-                        <div class="matchup-subgroup">
-                            ${createMatchupHTML('E-R1-3v6', e3, e6, '3', '6')}
-                            ${createMatchupHTML('E-R1-2v7', e2, e7_final, '2', '7')}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Round 2 / Semis -->
-                <div class="round-column">
                     <div class="round-title">Conference Semis</div>
-                    <div class="conference-group">
-                        <h3 class="conference-subtitle">West</h3>
-                        <div class="matchup-subgroup">
-                            ${createMatchupHTML('W-R2-T', W_R1_1v8_W, W_R1_4v5_W)}
-                        </div>
-                        <div class="matchup-subgroup">
-                            ${createMatchupHTML('W-R2-B', W_R1_3v6_W, W_R1_2v7_W)}
-                        </div>
-                    </div>
-                    <div class="conference-group">
-                        <h3 class="conference-subtitle">East</h3>
-                        <div class="matchup-subgroup">
-                            ${createMatchupHTML('E-R2-T', E_R1_1v8_W, E_R1_4v5_W)}
-                        </div>
-                        <div class="matchup-subgroup">
-                            ${createMatchupHTML('E-R2-B', E_R1_3v6_W, E_R1_2v7_W)}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Round 3 / Conf Finals -->
-                <div class="round-column">
                     <div class="round-title">Conference Finals</div>
-                     <div class="conference-group">
-                        <h3 class="conference-subtitle">West</h3>
-                        <!-- FIX: Using E-CF seriesId to display the correct West teams, as the data source seems to have them swapped. -->
-                        ${createMatchupHTML('E-CF', W_R2_T_W, W_R2_B_W)}
-                    </div>
-                    <div class="conference-group">
-                        <h3 class="conference-subtitle">East</h3>
-                        <!-- FIX: Using W-CF seriesId to display the correct East teams. -->
-                        ${createMatchupHTML('W-CF', E_R2_T_W, E_R2_B_W)}
-                    </div>
-                </div>
-
-                <!-- Round 4 / Finals -->
-                <div class="round-column final-round">
                     <div class="round-title">RKL Finals</div>
-                    ${ Champion ? `
-                        <div class="finals-champion">
-                            <div class="champion-box">
-                                <h3>🏆 RKL Champion 🏆</h3>
-                                ${createTeamHTML(Champion, getSeries('FINALS'), null, null, Champion)}
+                </div>
+                <div class="bracket-body-row">
+                    <!-- Round 1 Column -->
+                    <div class="round-column">
+                        <div class="conference-section">
+                            <h3 class="conference-subtitle">West</h3>
+                            <div class="conference-group">
+                                <div class="matchup-subgroup">
+                                    ${createMatchupHTML('W-R1-1v8', w1, w8_final, '1', '8')}
+                                    ${createMatchupHTML('W-R1-4v5', w4, w5, '4', '5')}
+                                </div>
+                                <div class="matchup-subgroup">
+                                    ${createMatchupHTML('W-R1-3v6', w3, w6, '3', '6')}
+                                    ${createMatchupHTML('W-R1-2v7', w2, w7_final, '2', '7')}
+                                </div>
                             </div>
                         </div>
-                    ` : `
-                        ${createMatchupHTML('FINALS', W_CF_W, E_CF_W)}
-                    `}
+                        <div class="conference-section">
+                            <h3 class="conference-subtitle">East</h3>
+                            <div class="conference-group">
+                                <div class="matchup-subgroup">
+                                    ${createMatchupHTML('E-R1-1v8', e1, e8_final, '1', '8')}
+                                    ${createMatchupHTML('E-R1-4v5', e4, e5, '4', '5')}
+                                </div>
+                                <div class="matchup-subgroup">
+                                    ${createMatchupHTML('E-R1-3v6', e3, e6, '3', '6')}
+                                    ${createMatchupHTML('E-R1-2v7', e2, e7_final, '2', '7')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Round 2 / Semis -->
+                    <div class="round-column">
+                        <div class="conference-section">
+                            <h3 class="conference-subtitle">West</h3>
+                            <div class="conference-group">
+                                <div class="matchup-subgroup">
+                                    ${createMatchupHTML('W-R2-T', W_R1_1v8_W, W_R1_4v5_W)}
+                                </div>
+                                <div class="matchup-subgroup">
+                                    ${createMatchupHTML('W-R2-B', W_R1_3v6_W, W_R1_2v7_W)}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="conference-section">
+                            <h3 class="conference-subtitle">East</h3>
+                            <div class="conference-group">
+                                <div class="matchup-subgroup">
+                                    ${createMatchupHTML('E-R2-T', E_R1_1v8_W, E_R1_4v5_W)}
+                                </div>
+                                <div class="matchup-subgroup">
+                                    ${createMatchupHTML('E-R2-B', E_R1_3v6_W, E_R1_2v7_W)}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Round 3 / Conf Finals -->
+                    <div class="round-column">
+                        <div class="conference-section">
+                            <h3 class="conference-subtitle">West</h3>
+                            <div class="conference-group">
+                                ${createMatchupHTML('W-CF', W_R2_T_W, W_R2_B_W)}
+                            </div>
+                        </div>
+                        <div class="conference-section">
+                            <h3 class="conference-subtitle">East</h3>
+                            <div class="conference-group">
+                                ${createMatchupHTML('E-CF', E_R2_T_W, E_R2_B_W)}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Round 4 / Finals -->
+                    <div class="round-column final-round">
+                        ${ Champion ? `
+                            <div class="finals-champion">
+                                <div class="champion-box">
+                                    <h3>🏆 RKL Champion 🏆</h3>
+                                    ${createTeamHTML(Champion, getSeries('FINALS'), null, null, Champion)}
+                                </div>
+                            </div>
+                        ` : `
+                            <div class="conference-group">
+                                ${createMatchupHTML('FINALS', W_CF_W, E_CF_W)}
+                            </div>
+                        `}
+                    </div>
                 </div>
             </div>`;
             
