@@ -1019,8 +1019,8 @@
                   team1Record = game.team1_record_snapshot || '0-0';
                   team2Record = game.team2_record_snapshot || '0-0';
               } else if (isRegularSeasonWeek) {
-                  const team1WeekRecord = weeklyAverages.find(r => r.team_id === game.team1_id && String(r.week) === String(week));
-                  const team2WeekRecord = weeklyAverages.find(r => r.team_id === game.team2_id && String(r.week) === String(week));
+                  const team1WeekRecord = weeklyScores.find(r => r.team_id === game.team1_id && String(r.week) === String(week));
+                  const team2WeekRecord = weeklyScores.find(r => r.team_id === game.team2_id && String(r.week) === String(week));
                   team1Record = team1WeekRecord ? `${team1WeekRecord.wins_after_week}-${team1WeekRecord.losses_after_week}` : '0-0';
                   team2Record = team2WeekRecord ? `${team2WeekRecord.wins_after_week}-${team2WeekRecord.losses_after_week}` : '0-0';
               } else {
