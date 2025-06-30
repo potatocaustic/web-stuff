@@ -388,7 +388,6 @@
             return allPlayoffGames.find(g => g.series_id === seriesId);
         }
 
-        // START OF CHANGE: New function to determine a series winner based on win counts.
         function getSeriesWinner(seriesId) {
             const series = getSeries(seriesId);
             if (!series) return null;
@@ -404,9 +403,9 @@
 
             // For multi-game series, check for the win condition.
             let win_condition = 0;
-            if (week === 'Round 1' || week === 'Round 2') win_condition = 2;
-            else if (week === 'Conference Finals') win_condition = 3;
-            else if (week === 'Finals') win_condition = 4;
+            if (week === 'Round 1' || week === 'Round 2') win_condition = 2; // Best of 3
+            else if (week === 'Conference Finals') win_condition = 3; // Best of 5
+            else if (week === 'Finals') win_condition = 4; // Best of 7
 
             if (team1Wins === win_condition) return series.team1_id;
             if (team2Wins === win_condition) return series.team2_id;
@@ -414,11 +413,10 @@
             return null; // Series is not complete.
         }
 
-        // START OF CHANGE: Updated createTeamHTML to accept seriesWinner for styling.
         function createTeamHTML(teamId, series, weekLink = null, displaySeed = null, seriesWinner = null) {
             const teamData = getTeam(teamId);
-            const isWinner = seriesWinner === teamId; // Use the explicitly passed series winner
-            const teamWins = (series?.team1_id === teamId) ? series?.team1_wins : series?.team2_wins;
+            const isWinner = seriesWinner === teamId;
+            const teamWins = (series?.team1_id === teamId) ? parseInt(series?.team1_wins, 10) : parseInt(series?.team2_wins, 10);
             const isTBD = !teamId || teamId === "TBD";
             const nonInteractiveClass = weekLink ? 'non-interactive' : '';
 
@@ -438,17 +436,29 @@
                 </a>`;
         }
         
-        // START OF CHANGE: Updated createMatchupHTML to use the new winner logic.
+        // START OF CHANGE: Updated logic to make matchups clickable as soon as any game is played.
         function createMatchupHTML(seriesId, defaultTeam1Id, defaultTeam2Id, team1DisplaySeed = null, team2DisplaySeed = null) {
             const series = getSeries(seriesId);
             const seriesWinner = getSeriesWinner(seriesId);
             const team1Id = series?.team1_id || defaultTeam1Id;
             const team2Id = series?.team2_id || defaultTeam2Id;
         
-            const isComplete = !!seriesWinner;
-            const weekLink = isComplete ? `schedule.html#week-${encodeURIComponent(getWeekNameFromSeriesId(seriesId))}` : null;
-            const matchupClass = isComplete ? 'matchup is-clickable' : 'matchup';
-            const clickHandler = isComplete ? `onclick="window.location.href='${weekLink}'"` : '';
+            let isClickable = false;
+            if (series) {
+                const week = getWeekNameFromSeriesId(seriesId);
+                if (week === 'Play-In') {
+                    isClickable = !!series.winner; // Play-In is clickable when the single game is won.
+                } else {
+                    // Other series are clickable if at least one game has been played.
+                    const team1Wins = parseInt(series.team1_wins, 10) || 0;
+                    const team2Wins = parseInt(series.team2_wins, 10) || 0;
+                    isClickable = team1Wins > 0 || team2Wins > 0;
+                }
+            }
+
+            const weekLink = isClickable ? `schedule.html#week-${encodeURIComponent(getWeekNameFromSeriesId(seriesId))}` : null;
+            const matchupClass = isClickable ? 'matchup is-clickable' : 'matchup';
+            const clickHandler = isClickable ? `onclick="window.location.href='${weekLink}'"` : '';
         
             let html = `<div class="${matchupClass}" ${clickHandler}> 
                 ${createTeamHTML(team1Id, series, weekLink, team1DisplaySeed, seriesWinner)}
@@ -476,10 +486,10 @@
                  }
              }
              
-            const isComplete = !!seriesWinner;
-            const weekLink = isComplete ? `schedule.html#week-${encodeURIComponent(getWeekNameFromSeriesId(seriesId))}` : null;
-            const matchupClass = isComplete ? 'play-in-matchup is-clickable' : 'play-in-matchup';
-            const clickHandler = isComplete ? `onclick="window.location.href='${weekLink}'"` : '';
+            const isClickable = !!seriesWinner; // Play-In is only clickable when complete.
+            const weekLink = isClickable ? `schedule.html#week-${encodeURIComponent(getWeekNameFromSeriesId(seriesId))}` : null;
+            const matchupClass = isClickable ? 'play-in-matchup is-clickable' : 'play-in-matchup';
+            const clickHandler = isClickable ? `onclick="window.location.href='${weekLink}'"` : '';
         
              return `
                 <div class="${matchupClass}" ${clickHandler}> 
