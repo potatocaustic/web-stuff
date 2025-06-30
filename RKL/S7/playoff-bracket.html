@@ -384,17 +384,21 @@
             return allPlayoffGames.find(g => g.series_id === seriesId);
         }
 
-        // START OF CHANGE: Updated createTeamHTML to always link to team pages and stop click propagation.
-        function createTeamHTML(teamId, series) {
+        // START OF CHANGE: Updated createTeamHTML to disable team links when a matchup is complete.
+        function createTeamHTML(teamId, series, weekLink = null) {
             const teamData = getTeam(teamId);
             const isWinner = series?.winner === teamId;
             const teamWins = (series?.team1_id === teamId) ? series?.team1_wins : series?.team2_wins;
             const isTBD = !teamId || teamId === "TBD";
         
-            const teamHref = isTBD ? 'javascript:void(0);' : `team.html?id=${teamData.team_id}`;
+            // If a weekLink exists, the parent div is clickable, so disable this link.
+            // Otherwise, link to the team page.
+            const teamHref = weekLink ? 'javascript:void(0);' : (isTBD ? 'javascript:void(0);' : `team.html?id=${teamData.team_id}`);
+            // If the link is disabled, change the cursor to show it's not a separate link.
+            const style = weekLink ? 'style="cursor: inherit;"' : '';
         
             return `
-                <a href="${teamHref}" class="team ${isWinner ? 'winner' : ''} ${isTBD ? 'tbd' : ''}" onclick="event.stopPropagation();">
+                <a href="${teamHref}" class="team ${isWinner ? 'winner' : ''} ${isTBD ? 'tbd' : ''}" ${style}>
                     <span class="team-seed">${teamData.postseed || ''}</span>
                     <img src="icons/${isTBD ? 'RKL' : teamData.team_id}.webp" alt="${teamData.team_name}" class="team-logo" onerror="this.onerror=null; this.src='icons/RKL.webp';">
                     <div class="team-info">
@@ -404,7 +408,7 @@
                 </a>`;
         }
         
-        // START OF CHANGE: Updated createMatchupHTML to make the entire div clickable and use the new URL format.
+        // START OF CHANGE: Updated createMatchupHTML to pass the weekLink to its children.
         function createMatchupHTML(seriesId, defaultTeam1Id, defaultTeam2Id) {
             const series = getSeries(seriesId);
             const team1Id = series?.team1_id || defaultTeam1Id;
@@ -416,8 +420,8 @@
             const clickHandler = hasStarted ? `onclick="window.location.href='${weekLink}'"` : '';
         
             let html = `<div class="${matchupClass}" ${clickHandler}> 
-                ${createTeamHTML(team1Id, series)}
-                ${createTeamHTML(team2Id, series)}`;
+                ${createTeamHTML(team1Id, series, weekLink)}
+                ${createTeamHTML(team2Id, series, weekLink)}`;
             if(series) {
                  html += `<div class="matchup-connector"></div>`;
             }
@@ -425,7 +429,7 @@
             return html;
         }
 
-        // START OF CHANGE: Updated createPlayInMatchupHTML to make the div clickable and use new URL format.
+        // START OF CHANGE: Updated createPlayInMatchupHTML to pass the weekLink to its children.
         function createPlayInMatchupHTML(label, seriesId, defaultTeam1Id, defaultTeam2Id) {
              const series = getSeries(seriesId);
              const team1Id = series?.team1_id || defaultTeam1Id;
@@ -448,8 +452,8 @@
              return `
                 <div class="${matchupClass}" ${clickHandler}> 
                     <div class="matchup-label">${label}</div>
-                    ${createTeamHTML(loserOf7v8Id || team1Id, series)}
-                    ${createTeamHTML(team2Id, series)}
+                    ${createTeamHTML(loserOf7v8Id || team1Id, series, weekLink)}
+                    ${createTeamHTML(team2Id, series, weekLink)}
                 </div>
             `;
         }
@@ -571,7 +575,7 @@
                         <div class="finals-champion">
                             <div class="champion-box">
                                 <h3>🏆 RKL Champion 🏆</h3>
-                                ${createTeamHTML(Champion, null)}
+                                ${createTeamHTML(Champion, getSeries('FINALS'), null)}
                             </div>
                         </div>
                     ` : `
