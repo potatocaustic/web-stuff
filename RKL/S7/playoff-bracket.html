@@ -95,7 +95,7 @@
             display: grid;
             grid-template-areas: "titles" "body";
             grid-template-rows: auto 1fr;
-            min-width: 1180px;
+            min-width: 1150px;
         }
 
         .bracket-header-row {
@@ -120,7 +120,7 @@
         .round-column {
             display: flex;
             flex-direction: column;
-            padding: 0 1rem;
+            padding: 0 0.75rem;
         }
         
         .conference-section {
@@ -169,7 +169,7 @@
             background-color: var(--bracket-bg-color);
             border: 1px solid var(--bracket-border-color);
             border-radius: 4px;
-            width: 215px;
+            width: 210px;
             transition: all 0.2s ease;
             text-decoration: none;
             color: inherit;
@@ -258,19 +258,19 @@
         .champion-box {
             background-color: var(--bracket-bg-color);
             border: 2px solid gold;
-            padding: 1.5rem;
+            padding: 1.25rem;
             border-radius: 8px;
             display: inline-block;
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
         }
         
         .champion-box .team-logo { width: 60px; height: 60px; margin-bottom: 1rem; }
-        .champion-box h3 { font-size: 1.5rem; }
+        .champion-box h3 { font-size: 1.4rem; }
         .champion-box h4 { font-size: 1.2rem; margin-top: 0.5rem; }
 
-        @media (max-width: 1180px) {
-             .bracket { min-width: 1080px; }
-             .team { width: 195px; }
+        @media (max-width: 1150px) {
+             .bracket { min-width: 1050px; }
+             .team { width: 190px; }
         }
         @media (max-width: 768px) {
             .page-header h2 { font-size: 1.8rem; }
