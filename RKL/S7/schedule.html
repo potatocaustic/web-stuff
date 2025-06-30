@@ -646,7 +646,7 @@
       let allTeams = [];
       let allPlayers = [];
       let allLineups = [];
-      let allWeeklyScores = []; 
+      let weeklyScoresData = []; 
       let dateToMedianTeamScoreMap = {}; 
       let dateToWeekMap = {}; 
       let allstarRosters = [];
@@ -738,7 +738,7 @@
       }
       
       async function loadData() {
-        const [scheduleData, allstarScheduleData, postScheduleData, teamsData, playersData, lineupsData, allstarLineupsData, postLineupsData, weeklyAveragesData, weeklyScoresData, allstarRostersData] = await Promise.all([
+        const [scheduleData, allstarScheduleData, postScheduleData, teamsData, playersData, lineupsData, allstarLineupsData, postLineupsData, weeklyAveragesData, fetchedWeeklyScores, allstarRostersData] = await Promise.all([
           fetchSheetData('Schedule'),
           fetchSheetData('Allstar_Schedule'),
           fetchSheetData('Post_Schedule'),
@@ -771,7 +771,7 @@
         if(postLineupsData) allLineups = allLineups.concat(postLineupsData);
 
         const localWeeklyAverages = weeklyAveragesData || []; 
-        allWeeklyScores = weeklyScoresData || [];
+        weeklyScoresData = fetchedWeeklyScores || [];
 
         dateToWeekMap = {}; 
         localWeeklyAverages.forEach(wa => {
@@ -781,7 +781,7 @@
         });
 
         dateToMedianTeamScoreMap = {}; 
-        allWeeklyScores.forEach(ws => {
+        weeklyScoresData.forEach(ws => {
           if (ws.date && ws.daily_median !== undefined && ws.daily_median !== '') {
             dateToMedianTeamScoreMap[ws.date] = parseNumber(ws.daily_median);
           }
@@ -790,11 +790,9 @@
         let initialWeek = determineCurrentWeek(allGames);
         const allAvailableWeeks = getCanonicalWeekOrder();
 
-        // START OF CHANGE: Updated URL hash parsing logic to be more robust.
         const hashPrefix = '#week-';
         if (window.location.hash.startsWith(hashPrefix)) {
             try {
-                // Decodes a hash like #week-Play-In into "Play-In" or #week-Round%201 into "Round 1"
                 const weekFromHash = decodeURIComponent(window.location.hash.substring(hashPrefix.length));
                 
                 if (weekFromHash && allAvailableWeeks.map(String).includes(weekFromHash)) {
@@ -804,7 +802,6 @@
                 console.error('Error processing week from URL hash:', e);
             }
         }
-        // END OF CHANGE
 
         currentWeek = initialWeek;
         setupWeekSelector(); 
@@ -863,7 +860,9 @@
           const isCompleted = weekGames.length > 0 && completedCount === weekGames.length; 
           
           let weekText;
-          if (POSTSEASON_WEEK_IDS.includes(String(week))) {
+          if (String(week) === 'Finals') {
+            weekText = '🏆 Finals';
+          } else if (POSTSEASON_WEEK_IDS.includes(String(week))) {
             weekText = String(week);
           } else if (week === 'ALLSTAR') {
             weekText = 'ALLSTAR';
@@ -887,29 +886,50 @@
        }
       
       function displayWeek(week) {
-        const weekGames = allGames.filter(game => String(game.week) === String(week));
+        let weekGames = allGames.filter(game => String(game.week) === String(week));
         const weekStandoutsSection = document.getElementById('week-standouts-section');
         const weekSummarySection = document.getElementById('week-summary');
         
         const isPostseason = POSTSEASON_WEEK_IDS.includes(String(week));
-        let playoffWeekRecords = {};
+        const isRegularSeasonWeek = !isPostseason && week !== 'ALLSTAR';
+        let gamesToRender = weekGames;
 
-        if (isPostseason) {
+        if (isPostseason && weekGames.length > 0) {
+            weekGames.sort((a, b) => {
+                const dateA = new Date(a.date);
+                const dateB = new Date(b.date);
+                if (dateA - dateB !== 0) return dateA - dateB;
+                return (parseInt(a.series_game, 10) || 99) - (parseInt(b.series_game, 10) || 99);
+            });
+
+            const seriesRecords = {};
+            const gamesWithSnapshots = [];
+
             weekGames.forEach(game => {
-                if (game.team1_id) playoffWeekRecords[game.team1_id] = { wins: 0, losses: 0 };
-                if (game.team2_id) playoffWeekRecords[game.team2_id] = { wins: 0, losses: 0 };
+                if (game.team1_id && !seriesRecords[game.team1_id]) seriesRecords[game.team1_id] = { wins: 0, losses: 0 };
+                if (game.team2_id && !seriesRecords[game.team2_id]) seriesRecords[game.team2_id] = { wins: 0, losses: 0 };
             });
-            const completedGamesThisWeek = weekGames.filter(game => game.completed === 'TRUE');
-            completedGamesThisWeek.forEach(game => {
-                const winnerId = game.winner;
-                const loserId = winnerId === game.team1_id ? game.team2_id : game.team1_id;
-                if (winnerId && playoffWeekRecords[winnerId]) {
-                    playoffWeekRecords[winnerId].wins++;
+
+            for (const game of weekGames) {
+                const gameWithSnapshot = { ...game };
+                
+                if (game.completed === 'TRUE') {
+                    const winnerId = game.winner;
+                    const loserId = winnerId === game.team1_id ? game.team2_id : game.team1_id;
+                    if (winnerId) {
+                        if (seriesRecords[winnerId]) seriesRecords[winnerId].wins++;
+                        if (seriesRecords[loserId]) seriesRecords[loserId].losses++;
+                    }
                 }
-                if (loserId && playoffWeekRecords[loserId]) {
-                    playoffWeekRecords[loserId].losses++;
-                }
-            });
+                
+                const team1Rec = seriesRecords[game.team1_id] || { wins: 0, losses: 0 };
+                const team2Rec = seriesRecords[game.team2_id] || { wins: 0, losses: 0 };
+                gameWithSnapshot.team1_record_snapshot = `${team1Rec.wins}-${team1Rec.losses}`;
+                gameWithSnapshot.team2_record_snapshot = `${team2Rec.wins}-${team2Rec.losses}`;
+
+                gamesWithSnapshots.push(gameWithSnapshot);
+            }
+            gamesToRender = gamesWithSnapshots;
         }
         
         let weekTitle;
@@ -922,8 +942,6 @@
         }
         document.getElementById('games-title').textContent = `${weekTitle} Games`;
         
-        const isRegularSeasonWeek = !isPostseason && week !== 'ALLSTAR';
-
         if (!isRegularSeasonWeek) {
             weekStandoutsSection.style.display = 'none';
         } else {
@@ -931,18 +949,18 @@
             if (standoutWeekNumSpan) standoutWeekNumSpan.textContent = week;
         }
 
-        if (weekGames.length === 0) {
+        if (gamesToRender.length === 0) {
           document.getElementById('games-content').innerHTML = '<div class="no-games">No games scheduled for this week</div>';
           weekSummarySection.style.display = 'none';
           if (isRegularSeasonWeek) weekStandoutsSection.style.display = 'none';
           return;
         }
         
-        const completedGamesThisWeek = weekGames.filter(game => game.completed === 'TRUE');
+        const completedGamesThisWeek = gamesToRender.filter(game => game.completed === 'TRUE');
         const completedCount = completedGamesThisWeek.length;
-        const upcomingCount = weekGames.length - completedCount;
+        const upcomingCount = gamesToRender.length - completedCount;
         
-        document.getElementById('total-games').textContent = weekGames.length;
+        document.getElementById('total-games').textContent = gamesToRender.length;
         document.getElementById('completed-games').textContent = completedCount;
         document.getElementById('upcoming-games').textContent = upcomingCount;
         weekSummarySection.style.display = 'block';
@@ -956,7 +974,7 @@
           document.querySelector('.games-header').appendChild(subtitle);
         }
 
-        const allGamesInWeekCompleted = weekGames.length > 0 && completedCount === weekGames.length;
+        const allGamesInWeekCompleted = gamesToRender.length > 0 && completedCount === gamesToRender.length;
         if (isRegularSeasonWeek && allGamesInWeekCompleted && allLineups && allLineups.length > 0 && Object.keys(dateToMedianTeamScoreMap).length > 0 && Object.keys(dateToWeekMap).length > 0) {
           calculateAndDisplayStandouts(week, completedGamesThisWeek);
           weekStandoutsSection.style.display = 'block';
@@ -965,7 +983,7 @@
         }
         
         const gamesByDate = {};
-        weekGames.forEach(game => {
+        gamesToRender.forEach(game => {
           const date = game.date;
           if (!gamesByDate[date]) gamesByDate[date] = [];
           gamesByDate[date].push(game);
@@ -993,25 +1011,29 @@
               const team2Score = parseNumber(game.team2_score);
               const winner = game.winner;
 
-              const team1Data = allTeams.find(t => t.team_id === game.team1_id);
-              const team2Data = allTeams.find(t => t.team_id === game.team2_id);
               let team1Record = '';
               let team2Record = '';
 
               if (isPostseason) {
-                  const rec1 = playoffWeekRecords[game.team1_id] || { wins: 0, losses: 0 };
-                  const rec2 = playoffWeekRecords[game.team2_id] || { wins: 0, losses: 0 };
-                  team1Record = `${rec1.wins}-${rec1.losses}`;
-                  team2Record = `${rec2.wins}-${rec2.losses}`;
+                  team1Record = game.team1_record_snapshot || '0-0';
+                  team2Record = game.team2_record_snapshot || '0-0';
+              } else if (isRegularSeasonWeek) {
+                  const team1WeekRecord = weeklyScoresData.find(r => r.team_id === game.team1_id && r.week == week);
+                  const team2WeekRecord = weeklyScoresData.find(r => r.team_id === game.team2_id && r.week == week);
+                  team1Record = team1WeekRecord ? `${team1WeekRecord.wins_after_week}-${team1WeekRecord.losses_after_week}` : '0-0';
+                  team2Record = team2WeekRecord ? `${team2WeekRecord.wins_after_week}-${team2WeekRecord.losses_after_week}` : '0-0';
               } else {
+                  const team1Data = allTeams.find(t => t.team_id === game.team1_id);
+                  const team2Data = allTeams.find(t => t.team_id === game.team2_id);
                   team1Record = team1Data ? `${team1Data.wins || 0}-${team1Data.losses || 0}` : '';
                   team2Record = team2Data ? `${team2Data.wins || 0}-${team2Data.losses || 0}` : '';
               }
               
               const team1SeedHtml = isPostseason && game.team1_seed ? `<span class="team-seed">(${game.team1_seed})</span> ` : '';
               const team2SeedHtml = isPostseason && game.team2_seed ? `<span class="team-seed">(${game.team2_seed})</span> ` : '';
+              const gameDesc = isPostseason && game.Desc ? `${escapeHTML(game.Desc)} - ` : '';
 
-              const clickHandler = isCompleted ? `onclick="showGameDetails('${escapeHTML(game.team1_id)}', '${escapeHTML(game.team2_id)}', '${escapeHTML(game.date)}')" ` : '';
+              const clickHandler = isCompleted ? `onclick="showGameDetails('${escapeHTML(game.team1_id)}', '${escapeHTML(game.team2_id)}', '${escapeHTML(game.date)}', '${escapeHTML(team1Record)}', '${escapeHTML(team2Record)}')" ` : '';
 
               return `
                 <div class="game-card ${isCompleted ? 'completed' : 'upcoming'}" ${clickHandler}>
@@ -1038,11 +1060,12 @@
                     </div>
                   </div>
                   <div class="game-status ${isCompleted ? 'completed' : 'upcoming'}">
-                    ${isCompleted ? `Final` : `Upcoming`}
+                    ${gameDesc}${isCompleted ? `Final` : `Upcoming`}
                   </div>
                 </div>`;
             }).join('');
-            return `<div class="date-section"><div class="date-header">${formatDate(date)}</div><div class="games-grid">${gamesHTML}</div></div>`;
+            const dateHeaderText = (week === 'Finals') ? `🏆 ${formatDate(date)}` : formatDate(date);
+            return `<div class="date-section"><div class="date-header">${dateHeaderText}</div><div class="games-grid">${gamesHTML}</div></div>`;
           }).join('');
         document.getElementById('games-content').innerHTML = datesHTML;
       }
@@ -1136,7 +1159,7 @@
           'No ranked player data.';
       }
       
-      async function showGameDetails(team1Id, team2Id, date) {
+      async function showGameDetails(team1Id, team2Id, date, team1Record, team2Record) {
         const modal = document.getElementById('game-modal');
         const modalTitle = document.getElementById('modal-title');
         const modalContent = document.getElementById('modal-content');
@@ -1179,21 +1202,21 @@
         const team2Total = parseNumber(game.team2_score); 
         const winner = game.winner;
         
-        const generateLineupTable = (lineups, teamIdForTable, totalScoreFromSchedule, isWinner, game) => {
+        const generateLineupTable = (lineups, teamIdForTable, totalScoreFromSchedule, isWinner, game, teamRecord) => {
           const teamData = allTeams.find(t => t.team_id === teamIdForTable);
           const isAllstarTeam = ALLSTAR_TEAM_IDS.includes(teamIdForTable);
           const isGMGame = (game.team1_id === 'EGM' && game.team2_id === 'WGM') || (game.team1_id === 'WGM' && game.team2_id === 'EGM');
           const logoExt = isAllstarTeam ? 'png' : 'webp';
           const logoClass = 'team-logo' + (isAllstarTeam ? ' allstar' : '');
           const headerOnClick = isAllstarTeam ? '' : `onclick="window.location.href='team.html?id=${escapeHTML(teamIdForTable)}'" style="cursor: pointer;"`;
-          const teamRecord = teamData ? `${teamData.wins || 0}-${teamData.losses || 0}` : 'N/A';
+          const recordToShow = teamRecord || (teamData ? `${teamData.wins || 0}-${teamData.losses || 0}` : 'N/A');
           
           if (lineups.length === 0) { 
             return `
               <div class="team-breakdown ${isWinner ? 'winner' : ''}">
                 <div class="team-header modal-team-header ${isWinner ? 'winner' : ''}" ${headerOnClick}>
                   <img src="icons/${escapeHTML(teamIdForTable)}.${logoExt}" alt="${escapeHTML(getTeamName(teamIdForTable))}" class="${logoClass}" onerror="this.onerror=null; this.src='icons/FA.webp';">
-                  <div><h4>${escapeHTML(getTeamName(teamIdForTable))}</h4><div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div></div>
+                  <div><h4>${escapeHTML(getTeamName(teamIdForTable))}</h4><div style="font-size: 0.9rem; opacity: 0.9;">${recordToShow}</div></div>
                 </div>
                 <div class="team-total">Total: ${formatInThousands(totalScoreFromSchedule)}</div>
                 <div style="padding: 1rem; text-align: center; color: #666;">No detailed lineup data available for this game.</div>
@@ -1246,7 +1269,7 @@
             <div class="team-breakdown ${isWinner ? 'winner' : ''}">
               <div class="team-header modal-team-header ${isWinner ? 'winner' : ''}" ${headerOnClick}>
                  <img src="icons/${escapeHTML(teamIdForTable)}.${logoExt}" alt="${escapeHTML(getTeamName(teamIdForTable))}" class="${logoClass}" onerror="this.onerror=null; this.src='icons/FA.webp';">
-                <div><h4>${escapeHTML(getTeamName(teamIdForTable))}</h4><div style="font-size: 0.9rem; opacity: 0.9;">${teamRecord}</div></div>
+                <div><h4>${escapeHTML(getTeamName(teamIdForTable))}</h4><div style="font-size: 0.9rem; opacity: 0.9;">${recordToShow}</div></div>
               </div>
               <div class="team-total">Total: ${formatInThousands(totalScoreFromSchedule)}</div>
               <table class="lineup-table">
@@ -1259,8 +1282,8 @@
         
         modalContent.innerHTML = `
           <div class="game-details-grid">
-            ${generateLineupTable(team1Lineups, game.team1_id, team1Total, winner === game.team1_id, game)}
-            ${generateLineupTable(team2Lineups, game.team2_id, team2Total, winner === game.team2_id, game)}
+            ${generateLineupTable(team1Lineups, game.team1_id, team1Total, winner === game.team1_id, game, team1Record)}
+            ${generateLineupTable(team2Lineups, game.team2_id, team2Total, winner === game.team2_id, game, team2Record)}
           </div>
         `;
        }
