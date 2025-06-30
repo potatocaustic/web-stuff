@@ -299,8 +299,7 @@
         </div>
 
         <div id="play-in-section" class="play-in-section">
-             <!-- Play-In Tournament HTML will be injected here -->
-        </div>
+             </div>
         
         <div class="bracket-container" id="bracket-container">
             <div class="loading">Loading Playoff Bracket...</div>
@@ -385,17 +384,17 @@
             return allPlayoffGames.find(g => g.series_id === seriesId);
         }
 
-        function createTeamHTML(teamId, series, weekLink = null) {
+        // START OF CHANGE: Updated createTeamHTML to always link to team pages and stop click propagation.
+        function createTeamHTML(teamId, series) {
             const teamData = getTeam(teamId);
             const isWinner = series?.winner === teamId;
             const teamWins = (series?.team1_id === teamId) ? series?.team1_wins : series?.team2_wins;
             const isTBD = !teamId || teamId === "TBD";
         
-            // This is the key change: Use the weekLink if it exists, otherwise use the team page link.
-            const teamHref = weekLink ? weekLink : (isTBD ? 'javascript:void(0);' : `team.html?id=${teamData.team_id}`);
+            const teamHref = isTBD ? 'javascript:void(0);' : `team.html?id=${teamData.team_id}`;
         
             return `
-                <a href="${teamHref}" class="team ${isWinner ? 'winner' : ''} ${isTBD ? 'tbd' : ''}">
+                <a href="${teamHref}" class="team ${isWinner ? 'winner' : ''} ${isTBD ? 'tbd' : ''}" onclick="event.stopPropagation();">
                     <span class="team-seed">${teamData.postseed || ''}</span>
                     <img src="icons/${isTBD ? 'RKL' : teamData.team_id}.webp" alt="${teamData.team_name}" class="team-logo" onerror="this.onerror=null; this.src='icons/RKL.webp';">
                     <div class="team-info">
@@ -405,19 +404,20 @@
                 </a>`;
         }
         
+        // START OF CHANGE: Updated createMatchupHTML to make the entire div clickable and use the new URL format.
         function createMatchupHTML(seriesId, defaultTeam1Id, defaultTeam2Id) {
             const series = getSeries(seriesId);
             const team1Id = series?.team1_id || defaultTeam1Id;
             const team2Id = series?.team2_id || defaultTeam2Id;
         
             const hasStarted = series && series.team1_id && series.team2_id;
-            const weekLink = hasStarted ? `schedule.html#week-${getWeekNameFromSeriesId(seriesId).replace(' ', '-')}` : null;
-            const matchupClass = hasStarted ? 'matchup is-clickable' : 'matchup'; // Add this line
+            const weekLink = hasStarted ? `schedule.html#week-${encodeURIComponent(getWeekNameFromSeriesId(seriesId))}` : null;
+            const matchupClass = hasStarted ? 'matchup is-clickable' : 'matchup';
+            const clickHandler = hasStarted ? `onclick="window.location.href='${weekLink}'"` : '';
         
-            // Use the new matchupClass variable here
-            let html = `<div class="${matchupClass}"> 
-                ${createTeamHTML(team1Id, series, weekLink)}
-                ${createTeamHTML(team2Id, series, weekLink)}`;
+            let html = `<div class="${matchupClass}" ${clickHandler}> 
+                ${createTeamHTML(team1Id, series)}
+                ${createTeamHTML(team2Id, series)}`;
             if(series) {
                  html += `<div class="matchup-connector"></div>`;
             }
@@ -425,6 +425,7 @@
             return html;
         }
 
+        // START OF CHANGE: Updated createPlayInMatchupHTML to make the div clickable and use new URL format.
         function createPlayInMatchupHTML(label, seriesId, defaultTeam1Id, defaultTeam2Id) {
              const series = getSeries(seriesId);
              const team1Id = series?.team1_id || defaultTeam1Id;
@@ -440,18 +441,19 @@
              }
              
              const hasStarted = series && series.team1_id && series.team2_id;
-             const weekLink = hasStarted ? `schedule.html#week-${getWeekNameFromSeriesId(seriesId).replace(' ', '-')}` : null;
-             const matchupClass = hasStarted ? 'play-in-matchup is-clickable' : 'play-in-matchup'; // Add this line
+             const weekLink = hasStarted ? `schedule.html#week-${encodeURIComponent(getWeekNameFromSeriesId(seriesId))}` : null;
+             const matchupClass = hasStarted ? 'play-in-matchup is-clickable' : 'play-in-matchup';
+             const clickHandler = hasStarted ? `onclick="window.location.href='${weekLink}'"` : '';
         
-             // Use the new matchupClass variable here
              return `
-                <div class="${matchupClass}"> 
+                <div class="${matchupClass}" ${clickHandler}> 
                     <div class="matchup-label">${label}</div>
-                    ${createTeamHTML(loserOf7v8Id || team1Id, series, weekLink)}
-                    ${createTeamHTML(team2Id, series, weekLink)}
+                    ${createTeamHTML(loserOf7v8Id || team1Id, series)}
+                    ${createTeamHTML(team2Id, series)}
                 </div>
             `;
         }
+        // END OF CHANGES
 
         function renderPlayInTournament(westTeams, eastTeams) {
             const playInSection = document.getElementById('play-in-section');
@@ -546,7 +548,6 @@
 
             let bracketHTML = `
             <div class="bracket">
-                <!-- Western Conference -->
                 <div class="conference west">
                     <div class="round round-1">
                         <div class="round-title">West Round 1</div>
@@ -565,7 +566,6 @@
                         ${createMatchupHTML('W-CF', W_R2_T_W, W_R2_B_W)}
                     </div>
                 </div>
-                <!-- Finals -->
                 <div class="final-round">
                     ${ Champion ? `
                         <div class="finals-champion">
@@ -581,7 +581,6 @@
                         </div>
                     `}
                 </div>
-                <!-- Eastern Conference -->
                 <div class="conference east">
                     <div class="round round-3">
                         <div class="round-title">East Finals</div>
