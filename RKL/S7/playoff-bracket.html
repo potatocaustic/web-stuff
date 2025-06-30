@@ -35,13 +35,7 @@
             --winner-bg: #3a4a3a;
             --team-hover-bg: #383838;
             --playin-bg-color: #1e1e1e;
-        }
-
-        .matchup-link {
-            text-decoration: none;
-            color: inherit;
-            display: block;
-        }       
+        } 
         
         /* Play-In Tournament Styles */
         .play-in-section {
@@ -385,14 +379,15 @@
             return allPlayoffGames.find(g => g.series_id === seriesId);
         }
 
-        function createTeamHTML(teamId, series) {
+        function createTeamHTML(teamId, series, weekLink = null) {
             const teamData = getTeam(teamId);
             const isWinner = series?.winner === teamId;
-            // The corrected line is below:
             const teamWins = (series?.team1_id === teamId) ? series?.team1_wins : series?.team2_wins;
             const isTBD = !teamId || teamId === "TBD";
-            const teamHref = isTBD ? 'javascript:void(0);' : `team.html?id=${teamData.team_id}`;
-
+        
+            // This is the key change: Use the weekLink if it exists, otherwise use the team page link.
+            const teamHref = weekLink ? weekLink : (isTBD ? 'javascript:void(0);' : `team.html?id=${teamData.team_id}`);
+        
             return `
                 <a href="${teamHref}" class="team ${isWinner ? 'winner' : ''} ${isTBD ? 'tbd' : ''}">
                     <span class="team-seed">${teamData.postseed || ''}</span>
@@ -408,19 +403,19 @@
             const series = getSeries(seriesId);
             const team1Id = series?.team1_id || defaultTeam1Id;
             const team2Id = series?.team2_id || defaultTeam2Id;
-            const weekName = getWeekNameFromSeriesId(seriesId);
-            
-            // Only add the link if the matchup has started (i.e., a series object exists)
-            const hasStarted = series && series.team1_id && series.team2_id;
-            const linkHref = hasStarted ? `schedule.html#week-${weekName.replace(' ', '-')}` : 'javascript:void(0);';
         
-            let html = `<a href="${linkHref}" class="matchup-link">
-                <div class="matchup">
-                    ${createTeamHTML(team1Id, series)}
-                    ${createTeamHTML(team2Id, series)}
-                    <div class="matchup-connector"></div>
-                </div>
-            </a>`;
+            // Determine if the matchup has started and generate the correct schedule link
+            const hasStarted = series && series.team1_id && series.team2_id;
+            const weekLink = hasStarted ? `schedule.html#week-${getWeekNameFromSeriesId(seriesId).replace(' ', '-')}` : null;
+        
+            // The outer <a> tag is removed. The weekLink is now passed to createTeamHTML.
+            let html = `<div class="matchup">
+                ${createTeamHTML(team1Id, series, weekLink)}
+                ${createTeamHTML(team2Id, series, weekLink)}`;
+            if(series) {
+                 html += `<div class="matchup-connector"></div>`;
+            }
+            html += `</div>`;
             return html;
         }
 
