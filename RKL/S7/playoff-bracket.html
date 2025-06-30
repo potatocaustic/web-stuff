@@ -267,7 +267,7 @@
         }
         
         .champion-box .team-logo { width: 60px; height: 60px; margin-bottom: 1rem; }
-        .champion-box h3 { font-size: 1.3rem; }
+        .champion-box h3 { font-size: 1.3rem; white-space: nowrap; }
         .champion-box h4 { font-size: 1.2rem; margin-top: 0.5rem; }
 
         @media (max-width: 1120px) {
@@ -691,7 +691,7 @@
                     <div class="round-column final-round">
                         ${ Champion ? `
                             <div class="finals-champion">
-                                <div class="champion-box">
+                                <div class="champion-box is-clickable" onclick="window.location.href='schedule.html#week-Finals'">
                                     <h3>🏆 RKL Champion 🏆</h3>
                                     ${createTeamHTML(Champion, getSeries('FINALS'), null, null, Champion)}
                                 </div>
