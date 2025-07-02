@@ -116,6 +116,18 @@
             font-size: 1.2rem;
             padding: 0.5rem 1rem;
         }
+        
+        .round-title .series-format {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: normal;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+        
+        .dark-mode .round-title .series-format {
+            color: #adb5bd;
+        }
 
         .round-column {
             display: flex;
@@ -614,10 +626,10 @@
             let bracketHTML = `
             <div class="bracket">
                 <div class="bracket-header-row">
-                    <div class="round-title">Round 1</div>
-                    <div class="round-title">Conference Semis</div>
-                    <div class="round-title">Conference Finals</div>
-                    <div class="round-title">RKL Finals</div>
+                    <div class="round-title">Round 1<small class="series-format">(Best of 3)</small></div>
+                    <div class="round-title">Conference Semis<small class="series-format">(Best of 3)</small></div>
+                    <div class="round-title">Conference Finals<small class="series-format">(Best of 5)</small></div>
+                    <div class="round-title">RKL Finals<small class="series-format">(Best of 7)</small></div>
                 </div>
                 <div class="bracket-body-row">
                     <div class="round-column">
@@ -651,7 +663,6 @@
 
                     <div class="round-column">
                         <div class="conference-section">
-                            <h3 class="conference-subtitle">West</h3>
                             <div class="conference-group">
                                 <div class="matchup-subgroup">
                                     ${createMatchupHTML('W-R2-T', W_R1_1v8_W, W_R1_4v5_W)}
@@ -662,7 +673,6 @@
                             </div>
                         </div>
                         <div class="conference-section">
-                            <h3 class="conference-subtitle">East</h3>
                             <div class="conference-group">
                                 <div class="matchup-subgroup">
                                     ${createMatchupHTML('E-R2-T', E_R1_1v8_W, E_R1_4v5_W)}
@@ -676,13 +686,11 @@
 
                     <div class="round-column">
                         <div class="conference-section">
-                            <h3 class="conference-subtitle">West</h3>
                             <div class="conference-group">
                                 ${createMatchupHTML('W-CF', W_R2_T_W, W_R2_B_W)}
                             </div>
                         </div>
                         <div class="conference-section">
-                            <h3 class="conference-subtitle">East</h3>
                             <div class="conference-group">
                                 ${createMatchupHTML('E-CF', E_R2_T_W, E_R2_B_W)}
                             </div>
