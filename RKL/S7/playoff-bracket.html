@@ -464,7 +464,7 @@
 
         function createTeamHTML(teamId, series, weekLink = null, displaySeed = null, seriesWinner = null) {
             const teamData = getTeam(teamId);
-            const isWinner = seriesWinner === teamId;
+            const isWinner = seriesWinner && seriesWinner === teamId;
             const teamWins = (series?.team1_id === teamId) ? parseInt(series?.team1_wins, 10) : parseInt(series?.team2_wins, 10);
             const isTBD = !teamId || teamId === "TBD" || teamId.includes('Loser of') || teamId.includes('Winner of');
             const nonInteractiveClass = weekLink ? 'non-interactive' : '';
