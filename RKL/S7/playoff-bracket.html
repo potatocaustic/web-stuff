@@ -95,7 +95,7 @@
             display: grid;
             grid-template-areas: "titles" "body";
             grid-template-rows: auto 1fr;
-            min-width: 1120px;
+            min-width: 1220px;
         }
 
         .bracket-header-row {
@@ -184,7 +184,7 @@
             background-color: var(--bracket-bg-color);
             border: 1px solid var(--bracket-border-color);
             border-radius: 4px;
-            width: 205px;
+            width: 230px;
             transition: all 0.2s ease;
             text-decoration: none;
             color: inherit;
@@ -253,6 +253,18 @@
             font-size: 0.9rem;
             font-weight: bold;
         }
+
+        .team-record {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: normal;
+            white-space: nowrap;
+        }
+        
+        .dark-mode .team-record {
+             color: #bbb;
+        }
+
         .team.winner .series-score {
             color: var(--winner-color);
         }
@@ -285,9 +297,9 @@
         .champion-box h3 { font-size: 1.3rem; white-space: nowrap; }
         .champion-box h4 { font-size: 1.2rem; margin-top: 0.5rem; }
 
-        @media (max-width: 1120px) {
-             .bracket { min-width: 1020px; }
-             .team { width: 185px; }
+        @media (max-width: 1220px) {
+             .bracket { min-width: 1120px; }
+             .team { width: 205px; }
         }
         @media (max-width: 768px) {
             .page-header h2 { font-size: 1.8rem; }
@@ -461,6 +473,15 @@
             const style = weekLink ? 'style="cursor: inherit;"' : '';
             
             const seedToShow = displaySeed || teamData.postseed || '';
+            
+            let scoreOrRecordHTML = '';
+            const seriesHasStarted = series && (parseInt(series.team1_wins, 10) > 0 || parseInt(series.team2_wins, 10) > 0);
+
+            if (seriesHasStarted) {
+                scoreOrRecordHTML = `<span class="series-score">${teamWins || 0}</span>`;
+            } else if (!isTBD && teamData.wins && teamData.losses) {
+                scoreOrRecordHTML = `<span class="team-record">(${teamData.wins}-${teamData.losses})</span>`;
+            }
         
             return `
                 <a href="${teamHref}" class="team ${isWinner ? 'winner' : ''} ${isTBD ? 'tbd' : ''} ${nonInteractiveClass}" ${style}>
@@ -468,7 +489,7 @@
                     <img src="icons/${isTBD ? 'RKL' : teamData.team_id}.webp" alt="${teamData.team_name}" class="team-logo" onerror="this.onerror=null; this.src='icons/RKL.webp';">
                     <div class="team-info">
                         <span class="team-name">${teamData.team_name}</span>
-                        ${series && (series.team1_wins > 0 || series.team2_wins > 0) ? `<span class="series-score">${teamWins || 0}</span>` : ''}
+                        ${scoreOrRecordHTML}
                     </div>
                 </a>`;
         }
