@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RKL Season 7 Standings</title>
+    <link rel="stylesheet" href="../css/global-styles.css" />
     <link rel="icon" href="../rklfavicon.ico" type="image/x-icon" />
     <script>
       // Apply theme from local storage before page loads to prevent flashing
@@ -15,247 +16,7 @@
       })();
     </script>
     <style>
-      /* Reset and General Styles */
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-        color: #333;
-        line-height: 1.6;
-        transition: background-color 0.3s, color 0.3s;
-      }
-      
-      h1, h2, h3 {
-        color: #333;
-        transition: color 0.3s;
-      }
-
-      /* Header styling */
-      header {
-        background-color: #333;
-        color: #fff;
-        padding: 1rem;
-        text-align: center;
-        position: relative;
-      }
-      
-      header h1 {
-        color: white !important;
-        font-size: 2rem; 
-        margin: 0;
-        display: flex; 
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem; 
-      }
-      
-      .header-logo {
-        width: 40px; 
-        height: 40px;
-        object-fit: cover;
-      }
-
-      .header-text {}
-
-      #theme-toggle-btn {
-        position: absolute;
-        top: 1.2rem;
-        right: 1rem;
-        background: none;
-        border: none;
-        color: white;
-        font-size: 1.5rem;
-        cursor: pointer;
-        padding: 0.5rem;
-        line-height: 1;
-        z-index: 102;
-      }
-      #theme-toggle-btn .moon-icon { display: none; }
-      
-      /* Navigation styling */
-      nav {
-        position: relative;
-      }
-
-      .nav-toggle {
-        display: none;
-        background: none;
-        border: none;
-        color: white;
-        font-size: 1.8rem;
-        cursor: pointer;
-        padding: 0.5rem 1rem;
-        position: absolute; 
-        top: -2.8rem; 
-        right: 1rem;
-      }
-      
-      nav ul {
-        display: flex;
-        justify-content: center;
-        list-style: none;
-        margin-top: 1rem;
-        flex-wrap: wrap;
-      }
-      
-      nav ul li {
-        margin: 0.5rem 1rem;
-      }
-      
-      nav ul li a {
-        color: #fff;
-        text-decoration: none;
-        font-size: 1.1rem;
-        transition: color 0.3s ease;
-        white-space: nowrap;
-      }
-      
-      nav ul li a:hover {
-        color: #ccc;
-      }
-      
-      /* Dropdown Menu Styles */
-      .dropdown {
-          position: relative;
-          display: inline-block;
-      }
-
-      .dropdown .dropbtn {
-          background: none;
-          border: none;
-          cursor: pointer;
-          color: #fff;
-          text-decoration: none;
-          font-size: 1.1rem;
-          font-family: inherit;
-      }
-
-      .dropdown-content {
-          display: none;
-          position: absolute;
-          background-color: #333;
-          min-width: 180px;
-          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-          z-index: 101;
-          border-radius: 4px;
-          top: 100%;
-          left: 50%;
-          transform: translateX(-50%);
-          padding-top: 0.5rem;
-          transition: background-color 0.3s;
-      }
-
-      .dropdown-content a {
-          color: white;
-          padding: 12px 16px;
-          text-decoration: none;
-          display: block;
-          text-align: left;
-          font-size: 1rem;
-      }
-
-      .dropdown-content a:hover {
-          background-color: #555;
-          color: #fff;
-      }
-
-      .dropdown:hover .dropdown-content {
-          display: block; /* Show on desktop hover */
-      }
-
-
-      @media (max-width: 600px) {
-        #theme-toggle-btn {
-          left: 1rem;
-          right: auto;
-        }
-
-        .header-text { display: none; }
-        .header-logo { width: 50px; height: 50px; }
-        .nav-toggle { display: block; }
-        
-        nav ul {
-          display: none;
-          position: absolute;
-          top: calc(100% - 1rem); 
-          left: 0; right: 0;
-          background-color: #444; 
-          flex-direction: column;
-          align-items: center;
-          gap: 0rem; 
-          margin-top: 0;
-          padding: 0.5rem 0;
-          box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-          z-index: 100; 
-        }
-        nav ul.active { display: flex; }
-        nav ul li { margin: 0; width: 100%; text-align: center; }
-        nav ul li a { display: block; padding: 0.8rem 1rem; }
-        nav ul li a:hover { background-color: #555; }
-        
-        .dropdown {
-            display: block;
-            width: 100%;
-        }
-        .dropdown .dropbtn {
-            width: 100%;
-            padding: 0.8rem 1rem;
-        }
-        .dropdown .dropbtn:hover {
-            background-color: #555;
-        }
-        .dropdown-content {
-            position: static;
-            display: none;
-            box-shadow: none;
-            background-color: #4a4a4a;
-            border-radius: 0;
-            padding-top: 0;
-            transform: none;
-            left: auto;
-            top: auto;
-        }
-        .dropdown-content a {
-            padding-left: 2.5rem; /* Indent nested links */
-        }
-        .dropdown.active .dropdown-content {
-            display: block; /* Show on mobile click via JS */
-        }
-        .dropdown:hover .dropdown-content {
-            display: none;
-        }
-        .dropdown.active:hover .dropdown-content {
-            display: block;
-        }
-      }
-
-      /* Main content */
-      main {
-        padding: 2rem;
-        max-width: 1400px;
-        margin: 0 auto;
-      }
-
-      .page-header {
-        text-align: center;
-        margin-bottom: 2rem;
-      }
-
-      .page-header h2 {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-      }
-      #pageDescription {
-        font-size: 0.95em;
-        color: #555;
-        transition: color 0.3s;
-      }
-      
+      /* Page-specific styles for standings.html */
       .hidden { display: none !important; }
 
       .view-toggle-button {
@@ -466,23 +227,41 @@
       .playin-color { background-color: #ffc107; }
       .eliminated-color { background-color: #dc3545; }
       
-      .loading { text-align: center; padding: 3rem; color: #666; font-size: 1.1rem; }
-      .error { text-align: center; padding: 2rem; color: #dc3545; background-color: #f8d7da; border-radius: 4px; margin: 1rem; }
+      /* Clinch Indicator Styles */
+      .clinch-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        font-size: 0.8rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-left: 6px;
+        flex-shrink: 0;
+      }
+      .clinch-playoff { background-color: #28a745; color: white; }
+      .clinch-playin { background-color: #ffc107; color: #333; }
+      .clinch-eliminated { background-color: #dc3545; color: white; }
 
-      /* Dark Mode Styles */
-      .dark-mode body {
-        background-color: #121212;
-        color: #e0e0e0;
+      /* Legend Styles */
+      .clinch-legend {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        margin-top: 2rem;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+        transition: background-color 0.3s, box-shadow 0.3s;
       }
-      .dark-mode h1, .dark-mode h2, .dark-mode h3 {
-        color: #f5f5f5;
-      }
-      .dark-mode #pageDescription {
-        color: #aaa;
-      }
-      .dark-mode #theme-toggle-btn .sun-icon { display: none; }
-      .dark-mode #theme-toggle-btn .moon-icon { display: block; }
+      .clinch-legend-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem; text-align: center; }
+      .clinch-legend-items { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+      .clinch-legend-item { display: flex; align-items: center; gap: 0.75rem; }
 
+      /* Page-specific Dark Mode Styles */
       .dark-mode .view-toggle-button {
         background-color: #373737;
         color: #e0e0e0;
@@ -491,9 +270,9 @@
       .dark-mode .view-toggle-button:hover {
         background-color: #4a4a4a;
       }
-
       .dark-mode .conference-section, 
-      .dark-mode .playoff-legend {
+      .dark-mode .playoff-legend,
+      .dark-mode .clinch-legend {
         background-color: #1e1e1e;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
       }
@@ -513,7 +292,6 @@
       .dark-mode .pam-positive { color: #66bb6a; }
       .dark-mode .pam-negative { color: #f06292; }
       .dark-mode .eliminated { opacity: 0.5; }
-      
       .dark-mode .power-rankings-summary {
         background-color: #2c2c2c;
         border-bottom-color: #444;
@@ -525,27 +303,7 @@
         color: #bb86fc;
       }
 
-      .dark-mode .error {
-        background-color: #5d1c21;
-        color: #f8d7da;
-      }
-      .dark-mode .dropdown-content {
-          background-color: #444;
-      }
-      .dark-mode .dropdown-content a:hover {
-          background-color: #666;
-      }
-      .dark-mode nav ul.active {
-          background-color: #444;
-      }
-      .dark-mode nav ul li a:hover {
-        background-color: #555;
-      }
-      .dark-mode .dropdown.active .dropdown-content {
-          background-color: #4a4a4a;
-      }
-
-
+      /* Page-specific responsive adjustments */
       @media (max-width: 768px) {
         .standings-container { grid-template-columns: 1fr; gap: 1.5rem; }
         #fullLeagueViewContainer .conference-section,
@@ -604,14 +362,6 @@
           font-size: 1.1rem; 
         }
       }
-
-      footer {
-        text-align: center;
-        margin-top: 3rem;
-        padding: 1rem;
-        background-color: #333;
-        color: #fff;
-      }
     </style>
   </head>
   <body>
@@ -629,7 +379,13 @@
         <ul id="nav-menu">
             <li><a href="RKL-S7.html">S7 Home</a></li>
             <li><a href="standings.html">Standings & Rankings</a></li>
-            <li><a href="leaderboards.html">Leaderboards</a></li>
+            <li class="dropdown">
+                <a href="javascript:void(0);" class="dropbtn">Stats Hub &#9662;</a>
+                <div class="dropdown-content">
+                    <a href="leaderboards.html">Leaderboards</a>
+                    <a href="compare.html">Comparison Tool</a>
+                </div>
+            </li>
             <li><a href="schedule.html">Schedule</a></li>
             <li class="dropdown">
                 <a href="javascript:void(0);" class="dropbtn">Draft Central &#9662;</a>
@@ -641,6 +397,7 @@
             </li>
             <li><a href="transactions.html">Transactions</a></li>
             <li><a href="teams.html">Teams</a></li>
+            <li><a href="trophy-case.html">Trophy Case</a></li>
             <li><a href="changelog.html">Changelog</a></li>
         </ul>
       </nav>
@@ -655,11 +412,12 @@
       <div class="page-buttons-container">
         <button id="viewToggleButton1" class="view-toggle-button">Show Full League Standings</button>
         <button id="viewToggleButton2" class="view-toggle-button">Show Power Rankings</button>
+        <button onclick="window.location.href='playoff-bracket.html'" class="view-toggle-button">Show Playoff Bracket</button>
       </div>
 
       <div id="conferenceViewContainer">
         <div class="playoff-legend">
-          <div class="legend-title">Playoff Picture (Conferences)</div>
+          <div class="legend-title">Playoff Picture (Based on Rank)</div>
           <div class="legend-items">
             <div class="legend-item">
               <div class="legend-color playoff-color"></div>
@@ -750,7 +508,7 @@
       <div id="powerRankingsViewContainer" class="hidden">
         <div class="conference-section"> 
           <div class="conference-header">
-            <h3>Power Rankings v3 (Week 6)</h3> </div>
+            <h3>Power Rankings v4 (Week 9)</h3> </div>
           <div id="powerRankingsSummary" class="power-rankings-summary">
             Loading summary...
           </div>
@@ -771,13 +529,32 @@
           </table>
         </div>
       </div>
-
+      
+      <div class="clinch-legend">
+        <div class="clinch-legend-title">Postseason Clinching Status</div>
+        <div class="clinch-legend-items">
+          <div class="clinch-legend-item">
+            <span class="clinch-badge clinch-playoff">x</span>
+            <span>Clinched Playoffs</span>
+          </div>
+          <div class="clinch-legend-item">
+            <span class="clinch-badge clinch-playin">p</span>
+            <span>Clinched Play-In</span>
+          </div>
+          <div class="clinch-legend-item">
+            <span class="clinch-badge clinch-eliminated">e</span>
+            <span>Eliminated</span>
+          </div>
+        </div>
+      </div>
     </main>
     
     <footer>
       <p>@caustic on Real</p>
+      <a href="trade-block.html">GM Portal</a>
     </footer>
 
+    <script src="../js/main.js" defer></script>
     <script>
       const SHEET_ID = '1zb1x8r4OlRTVg9W5WMZF-ootyfsMg2yx2_3rcUhmIrc';
       const BASE_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=`;
@@ -794,7 +571,7 @@
       const sortState = {
         Eastern: { column: 'record', direction: 'asc' },
         Western: { column: 'record', direction: 'asc' },
-        FullLeague: { column: 'record', direction: 'asc'}
+        FullLeague: { column: 'record', direction: 'asc' }
       };
 
       function getUrlParameter(name) {
@@ -984,6 +761,16 @@
           const wins = parseInt(team.wins || 0); const losses = parseInt(team.losses || 0);
           const pam = parseFloat(team.pam || 0); const medRank = parseFloat(team.med_starter_rank || 0);
           let rankCellContent; let trClass = '';
+          
+          let clinchBadgeHtml = '';
+          if (team.playoffs === '1') {
+              clinchBadgeHtml = '<span class="clinch-badge clinch-playoff">x</span>';
+          } else if (team.playin === '1') {
+              clinchBadgeHtml = '<span class="clinch-badge clinch-playin">p</span>';
+          } else if (team.elim === '1') {
+              clinchBadgeHtml = '<span class="clinch-badge clinch-eliminated">e</span>';
+          }
+
           if (tableType === 'FullLeague') {
             rankCellContent = team.officialFullLeagueRank;
           } else {
@@ -1001,6 +788,7 @@
                 <div class="team-cell" onclick="handleTeamClick('${team.team_id}')">
                   <img src="icons/${team.team_id}.webp" alt="${team.team_name}" class="team-logo" onerror="this.style.display='none'">
                   <span class="team-name">${team.team_name}</span>
+                  ${clinchBadgeHtml}
                 </div>
               </td>
               <td class="record-cell">${wins}-${losses}</td>
@@ -1244,20 +1032,6 @@
 
 
       async function loadStandings() {
-        // --- Theme Toggler ---
-        const themeToggleBtn = document.getElementById('theme-toggle-btn');
-        if(themeToggleBtn) {
-            themeToggleBtn.addEventListener('click', () => {
-                document.documentElement.classList.toggle('dark-mode');
-                
-                let theme = 'light';
-                if (document.documentElement.classList.contains('dark-mode')) {
-                    theme = 'dark';
-                }
-                localStorage.setItem('theme', theme);
-            });
-        }
-        
         const viewParam = getUrlParameter('view');
         const sortByParam = getUrlParameter('sortBy');
         let sortDirectionParam = getUrlParameter('sortDirection');
@@ -1340,28 +1114,33 @@
         let rawEasternTeams = allTeamsData.filter(team => team.conference === 'Eastern');
         let rawWesternTeams = allTeamsData.filter(team => team.conference === 'Western');
 
-        easternTeamsData = rawEasternTeams
-          .sort((a, b) => {
-            const winsA = parseInt(a.wins || 0); const winsB = parseInt(b.wins || 0);
-            if (winsB !== winsA) return winsB - winsA;
+        const sortLogic = (a, b) => {
+            const winsA = parseInt(a.wins || 0);
+            const lossesA = parseInt(a.losses || 0);
+            const totalGamesA = winsA + lossesA;
+            const winPctA = totalGamesA > 0 ? winsA / totalGamesA : 0;
+            
+            const winsB = parseInt(b.wins || 0);
+            const lossesB = parseInt(b.losses || 0);
+            const totalGamesB = winsB + lossesB;
+            const winPctB = totalGamesB > 0 ? winsB / totalGamesB : 0;
+
+            if (winPctB !== winPctA) {
+                return winPctB - winPctA;
+            }
             return parseFloat(b.pam || 0) - parseFloat(a.pam || 0);
-          })
+        };
+
+        easternTeamsData = rawEasternTeams
+          .sort(sortLogic)
           .map((team, index) => ({ ...team, officialRecordRank: index + 1 }));
 
         westernTeamsData = rawWesternTeams
-          .sort((a, b) => {
-            const winsA = parseInt(a.wins || 0); const winsB = parseInt(b.wins || 0);
-            if (winsB !== winsA) return winsB - winsA;
-            return parseFloat(b.pam || 0) - parseFloat(a.pam || 0);
-          })
+          .sort(sortLogic)
           .map((team, index) => ({ ...team, officialRecordRank: index + 1 }));
 
         fullLeagueTeamsData = [...allTeamsData]
-          .sort((a, b) => {
-            const winsA = parseInt(a.wins || 0); const winsB = parseInt(b.wins || 0);
-            if (winsB !== winsA) return winsB - winsA;
-            return parseFloat(b.pam || 0) - parseFloat(a.pam || 0);
-          })
+          .sort(sortLogic)
           .map((team, index) => ({ ...team, officialFullLeagueRank: index + 1 }));
         
         let rawPowerRankings = await fetchSheetData('TPR');
@@ -1412,28 +1191,8 @@
             showConferenceView(); 
         }
         updateColspanForLoadingPlaceholders();
-
-        // --- Mobile Navigation ---
-        const navToggle = document.querySelector('.nav-toggle');
-        const navMenu = document.getElementById('nav-menu');
-        const dropdownBtn = document.querySelector('.dropdown .dropbtn');
-
-        if (navToggle && navMenu) {
-            navToggle.addEventListener('click', () => {
-                const isExpanded = navToggle.getAttribute('aria-expanded') === 'true' || false;
-                navToggle.setAttribute('aria-expanded', !isExpanded);
-                navMenu.classList.toggle('active');
-            });
-        }
-        if(dropdownBtn) {
-            dropdownBtn.addEventListener('click', function(event) {
-                if (window.getComputedStyle(navToggle).display !== 'none') {
-                    event.preventDefault(); 
-                    this.parentElement.classList.toggle('active');
-                }
-            });
-        }
       }
+
       window.addEventListener('resize', () => {
         if (currentView === 'conferences') {
             renderStandings('Eastern', easternTeamsData); 
