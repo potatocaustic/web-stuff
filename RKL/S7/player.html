@@ -218,6 +218,11 @@
         margin: 0;
         font-size: 1.4rem;
       }
+      
+      .performance-table-container {
+        max-height: 600px; 
+        overflow-y: auto;
+      }
 
       .performance-table {
         width: 100%;
@@ -356,6 +361,29 @@
       .back-button { background-color: #007bff; color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 4px; text-decoration: none; font-size: 1rem; display: inline-block; margin-bottom: 2rem; transition: background-color 0.3s;}
       .back-button:hover { background-color: #0056b3; text-decoration: none; color: white; }
 
+      /* Scrollbar Styles */
+      .performance-table-container, .game-history {
+        scrollbar-width: thin;
+        scrollbar-color: #ccc #f1f1f1;
+      }
+      .performance-table-container::-webkit-scrollbar,
+      .game-history::-webkit-scrollbar {
+        width: 10px;
+      }
+      .performance-table-container::-webkit-scrollbar-track,
+      .game-history::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      .performance-table-container::-webkit-scrollbar-thumb,
+      .game-history::-webkit-scrollbar-thumb {
+        background: #bbb;
+        border-radius: 5px;
+      }
+      .performance-table-container::-webkit-scrollbar-thumb:hover,
+      .game-history::-webkit-scrollbar-thumb:hover {
+        background: #999;
+      }
+      
       /* Dark Mode Styles */
       .dark-mode .back-button { background-color: #3b82f6; }
       .dark-mode .back-button:hover { background-color: #60a5fa; }
@@ -395,6 +423,23 @@
       .dark-mode .player-link { color: #8ab4f8; }
       .dark-mode .player-link:hover { color: #a7c7fa; }
       .dark-mode .rank-cell { color: #aaa; }
+      
+      /* Dark Mode Scrollbar */
+      .dark-mode .performance-table-container, .dark-mode .game-history {
+        scrollbar-color: #555 #2c2c2c;
+      }
+      .dark-mode .performance-table-container::-webkit-scrollbar-track,
+      .dark-mode .game-history::-webkit-scrollbar-track {
+        background: #2c2c2c;
+      }
+      .dark-mode .performance-table-container::-webkit-scrollbar-thumb,
+      .dark-mode .game-history::-webkit-scrollbar-thumb {
+        background: #555;
+      }
+      .dark-mode .performance-table-container::-webkit-scrollbar-thumb:hover,
+      .dark-mode .game-history::-webkit-scrollbar-thumb:hover {
+        background: #6e6e6e;
+      }
 
       @media (max-width: 768px) {
         .content-grid { grid-template-columns: 1fr; }
@@ -479,7 +524,7 @@
       <div class="content-grid">
         <div class="performance-section">
           <div class="section-header"><h3>Weekly Performance</h3></div>
-          <div style="max-height: 600px; overflow-y: auto;">
+          <div class="performance-table-container">
             <table class="performance-table">
               <thead><tr><th>Week</th><th>Points</th><th>Rank</th><th>Role</th></tr></thead>
               <tbody id="performance-table"><tr><td colspan="4" class="loading">Loading performance data...</td></tr></tbody>
