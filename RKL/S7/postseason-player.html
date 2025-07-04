@@ -466,6 +466,7 @@
     </header>
     
     <main>
+      <a href="#" id="regular-season-btn" class="back-button" style="background-color: #6c757d;">Regular Season Profile</a>
       <a href="leaderboards.html" class="back-button">Leaderboards</a>
       
       <div class="player-header">
@@ -797,6 +798,14 @@
       
       async function loadPlayerData() {
         playerHandle = getUrlParameter('player');
+
+        if (playerHandle) {
+            const regularSeasonBtn = document.getElementById('regular-season-btn');
+            if(regularSeasonBtn) {
+                regularSeasonBtn.href = `player.html?player=${encodeURIComponent(playerHandle)}`;
+            }
+        }
+
         if (!playerHandle) {
           document.getElementById('player-main-info').innerHTML = '<div class="error">No player specified</div>';
           return;
