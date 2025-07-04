@@ -92,7 +92,7 @@ auth.onAuthStateChanged(async (user) => {
         if (!userDoc.exists) {
             logoutMessage = "User data not found. Please contact admin.";
         } else {
-            logoutMessage = "Your account is awaiting approval. Please contact site admin.";
+            logoutMessage = "Your account is awaiting admin approval.";
         }
         await auth.signOut();
       }
