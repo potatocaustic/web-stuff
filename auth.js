@@ -92,11 +92,11 @@ auth.onAuthStateChanged(async (user) => {
         // }
 
       } else {
-        if (!userDoc.exists) {
-          authError.textContent = "User data not found. Please contact admin.";
-        } else {
-          authError.textContent = "Account is disabled or not fully set up. Please contact admin.";
-        }
+      if (!userDoc.exists) {
+        authError.textContent = "User data not found. Please contact admin.";
+      } else {
+        authError.textContent = "Your account is awaiting approval. Please contact site admin.";
+      }
         await auth.signOut();
         // UI update will be handled by the 'else' block of onAuthStateChanged
       }
@@ -195,9 +195,11 @@ signupButton.addEventListener('click', async () => {
     const user = userCredential.user;
     await db.collection('users').doc(user.uid).set({
       username: username,
-      isActive: true,
+      isActive: false,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
+    authError.textContent = "Account created successfully! It is now awaiting admin approval.";
+    await auth.signOut(); 
   } catch (error) {
     console.error("Signup error:", error);
     if (error.code === 'auth/email-already-in-use') {
