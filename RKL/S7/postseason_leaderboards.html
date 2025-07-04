@@ -33,6 +33,26 @@
         margin-bottom: 1rem;
       }
 
+      .nav-button-container {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      .nav-button {
+          text-decoration: none;
+          background-color: #007bff;
+          color: white !important;
+          padding: 0.75rem 1.5rem;
+          border-radius: 6px;
+          font-weight: 500;
+          transition: background-color 0.3s ease;
+          display: inline-block;
+      }
+      .nav-button:hover {
+          background-color: #0056b3;
+          color: white !important;
+          text-decoration: none;
+      }
+
       .category-selector {
         background-color: #fff;
         border-radius: 8px;
@@ -382,6 +402,14 @@
       .dark-mode .page-header p a {
         color: #f06292;
       }
+      .dark-mode .nav-button {
+        background-color: #8ab4f8;
+        color: #121212 !important;
+      }
+      .dark-mode .nav-button:hover {
+          background-color: #a7c7fa;
+          color: #121212 !important;
+      }
       .dark-mode .category-selector,
       .dark-mode .leaderboard-container {
         background-color: #1e1e1e;
@@ -527,6 +555,10 @@
         <h2>Postseason Player Leaderboards</h2>
         <p>Statistical leaders across all postseason categories</p>
         <p style="color: red; font-size: 0.9em; margin-top: 0.5rem;">NEW: Check out the <a href="stats-glossary.html">advanced stats glossary</a> to learn more about some of the metrics used on this page!</p>
+      </div>
+
+      <div class="nav-button-container">
+        <a href="leaderboards.html" class="nav-button">Regular Season Leaderboards</a>
       </div>
 
       <div class="category-selector">
