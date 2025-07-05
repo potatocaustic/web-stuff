@@ -60,6 +60,15 @@
         display: inline-flex;
         align-items: center;
       }
+
+      .season-indicator {
+        color: #28a745;
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
       
       .player-subtitle {
         font-size: 1.2rem;
@@ -393,6 +402,7 @@
       .dark-mode .team-info { color: #8ab4f8; }
       .dark-mode .team-info:hover { color: #a7c7fa; }
       .dark-mode .player-previous-teams a { color: #999; }
+      .dark-mode .season-indicator { color: #66bb6a; }
       .dark-mode .stat-card { background-color: #2c2c2c; border-color: #444; }
       .dark-mode .stat-card:hover { border-color: #bb86fc; }
       .dark-mode .stat-value { color: #e0e0e0; }
@@ -511,7 +521,7 @@
     </header>
     
     <main>
-      <a href="#" id="regular-season-btn" class="back-button" style="background-color: #6c757d;">Regular Season Profile</a>
+      <a href="#" id="regular-season-btn" class="back-button" style="background-color: #6c757d;">&larr; Regular Season Profile</a>
       <a href="leaderboards.html" class="back-button">Leaderboards</a>
       
       <div class="player-header">
@@ -952,6 +962,7 @@
           ${teamLogoHTML}
           <div class="player-details">
             <h2>${playerData.player_handle}${isRookie ? '<span class="rookie-badge">R</span>' : ''}${isAllStar ? ' <span class="all-star-badge">★</span>' : ''}</h2>
+            <div class="season-indicator">Postseason</div>
             <div class="player-subtitle">${playerData.player_status} • ${gamesPlayed} games played</div>
             ${teamInfoHTML}
             ${previousTeamsHTML} 
