@@ -62,7 +62,7 @@
       }
 
       .season-indicator {
-        color: #28a745;
+        color: inherit;
         font-weight: bold;
         font-size: 1.1rem;
         margin-bottom: 0.5rem;
@@ -402,7 +402,6 @@
       .dark-mode .team-info { color: #8ab4f8; }
       .dark-mode .team-info:hover { color: #a7c7fa; }
       .dark-mode .player-previous-teams a { color: #999; }
-      .dark-mode .season-indicator { color: #66bb6a; }
       .dark-mode .stat-card { background-color: #2c2c2c; border-color: #444; }
       .dark-mode .stat-card:hover { border-color: #bb86fc; }
       .dark-mode .stat-value { color: #e0e0e0; }
@@ -1079,7 +1078,7 @@
         const historyHTML = gamesWithPerformance.map(game => {
           const isCaptain = String(game.lineup.captain).toLowerCase() === 'true' || game.lineup.captain === true || game.lineup.captain === 1;
           const pointsRaw = parseNumber(game.lineup.points_raw); 
-          const globalRank = parseNumber(game.lineup.global_rank);
+          const globalRank = parseNumber(game.global_rank);
           
           const playerTeamName = getTeamName(game.playerTeamId);
           const opponentTeamName = getTeamName(game.opponentId);
