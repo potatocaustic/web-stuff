@@ -20,20 +20,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // --- DOM Elements (CHANGED to match your HTML) ---
+    // --- DOM Elements ---
     const authContainer = document.getElementById('auth-container');
-    const mainContent = document.querySelector('main'); // CHANGED: Selects the <main> tag directly instead of an ID.
+    const mainContent = document.querySelector('main');
     const loginForm = document.getElementById('login-form');
-    const emailInput = document.getElementById('login-username'); // CHANGED: Was 'email'
-    const passwordInput = document.getElementById('login-password'); // CHANGED: Was 'password'
+    const emailInput = document.getElementById('login-username');
+    const passwordInput = document.getElementById('login-password');
     const loginButton = document.getElementById('login-button');
-    const messageDiv = document.getElementById('auth-error'); // CHANGED: Was 'message'
+    const messageDiv = document.getElementById('auth-error');
 
     let logoutMessage = "";
 
     // --- Auth State Change Logic ---
     auth.onAuthStateChanged(async (user) => {
-      // Ensure critical elements are not null before proceeding
       if (!mainContent || !authContainer || !loginForm || !messageDiv) {
           console.error("Critical DOM elements not found! Please check auth.js and your HTML file IDs.");
           return;
@@ -45,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const userDoc = await userDocRef.get();
 
           if (userDoc.exists && userDoc.data().isActive === true) {
-            mainContent.style.display = 'block'; // Show main content
+            mainContent.style.display = 'block';
             authContainer.style.display = 'none';
             if (!document.getElementById('logout-button')) {
                 createLogoutButton();
@@ -64,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
           await auth.signOut();
         }
       } else {
-        mainContent.style.display = 'none'; // Hide main content
+        mainContent.style.display = 'none';
         authContainer.style.display = 'block';
         if (logoutMessage) {
           messageDiv.textContent = logoutMessage;
@@ -74,11 +73,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Login Form Submission ---
-    // This event listener now references the correct input variables from above
-    loginForm.addEventListener('submit', async (e) => {
+    // CHANGED: Listening for a 'click' on the button instead of 'submit' on the div.
+    loginButton.addEventListener('click', async (e) => {
       e.preventDefault();
 
-      // Check if the input fields exist before trying to get their value
       if (!emailInput || !passwordInput) {
         messageDiv.textContent = "Login input fields not found.";
         return;
@@ -91,9 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
       loginButton.disabled = true;
 
       try {
-        // Firebase Auth uses email for login, even if the field is named 'username'
         await auth.signInWithEmailAndPassword(email, password);
-        // The onAuthStateChanged listener will handle the UI changes
       } catch (error) {
         messageDiv.textContent = error.message;
       } finally {
