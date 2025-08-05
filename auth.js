@@ -73,7 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Login Form Submission ---
-    // CHANGED: Listening for a 'click' on the button instead of 'submit' on the div.
     loginButton.addEventListener('click', async (e) => {
       e.preventDefault();
 
@@ -81,14 +80,25 @@ document.addEventListener('DOMContentLoaded', () => {
         messageDiv.textContent = "Login input fields not found.";
         return;
       }
-
-      const email = emailInput.value;
+      
+      // NEW LOGIC: Append domain to username to create a valid email
+      const username = emailInput.value;
       const password = passwordInput.value;
+      let email;
+
+      // If user types a plain username, add the domain.
+      // If they already typed a full email, use it as is.
+      if (username.includes('@')) {
+        email = username;
+      } else {
+        email = username + '@yourleague.local';
+      }
 
       loginButton.textContent = 'Logging in...';
       loginButton.disabled = true;
 
       try {
+        // This now sends the correctly formatted email to Firebase
         await auth.signInWithEmailAndPassword(email, password);
       } catch (error) {
         messageDiv.textContent = error.message;
