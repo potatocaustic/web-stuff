@@ -23,26 +23,37 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- DOM Elements ---
     const authContainer = document.getElementById('auth-container');
     const mainContent = document.querySelector('main');
+    const messageDiv = document.getElementById('auth-error');
+    
+    // Login Form
     const loginForm = document.getElementById('login-form');
     const emailInput = document.getElementById('login-username');
     const passwordInput = document.getElementById('login-password');
     const loginButton = document.getElementById('login-button');
-    const messageDiv = document.getElementById('auth-error');
+    
+    // NEW DOM ELEMENTS: Signup Form & UI Toggles
+    const signupForm = document.getElementById('signup-form');
+    const signupUsernameInput = document.getElementById('signup-username');
+    const signupPasswordInput = document.getElementById('signup-password');
+    const signupConfirmPasswordInput = document.getElementById('signup-confirm-password');
+    const signupButton = document.getElementById('signup-button');
+    const showSignup = document.getElementById('show-signup');
+    const showLogin = document.getElementById('show-login');
+    const authTitle = document.getElementById('auth-title');
 
     let logoutMessage = "";
 
     // --- Auth State Change Logic ---
     auth.onAuthStateChanged(async (user) => {
-      if (!mainContent || !authContainer || !loginForm || !messageDiv) {
+      // ... (This section remains unchanged)
+      if (!mainContent || !authContainer) {
           console.error("Critical DOM elements not found! Please check auth.js and your HTML file IDs.");
           return;
       }
-
       if (user) {
         try {
           const userDocRef = db.collection('users').doc(user.uid);
           const userDoc = await userDocRef.get();
-
           if (userDoc.exists && userDoc.data().isActive === true) {
             mainContent.style.display = 'block';
             authContainer.style.display = 'none';
@@ -50,11 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 createLogoutButton();
             }
           } else {
-            if (!userDoc.exists) {
-              logoutMessage = "User data not found. Please contact admin.";
-            } else {
-              logoutMessage = "Your account is awaiting admin approval.";
-            }
+            if (!userDoc.exists) { logoutMessage = "User data not found. Please contact admin."; } 
+            else { logoutMessage = "Your account is awaiting admin approval."; }
             await auth.signOut();
           }
         } catch (error) {
@@ -71,55 +79,108 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     });
-
-    // --- Login Form Submission ---
+    
+    // --- Login Logic ---
     loginButton.addEventListener('click', async (e) => {
-      e.preventDefault();
+        // ... (This section remains unchanged)
+        e.preventDefault();
+        if (!emailInput || !passwordInput) {
+            messageDiv.textContent = "Login input fields not found.";
+            return;
+        }
+        const username = emailInput.value;
+        const password = passwordInput.value;
+        let email;
+        if (username.includes('@')) { email = username; } 
+        else { email = username + '@yourleague.local'; }
 
-      if (!emailInput || !passwordInput) {
-        messageDiv.textContent = "Login input fields not found.";
-        return;
-      }
-      
-      // NEW LOGIC: Append domain to username to create a valid email
-      const username = emailInput.value;
-      const password = passwordInput.value;
-      let email;
-
-      // If user types a plain username, add the domain.
-      // If they already typed a full email, use it as is.
-      if (username.includes('@')) {
-        email = username;
-      } else {
-        email = username + '@yourleague.local';
-      }
-
-      loginButton.textContent = 'Logging in...';
-      loginButton.disabled = true;
-
-      try {
-        // This now sends the correctly formatted email to Firebase
-        await auth.signInWithEmailAndPassword(email, password);
-      } catch (error) {
-        messageDiv.textContent = error.message;
-      } finally {
-        loginButton.textContent = 'Login';
-        loginButton.disabled = false;
-      }
+        loginButton.textContent = 'Logging in...';
+        loginButton.disabled = true;
+        try {
+            await auth.signInWithEmailAndPassword(email, password);
+        } catch (error) {
+            messageDiv.textContent = error.message;
+        } finally {
+            loginButton.textContent = 'Login';
+            loginButton.disabled = false;
+        }
     });
 
     // --- Logout Button ---
     function createLogoutButton() {
-      const existingButton = document.getElementById('logout-button');
-      if (existingButton) return;
-
-      const logoutButton = document.createElement('button');
-      logoutButton.id = 'logout-button';
-      logoutButton.textContent = 'Logout';
-      logoutButton.addEventListener('click', async () => {
-        logoutMessage = "You have been logged out.";
-        await auth.signOut();
-      });
-      mainContent.insertBefore(logoutButton, mainContent.firstChild);
+        // ... (This section remains unchanged)
+        const existingButton = document.getElementById('logout-button');
+        if (existingButton) return;
+        const logoutButton = document.createElement('button');
+        logoutButton.id = 'logout-button';
+        logoutButton.textContent = 'Logout';
+        logoutButton.addEventListener('click', async () => {
+            logoutMessage = "You have been logged out.";
+            await auth.signOut();
+        });
+        mainContent.insertBefore(logoutButton, mainContent.firstChild);
     }
+    
+    // --- NEW: UI Switching Logic ---
+    showSignup.addEventListener('click', (e) => {
+        e.preventDefault();
+        loginForm.style.display = 'none';
+        signupForm.style.display = 'block';
+        authTitle.textContent = 'Sign Up';
+        messageDiv.textContent = ''; // Clear any previous error messages
+    });
+
+    showLogin.addEventListener('click', (e) => {
+        e.preventDefault();
+        signupForm.style.display = 'none';
+        loginForm.style.display = 'block';
+        authTitle.textContent = 'Login';
+        messageDiv.textContent = ''; // Clear any previous error messages
+    });
+
+    // --- NEW: Signup Logic ---
+    signupButton.addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        const username = signupUsernameInput.value;
+        const password = signupPasswordInput.value;
+        const confirmPassword = signupConfirmPasswordInput.value;
+        messageDiv.textContent = '';
+
+        if (password !== confirmPassword) {
+            messageDiv.textContent = "Passwords do not match.";
+            return;
+        }
+        if (!username || password.length < 6) {
+            messageDiv.textContent = "Please enter a username and a password of at least 6 characters.";
+            return;
+        }
+
+        const email = username + '@yourleague.local';
+        signupButton.textContent = 'Signing Up...';
+        signupButton.disabled = true;
+
+        try {
+            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            const user = userCredential.user;
+
+            // Create a corresponding document in the 'users' collection
+            await db.collection('users').doc(user.uid).set({
+                username: username,
+                email: user.email,
+                isActive: false, // Set to false by default for admin approval
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            // Log the user out immediately and show message
+            logoutMessage = "Account created successfully. Please wait for admin approval.";
+            await auth.signOut();
+
+        } catch (error) {
+            messageDiv.textContent = error.message;
+        } finally {
+            signupButton.textContent = 'Sign Up';
+            signupButton.disabled = false;
+        }
+    });
 });
