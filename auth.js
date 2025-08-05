@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const passwordInput = document.getElementById('login-password');
     const loginButton = document.getElementById('login-button');
     
-    // NEW DOM ELEMENTS: Signup Form & UI Toggles
+    // Signup Form & UI Toggles
     const signupForm = document.getElementById('signup-form');
     const signupUsernameInput = document.getElementById('signup-username');
     const signupPasswordInput = document.getElementById('signup-password');
@@ -121,24 +121,26 @@ document.addEventListener('DOMContentLoaded', () => {
         mainContent.insertBefore(logoutButton, mainContent.firstChild);
     }
     
-    // --- NEW: UI Switching Logic ---
+    // --- UI Switching Logic ---
     showSignup.addEventListener('click', (e) => {
+        // ... (This section remains unchanged)
         e.preventDefault();
         loginForm.style.display = 'none';
         signupForm.style.display = 'block';
         authTitle.textContent = 'Sign Up';
-        messageDiv.textContent = ''; // Clear any previous error messages
+        messageDiv.textContent = '';
     });
 
     showLogin.addEventListener('click', (e) => {
+        // ... (This section remains unchanged)
         e.preventDefault();
         signupForm.style.display = 'none';
         loginForm.style.display = 'block';
         authTitle.textContent = 'Login';
-        messageDiv.textContent = ''; // Clear any previous error messages
+        messageDiv.textContent = '';
     });
 
-    // --- NEW: Signup Logic ---
+    // --- Signup Logic ---
     signupButton.addEventListener('click', async (e) => {
         e.preventDefault();
         
@@ -168,8 +170,8 @@ document.addEventListener('DOMContentLoaded', () => {
             await db.collection('users').doc(user.uid).set({
                 username: username,
                 email: user.email,
-                isActive: false, // Set to false by default for admin approval
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                isActive: false // Set to false by default for admin approval
+                // REMOVED: The problematic serverTimestamp line was here
             });
 
             // Log the user out immediately and show message
