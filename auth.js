@@ -10,12 +10,15 @@ const firebaseConfig = {
 };
 
 // --- Initialize Firebase ---
-firebase.initializeApp(firebaseConfig);
-if (firebase.analytics && typeof firebase.analytics === 'function') {
-    firebase.analytics();
+// This ensures the app is initialized only once.
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+} else {
+  firebase.app(); // if already initialized, use that one
 }
+
 const auth = firebase.auth();
-const db = firebase.firestore();
+const db = firebase.firestore(); 
 
 // --- DOM Elements ---
 const authContainer = document.getElementById('auth-container');
