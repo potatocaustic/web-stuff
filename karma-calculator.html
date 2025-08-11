@@ -288,12 +288,15 @@
         flex: 1;
         min-width: calc(33.33% - 0.5rem);
         justify-content: center;
+        text-align: center; /* Center text */
         transition: all 0.3s ease;
       }
       
+      /* --- MOBILE OPTIMIZATION --- */
       @media (max-width: 767px) {
         .radio-label {
-          min-width: calc(50% - 0.5rem);
+          min-width: initial; /* Reset min-width */
+          flex-basis: calc(50% - 0.25rem); /* Create two equal columns */
         }
       }
       
@@ -308,7 +311,11 @@
       }
       
       .radio-input {
-        margin-right: 0.5rem;
+        /* Hide the actual radio button */
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
       }
       
       .result-card {
@@ -647,7 +654,7 @@
           setNoVigProbUnder(underProb);
           setNoVigProbDraw(drawProb);
           
-          // This is the line for "zeroBetSize" - it already implements the requested logic.
+          // This is the line for "zeroBetSize" - it already implements the requested logic for 300 karma bets.
           const zeroBetSize = maxBetSize >= 100 ? 10 : 5; 
 
           if (bettingMode === 'two-way') {
@@ -743,22 +750,24 @@
                 >
                   <input
                     type="radio"
+                    name="bettingMode"
                     checked={bettingMode === 'two-way'}
                     onChange={() => setBettingMode('two-way')}
                     className="radio-input"
                   />
-                  Two-Way (Over/Under, Home/Away)
+                  Two-Way
                 </label>
                 <label 
                   className={`radio-label ${bettingMode === 'three-way' ? 'radio-label-selected' : ''}`}
                 >
                   <input
                     type="radio"
+                    name="bettingMode"
                     checked={bettingMode === 'three-way'}
                     onChange={() => setBettingMode('three-way')}
                     className="radio-input"
                   />
-                  Three-Way (Home/Draw/Away)
+                  Three-Way
                 </label>
               </div>
             </div>
@@ -766,13 +775,15 @@
             <div className="section">
               <h2 className="section-title">Maximum Bet Size</h2>
               <div className="radio-group">
-                {[50, 100, 200].map(size => (
+                {/* --- ADDED 300 KARMA OPTION --- */}
+                {[50, 100, 200, 300].map(size => (
                   <label 
                     key={size}
                     className={`radio-label ${maxBetSize === size ? 'radio-label-selected' : ''}`}
                   >
                     <input
                       type="radio"
+                      name="maxBetSize"
                       checked={maxBetSize === size}
                       onChange={() => setMaxBetSize(size)}
                       className="radio-input"
@@ -896,6 +907,7 @@
                     >
                       <input
                         type="radio"
+                        name="oddsFormat"
                         checked={oddsFormat === 'american'}
                         onChange={() => setOddsFormat('american')}
                         className="radio-input"
@@ -907,6 +919,7 @@
                     >
                       <input
                         type="radio"
+                        name="oddsFormat"
                         checked={oddsFormat === 'decimal'}
                         onChange={() => setOddsFormat('decimal')}
                         className="radio-input"
