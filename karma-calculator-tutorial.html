@@ -255,12 +255,12 @@
     <main>
       <div class="section">
         <h2>What is Expected Value (EV)?</h2>
-        <p>Expected Value is a fundamental concept in probability and gambling that tells you the average amount you can expect to win or lose per bet in the long run. It's calculated by weighing all possible outcomes by their probability of occurring.</p>
+        <p>Expected Value is a fundamental concept in gambling that tells you the average amount you can expect to win or lose per bet in the long run. The calculation weighs all possible outcomes by their probability of occurring.</p>
         
         <div class="highlight-box">
           <h3>The Basic Formula</h3>
-          <div class="formula">EV = (Probability of Winning × Amount Won) + (Probability of Losing × Amount Lost)</div>
-          <p>Since losing means you lose your bet amount, the "Amount Lost" is negative (e.g., -$100 for a $100 bet).</p>
+          <div class="formula">EV = (Win Prob. × Win Amt.) + (Loss Prob. × Loss Amt.)</div>
+          <p>Note: the loss amount is a negative number (e.g., -$100 for a $100 bet).</p>
         </div>
         
         <div class="example">
@@ -268,9 +268,9 @@
           <p>You bet $100 on a coin flip at +100 odds (even money):</p>
           <ul>
             <li>Probability of winning: 50% (0.5)</li>
-            <li>Amount won if you win: $100</li>
+            <li>Potential Win Amount: $100</li>
             <li>Probability of losing: 50% (0.5)</li>
-            <li>Amount lost if you lose: -$100</li>
+            <li>Potential Loss Amount: -$100</li>
           </ul>
           <div class="formula">EV = (0.5 × $100) + (0.5 × -$100) = $50 - $50 = $0</div>
           <p><strong>Result:</strong> This is a fair bet with zero expected value.</p>
@@ -279,17 +279,17 @@
       
       <div class="section">
         <h2>Why Expected Value Matters for Karma Betting</h2>
-        <p>On the Real app, you want to find situations where the "true" probability of an outcome (estimated from sportsbook odds) differs from the payout odds offered by Real. When Real offers better odds than the true probability suggests, you have a positive EV bet.</p>
+        <p>On the Real app, you want to find situations where Real offers better odds than fair value as determined from sportsbooks odds, giving you a positive EV bet.</p>
         
         <div class="highlight-box">
           <h3>Key Insight</h3>
-          <p>Sportsbooks are generally more accurate at setting odds because they have more sophisticated models and handle much larger volumes. By using sportsbook odds to estimate true probabilities, we can identify when Real is offering favorable bets.</p>
+          <p>Sportsbooks are generally more accurate at setting odds because they have more sophisticated models and pay for the absolute highest-frequency data. By using sportsbook odds to estimate true probabilities, we can identify when Real is offering favorable bets.</p>
         </div>
         
         <h3>What are "No-Vig" Probabilities?</h3>
-        <p>Sportsbooks build in a profit margin called "vig" or "juice." For example, both sides of a bet might have -110 odds, implying a 52.4% probability each, totaling 104.8%. The extra 4.8% is the vig.</p>
+        <p>Sportsbooks build in a profit margin called "vig" or "juice." For example, both sides of a bet might have -110 odds. This would imply a 52.4% win probability for each side, totaling 104.8%. The extra 4.8% is the vig.</p>
         
-        <p>To get true probabilities, we remove this vig by normalizing the implied probabilities so they add up to 100%. The calculator does this for you; this is simply for informational purposes.</p>
+        <p>To get fair value probabilities, we remove this vig by normalizing the implied probabilities so they add up to 100%. The calculator does this for you; this is simply for informational purposes.</p>
         
         <div class="example">
           <h4>No-Vig Example:</h4>
@@ -312,7 +312,7 @@
         
         <div class="step">
           <div class="step-number">Step 1: Set Your Maximum Bet Size</div>
-          <p>Choose 50, 100, or 200 karma, depending on the maximum bet allowed by Real.</p>
+          <p>Choose 50, 100, 200, or 300 karma, depending on the maximum bet allowed by Real.</p>
         </div>
         
         <div class="step">
