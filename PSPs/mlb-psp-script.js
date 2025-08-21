@@ -92,6 +92,27 @@ async function loadMetadata() {
   }
 }
 
+// Helper function to check if a date is 8-19-25
+function isDate81925(dateString) {
+  if (!dateString) return false;
+  
+  const patterns = [
+    /^8-19-25$/,          
+    /^08-19-25$/,          
+    /^8\/19\/2025$/,        
+    /^08\/19\/2025$/,      
+    /^8-19-2025$/,          
+    /^08-19-2025$/         
+  ];
+  
+  return patterns.some(pattern => pattern.test(dateString.trim()));
+}
+
+// Helper function to check if a date is an exception date
+function isExceptionDate(dateString) {
+  return isDate81925(dateString);
+}
+
 // Function to load data for a specific category
 async function loadData(category) {
   if (allData[category].length > 0) {
@@ -122,8 +143,15 @@ async function loadData(category) {
       }
     }
     
-    // Filter out entries with Projection = 0
-    const filtered = data.filter(entry => entry.Projection !== 0);
+    // Modified filter: Keep entries with Projection !== 0 OR entries from the exception date
+    const filtered = data.filter(entry => {
+      // Always include entries from the exception date, regardless of Projection value
+      if (isExceptionDate(entry.Date)) {
+        return true;
+      }
+      // For all other dates, filter out entries with Projection = 0
+      return entry.Projection !== 0;
+    });
     
     // Store the data
     allData[category] = filtered;
