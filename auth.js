@@ -45,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Auth State Change Logic ---
     auth.onAuthStateChanged(async (user) => {
-      // ... (This section remains unchanged)
       if (!mainContent || !authContainer) {
           console.error("Critical DOM elements not found! Please check auth.js and your HTML file IDs.");
           return;
@@ -82,7 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- Login Logic ---
     loginButton.addEventListener('click', async (e) => {
-        // ... (This section remains unchanged)
         e.preventDefault();
         if (!emailInput || !passwordInput) {
             messageDiv.textContent = "Login input fields not found.";
@@ -108,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Logout Button ---
     function createLogoutButton() {
-        // ... (This section remains unchanged)
         const existingButton = document.getElementById('logout-button');
         if (existingButton) return;
         const logoutButton = document.createElement('button');
@@ -123,7 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- UI Switching Logic ---
     showSignup.addEventListener('click', (e) => {
-        // ... (This section remains unchanged)
         e.preventDefault();
         loginForm.style.display = 'none';
         signupForm.style.display = 'block';
@@ -132,7 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     showLogin.addEventListener('click', (e) => {
-        // ... (This section remains unchanged)
         e.preventDefault();
         signupForm.style.display = 'none';
         loginForm.style.display = 'block';
@@ -170,8 +165,8 @@ document.addEventListener('DOMContentLoaded', () => {
             await db.collection('users').doc(user.uid).set({
                 username: username,
                 email: user.email,
-                isActive: false // Set to false by default for admin approval
-                // REMOVED: The problematic serverTimestamp line was here
+                isActive: false, // Set to false by default for admin approval
+                createdAt: firebase.firestore.FieldValue.serverTimestamp() // MODIFIED: Added timestamp
             });
 
             // Log the user out immediately and show message
