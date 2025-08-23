@@ -30,6 +30,7 @@
         color: #fff;
         padding: 1rem;
         text-align: center;
+        position: relative; /* Added for positioning context */
       }
       
       header h1 {
@@ -44,6 +45,7 @@
         justify-content: center;
         list-style: none;
         margin-top: 1rem;
+        padding: 0;
         flex-wrap: wrap;
       }
       
@@ -63,40 +65,57 @@
         color: #ccc;
       }
       
-      /* Mobile navigation styles */
-      @media (max-width: 600px) {
-        nav {
-          width: 100%;
-          padding: 0;
-        }
-        
-        nav ul {
-          flex-direction: column;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0;
-          width: 100%;
-          margin-left: 0;
-          margin-right: 0;
-        }
-        
-        nav ul li {
-          margin: 0.2rem 0;
-          width: 100%;
-          text-align: center;
-        }
-        
-        nav ul li a {
-          display: block;
-          padding: 0.5rem 0;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-          width: 100%;
-          margin: 0 auto;
-        }
-        
-        nav ul li:last-child a {
-          border-bottom: none;
-        }
+      .menu-toggle {
+          display: none;
+          background: none;
+          border: none;
+          color: white;
+          font-size: 1.5rem;
+          cursor: pointer;
+      }
+
+      /* UPDATED: Mobile navigation styles */
+      @media (max-width: 850px) {
+          .menu-toggle {
+              display: block;
+              position: absolute;
+              top: 1rem;
+              right: 1rem;
+          }
+
+          nav ul {
+              display: none;
+              position: absolute;
+              top: 100%;
+              right: 0;
+              background-color: #333;
+              flex-direction: column;
+              width: 200px;
+              box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+              z-index: 1000;
+              margin-top: 0;
+              text-align: left;
+          }
+
+          nav ul.show-menu {
+              display: flex;
+          }
+
+          nav ul li {
+              width: 100%;
+              margin: 0;
+          }
+          
+          nav ul li a {
+              display: block;
+              padding: 0.8rem 1rem;
+              border-bottom: 1px solid #444;
+              width: 100%;
+          }
+
+          nav ul li:last-child a {
+              border-bottom: none;
+          }
       }
 
       /* Main content area */
@@ -368,14 +387,16 @@
     <header>
       <h1>Karma Betting Expected Value Calculator</h1>
       <nav>
-        <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="../RKL/rkl-stats.html">Jammers Stats</a></li>
-          <li><a href="PSPs/mlb-psp.html">MLB PSP Database</a></li>
-          <li><a href="PSPs-WNBA/wnba-psp.html">WNBA PSP Database</a></li>
-          <li><a href="karma-calculator.html">Karma EV Calculator</a></li>
-          <li><a href="pool-optimizer.html">Pool Optimizer</a></li>
-          </ul>
+        <button id="menu-toggle" class="menu-toggle" aria-label="Open Navigation Menu">&#9776;</button>
+        <ul id="nav-menu">
+            <li><a href="/index.html">Home</a></li>
+            <li><a href="/PSPs/mlb-psp.html">MLB PSP Database</a></li>
+            <li><a href="/PSPs-WNBA/wnba-psp.html">WNBA PSP Database</a></li>
+            <li><a href="/RKL/rkl-stats.html">Jammers Stats</a></li>
+            <li><a href="/karma-calculator.html">Karma EV Calculator</a></li>
+            <li><a href="/pool-optimizer.html">Pool Optimizer</a></li>
+            <li><a href="/CFB/cfb-projections.html">CFB Projections</a></li>
+        </ul>
       </nav>
     </header>
 
@@ -429,6 +450,7 @@
     <script src="auth.js"></script>
 
     <script type="text/babel">
+      // React component code remains the same
       const { useState, useRef, useEffect } = React;
       
       const KarmaBettingCalculator = () => {
@@ -1170,6 +1192,19 @@
       const container = document.getElementById('calculator-root');
       const root = ReactDOM.createRoot(container);
       root.render(<KarmaBettingCalculator />);
+    </script>
+     <script>
+        // ADDED: Navigation menu toggle script
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuToggle = document.getElementById('menu-toggle');
+            const navMenu = document.getElementById('nav-menu');
+
+            if (menuToggle && navMenu) {
+                menuToggle.addEventListener('click', () => {
+                    navMenu.classList.toggle('show-menu');
+                });
+            }
+        });
     </script>
   </body>
 </html>

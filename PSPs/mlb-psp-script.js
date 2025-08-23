@@ -36,7 +36,9 @@ const elements = {
   statsSection: document.getElementById('statsSection'),
   successRateByTarget: document.getElementById('successRateByTarget'),
   avgRankSection: document.getElementById('avgRankSection'),
-  showAllButton: document.getElementById('showAllButton')
+  showAllButton: document.getElementById('showAllButton'),
+  menuToggle: document.getElementById('menu-toggle'),
+  navMenu: document.getElementById('nav-menu')
 };
 
 // Event listeners
@@ -53,7 +55,8 @@ async function init() {
   elements.pkButton.addEventListener('click', () => switchCategory('PK'));
   elements.playerSearchInput.addEventListener('input', handlePlayerSearch);
   elements.showAllButton.addEventListener('click', handleShowAll);
-  
+  elements.menuToggle.addEventListener('click', () => elements.navMenu.classList.toggle('show-menu'));
+
   // Initial data load
   try {
     // For server source, also get metadata first
