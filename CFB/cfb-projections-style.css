@@ -14,11 +14,20 @@ h1, h2, h3 {
   color: #333;
 }
 
+/* Header and Navigation */
 header {
   background-color: #333;
   color: #fff;
   padding: 1rem;
   text-align: center;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 header h1 {
@@ -31,13 +40,13 @@ nav ul {
   display: flex;
   justify-content: center;
   list-style: none;
-  margin-top: 1rem;
+  margin: 0;
   padding: 0;
   flex-wrap: wrap;
 }
 
 nav ul li {
-  margin: 0.5rem 1rem;
+  margin: 0 1rem;
 }
 
 nav ul li a {
@@ -52,11 +61,25 @@ nav ul li a:hover {
   color: #ccc;
 }
 
+.menu-toggle {
+    display: none; /* Hidden on desktop */
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
 main {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
   display: none; /* Hidden by default, shown by auth.js */
+}
+
+main > h1 {
+    text-align: center;
+    margin-bottom: 0.5rem;
 }
 
 .info {
@@ -153,6 +176,19 @@ main {
   top: 0;
 }
 
+.projections-table th.sortable {
+    cursor: pointer;
+}
+
+.projections-table th.sortable:hover {
+    background-color: #e0e0e0;
+}
+
+.projections-table th .sort-indicator {
+    margin-left: 5px;
+    font-size: 0.8em;
+}
+
 .projections-table tr:hover {
   background-color: #f9f9f9;
 }
@@ -178,21 +214,56 @@ footer {
 }
 
 /* Responsive Adjustments */
-@media (max-width: 768px) {
-  nav ul {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .controls-section {
-    grid-template-columns: 1fr;
-  }
-  
-  .position-buttons {
-    flex-direction: row;
-  }
+@media (max-width: 850px) {
+    .header-content {
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    
+    nav {
+        position: relative;
+    }
 
-  .position-button {
-    flex: 1;
-  }
+    .menu-toggle {
+        display: block;
+    }
+
+    nav ul {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: #333;
+        flex-direction: column;
+        width: 200px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        z-index: 1000;
+    }
+
+    nav ul.show-menu {
+        display: flex;
+    }
+
+    nav ul li {
+        width: 100%;
+        text-align: left;
+    }
+
+    nav ul li a {
+        display: block;
+        padding: 0.8rem 1rem;
+        border-bottom: 1px solid #444;
+    }
+    
+    .controls-section {
+      grid-template-columns: 1fr;
+    }
+    
+    .position-buttons {
+      flex-direction: row;
+    }
+
+    .position-button {
+      flex: 1;
+    }
 }

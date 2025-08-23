@@ -4,6 +4,11 @@ let allData = {
   nonQb: []
 };
 let currentPosition = 'nonQb'; // Default position group
+let filteredDataCache = []; // Cache for sorting
+let sortState = {
+    key: 'Player Name',
+    direction: 'asc'
+};
 
 // Configuration
 const CONFIG = {
@@ -29,7 +34,9 @@ const elements = {
   projectionsTableHeader: document.getElementById('projectionsTableHeader'),
   projectionsTableBody: document.getElementById('projectionsTableBody'),
   noResultsMessage: document.getElementById('noResultsMessage'),
-  lastUpdated: document.getElementById('last-updated')
+  lastUpdated: document.getElementById('last-updated'),
+  menuToggle: document.getElementById('menu-toggle'),
+  navMenu: document.getElementById('nav-menu')
 };
 
 // Event listeners
@@ -43,15 +50,14 @@ async function init() {
   elements.qbButton.addEventListener('click', () => switchPosition('qb'));
   elements.nonQbButton.addEventListener('click', () => switchPosition('nonQb'));
   elements.gameSelector.addEventListener('change', displayProjections);
+  elements.menuToggle.addEventListener('click', () => elements.navMenu.classList.toggle('show-menu'));
 
-  // Populate the game selector dropdown
   populateGameSelector();
   
-  // Initial data load
   try {
     await Promise.all([loadData('qb'), loadData('nonQb')]);
     elements.lastUpdated.textContent = 'Projection data loaded successfully.';
-    displayProjections(); // Initial display
+    displayProjections();
   } catch (error) {
     console.error('Failed to load initial data:', error);
     elements.lastUpdated.textContent = 'Error loading data. Please try refreshing the page.';
@@ -75,7 +81,7 @@ function populateGameSelector() {
  * @param {string} position - The position type ('qb' or 'nonQb')
  */
 async function loadData(position) {
-  if (allData[position].length > 0) return; // Data already loaded
+  if (allData[position].length > 0) return;
   
   try {
     const response = await fetch(CONFIG.GOOGLE_SHEET_URLS[position]);
@@ -91,8 +97,6 @@ async function loadData(position) {
 
 /**
  * Parses CSV text into an array of JSON objects
- * @param {string} csvText - The CSV data as a string
- * @returns {Array<Object>}
  */
 function parseCSV(csvText) {
   const lines = csvText.split('\n');
@@ -104,18 +108,17 @@ function parseCSV(csvText) {
   for (let i = 1; i < lines.length; i++) {
     if (!lines[i].trim()) continue;
     
-    const values = lines[i].split(',').map(value => value.trim());
+    const values = lines[i].split(',').map(value => value.trim().replace(/"/g, ''));
     const entry = {};
     
     headers.forEach((header, index) => {
       if (index < values.length) {
-        // Basic check for numeric values, can be expanded
         const isNumeric = !isNaN(parseFloat(values[index])) && isFinite(values[index]);
         entry[header] = isNumeric ? parseFloat(values[index]) : values[index];
       }
     });
     
-    if (entry['Player Name']) { // Ensure entry is valid
+    if (entry['Player Name']) {
         result.push(entry);
     }
   }
@@ -130,6 +133,8 @@ function switchPosition(position) {
   currentPosition = position;
   elements.qbButton.classList.toggle('active', position === 'qb');
   elements.nonQbButton.classList.toggle('active', position === 'nonQb');
+  // Reset sort state when switching views
+  sortState = { key: 'Player Name', direction: 'asc' };
   displayProjections();
 }
 
@@ -139,7 +144,6 @@ function switchPosition(position) {
 function displayProjections() {
   const selectedGameIndex = elements.gameSelector.value;
 
-  // Clear previous results
   elements.projectionsTableHeader.innerHTML = '';
   elements.projectionsTableBody.innerHTML = '';
 
@@ -154,13 +158,12 @@ function displayProjections() {
   elements.resultsTitle.textContent = `${selectedGame.name} - ${currentPosition === 'qb' ? 'QB' : 'Non-QB'} Projections`;
 
   const data = allData[currentPosition];
-  const filteredData = data.filter(player => selectedGame.teams.includes(player.Team));
+  filteredDataCache = data.filter(player => selectedGame.teams.includes(player.Team));
 
-  if (filteredData.length > 0) {
+  if (filteredDataCache.length > 0) {
     elements.noResultsMessage.classList.add('hidden');
     elements.projectionsTableBody.parentElement.classList.remove('hidden');
-    updateTableHeader();
-    populateTable(filteredData);
+    sortAndRender();
   } else {
     elements.noResultsMessage.classList.remove('hidden');
     elements.noResultsMessage.textContent = `No ${currentPosition === 'qb' ? 'QB' : 'Non-QB'} data found for this game.`;
@@ -169,21 +172,76 @@ function displayProjections() {
 }
 
 /**
- * Updates the header of the projections table
+ * Sorts the cached data and renders the table
+ */
+function sortAndRender() {
+    const { key, direction } = sortState;
+
+    // Sorting logic
+    filteredDataCache.sort((a, b) => {
+        if (a[key] === undefined || a[key] === null) return 1;
+        if (b[key] === undefined || b[key] === null) return -1;
+        
+        let valA = a[key];
+        let valB = b[key];
+
+        if (typeof valA === 'string') {
+            valA = valA.toLowerCase();
+            valB = valB.toLowerCase();
+        }
+
+        if (valA < valB) return direction === 'asc' ? -1 : 1;
+        if (valA > valB) return direction === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    updateTableHeader();
+    populateTable(filteredDataCache);
+}
+
+
+/**
+ * Updates the header of the projections table and adds sort listeners
  */
 function updateTableHeader() {
+  elements.projectionsTableHeader.innerHTML = ''; // Clear existing header
   const headerRow = document.createElement('tr');
   let headers = [];
+  const keyMap = {};
 
   if (currentPosition === 'nonQb') {
     headers = ['Player Name', 'Team', 'Pos', 'Total Yards', 'Total TDs', 'Receptions'];
+    Object.assign(keyMap, { 'Player Name': 'Player Name', 'Team': 'Team', 'Pos': 'Pos', 'Total Yards': 'RushRecYds', 'Total TDs': 'TotalTD', 'Receptions': 'Rec' });
   } else { // 'qb'
     headers = ['Player Name', 'Team', 'Pos', 'Passing Yards', 'Passing TDs', 'Rushing Yards', 'Rushing TDs'];
+    Object.assign(keyMap, { 'Player Name': 'Player Name', 'Team': 'Team', 'Pos': 'Pos', 'Passing Yards': 'pYds', 'Passing TDs': 'pTD', 'Rushing Yards': 'rYds', 'Rushing TDs': 'rTD' });
   }
 
   headers.forEach(headerText => {
     const th = document.createElement('th');
     th.textContent = headerText;
+    th.classList.add('sortable');
+    const dataKey = keyMap[headerText];
+
+    // Add sort indicator
+    if (sortState.key === dataKey) {
+        const indicator = document.createElement('span');
+        indicator.className = 'sort-indicator';
+        indicator.textContent = sortState.direction === 'asc' ? ' ▲' : ' ▼';
+        th.appendChild(indicator);
+    }
+    
+    // Add click listener for sorting
+    th.addEventListener('click', () => {
+        if (sortState.key === dataKey) {
+            sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            sortState.key = dataKey;
+            sortState.direction = 'asc';
+        }
+        sortAndRender();
+    });
+
     headerRow.appendChild(th);
   });
 
@@ -192,9 +250,10 @@ function updateTableHeader() {
 
 /**
  * Populates the table body with player data
- * @param {Array<Object>} playerData - The filtered data to display
+ * @param {Array<Object>} playerData - The filtered and sorted data to display
  */
 function populateTable(playerData) {
+  elements.projectionsTableBody.innerHTML = ''; // Clear existing rows
   playerData.forEach(player => {
     const row = document.createElement('tr');
     
