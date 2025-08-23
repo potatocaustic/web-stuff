@@ -1,0 +1,198 @@
+/* CFB Projections Page Styles */
+
+/* General Body and Layout */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3 {
+  color: #333;
+}
+
+header {
+  background-color: #333;
+  color: #fff;
+  padding: 1rem;
+  text-align: center;
+}
+
+header h1 {
+  color: white !important;
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+nav ul {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  margin-top: 1rem;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+nav ul li {
+  margin: 0.5rem 1rem;
+}
+
+nav ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.1rem;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+}
+
+nav ul li a:hover {
+  color: #ccc;
+}
+
+main {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: none; /* Hidden by default, shown by auth.js */
+}
+
+.info {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+#last-updated {
+  font-style: italic;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+/* Controls Section */
+.controls-section {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.game-selection, .position-selection {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#gameSelector {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.position-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.position-button {
+  padding: 0.8rem;
+  background-color: #f4f4f4;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.position-button:hover {
+  background-color: #e0e0e0;
+}
+
+.position-button.active {
+  background-color: #333;
+  color: #fff;
+  border-color: #333;
+}
+
+/* Results Section */
+.results-section {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.projections-container {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.projections-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.projections-table th,
+.projections-table td {
+  padding: 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.projections-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+}
+
+.projections-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+/* Helper Classes */
+.hidden {
+  display: none !important;
+}
+
+.no-results {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-style: italic;
+}
+
+footer {
+  text-align: center;
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #333;
+  color: #fff;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  nav ul {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .controls-section {
+    grid-template-columns: 1fr;
+  }
+  
+  .position-buttons {
+    flex-direction: row;
+  }
+
+  .position-button {
+    flex: 1;
+  }
+}
