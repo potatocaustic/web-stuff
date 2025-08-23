@@ -6,7 +6,6 @@
     <title>Home - caustic.info</title>
     <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
     <style>
-        /* Your existing homepage styles */
         * {
             margin: 0;
             padding: 0;
@@ -29,6 +28,7 @@
             color: #fff;
             padding: 1rem;
             text-align: center;
+            position: relative; /* Added for positioning context */
         }
         
         header h1 {
@@ -42,6 +42,7 @@
           justify-content: center;
           list-style: none;
           margin-top: 1rem;
+          padding: 0; /* Added to reset padding */
           flex-wrap: wrap;
         }
         
@@ -60,41 +61,58 @@
         nav ul li a:hover {
           color: #ccc;
         }
+
+        .menu-toggle {
+            display: none; /* Hide the button by default */
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
         
-        /* Mobile navigation styles */
-        @media (max-width: 600px) {
-          nav {
-            width: 100%;
-            padding: 0;
-          }
-          
-          nav ul {
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0;
-            width: 100%;
-            margin-left: 0;
-            margin-right: 0;
-          }
-          
-          nav ul li {
-            margin: 0.2rem 0;
-            width: 100%;
-            text-align: center;
-          }
-          
-          nav ul li a {
-            display: block;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            width: 100%;
-            margin: 0 auto;
-          }
-          
-          nav ul li:last-child a {
-            border-bottom: none;
-          }
+        /* UPDATED: Mobile navigation styles */
+        @media (max-width: 850px) {
+            .menu-toggle {
+                display: block;
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+            }
+
+            nav ul {
+                display: none; /* Hide the menu by default */
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background-color: #333;
+                flex-direction: column;
+                width: 200px;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                z-index: 1000;
+                margin-top: 0;
+                text-align: left;
+            }
+
+            nav ul.show-menu {
+                display: flex; /* This class will be toggled by JavaScript to show the menu */
+            }
+
+            nav ul li {
+                width: 100%;
+                margin: 0;
+            }
+            
+            nav ul li a {
+                display: block;
+                padding: 0.8rem 1rem;
+                border-bottom: 1px solid #444;
+                width: 100%;
+            }
+
+            nav ul li:last-child a {
+                border-bottom: none;
+            }
         }
         
         main {
@@ -181,7 +199,8 @@
     <header>
         <h1>caustic.info</h1>
         <nav>
-            <ul>
+            <button id="menu-toggle" class="menu-toggle" aria-label="Open Navigation Menu">&#9776;</button>
+            <ul id="nav-menu">
               <li><a href="/index.html">Home</a></li>
               <li><a href="/PSPs/mlb-psp.html">MLB PSP Database</a></li>
               <li><a href="/PSPs-WNBA/wnba-psp.html">WNBA PSP Database</a></li>
@@ -253,5 +272,18 @@
     <footer>
         <p>&copy; caustic.info</p>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuToggle = document.getElementById('menu-toggle');
+            const navMenu = document.getElementById('nav-menu');
+
+            if (menuToggle && navMenu) {
+                menuToggle.addEventListener('click', () => {
+                    navMenu.classList.toggle('show-menu');
+                });
+            }
+        });
+    </script>
 </body>
 </html>
