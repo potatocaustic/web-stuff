@@ -6,152 +6,21 @@
     <title>WNBA PSP Database - caustic.info</title>
     <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="wnba-psp-style.css" />
-    <style>
-      /* Reset and General Styles */
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-        color: #333;
-        line-height: 1.6;
-      }
-      
-      h1, h2, h3 {
-        color: #333;
-      }
-
-      /* Main site header style - matching your other pages */
-      header {
-        background-color: #333;
-        color: #fff;
-        padding: 1rem;
-        text-align: center;
-      }
-      
-      header h1 {
-        color: white !important;
-        font-size: 1.5rem;
-        margin: 0;
-      }
-      
-      /* Navigation styling */
-      nav ul {
-        display: flex;
-        justify-content: center;
-        list-style: none;
-        margin-top: 1rem;
-        flex-wrap: wrap;
-      }
-      
-      nav ul li {
-        margin: 0.5rem 1rem;
-      }
-      
-      nav ul li a {
-        color: #fff;
-        text-decoration: none;
-        font-size: 1.1rem;
-        transition: color 0.3s ease;
-        white-space: nowrap;
-      }
-      
-      nav ul li a:hover {
-        color: #ccc;
-      }
-      
-      /* Mobile navigation styles */
-      @media (max-width: 600px) {
-        nav {
-          width: 100%;
-          padding: 0;
-        }
-        
-        nav ul {
-          flex-direction: column;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0;
-          width: 100%;
-          margin-left: 0;
-          margin-right: 0;
-        }
-        
-        nav ul li {
-          margin: 0.2rem 0;
-          width: 100%;
-          text-align: center;
-        }
-        
-        nav ul li a {
-          display: block;
-          padding: 0.5rem 0;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-          width: 100%;
-          margin: 0 auto;
-        }
-        
-        nav ul li:last-child a {
-          border-bottom: none;
-        }
-      }
-
-      /* Main content area */
-      main {
-        padding: 2rem;
-        max-width: 1200px;
-        margin: 0 auto;
-        display: none; /* MODIFIED: Hide main content initially */
-      }
-
-      main.visible { /* ADDED: Class to show main content */
-        display: block;
-      }
-      
-      /* Info Section */
-      .info {
-        text-align: center;
-        margin-bottom: 1.5rem;
-      }
-      
-      .info p {
-        margin-bottom: 0.5rem;
-      }
-      
-      #last-updated {
-        font-style: italic;
-        color: #666;
-        margin-top: 0.5rem;
-      }
-
-      /* Styles for your WNBA content from wnba-psp-style.css would be here or linked */
-
-      /* Footer */
-      footer {
-        text-align: center;
-        margin-top: 2rem;
-        padding: 1rem;
-        background-color: #333;
-        color: #fff;
-      }
-    </style>
   </head>
   <body>
     <header>
       <h1>WNBA Player Stat Picks Database</h1>
       <nav>
-        <ul>
-          <li><a href="../index.html">Home</a></li>
-          <li><a href="../PSPs/mlb-psp.html">MLB PSP Database</a></li>
-          <li><a href="../RKL/rkl-stats.html">Jammers Stats</a></li>
-          <li><a href="../PSPs-WNBA/wnba-psp.html">WNBA PSP Database</a></li> 
-          <li><a href="../karma-calculator.html">Karma EV Calculator</a></li>
-          <li><a href="../pool-optimizer.html">Pool Optimizer</a></li>
-          </ul>
+        <button id="menu-toggle" class="menu-toggle" aria-label="Open Navigation Menu">&#9776;</button>
+        <ul id="nav-menu">
+            <li><a href="/index.html">Home</a></li>
+            <li><a href="/PSPs/mlb-psp.html">MLB PSP Database</a></li>
+            <li><a href="/PSPs-WNBA/wnba-psp.html">WNBA PSP Database</a></li>
+            <li><a href="/RKL/rkl-stats.html">Jammers Stats</a></li>
+            <li><a href="/karma-calculator.html">Karma EV Calculator</a></li>
+            <li><a href="/pool-optimizer.html">Pool Optimizer</a></li>
+            <li><a href="/CFB/cfb-projections.html">CFB Projections</a></li>
+        </ul>
       </nav>
     </header>
 

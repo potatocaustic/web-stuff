@@ -12,15 +12,13 @@ let currentPlayerData = null; // Store current player data globally for "Show Al
 
 // Configuration - update these with your actual data sources
 const CONFIG = {
-  // Set DATA_SOURCE to 'google_sheets' or 'server' based on your preferred method
   DATA_SOURCE: 'google_sheets',
   
-  // Google Sheet direct URLs (if using 'google_sheets' source)
   GOOGLE_SHEET_URLS: {
-    PTS: 'https://docs.google.com/spreadsheets/d/1mb8Ff8jqKBuBOIKTwGVwLF4hInHt3FYIAvRlILeDnx8/export?format=csv&gid=0', // Update with actual PTS gid
-    REB: 'https://docs.google.com/spreadsheets/d/1mb8Ff8jqKBuBOIKTwGVwLF4hInHt3FYIAvRlILeDnx8/export?format=csv&gid=1526651812', // Update with actual REB gid
-    AST: 'https://docs.google.com/spreadsheets/d/1mb8Ff8jqKBuBOIKTwGVwLF4hInHt3FYIAvRlILeDnx8/export?format=csv&gid=916391583',  // Update with actual AST gid
-    TPM: 'https://docs.google.com/spreadsheets/d/1mb8Ff8jqKBuBOIKTwGVwLF4hInHt3FYIAvRlILeDnx8/export?format=csv&gid=372469482'   // Update with actual 3PM gid
+    PTS: 'https://docs.google.com/spreadsheets/d/1mb8Ff8jqKBuBOIKTwGVwLF4hInHt3FYIAvRlILeDnx8/export?format=csv&gid=0',
+    REB: 'https://docs.google.com/spreadsheets/d/1mb8Ff8jqKBuBOIKTwGVwLF4hInHt3FYIAvRlILeDnx8/export?format=csv&gid=1526651812',
+    AST: 'https://docs.google.com/spreadsheets/d/1mb8Ff8jqKBuBOIKTwGVwLF4hInHt3FYIAvRlILeDnx8/export?format=csv&gid=916391583',
+    TPM: 'https://docs.google.com/spreadsheets/d/1mb8Ff8jqKBuBOIKTwGVwLF4hInHt3FYIAvRlILeDnx8/export?format=csv&gid=372469482'
   }
 };
 
@@ -39,7 +37,9 @@ const elements = {
   statsSection: document.getElementById('statsSection'),
   successRateByTarget: document.getElementById('successRateByTarget'),
   avgRankSection: document.getElementById('avgRankSection'),
-  showAllButton: document.getElementById('showAllButton')
+  showAllButton: document.getElementById('showAllButton'),
+  menuToggle: document.getElementById('menu-toggle'),
+  navMenu: document.getElementById('nav-menu')
 };
 
 // Event listeners
@@ -47,7 +47,6 @@ document.addEventListener('DOMContentLoaded', init);
 
 // Initialize the application
 async function init() {
-  // Add debug log to page
   addDebugLog("Initialize application");
   
   // Set up event listeners
@@ -57,10 +56,10 @@ async function init() {
   elements.tpmButton.addEventListener('click', () => switchCategory('TPM'));
   elements.playerSearchInput.addEventListener('input', handlePlayerSearch);
   elements.showAllButton.addEventListener('click', handleShowAll);
-  
+  elements.menuToggle.addEventListener('click', () => elements.navMenu.classList.toggle('show-menu'));
+
   // Initial data load
   try {
-    // For server source, also get metadata first
     if (CONFIG.DATA_SOURCE === 'server') {
       await loadMetadata();
     }
@@ -100,14 +99,13 @@ async function loadMetadata() {
 function isDate51825(dateString) {
   if (!dateString) return false;
   
-  // Check for various date formats that could represent 5-18-25
   const patterns = [
-    /^5-18-25$/,           // 5-18-25
-    /^05-18-25$/,          // 05-18-25
-    /^5\/18\/2025$/,       // 5/18/2025
-    /^05\/18\/2025$/,      // 05/18/2025
-    /^5-18-2025$/,         // 5-18-2025
-    /^05-18-2025$/         // 05-18-2025
+    /^5-18-25$/,
+    /^05-18-25$/,
+    /^5\/18\/2025$/,
+    /^05\/18\/2025$/,
+    /^5-18-2025$/,
+    /^05-18-2025$/
   ];
   
   return patterns.some(pattern => pattern.test(dateString.trim()));
@@ -117,14 +115,13 @@ function isDate51825(dateString) {
 function isDate6625(dateString) {
   if (!dateString) return false;
   
-  // Check for various date formats that could represent 6-6-25
   const patterns = [
-    /^6-6-25$/,            // 6-6-25
-    /^06-06-25$/,          // 06-06-25
-    /^6\/6\/2025$/,        // 6/6/2025
-    /^06\/06\/2025$/,      // 06/06/2025
-    /^6-6-2025$/,          // 6-6-2025
-    /^06-06-2025$/         // 06-06-2025
+    /^6-6-25$/,
+    /^06-06-25$/,
+    /^6\/6\/2025$/,
+    /^06\/06\/2025$/,
+    /^6-6-2025$/,
+    /^06-06-2025$/
   ];
   
   return patterns.some(pattern => pattern.test(dateString.trim()));
@@ -154,7 +151,6 @@ function isExceptionDate(dateString) {
 // Function to load data for a specific category
 async function loadData(category) {
   if (allData[category].length > 0) {
-    // Data already loaded for this category
     return;
   }
   
@@ -162,40 +158,27 @@ async function loadData(category) {
     let data;
     
     if (CONFIG.DATA_SOURCE === 'google_sheets') {
-      // Load directly from Google Sheets
       const response = await fetch(CONFIG.GOOGLE_SHEET_URLS[category]);
       const csvText = await response.text();
-      
-      // Parse CSV to JSON
       data = parseCSV(csvText);
     } else {
-      // Load from server JSON files
       const response = await fetch(CONFIG.SERVER_JSON_URLS[category]);
       const jsonData = await response.json();
-      
       data = jsonData.data;
-      
-      // If metadata wasn't loaded separately, use the timestamp from this response
       if (!dataLastUpdated && jsonData.updated) {
         dataLastUpdated = new Date(jsonData.updated);
       }
     }
     
-    // Modified filter: Keep entries with Projection !== 0 OR entries from exception dates (5-18-25 or 6-6-25)
     const filtered = data.filter(entry => {
-      // Always include entries from exception dates, regardless of Projection value
       if (isExceptionDate(entry.Date)) {
         return true;
       }
-      // For all other dates, filter out entries with Projection = 0
       return entry.Projection !== 0;
     });
     
-    // Store the data
     allData[category] = filtered;
-    
     addDebugLog(`Loaded ${filtered.length} entries for category ${category}`);
-    
     return filtered;
   } catch (error) {
     console.error(`Error loading data for ${category}:`, error);
@@ -203,7 +186,7 @@ async function loadData(category) {
   }
 }
 
-// Parse CSV text to JSON (only needed for Google Sheets source)
+// Parse CSV text to JSON
 function parseCSV(csvText) {
   const lines = csvText.split('\n');
   const headers = lines[0].split(',').map(header => header.trim());
@@ -217,7 +200,6 @@ function parseCSV(csvText) {
     const entry = {};
     
     headers.forEach((header, index) => {
-      // Convert numeric values
       if (index < values.length) {
         if (['Target Value', 'Rank', 'Votes', 'Hit', 'Projection', 'Delta'].includes(header)) {
           entry[header] = parseFloat(values[index]) || 0;
@@ -227,7 +209,6 @@ function parseCSV(csvText) {
       }
     });
     
-    // Only add entry if it has the necessary fields
     if (entry.Date && entry.Name && entry['Target Value'] !== undefined) {
       result.push(entry);
     }
@@ -238,16 +219,13 @@ function parseCSV(csvText) {
 
 // Switch between categories
 async function switchCategory(category) {
-  // Update active button
   elements.ptsButton.classList.toggle('active', category === 'PTS');
   elements.rebButton.classList.toggle('active', category === 'REB');
   elements.astButton.classList.toggle('active', category === 'AST');
   elements.tpmButton.classList.toggle('active', category === 'TPM');
   
-  // Set current category
   currentCategory = category;
   
-  // Load data if not already loaded
   if (allData[category].length === 0) {
     try {
       await loadData(category);
@@ -258,14 +236,9 @@ async function switchCategory(category) {
     }
   }
   
-  // Clear current search and results
   elements.playerSearchInput.value = '';
   elements.searchResults.innerHTML = '';
-  
-  // Reset player results
   resetPlayerResults();
-  
-  // Focus on search input
   elements.playerSearchInput.focus();
 }
 
@@ -276,10 +249,8 @@ function handlePlayerSearch() {
   
   if (searchTerm.length < 2) return;
   
-  // Get unique players from the current category
   const players = getUniquePlayers(currentCategory, searchTerm);
   
-  // Display matching players
   if (players.length > 0) {
     players.forEach(player => {
       const resultItem = document.createElement('div');
@@ -299,11 +270,7 @@ function handlePlayerSearch() {
 // Handle Show All button click
 function handleShowAll() {
   if (!currentPlayerData) return;
-  
-  // Display all player data
   displayPlayerData(currentPlayerData, false);
-  
-  // Hide the "Show All" button
   elements.showAllButton.classList.add('hidden');
 }
 
@@ -324,43 +291,29 @@ function getUniquePlayers(category, searchTerm) {
 function getDateParts(dateString) {
   if (!dateString) return [0, 0, 0];
   
-  // Check if the date is in format MM-DD-YY
   const hyphenMatch = /^(\d{1,2})-(\d{1,2})-(\d{2})$/.exec(dateString);
   if (hyphenMatch) {
     let [_, month, day, year] = hyphenMatch;
-    // Convert 2-digit year to 4-digit year
-    year = parseInt(year) + 2000; // Assuming all years are post-2000
+    year = parseInt(year) + 2000;
     return [parseInt(year), parseInt(month), parseInt(day)];
   }
   
-  // Check if the date is in format MM/DD/YYYY
   const slashMatch = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(dateString);
   if (slashMatch) {
     let [_, month, day, year] = slashMatch;
     return [parseInt(year), parseInt(month), parseInt(day)];
   }
   
-  // Default return if format is not recognized
   return [0, 0, 0];
 }
 
 // Function to compare dates and sort from newest to oldest
 function sortByDateDescending(a, b) {
-  // Get date parts [year, month, day] for each date
   const [yearA, monthA, dayA] = getDateParts(a.Date);
   const [yearB, monthB, dayB] = getDateParts(b.Date);
   
-  // Compare years first (descending order for newest first)
-  if (yearA !== yearB) {
-    return yearB - yearA;
-  }
-  
-  // Then compare months (descending order)
-  if (monthA !== monthB) {
-    return monthB - monthA;
-  }
-  
-  // Finally compare days (descending order)
+  if (yearA !== yearB) return yearB - yearA;
+  if (monthA !== monthB) return monthB - monthA;
   return dayB - dayA;
 }
 
@@ -368,109 +321,51 @@ function sortByDateDescending(a, b) {
 function selectPlayer(playerName) {
   addDebugLog(`Selecting player: ${playerName}`);
   currentPlayer = playerName;
-  
-  // Update results title
   elements.resultsTitle.textContent = `Results for ${playerName} - ${getCategoryFullName(currentCategory)}`;
   
-  // Filter data for the selected player
   let playerData = allData[currentCategory].filter(entry => entry.Name === playerName);
-  
-  addDebugLog(`Found ${playerData.length} entries for ${playerName}`);
-  if (playerData.length > 0) {
-    addDebugLog(`Before sorting - First entry: ${playerData[0].Date}`);
-    
-    // Check date format of first entry
-    const firstDate = playerData[0].Date;
-    addDebugLog(`Date format check: ${firstDate} -> Parts: ${getDateParts(firstDate).join('/')}`);
-  }
-  
-  // IMPORTANT: Sort data from newest to oldest
   playerData.sort(sortByDateDescending);
   
-  if (playerData.length > 0) {
-    addDebugLog(`After sorting - First entry: ${playerData[0].Date}`);
-  }
-  
-  // Verify sort by printing first few entries
-  if (playerData.length > 1) {
-    addDebugLog("First few entries after sorting:");
-    playerData.slice(0, Math.min(5, playerData.length)).forEach((entry, i) => {
-      addDebugLog(`${i+1}. ${entry.Date}`);
-    });
-  }
-  
-  // Store current player data globally
   currentPlayerData = playerData;
-  
-  // Display only the first 5 results initially
   displayPlayerData(playerData, true);
   
-  // Show/hide the Show All button based on data length
   if (playerData.length > 5) {
     elements.showAllButton.classList.remove('hidden');
   } else {
     elements.showAllButton.classList.add('hidden');
   }
   
-  // Clear search results
   elements.searchResults.innerHTML = '';
 }
 
 // Display player data
 function displayPlayerData(playerData, limitToFive) {
-  addDebugLog(`Displaying player data. Limit to five: ${limitToFive}`);
-  
-  // Clear previous results
   elements.playerStatsBody.innerHTML = '';
   
-  // Check if there are results
   if (playerData.length > 0) {
-    // Show the table, hide no results message
     elements.noResultsMessage.classList.add('hidden');
     elements.playerStatsBody.parentElement.classList.remove('hidden');
     
-    // Make a copy of the player data to avoid modifying the original
     let dataToDisplay = [...playerData];
-    
-    // Sort again to ensure newest first (redundant but safe)
-    dataToDisplay.sort(sortByDateDescending);
-    
-    // Limit to first 5 if requested
     if (limitToFive && dataToDisplay.length > 5) {
       dataToDisplay = dataToDisplay.slice(0, 5);
     }
     
-    // Log first and last entries for debugging
-    if (dataToDisplay.length > 0) {
-      addDebugLog(`First displayed entry date: ${dataToDisplay[0].Date}`);
-      if (dataToDisplay.length > 1) {
-        addDebugLog(`Last displayed entry date: ${dataToDisplay[dataToDisplay.length-1].Date}`);
-      }
-    }
-    
-    // Populate table with player data
     dataToDisplay.forEach(entry => {
       const row = document.createElement('tr');
-      
-      // Format the date
       const formattedDate = formatDate(entry.Date);
-      
-      // Create table cells with whole number rank
       row.innerHTML = `
         <td>${formattedDate}</td>
         <td>${entry['Target Value']}</td>
         <td>${Math.round(entry.Rank)}</td>
         <td><span class="${entry.Hit === 1 ? 'hit' : 'miss'}">${entry.Hit === 1 ? 'Hit' : 'Miss'}</span></td>
       `;
-      
       elements.playerStatsBody.appendChild(row);
     });
     
-    // Calculate and display stats
     updatePlayerStats(playerData);
     elements.statsSection.classList.remove('hidden');
   } else {
-    // Show no results message
     elements.noResultsMessage.classList.remove('hidden');
     elements.playerStatsBody.parentElement.classList.add('hidden');
     elements.statsSection.classList.add('hidden');
@@ -490,67 +385,48 @@ function resetPlayerResults() {
 
 // Update player stats summary
 function updatePlayerStats(playerData) {
-  // Clear previous stats
   elements.successRateByTarget.innerHTML = '';
   elements.avgRankSection.innerHTML = '';
   
-  // Copy data array to avoid modifying original
   let sortedData = [...playerData];
-  
-  // Sort by date (newest first)
   sortedData.sort(sortByDateDescending);
   
-  // Calculate success rate by target value
   const targetValueMap = new Map();
-  
-  // Group data by target value
   playerData.forEach(entry => {
     const targetValue = entry['Target Value'];
     if (!targetValueMap.has(targetValue)) {
       targetValueMap.set(targetValue, { total: 0, hits: 0 });
     }
-    
     const stats = targetValueMap.get(targetValue);
     stats.total += 1;
     stats.hits += entry.Hit;
   });
   
-  // Create success rate by target value display
   if (targetValueMap.size > 0) {
     const targetHeader = document.createElement('h3');
     targetHeader.textContent = 'Success Rate by Target Value';
     elements.successRateByTarget.appendChild(targetHeader);
-    
     const targetTable = document.createElement('table');
     targetTable.classList.add('stats-table');
-    
-    // Create table header
     const tableHeader = document.createElement('tr');
     tableHeader.innerHTML = '<th>Target</th><th>Success Rate</th><th>Record</th>';
     targetTable.appendChild(tableHeader);
     
-    // Sort target values numerically
     const sortedTargets = Array.from(targetValueMap.keys()).sort((a, b) => a - b);
-    
-    // Add rows for each target value
     sortedTargets.forEach(target => {
       const stats = targetValueMap.get(target);
       const successRate = (stats.hits / stats.total) * 100;
-      
       const row = document.createElement('tr');
       row.innerHTML = `
         <td>${target}</td>
         <td>${successRate.toFixed(1)}%</td>
         <td>${stats.hits}/${stats.total}</td>
       `;
-      
       targetTable.appendChild(row);
     });
-    
     elements.successRateByTarget.appendChild(targetTable);
   }
   
-  // Calculate average ranks for different periods
   const calculateAvgRank = (data) => {
     if (data.length === 0) return 0;
     const totalRank = data.reduce((sum, entry) => sum + entry.Rank, 0);
@@ -561,20 +437,15 @@ function updatePlayerStats(playerData) {
   const last5AvgRank = calculateAvgRank(sortedData.slice(0, Math.min(5, sortedData.length)));
   const last10AvgRank = calculateAvgRank(sortedData.slice(0, Math.min(10, sortedData.length)));
   
-  // Create average rank display
   const rankHeader = document.createElement('h3');
   rankHeader.textContent = 'Average Rank';
   elements.avgRankSection.appendChild(rankHeader);
-  
   const rankTable = document.createElement('table');
   rankTable.classList.add('stats-table');
-  
-  // Create table header
   const rankTableHeader = document.createElement('tr');
   rankTableHeader.innerHTML = '<th>Period</th><th>Avg. Rank</th>';
   rankTable.appendChild(rankTableHeader);
   
-  // Add rows for each period
   const periods = [
     { name: 'Last 5', value: Math.round(last5AvgRank) },
     { name: 'Last 10', value: Math.round(last10AvgRank) },
@@ -587,10 +458,8 @@ function updatePlayerStats(playerData) {
       <td>${period.name}</td>
       <td>${period.value}</td>
     `;
-    
     rankTable.appendChild(row);
   });
-  
   elements.avgRankSection.appendChild(rankTable);
 }
 
@@ -609,10 +478,7 @@ function getCategoryFullName(category) {
 function formatDate(dateString) {
   if (!dateString) return '';
   
-  // Get date parts [year, month, day]
   const [year, month, day] = getDateParts(dateString);
-  
-  // Manual formatting to avoid browser inconsistencies
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const monthName = monthNames[month - 1] || '';
   
@@ -633,18 +499,14 @@ function updateLastUpdatedText() {
 function formatDateWithTime(date) {
   try {
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    
     const month = monthNames[date.getMonth()];
     const day = date.getDate();
     const year = date.getFullYear();
-    
     let hours = date.getHours();
     const minutes = date.getMinutes().toString().padStart(2, '0');
     const ampm = hours >= 12 ? 'PM' : 'AM';
-    
     hours = hours % 12;
-    hours = hours ? hours : 12; // Convert 0 to 12
-    
+    hours = hours ? hours : 12;
     return `${month} ${day}, ${year} ${hours}:${minutes} ${ampm}`;
   } catch (e) {
     return date.toString();
