@@ -1,4 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // --- NEW: Navigation menu toggle script ---
+    const menuToggle = document.getElementById('menu-toggle');
+    const navMenu = document.getElementById('nav-menu');
+    if (menuToggle && navMenu) {
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('show-menu');
+        });
+    }
+
     // Fetch the team and player data from the JSON file
     fetch('cfbteamsData.json')
         .then(response => {
@@ -8,19 +17,13 @@ document.addEventListener('DOMContentLoaded', function () {
             return response.json();
         })
         .then(teamsData => {
-            // These are the teams that will be displayed by default
             const featuredTeams = ["Texas", "Georgia", "Alabama", "Ohio State", "Penn State", "Notre Dame", "Oregon", "Tennessee", "Clemson"];
-            
             const featuredTeamsContainer = document.getElementById('featured-teams');
             const teamSelectionContainer = document.getElementById('team-selection-list');
-
-            // Sort teams alphabetically for the searchable list
             const sortedTeams = teamsData.sort((a, b) => a.name.localeCompare(b.name));
 
-            // Populate the team selection checkboxes
             sortedTeams.forEach(team => {
-                if (team.name === "FA") return; // Skip "FA" team if it exists
-
+                if (team.name === "FA") return;
                 const teamId = `team-${team.name.replace(/\s+/g, '-')}`;
                 const teamLabel = document.createElement('label');
                 teamLabel.className = 'flex items-center space-x-2 p-1.5 rounded-md hover:bg-gray-100 cursor-pointer';
@@ -30,43 +33,55 @@ document.addEventListener('DOMContentLoaded', function () {
                 checkbox.type = 'checkbox';
                 checkbox.id = teamId;
                 checkbox.value = team.name;
-                checkbox.className = 'h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500';
+                checkbox.className = 'h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 team-checkbox';
 
                 const textNode = document.createElement('span');
                 textNode.textContent = team.name;
                 textNode.className = 'text-sm';
-                
+
                 teamLabel.appendChild(checkbox);
                 teamLabel.appendChild(textNode);
 
-                // Add to the appropriate container
                 if (featuredTeams.includes(team.name)) {
                     featuredTeamsContainer.appendChild(teamLabel);
                 } else {
                     teamSelectionContainer.appendChild(teamLabel);
                 }
             });
-            
+
+            // --- NEW: Team selection limit validation ---
+            const allCheckboxes = document.querySelectorAll('.team-checkbox');
+            const errorElement = document.getElementById('team-limit-error');
+            allCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    const selectedCount = document.querySelectorAll('.team-checkbox:checked').length;
+                    if (selectedCount > 5) {
+                        checkbox.checked = false; // Prevent selection
+                        errorElement.classList.remove('hidden');
+                    } else {
+                        errorElement.classList.add('hidden');
+                    }
+                });
+            });
+
             // Search functionality
             const searchInput = document.getElementById('team-search');
-            searchInput.addEventListener('input', function() {
+            searchInput.addEventListener('input', function () {
                 const filter = searchInput.value.toLowerCase();
                 const labels = teamSelectionContainer.getElementsByTagName('label');
                 Array.from(labels).forEach(label => {
                     const teamName = label.textContent.toLowerCase();
                     if (teamName.includes(filter)) {
-                        label.style.display = "";
+                        label.style.display = "flex";
                     } else {
                         label.style.display = "none";
                     }
                 });
             });
 
-            // Set up the Build My List button
+            // Build button event listener
             const buildButton = document.getElementById("buildButton");
-            buildButton.addEventListener("click", function () {
-                buildRecommendationList(teamsData);
-            });
+            buildButton.addEventListener("click", () => buildRecommendationList(teamsData));
         })
         .catch(error => console.error("Error fetching teams data:", error));
 
@@ -76,99 +91,109 @@ document.addEventListener('DOMContentLoaded', function () {
      */
     function buildRecommendationList(teamsData) {
         const recommendationsList = document.getElementById("recommendationsList");
-        const placeholder = document.getElementById("placeholder");
         recommendationsList.innerHTML = ""; // Clear previous recommendations
-        
-        // Get budget and validate
+
         const budgetInput = document.getElementById("budget").value;
         const budget = parseFloat(budgetInput.replace(/,/g, ''));
 
         if (isNaN(budget) || budget <= 0) {
-            const errorItem = document.createElement("li");
-            errorItem.textContent = "Please enter a valid budget.";
-            errorItem.className = "text-center py-16 text-red-500";
-            recommendationsList.appendChild(errorItem);
+            showError("Please enter a valid budget.");
             return;
         }
-        
-        // Find selected teams
-        const selectedTeams = [];
-        let totalCost = 0;
+
         const playerCost = 200;
         const maxPlayers = 70;
+        const teamCost = 800;
 
-        const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
-        allCheckboxes.forEach(checkbox => {
-            if (checkbox.checked) {
-                const teamData = teamsData.find(t => t.name === checkbox.value);
-                if (teamData) {
-                    selectedTeams.push(teamData);
-                    totalCost += 800; // Each team costs 800
-                }
-            }
+        // --- REVISED: Budget and Player Selection Logic ---
+
+        // 1. Get selected teams and calculate initial team cost
+        const selectedTeams = [];
+        document.querySelectorAll('.team-checkbox:checked').forEach(checkbox => {
+            const teamData = teamsData.find(t => t.name === checkbox.value);
+            if (teamData) selectedTeams.push(teamData);
         });
 
-        // Early exit if team cost exceeds budget
-        if (totalCost > budget) {
-            const errorItem = document.createElement("li");
-            errorItem.textContent = "Team selection cost exceeds your budget.";
-            errorItem.className = "text-center py-16 text-red-500";
-            recommendationsList.appendChild(errorItem);
+        const totalTeamCost = selectedTeams.length * teamCost;
+        if (totalTeamCost > budget) {
+            showError("Team selection cost exceeds your budget.");
             return;
         }
 
+        // 2. Determine mandatory players and their cost
+        const mandatoryPlayers = [];
         const addedPlayers = new Set();
-        const recommendedPlayers = [];
-
-        // Add top players from selected teams
         selectedTeams.forEach(team => {
             const playersToAddCount = budget >= 10000 ? 4 : 2;
             const topPlayers = team.players.sort((a, b) => a.Rank - b.Rank).slice(0, playersToAddCount);
             topPlayers.forEach(player => {
                 if (!addedPlayers.has(player.Name)) {
-                    recommendedPlayers.push({ ...player, Team: team.name });
+                    mandatoryPlayers.push({ ...player, Team: team.name });
                     addedPlayers.add(player.Name);
                 }
             });
         });
         
-        // Update cost and remaining budget
-        totalCost += recommendedPlayers.length * playerCost;
-        let remainingBudget = budget - totalCost;
+        const mandatoryPlayerCost = mandatoryPlayers.length * playerCost;
+        const initialTotalCost = totalTeamCost + mandatoryPlayerCost;
 
-        if (remainingBudget < 0) {
-             const errorItem = document.createElement("li");
-            errorItem.textContent = "Cost of required players from selected teams exceeds budget.";
-            errorItem.className = "text-center py-16 text-red-500";
-            recommendationsList.appendChild(errorItem);
+        if (initialTotalCost > budget) {
+            showError("Cost of teams and required players exceeds your budget.");
             return;
         }
 
-        // Add remaining players from all teams based on rank
+        // 3. Calculate remaining budget and how many filler players can be afforded
+        const remainingBudgetForFillers = budget - initialTotalCost;
+        let numberOfFillersToAdd = Math.floor(remainingBudgetForFillers / playerCost);
+
+        // 4. Build final player list, starting with mandatory players
+        let recommendedPlayers = [...mandatoryPlayers];
+
+        // 5. Add filler players from all teams based on rank
         const allPlayers = teamsData.flatMap(team => team.players.map(p => ({ ...p, Team: team.name })));
         const sortedAllPlayers = allPlayers.sort((a, b) => a.Rank - b.Rank);
 
-        const remainingPlayerCount = Math.floor(remainingBudget / playerCost);
-        
         for (const player of sortedAllPlayers) {
-            if (recommendedPlayers.length >= maxPlayers || recommendedPlayers.length >= (Math.floor(remainingBudget / playerCost) + addedPlayers.size)) break;
+            if (numberOfFillersToAdd <= 0 || recommendedPlayers.length >= maxPlayers) break;
+            
             if (!addedPlayers.has(player.Name)) {
                 recommendedPlayers.push(player);
                 addedPlayers.add(player.Name);
+                numberOfFillersToAdd--;
             }
         }
         
-        // Ensure we don't exceed max players
-        if (recommendedPlayers.length > maxPlayers) {
-            recommendedPlayers.length = maxPlayers;
-        }
+        // 6. Display results
+        displayResults(recommendedPlayers, selectedTeams.length);
+    }
 
-        // Display recommended buys
-        if (recommendedPlayers.length === 0) {
-             if (placeholder) placeholder.style.display = 'block';
+    /**
+     * Displays an error message in the results list.
+     * @param {string} message - The error message to display.
+     */
+    function showError(message) {
+        const recommendationsList = document.getElementById("recommendationsList");
+        const errorItem = document.createElement("li");
+        errorItem.textContent = message;
+        errorItem.className = "text-center py-16 text-red-500";
+        recommendationsList.innerHTML = "";
+        recommendationsList.appendChild(errorItem);
+        document.getElementById("totalCost").textContent = `Total Cost: 0 Rax`;
+    }
+
+    /**
+     * Renders the final list of players and total cost.
+     * @param {Array} players - The final list of players to recommend.
+     * @param {number} teamCount - The number of teams selected.
+     */
+    function displayResults(players, teamCount) {
+        const recommendationsList = document.getElementById("recommendationsList");
+        const placeholder = document.getElementById("placeholder");
+        
+        if (players.length === 0) {
+            recommendationsList.innerHTML = `<li id="placeholder" class="text-center py-16 text-gray-500">Your list will appear here once generated.</li>`;
         } else {
-            if (placeholder) placeholder.style.display = 'none';
-            recommendedPlayers.forEach((player, index) => {
+            players.forEach((player, index) => {
                 const listItem = document.createElement("li");
                 listItem.className = "flex justify-between items-center py-3 px-2";
                 listItem.innerHTML = `
@@ -181,12 +206,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 recommendationsList.appendChild(listItem);
             });
         }
-        
-        // Calculate and display final total cost
-        const finalTotalCost = (800 * selectedTeams.length) + (recommendedPlayers.length * playerCost);
+
+        const finalTotalCost = (800 * teamCount) + (players.length * 200);
         document.getElementById("totalCost").textContent = `Total Cost: ${finalTotalCost.toLocaleString()} Rax`;
 
-        // Add or update the CSV download button
         let csvButton = document.getElementById("csvButton");
         if (!csvButton) {
             csvButton = document.createElement('button');
@@ -195,24 +218,18 @@ document.addEventListener('DOMContentLoaded', function () {
             csvButton.className = "w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500";
             document.getElementById("buttonContainer").appendChild(csvButton);
         }
-        // Always update the event listener to capture the current list
-        csvButton.onclick = function () {
-            downloadCSV(recommendedPlayers);
-        };
+        csvButton.onclick = () => downloadCSV(players);
     }
 
     /**
-     * Function to download the recommended player list as a CSV file
+     * Downloads the recommended player list as a CSV file.
      * @param {Array} players - The array of recommended player objects.
      */
     function downloadCSV(players) {
         if (players.length === 0) return;
-
         const header = ["Rank", "Player Name", "Team"];
-        const rows = players.map((player, index) => [index + 1, player.Name, player.Team]);
-
+        const rows = players.map((player, index) => [index + 1, `"${player.Name}"`, player.Team]);
         let csvContent = "data:text/csv;charset=utf-8," + header.join(",") + "\n" + rows.map(e => e.join(",")).join("\n");
-
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
