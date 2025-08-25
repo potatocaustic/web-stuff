@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            // --- NEW: Team selection limit validation ---
+            // --- Team selection limit validation ---
             const allCheckboxes = document.querySelectorAll('.team-checkbox');
             const errorElement = document.getElementById('team-limit-error');
             allCheckboxes.forEach(checkbox => {
@@ -94,7 +94,9 @@ document.addEventListener('DOMContentLoaded', function () {
         recommendationsList.innerHTML = ""; // Clear previous recommendations
 
         const budgetInput = document.getElementById("budget").value;
-        const budget = parseFloat(budgetInput.replace(/,/g, ''));
+        // --- REVISED: Robust budget parsing ---
+        const budget = parseFloat(budgetInput.replace(/[^0-9.]/g, ''));
+
 
         if (isNaN(budget) || budget <= 0) {
             showError("Please enter a valid budget.");
