@@ -158,10 +158,7 @@ function isDate83025(dateString) {
 
 // Helper function to check if a date is an exception date
 function isExceptionDate(dateString) {
-  return isDate81925(dateString);
-  return isDate82825(dateString);
-  return isDate82925(dateString);
-  return isDate83025(dateString);
+  return isDate81925(dateString) || isDate82825(dateString) || isDate82925(dateString) || isDate83025(dateString);
 }
 
 // Function to load data for a specific category
