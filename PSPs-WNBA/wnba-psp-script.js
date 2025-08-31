@@ -143,6 +143,51 @@ function isDate81925(dateString) {
   return patterns.some(pattern => pattern.test(dateString.trim()));
 }
 
+function isDate82825(dateString) {
+  if (!dateString) return false;
+  
+  const patterns = [
+    /^8-28-25$/,          
+    /^08-28-25$/,          
+    /^8\/28\/2025$/,        
+    /^08\/28\/2025$/,      
+    /^8-28-2025$/,          
+    /^08-28-2025$/         
+  ];
+  
+  return patterns.some(pattern => pattern.test(dateString.trim()));
+}
+
+function isDate82925(dateString) {
+  if (!dateString) return false;
+  
+  const patterns = [
+    /^8-29-25$/,          
+    /^08-29-25$/,          
+    /^8\/29\/2025$/,        
+    /^08\/29\/2025$/,      
+    /^8-29-2025$/,          
+    /^08-29-2025$/         
+  ];
+  
+  return patterns.some(pattern => pattern.test(dateString.trim()));
+}
+
+function isDate83025(dateString) {
+  if (!dateString) return false;
+  
+  const patterns = [
+    /^8-30-25$/,          
+    /^08-30-25$/,          
+    /^8\/30\/2025$/,        
+    /^08\/30\/2025$/,      
+    /^8-30-2025$/,          
+    /^08-30-2025$/         
+  ];
+  
+  return patterns.some(pattern => pattern.test(dateString.trim()));
+}
+
 // Helper function to check if a date is an exception date
 function isExceptionDate(dateString) {
   return isDate51825(dateString) || isDate6625(dateString) || isDate81925(dateString);
