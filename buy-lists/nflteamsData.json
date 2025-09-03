@@ -1,0 +1,1634 @@
+[
+    {
+        "name": "49ers",
+        "players": [
+            {
+                "Name": "Christian McCaffrey",
+                "Rank": 23
+            },
+            {
+                "Name": "George Kittle",
+                "Rank": 48
+            },
+            {
+                "Name": "Nick Bosa",
+                "Rank": 49
+            },
+            {
+                "Name": "Fred Warner",
+                "Rank": 107
+            },
+            {
+                "Name": "Brock Purdy",
+                "Rank": 119
+            },
+            {
+                "Name": "Ricky Pearsall",
+                "Rank": 138
+            },
+            {
+                "Name": "Jauan Jennings",
+                "Rank": 173
+            },
+            {
+                "Name": "Dee Winters",
+                "Rank": 243
+            },
+            {
+                "Name": "Brian Robinson",
+                "Rank": 275
+            },
+            {
+                "Name": "Brandon Aiyuk",
+                "Rank": 286
+            },
+            {
+                "Name": "Deommodore Lenoir",
+                "Rank": 355
+            },
+            {
+                "Name": "Ji'Ayir Brown",
+                "Rank": 365
+            }
+        ]
+    },
+    {
+        "name": "Bears",
+        "players": [
+            {
+                "Name": "Rome Odunze",
+                "Rank": 53
+            },
+            {
+                "Name": "DJ Moore",
+                "Rank": 57
+            },
+            {
+                "Name": "D'Andre Swift",
+                "Rank": 73
+            },
+            {
+                "Name": "Caleb Williams",
+                "Rank": 159
+            },
+            {
+                "Name": "T.J. Edwards",
+                "Rank": 162
+            },
+            {
+                "Name": "Colston Loveland",
+                "Rank": 166
+            },
+            {
+                "Name": "Jaquan Brisker",
+                "Rank": 208
+            },
+            {
+                "Name": "Tremaine Edmunds",
+                "Rank": 228
+            },
+            {
+                "Name": "Luther Burden III",
+                "Rank": 246
+            },
+            {
+                "Name": "Kyler Gordon",
+                "Rank": 268
+            },
+            {
+                "Name": "Kevin Byard",
+                "Rank": 273
+            },
+            {
+                "Name": "Montez Sweat",
+                "Rank": 282
+            }
+        ]
+    },
+    {
+        "name": "Bengals",
+        "players": [
+            {
+                "Name": "Ja'Marr Chase",
+                "Rank": 1
+            },
+            {
+                "Name": "Joe Burrow",
+                "Rank": 18
+            },
+            {
+                "Name": "Tee Higgins",
+                "Rank": 36
+            },
+            {
+                "Name": "Chase Brown",
+                "Rank": 39
+            },
+            {
+                "Name": "Trey Hendrickson",
+                "Rank": 128
+            },
+            {
+                "Name": "Logan Wilson",
+                "Rank": 153
+            },
+            {
+                "Name": "Demetrius Knight Jr.",
+                "Rank": 242
+            },
+            {
+                "Name": "Mike Gesicki",
+                "Rank": 266
+            },
+            {
+                "Name": "Jordan Battle",
+                "Rank": 269
+            },
+            {
+                "Name": "Dax Hill",
+                "Rank": 357
+            }
+        ]
+    },
+    {
+        "name": "Bills",
+        "players": [
+            {
+                "Name": "Josh Allen",
+                "Rank": 7
+            },
+            {
+                "Name": "James Cook",
+                "Rank": 38
+            },
+            {
+                "Name": "Khalil Shakir",
+                "Rank": 90
+            },
+            {
+                "Name": "Greg Rousseau",
+                "Rank": 91
+            },
+            {
+                "Name": "Terrel Bernard",
+                "Rank": 122
+            },
+            {
+                "Name": "Dalton Kincaid",
+                "Rank": 147
+            },
+            {
+                "Name": "Khalil Shakir",
+                "Rank": 171
+            },
+            {
+                "Name": "Keon Coleman",
+                "Rank": 219
+            },
+            {
+                "Name": "Joey Bosa",
+                "Rank": 259
+            },
+            {
+                "Name": "Matt Milano",
+                "Rank": 298
+            },
+            {
+                "Name": "Ray Davis",
+                "Rank": 317
+            },
+            {
+                "Name": "Taron Johnson",
+                "Rank": 330
+            },
+            {
+                "Name": "Ed Oliver",
+                "Rank": 338
+            }
+        ]
+    },
+    {
+        "name": "Broncos",
+        "players": [
+            {
+                "Name": "RJ Harvey",
+                "Rank": 56
+            },
+            {
+                "Name": "Courtland Sutton",
+                "Rank": 117
+            },
+            {
+                "Name": "Bo Nix",
+                "Rank": 120
+            },
+            {
+                "Name": "Zach Allen",
+                "Rank": 129
+            },
+            {
+                "Name": "Evan Engram",
+                "Rank": 134
+            },
+            {
+                "Name": "Marvin Mims Jr.",
+                "Rank": 148
+            },
+            {
+                "Name": "J.K. Dobbins",
+                "Rank": 155
+            },
+            {
+                "Name": "Dre Greenlaw",
+                "Rank": 161
+            },
+            {
+                "Name": "Brandon Jones",
+                "Rank": 175
+            },
+            {
+                "Name": "Alex Singleton",
+                "Rank": 176
+            },
+            {
+                "Name": "Nik Bonitto",
+                "Rank": 221
+            },
+            {
+                "Name": "Talanoa Hufanga",
+                "Rank": 323
+            },
+            {
+                "Name": "Riley Moss",
+                "Rank": 348
+            }
+        ]
+    },
+    {
+        "name": "Browns",
+        "players": [
+            {
+                "Name": "Myles Garrett",
+                "Rank": 63
+            },
+            {
+                "Name": "David Njoku",
+                "Rank": 85
+            },
+            {
+                "Name": "Jerry Jeudy",
+                "Rank": 133
+            },
+            {
+                "Name": "Carson Schwesinger",
+                "Rank": 150
+            },
+            {
+                "Name": "Grant Delpit",
+                "Rank": 174
+            },
+            {
+                "Name": "Dylan Sampson",
+                "Rank": 184
+            },
+            {
+                "Name": "Quinshon Judkins",
+                "Rank": 190
+            },
+            {
+                "Name": "Cedric Tillman",
+                "Rank": 218
+            },
+            {
+                "Name": "Joe Flacco",
+                "Rank": 362
+            }
+        ]
+    },
+    {
+        "name": "Buccaneers",
+        "players": [
+            {
+                "Name": "Bucky Irving",
+                "Rank": 22
+            },
+            {
+                "Name": "Baker Mayfield",
+                "Rank": 33
+            },
+            {
+                "Name": "Mike Evans",
+                "Rank": 45
+            },
+            {
+                "Name": "Emeka Egbuka",
+                "Rank": 156
+            },
+            {
+                "Name": "Chris Godwin",
+                "Rank": 157
+            },
+            {
+                "Name": "Lavonte David",
+                "Rank": 163
+            },
+            {
+                "Name": "Yaya Diaby",
+                "Rank": 200
+            },
+            {
+                "Name": "Antoine Winfield Jr.",
+                "Rank": 210
+            },
+            {
+                "Name": "SirVocea Dennis",
+                "Rank": 251
+            },
+            {
+                "Name": "Rachaad White",
+                "Rank": 258
+            },
+            {
+                "Name": "Haason Reddick",
+                "Rank": 260
+            },
+            {
+                "Name": "Tykee Smith",
+                "Rank": 270
+            },
+            {
+                "Name": "Cade Otton",
+                "Rank": 290
+            },
+            {
+                "Name": "Calijah Kancey",
+                "Rank": 335
+            }
+        ]
+    },
+    {
+        "name": "Cardinals",
+        "players": [
+            {
+                "Name": "Marvin Harrison Jr.",
+                "Rank": 30
+            },
+            {
+                "Name": "Trey McBride",
+                "Rank": 40
+            },
+            {
+                "Name": "James Conner",
+                "Rank": 65
+            },
+            {
+                "Name": "Kyler Murray",
+                "Rank": 110
+            },
+            {
+                "Name": "Budda Baker",
+                "Rank": 141
+            },
+            {
+                "Name": "Mack Wilson Sr.",
+                "Rank": 180
+            },
+            {
+                "Name": "Josh Sweat",
+                "Rank": 195
+            },
+            {
+                "Name": "Trey Benson",
+                "Rank": 224
+            },
+            {
+                "Name": "Akeem Davis-Gaither",
+                "Rank": 300
+            },
+            {
+                "Name": "Jalen Thompson",
+                "Rank": 324
+            }
+        ]
+    },
+    {
+        "name": "Chargers",
+        "players": [
+            {
+                "Name": "Ladd McConkey",
+                "Rank": 32
+            },
+            {
+                "Name": "Omarion Hampton",
+                "Rank": 37
+            },
+            {
+                "Name": "Justin Herbert",
+                "Rank": 70
+            },
+            {
+                "Name": "Cameron Dicker",
+                "Rank": 74
+            },
+            {
+                "Name": "Daiyan Henley",
+                "Rank": 104
+            },
+            {
+                "Name": "Derwin James Jr.",
+                "Rank": 142
+            },
+            {
+                "Name": "Khalil Mack",
+                "Rank": 196
+            },
+            {
+                "Name": "Keenan Allen",
+                "Rank": 239
+            },
+            {
+                "Name": "Tre Harris",
+                "Rank": 247
+            },
+            {
+                "Name": "Najee Harris",
+                "Rank": 276
+            },
+            {
+                "Name": "Tarheeb Still",
+                "Rank": 343
+            }
+        ]
+    },
+    {
+        "name": "Chiefs",
+        "players": [
+            {
+                "Name": "Patrick Mahomes",
+                "Rank": 16
+            },
+            {
+                "Name": "Harrison Butker",
+                "Rank": 47
+            },
+            {
+                "Name": "Isiah Pacheco",
+                "Rank": 75
+            },
+            {
+                "Name": "Rashee Rice",
+                "Rank": 84
+            },
+            {
+                "Name": "Xavier Worthy",
+                "Rank": 108
+            },
+            {
+                "Name": "Travis Kelce",
+                "Rank": 111
+            },
+            {
+                "Name": "Nick Bolton",
+                "Rank": 181
+            },
+            {
+                "Name": "George Karlaftis",
+                "Rank": 202
+            },
+            {
+                "Name": "Chris Jones",
+                "Rank": 204
+            },
+            {
+                "Name": "Chamarri Conner",
+                "Rank": 322
+            },
+            {
+                "Name": "Trent McDuffie",
+                "Rank": 358
+            }
+        ]
+    },
+    {
+        "name": "Colts",
+        "players": [
+            {
+                "Name": "Jonathan Taylor",
+                "Rank": 35
+            },
+            {
+                "Name": "Zaire Franklin",
+                "Rank": 67
+            },
+            {
+                "Name": "Josh Downs",
+                "Rank": 87
+            },
+            {
+                "Name": "Tyler Warren",
+                "Rank": 88
+            },
+            {
+                "Name": "DeForest Buckner",
+                "Rank": 137
+            },
+            {
+                "Name": "Laiatu Latu",
+                "Rank": 192
+            },
+            {
+                "Name": "Michael Pittman Jr.",
+                "Rank": 199
+            },
+            {
+                "Name": "Nick Cross",
+                "Rank": 253
+            },
+            {
+                "Name": "Kwity Paye",
+                "Rank": 311
+            },
+            {
+                "Name": "Daniel Jones",
+                "Rank": 313
+            },
+            {
+                "Name": "Kenny Moore II",
+                "Rank": 344
+            },
+            {
+                "Name": "Charvarius Ward",
+                "Rank": 347
+            },
+            {
+                "Name": "Joe Bachie",
+                "Rank": 352
+            },
+            {
+                "Name": "Jaylon Jones",
+                "Rank": 356
+            }
+        ]
+    },
+    {
+        "name": "Commanders",
+        "players": [
+            {
+                "Name": "Jayden Daniels",
+                "Rank": 20
+            },
+            {
+                "Name": "Terry McLaurin",
+                "Rank": 44
+            },
+            {
+                "Name": "Deebo Samuel",
+                "Rank": 139
+            },
+            {
+                "Name": "Bobby Wagner",
+                "Rank": 144
+            },
+            {
+                "Name": "Frankie Luvu",
+                "Rank": 215
+            },
+            {
+                "Name": "Jacory Croskey-Merritt",
+                "Rank": 254
+            },
+            {
+                "Name": "Austin Ekeler",
+                "Rank": 255
+            },
+            {
+                "Name": "Chris Rodriguez Jr.",
+                "Rank": 256
+            },
+            {
+                "Name": "Zach Ertz",
+                "Rank": 264
+            },
+            {
+                "Name": "Will Harris",
+                "Rank": 331
+            },
+            {
+                "Name": "Mike Sainristil",
+                "Rank": 342
+            }
+        ]
+    },
+    {
+        "name": "Cowboys",
+        "players": [
+            {
+                "Name": "CeeDee Lamb",
+                "Rank": 10
+            },
+            {
+                "Name": "Brandon Aubrey",
+                "Rank": 64
+            },
+            {
+                "Name": "Dak Prescott",
+                "Rank": 103
+            },
+            {
+                "Name": "George Pickens",
+                "Rank": 132
+            },
+            {
+                "Name": "Javonte Williams",
+                "Rank": 165
+            },
+            {
+                "Name": "Jake Ferguson",
+                "Rank": 168
+            },
+            {
+                "Name": "Jack Sanborn",
+                "Rank": 177
+            },
+            {
+                "Name": "Osa Odighizuwa",
+                "Rank": 336
+            },
+            {
+                "Name": "DaRon Bland",
+                "Rank": 360
+            }
+        ]
+    },
+    {
+        "name": "Dolphins",
+        "players": [
+            {
+                "Name": "De'Von Achane",
+                "Rank": 21
+            },
+            {
+                "Name": "Tyreek Hill",
+                "Rank": 46
+            },
+            {
+                "Name": "Jaylen Waddle",
+                "Rank": 109
+            },
+            {
+                "Name": "Jordyn Brooks",
+                "Rank": 123
+            },
+            {
+                "Name": "Bradley Chubb",
+                "Rank": 235
+            },
+            {
+                "Name": "Tyrel Dodson",
+                "Rank": 241
+            },
+            {
+                "Name": "Zach Sieler",
+                "Rank": 262
+            },
+            {
+                "Name": "Chop Robinson",
+                "Rank": 281
+            },
+            {
+                "Name": "Minkah Fitzpatrick",
+                "Rank": 293
+            },
+            {
+                "Name": "Tua Tagovailoa",
+                "Rank": 294
+            },
+            {
+                "Name": "Jaelan Phillips",
+                "Rank": 334
+            },
+            {
+                "Name": "Mike Hilton",
+                "Rank": 361
+            },
+            {
+                "Name": "Ifeatu Melifonwu",
+                "Rank": 366
+            }
+        ]
+    },
+    {
+        "name": "Eagles",
+        "players": [
+            {
+                "Name": "Saquon Barkley",
+                "Rank": 5
+            },
+            {
+                "Name": "Jalen Hurts",
+                "Rank": 17
+            },
+            {
+                "Name": "A.J. Brown",
+                "Rank": 25
+            },
+            {
+                "Name": "DeVonta Smith",
+                "Rank": 52
+            },
+            {
+                "Name": "Zack Baun",
+                "Rank": 71
+            },
+            {
+                "Name": "Dallas Goedert",
+                "Rank": 167
+            },
+            {
+                "Name": "Jihaad Campbell",
+                "Rank": 216
+            },
+            {
+                "Name": "Jalen Carter",
+                "Rank": 261
+            },
+            {
+                "Name": "Cooper DeJean",
+                "Rank": 267
+            },
+            {
+                "Name": "Reed Blankenship",
+                "Rank": 292
+            }
+        ]
+    },
+    {
+        "name": "Falcons",
+        "players": [
+            {
+                "Name": "Bijan Robinson",
+                "Rank": 2
+            },
+            {
+                "Name": "Drake London",
+                "Rank": 15
+            },
+            {
+                "Name": "Michael Penix Jr.",
+                "Rank": 95
+            },
+            {
+                "Name": "Kaden Elliss",
+                "Rank": 124
+            },
+            {
+                "Name": "Darnell Mooney",
+                "Rank": 187
+            },
+            {
+                "Name": "Kyle Pitts",
+                "Rank": 212
+            },
+            {
+                "Name": "Tyler Allgeier",
+                "Rank": 257
+            },
+            {
+                "Name": "Jessie Bates III",
+                "Rank": 272
+            },
+            {
+                "Name": "Divine Deablo",
+                "Rank": 301
+            },
+            {
+                "Name": "Jalon Walker",
+                "Rank": 309
+            },
+            {
+                "Name": "Xavier Watts",
+                "Rank": 340
+            }
+        ]
+    },
+    {
+        "name": "Giants",
+        "players": [
+            {
+                "Name": "Malik Nabers",
+                "Rank": 8
+            },
+            {
+                "Name": "Brian Burns",
+                "Rank": 92
+            },
+            {
+                "Name": "Dexter Lawrence",
+                "Rank": 136
+            },
+            {
+                "Name": "Tyrone Tracy",
+                "Rank": 146
+            },
+            {
+                "Name": "Tyler Nubin",
+                "Rank": 169
+            },
+            {
+                "Name": "Wan'Dale Robinson",
+                "Rank": 198
+            },
+            {
+                "Name": "Bobby Okereke",
+                "Rank": 229
+            },
+            {
+                "Name": "Kayvon Thibodeaux",
+                "Rank": 231
+            },
+            {
+                "Name": "Abdul Carter",
+                "Rank": 232
+            },
+            {
+                "Name": "Cam Skattebo",
+                "Rank": 302
+            },
+            {
+                "Name": "Micah McFadden",
+                "Rank": 303
+            },
+            {
+                "Name": "Russell Wilson",
+                "Rank": 315
+            },
+            {
+                "Name": "Andru Phillips",
+                "Rank": 326
+            },
+            {
+                "Name": "Paulson Adebo",
+                "Rank": 329
+            },
+            {
+                "Name": "Jevon Holland",
+                "Rank": 368
+            }
+        ]
+    },
+    {
+        "name": "Jaguars",
+        "players": [
+            {
+                "Name": "Travis Hunter",
+                "Rank": 13
+            },
+            {
+                "Name": "Brian Thomas Jr.",
+                "Rank": 19
+            },
+            {
+                "Name": "Cam Little",
+                "Rank": 55
+            },
+            {
+                "Name": "Josh Hines-Allen",
+                "Rank": 81
+            },
+            {
+                "Name": "Travis Etienne Jr.",
+                "Rank": 115
+            },
+            {
+                "Name": "Foyesade Oluokun",
+                "Rank": 121
+            },
+            {
+                "Name": "Travon Walker",
+                "Rank": 194
+            },
+            {
+                "Name": "Tank Bigsby",
+                "Rank": 205
+            },
+            {
+                "Name": "Bhayshul Tuten",
+                "Rank": 206
+            },
+            {
+                "Name": "Brenton Strange",
+                "Rank": 213
+            },
+            {
+                "Name": "Trevor Lawrence",
+                "Rank": 277
+            },
+            {
+                "Name": "Jourdan Lewis",
+                "Rank": 345
+            }
+        ]
+    },
+    {
+        "name": "Jets",
+        "players": [
+            {
+                "Name": "Garrett Wilson",
+                "Rank": 27
+            },
+            {
+                "Name": "Justin Fields",
+                "Rank": 96
+            },
+            {
+                "Name": "Breece Hall",
+                "Rank": 100
+            },
+            {
+                "Name": "Jamien Sherwood",
+                "Rank": 101
+            },
+            {
+                "Name": "Braelon Allen",
+                "Rank": 183
+            },
+            {
+                "Name": "Quinnen Williams",
+                "Rank": 203
+            },
+            {
+                "Name": "Quincy Williams",
+                "Rank": 226
+            },
+            {
+                "Name": "Jermaine Johnson",
+                "Rank": 284
+            }
+        ]
+    },
+    {
+        "name": "Lions",
+        "players": [
+            {
+                "Name": "Jahmyr Gibbs",
+                "Rank": 3
+            },
+            {
+                "Name": "Amon-Ra St. Brown",
+                "Rank": 14
+            },
+            {
+                "Name": "Sam LaPorta",
+                "Rank": 51
+            },
+            {
+                "Name": "Aidan Hutchinson",
+                "Rank": 59
+            },
+            {
+                "Name": "Jared Goff",
+                "Rank": 66
+            },
+            {
+                "Name": "Brian Branch",
+                "Rank": 69
+            },
+            {
+                "Name": "Jameson Williams",
+                "Rank": 94
+            },
+            {
+                "Name": "David Montgomery",
+                "Rank": 97
+            },
+            {
+                "Name": "Jack Campbell",
+                "Rank": 105
+            },
+            {
+                "Name": "Alex Anzalone",
+                "Rank": 245
+            },
+            {
+                "Name": "Kerby Joseph",
+                "Rank": 333
+            },
+            {
+                "Name": "D.J. Reed",
+                "Rank": 359
+            }
+        ]
+    },
+    {
+        "name": "Packers",
+        "players": [
+            {
+                "Name": "Josh Jacobs",
+                "Rank": 29
+            },
+            {
+                "Name": "Micah Parsons",
+                "Rank": 61
+            },
+            {
+                "Name": "Edgerrin Cooper",
+                "Rank": 143
+            },
+            {
+                "Name": "Tucker Kraft",
+                "Rank": 154
+            },
+            {
+                "Name": "Quay Walker",
+                "Rank": 164
+            },
+            {
+                "Name": "Jayden Reed",
+                "Rank": 189
+            },
+            {
+                "Name": "Matthew Golden",
+                "Rank": 197
+            },
+            {
+                "Name": "Jordan Love",
+                "Rank": 211
+            },
+            {
+                "Name": "Rashan Gary",
+                "Rank": 234
+            },
+            {
+                "Name": "Xavier McKinney",
+                "Rank": 274
+            },
+            {
+                "Name": "MarShawn Lloyd",
+                "Rank": 319
+            },
+            {
+                "Name": "Nate Hobbs",
+                "Rank": 350
+            },
+            {
+                "Name": "Evan Williams",
+                "Rank": 364
+            }
+        ]
+    },
+    {
+        "name": "Panthers",
+        "players": [
+            {
+                "Name": "Tetairoa McMillan",
+                "Rank": 41
+            },
+            {
+                "Name": "Chuba Hubbard",
+                "Rank": 54
+            },
+            {
+                "Name": "Bryce Young",
+                "Rank": 113
+            },
+            {
+                "Name": "Christian Rozeboom",
+                "Rank": 178
+            },
+            {
+                "Name": "Derrick Brown",
+                "Rank": 223
+            },
+            {
+                "Name": "Rico Dowdle",
+                "Rank": 225
+            },
+            {
+                "Name": "Jalen Coker",
+                "Rank": 236
+            },
+            {
+                "Name": "A'Shawn Robinson",
+                "Rank": 279
+            },
+            {
+                "Name": "Trevin Wallace",
+                "Rank": 304
+            },
+            {
+                "Name": "D.J. Wonnum",
+                "Rank": 305
+            },
+            {
+                "Name": "Tre'von Moehrig",
+                "Rank": 332
+            }
+        ]
+    },
+    {
+        "name": "Patriots",
+        "players": [
+            {
+                "Name": "TreVeyon Henderson",
+                "Rank": 76
+            },
+            {
+                "Name": "Drake Maye",
+                "Rank": 86
+            },
+            {
+                "Name": "Rhamondre Stevenson",
+                "Rank": 114
+            },
+            {
+                "Name": "Robert Spillane",
+                "Rank": 152
+            },
+            {
+                "Name": "Stefon Diggs",
+                "Rank": 172
+            },
+            {
+                "Name": "Demario Douglas",
+                "Rank": 217
+            },
+            {
+                "Name": "Harold Landry III",
+                "Rank": 220
+            },
+            {
+                "Name": "Christian Elliss",
+                "Rank": 250
+            },
+            {
+                "Name": "Hunter Henry",
+                "Rank": 265
+            },
+            {
+                "Name": "Milton Williams",
+                "Rank": 278
+            },
+            {
+                "Name": "Keion White",
+                "Rank": 337
+            },
+            {
+                "Name": "Jabrill Peppers",
+                "Rank": 341
+            },
+            {
+                "Name": "Christian Gonzalez",
+                "Rank": 346
+            }
+        ]
+    },
+    {
+        "name": "Raiders",
+        "players": [
+            {
+                "Name": "Ashton Jeanty",
+                "Rank": 9
+            },
+            {
+                "Name": "Brock Bowers",
+                "Rank": 26
+            },
+            {
+                "Name": "Maxx Crosby",
+                "Rank": 62
+            },
+            {
+                "Name": "Daniel Carlson",
+                "Rank": 112
+            },
+            {
+                "Name": "Jakobi Meyers",
+                "Rank": 158
+            },
+            {
+                "Name": "Jeremy Chinn",
+                "Rank": 209
+            },
+            {
+                "Name": "Devin White",
+                "Rank": 240
+            },
+            {
+                "Name": "D'onte Thornton Jr.",
+                "Rank": 248
+            },
+            {
+                "Name": "Malcolm Koonce",
+                "Rank": 280
+            },
+            {
+                "Name": "Geno Smith",
+                "Rank": 296
+            },
+            {
+                "Name": "Amari Cooper",
+                "Rank": 320
+            },
+            {
+                "Name": "Germaine Pratt",
+                "Rank": 353
+            }
+        ]
+    },
+    {
+        "name": "Rams",
+        "players": [
+            {
+                "Name": "Puka Nacua",
+                "Rank": 12
+            },
+            {
+                "Name": "Kyren Williams",
+                "Rank": 28
+            },
+            {
+                "Name": "Davante Adams",
+                "Rank": 42
+            },
+            {
+                "Name": "Jared Verse",
+                "Rank": 60
+            },
+            {
+                "Name": "Joshua Karty",
+                "Rank": 83
+            },
+            {
+                "Name": "Nate Landman",
+                "Rank": 179
+            },
+            {
+                "Name": "Kobie Turner",
+                "Rank": 222
+            },
+            {
+                "Name": "Quentin Lake",
+                "Rank": 271
+            },
+            {
+                "Name": "Matthew Stafford",
+                "Rank": 297
+            },
+            {
+                "Name": "Byron Young",
+                "Rank": 308
+            },
+            {
+                "Name": "Blake Corum",
+                "Rank": 318
+            }
+        ]
+    },
+    {
+        "name": "Ravens",
+        "players": [
+            {
+                "Name": "Lamar Jackson",
+                "Rank": 6
+            },
+            {
+                "Name": "Derrick Henry",
+                "Rank": 24
+            },
+            {
+                "Name": "Kyle Hamilton",
+                "Rank": 58
+            },
+            {
+                "Name": "Roquan Smith",
+                "Rank": 68
+            },
+            {
+                "Name": "Zay Flowers",
+                "Rank": 118
+            },
+            {
+                "Name": "Mark Andrews",
+                "Rank": 135
+            },
+            {
+                "Name": "Isaiah Likely",
+                "Rank": 214
+            },
+            {
+                "Name": "Odafe Oweh",
+                "Rank": 233
+            },
+            {
+                "Name": "Rashod Bateman",
+                "Rank": 285
+            },
+            {
+                "Name": "Nnamdi Madubuike",
+                "Rank": 306
+            },
+            {
+                "Name": "Marlon Humphrey",
+                "Rank": 349
+            }
+        ]
+    },
+    {
+        "name": "Saints",
+        "players": [
+            {
+                "Name": "Alvin Kamara",
+                "Rank": 43
+            },
+            {
+                "Name": "Chris Olave",
+                "Rank": 82
+            },
+            {
+                "Name": "Carl Granderson",
+                "Rank": 193
+            },
+            {
+                "Name": "Demario Davis",
+                "Rank": 230
+            },
+            {
+                "Name": "Rashid Shaheed",
+                "Rank": 237
+            },
+            {
+                "Name": "Chase Young",
+                "Rank": 310
+            },
+            {
+                "Name": "Alontae Taylor",
+                "Rank": 328
+            },
+            {
+                "Name": "Spencer Rattler",
+                "Rank": 363
+            }
+        ]
+    },
+    {
+        "name": "Seahawks",
+        "players": [
+            {
+                "Name": "Jaxon Smith-Njigba",
+                "Rank": 31
+            },
+            {
+                "Name": "Kenneth Walker III",
+                "Rank": 34
+            },
+            {
+                "Name": "Cooper Kupp",
+                "Rank": 140
+            },
+            {
+                "Name": "Ernest Jones",
+                "Rank": 151
+            },
+            {
+                "Name": "Zach Charbonnet",
+                "Rank": 185
+            },
+            {
+                "Name": "Leonard Williams",
+                "Rank": 201
+            },
+            {
+                "Name": "Julian Love",
+                "Rank": 252
+            },
+            {
+                "Name": "Boye Mafe",
+                "Rank": 283
+            },
+            {
+                "Name": "Sam Darnold",
+                "Rank": 295
+            },
+            {
+                "Name": "Devon Witherspoon",
+                "Rank": 327
+            },
+            {
+                "Name": "Tyrice Knight",
+                "Rank": 351
+            },
+            {
+                "Name": "Coby Bryant",
+                "Rank": 367
+            }
+        ]
+    },
+    {
+        "name": "Steelers",
+        "players": [
+            {
+                "Name": "T.J. Watt",
+                "Rank": 50
+            },
+            {
+                "Name": "Alex Highsmith",
+                "Rank": 93
+            },
+            {
+                "Name": "Jaylen Warren",
+                "Rank": 99
+            },
+            {
+                "Name": "D.K. Metcalf",
+                "Rank": 125
+            },
+            {
+                "Name": "Kaleb Johnson",
+                "Rank": 145
+            },
+            {
+                "Name": "Patrick Queen",
+                "Rank": 182
+            },
+            {
+                "Name": "DeShon Elliott",
+                "Rank": 207
+            },
+            {
+                "Name": "Jonnu Smith",
+                "Rank": 288
+            },
+            {
+                "Name": "Pat Freiermuth",
+                "Rank": 289
+            },
+            {
+                "Name": "Payton Wilson",
+                "Rank": 299
+            },
+            {
+                "Name": "Cameron Heyward",
+                "Rank": 307
+            },
+            {
+                "Name": "Aaron Rodgers",
+                "Rank": 314
+            }
+        ]
+    },
+    {
+        "name": "Texans",
+        "players": [
+            {
+                "Name": "Nico Collins",
+                "Rank": 11
+            },
+            {
+                "Name": "C.J. Stroud",
+                "Rank": 72
+            },
+            {
+                "Name": "Will Anderson Jr.",
+                "Rank": 78
+            },
+            {
+                "Name": "Danielle Hunter",
+                "Rank": 80
+            },
+            {
+                "Name": "Ka'imi Fairbairn",
+                "Rank": 98
+            },
+            {
+                "Name": "Nick Chubb",
+                "Rank": 106
+            },
+            {
+                "Name": "Azeez Al-Shaair",
+                "Rank": 160
+            },
+            {
+                "Name": "Joe Mixon",
+                "Rank": 191
+            },
+            {
+                "Name": "Jayden Higgins",
+                "Rank": 238
+            },
+            {
+                "Name": "Henry To'oTo'o",
+                "Rank": 244
+            },
+            {
+                "Name": "Dalton Schultz",
+                "Rank": 291
+            },
+            {
+                "Name": "Dameon Pierce",
+                "Rank": 316
+            },
+            {
+                "Name": "Christian Kirk",
+                "Rank": 321
+            },
+            {
+                "Name": "Jalen Pitre",
+                "Rank": 325
+            }
+        ]
+    },
+    {
+        "name": "Titans",
+        "players": [
+            {
+                "Name": "Tony Pollard",
+                "Rank": 77
+            },
+            {
+                "Name": "Calvin Ridley",
+                "Rank": 126
+            },
+            {
+                "Name": "Cam Ward",
+                "Rank": 130
+            },
+            {
+                "Name": "Jeffery Simmons",
+                "Rank": 131
+            },
+            {
+                "Name": "Cody Barton",
+                "Rank": 227
+            },
+            {
+                "Name": "Cedric Gray",
+                "Rank": 249
+            },
+            {
+                "Name": "Chigoziem Okonkwo",
+                "Rank": 263
+            },
+            {
+                "Name": "Dre'Mont Jones",
+                "Rank": 312
+            }
+        ]
+    },
+    {
+        "name": "Vikings",
+        "players": [
+            {
+                "Name": "Justin Jefferson",
+                "Rank": 4
+            },
+            {
+                "Name": "T.J. Hockenson",
+                "Rank": 79
+            },
+            {
+                "Name": "Aaron Jones",
+                "Rank": 89
+            },
+            {
+                "Name": "Blake Cashman",
+                "Rank": 102
+            },
+            {
+                "Name": "Jordan Mason",
+                "Rank": 116
+            },
+            {
+                "Name": "Jonathan Greenard",
+                "Rank": 127
+            },
+            {
+                "Name": "Andrew Van Ginkel",
+                "Rank": 149
+            },
+            {
+                "Name": "Josh Metellus",
+                "Rank": 170
+            },
+            {
+                "Name": "J.J. McCarthy",
+                "Rank": 186
+            },
+            {
+                "Name": "Jordan Addison",
+                "Rank": 188
+            },
+            {
+                "Name": "Adam Thielen",
+                "Rank": 287
+            },
+            {
+                "Name": "Harrison Smith",
+                "Rank": 339
+            },
+            {
+                "Name": "Byron Murphy Jr.",
+                "Rank": 354
+            }
+        ]
+    }
+]
