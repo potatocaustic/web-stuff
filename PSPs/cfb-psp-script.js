@@ -1,5 +1,5 @@
 // Global variables
-let currentCategory = 'TB'; // Default category
+let currentCategory = 'RushRecYds'; // Default category
 let allData = {
   RushRecYds: [],
   REC: [],
@@ -95,22 +95,6 @@ async function loadMetadata() {
   }
 }
 
-// Helper function to check if a date is 8-19-25
-function isDate81925(dateString) {
-  if (!dateString) return false;
-  
-  const patterns = [
-    /^8-19-25$/,          
-    /^08-19-25$/,          
-    /^8\/19\/2025$/,        
-    /^08\/19\/2025$/,      
-    /^8-19-2025$/,          
-    /^08-19-2025$/         
-  ];
-  
-  return patterns.some(pattern => pattern.test(dateString.trim()));
-}
-
 function isDate82825(dateString) {
   if (!dateString) return false;
   
@@ -173,7 +157,7 @@ function isDate83125(dateString) {
 
 // Helper function to check if a date is an exception date
 function isExceptionDate(dateString) {
-  return isDate81925(dateString) || isDate82825(dateString) || isDate82925(dateString) || isDate83025(dateString) || isDate83125(dateString);
+  return isDate82825(dateString) || isDate82925(dateString) || isDate83025(dateString) || isDate83125(dateString);
 }
 
 // Function to load data for a specific category
