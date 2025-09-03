@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const mandatoryPlayers = [];
         const addedPlayers = new Set();
         selectedTeams.forEach(team => {
-            const playersToAddCount = budget >= 10000 ? 5 : 3;
+            const playersToAddCount = budget >= 10000 ? 4 : 2;
             const topPlayers = team.players.sort((a, b) => a.Rank - b.Rank).slice(0, playersToAddCount);
             topPlayers.forEach(player => {
                 if (!addedPlayers.has(player.Name)) {
