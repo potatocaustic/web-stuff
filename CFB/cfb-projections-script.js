@@ -18,7 +18,7 @@ const CONFIG = {
   },
   GAMES: [
     { name: 'Pittsburgh vs Central Michigan', teams: ['Pitt', 'CMU'] },
-    { name: 'Northwestern vs West Illinois', teams: ['NW', 'WestIll'] },
+    { name: 'Northwestern vs West Illinois', teams: ['NW', 'WestIl'] },
     { name: 'Baylor vs SMU', teams: ['Baylor', 'SMU'] },
     { name: 'Minnesota vs NWSt', teams: ['Minnesota', 'NWSt'] },
     { name: 'North Carolina State vs Virginia', teams: ['NCSU', 'UVa'] },
