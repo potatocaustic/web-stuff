@@ -190,15 +190,8 @@ async function loadData(category) {
       }
     }
     
-    // Modified filter: Keep entries with Projection !== 0 OR entries from the exception date
-    const filtered = data.filter(entry => {
-      // Always include entries from the exception date, regardless of Projection value
-      if (isExceptionDate(entry.Date)) {
-        return true;
-      }
-      // For all other dates, filter out entries with Projection = 0
-      return entry.Projection !== 0;
-    });
+    // The filter that excluded entries with a Projection of 0 has been removed.
+    const filtered = data;
     
     // Store the data
     allData[category] = filtered;
