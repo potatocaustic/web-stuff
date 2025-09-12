@@ -5,9 +5,10 @@ let allData = {
 };
 let currentPosition = 'nonQb'; // Default position group
 let filteredDataCache = []; // Cache for sorting
+// CHANGED: Set the initial sort state to Total Yards for the default Non-QB view
 let sortState = {
-    key: 'Player Name',
-    direction: 'asc'
+    key: 'RushRecYds',
+    direction: 'desc'
 };
 
 // Configuration
@@ -198,8 +199,14 @@ function switchPosition(position) {
   currentPosition = position;
   elements.qbButton.classList.toggle('active', position === 'qb');
   elements.nonQbButton.classList.toggle('active', position === 'nonQb');
-  // Reset sort state when switching views
-  sortState = { key: 'Player Name', direction: 'asc' };
+  
+  // ADDED: Update the sortState to the desired default for the selected position
+  if (position === 'qb') {
+    sortState = { key: 'pYds', direction: 'desc' }; // Default sort for QBs
+  } else {
+    sortState = { key: 'RushRecYds', direction: 'desc' }; // Default sort for Non-QBs
+  }
+  
   displayProjections();
 }
 
@@ -302,7 +309,7 @@ function updateTableHeader() {
             sortState.direction = sortState.direction === 'asc' ? 'desc' : 'asc';
         } else {
             sortState.key = dataKey;
-            sortState.direction = 'asc';
+            sortState.direction = 'desc'; // CHANGED: Default to descending on new column click
         }
         sortAndRender();
     });
