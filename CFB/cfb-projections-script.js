@@ -73,7 +73,7 @@ GAMES: [
     { name: 'South Alabama vs Auburn', teams: ['South Alabama', 'Auburn'] },
     { name: 'South Florida vs Miami', teams: ['South Florida', 'Miami'] },
     { name: 'Southern vs Fresno State', teams: ['Southern', 'Fresno State'] },
-    { name: 'Southern California vs Purdue', teams: ['Southern California', 'Purdue'] },
+    { name: 'USC vs Purdue', teams: ['USC', 'Purdue'] },
     { name: 'SMU vs Missouri State', teams: ['SMU', 'Missouri State'] },
     { name: 'Texas A&M vs Notre Dame', teams: ['Texas A&M', 'Notre Dame'] },
     { name: 'Texas State vs Arizona State', teams: ['Texas State', 'Arizona State'] },
