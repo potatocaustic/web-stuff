@@ -9,10 +9,12 @@ let currentPlayer = null;
 let currentPlayerData = null;
 
 // --- Supabase Configuration ---
-// IMPORTANT: Replace with your actual Supabase URL and anon key
 const SUPABASE_URL = 'https://sjqvaelyxdpchnswpapi.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqcXZhZWx5eGRwY2huc3dwYXBpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1ODU0OTEsImV4cCI6MjA3MzE2MTQ5MX0.mqql48513Ru5s7KEgXP787bNNi5f2ROANfMHzTN6wUM';
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// **FIXED LINE**: Use a different variable name for the client instance
+// The global object from the CDN is 'supabase', our client will be 'supabaseClient'
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
 // DOM elements
@@ -64,8 +66,8 @@ async function loadData(category) {
   }
 
   try {
-    // Fetch data from the 'nfl_psp_data' table for the selected category
-    const { data, error } = await supabase
+    // **FIXED LINE**: Use the new 'supabaseClient' variable to make the query
+    const { data, error } = await supabaseClient
       .from('nfl_psp_data')
       .select('*')
       .eq('category', category);
