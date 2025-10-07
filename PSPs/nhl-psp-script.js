@@ -17,8 +17,8 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // DOM elements
 const elements = {
   ptsButton: document.getElementById('ptsButton'),
-  shotsButton: document.getElementById('hitsButton'),
-  hitsButton: document.getElementById('astButton'),
+  shotsButton: document.getElementById('shotsButton'),
+  hitsButton: document.getElementById('hitsButton'),
   savesButton: document.getElementById('savesButton'),
   playerSearchInput: document.getElementById('playerSearchInput'),
   searchResults: document.getElementById('searchResults'),
