@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NFL PSP Database - caustic.info</title>
+    <title>NHL PSP Database - caustic.info</title>
     <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="nfl-psp-style.css" />
+    <link rel="stylesheet" href="nhl-psp-style.css" />
   </head>
   <body>
     <header>
-      <h1>NFL Player Stat Picks Database</h1>
+      <h1>NHL Player Stat Picks Database</h1>
       <nav>
         <button id="menu-toggle" class="menu-toggle" aria-label="Open Navigation Menu">&#9776;</button>
             <ul id="nav-menu">
@@ -45,7 +45,7 @@
 
     <main>
       <section class="info">
-        <p>Search historical NFL player stat pick poll results. Select a category, find a player, and view their performance history.</p>
+        <p>Search historical NHL player stat pick poll results. Select a category, find a player, and view their performance history.</p>
         <p id="last-updated">Last updated: Loading...</p>
       </section>
       
@@ -53,9 +53,10 @@
         <div class="category-selection">
           <h3>Select Category</h3>
           <div class="category-buttons">
-            <button id="rushrecydsButton" class="category-button active">Rush + Rec Yards</button>
-            <button id="recButton" class="category-button">Receptions</button>
-            <button id="tdsButton" class="category-button">TDs (non-passing)</button>
+            <button id="shotsButton" class="category-button">Shots</button>
+            <button id="ptsButton" class="category-button active">Points</button>
+            <button id="hitsButton" class="category-button">Hits</button>
+            <button id="savesButton" class="category-button">Saves</button>
           </div>
         </div>
         
@@ -108,6 +109,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics-compat.js"></script>
 
     <script src="../auth.js"></script>
+
     <script src="nhl-psp-script.js"></script>
   </body>
 </html>
