@@ -231,6 +231,9 @@ function displayProjections() {
 /**
  * Sorts the cached data and renders the table
  */
+/**
+ * Sorts the cached data and renders the table
+ */
 function sortAndRender() {
     const { key, direction } = sortState;
 
@@ -242,7 +245,8 @@ function sortAndRender() {
         let valA = a[key];
         let valB = b[key];
 
-        if (typeof valA === 'string') {
+        // CORRECTED LOGIC: Check if both values are strings before converting
+        if (typeof valA === 'string' && typeof valB === 'string') {
             valA = valA.toLowerCase();
             valB = valB.toLowerCase();
         }
