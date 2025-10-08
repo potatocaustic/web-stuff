@@ -1,10 +1,10 @@
 // Global variables
-let currentCategory = 'SHOTS'; // Default NBA category
+let currentCategory = 'SOG'; // Default NHL category changed from SHOTS
 let allData = {
-  SHOTS: [],
+  SOG: [],
   PTS: [],
   HITS: [],
-  "SAVES": []
+  "SV": []
 };
 let currentPlayer = null;
 let currentPlayerData = null;
@@ -38,10 +38,11 @@ const elements = {
 document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
-  elements.shotsButton.addEventListener('click', () => switchCategory('SHOTS'));
+  // Use 'SOG' for shots and 'SV' for saves
+  elements.shotsButton.addEventListener('click', () => switchCategory('SOG'));
   elements.ptsButton.addEventListener('click', () => switchCategory('PTS'));
   elements.hitsButton.addEventListener('click', () => switchCategory('HITS'));
-  elements.savesButton.addEventListener('click', () => switchCategory("SAVES"));
+  elements.savesButton.addEventListener('click', () => switchCategory("SV"));
   elements.playerSearchInput.addEventListener('input', handlePlayerSearch);
   elements.showAllButton.addEventListener('click', handleShowAll);
   elements.menuToggle.addEventListener('click', () => elements.navMenu.classList.toggle('show-menu'));
@@ -59,7 +60,7 @@ async function loadData(category) {
   if (allData[category].length > 0) return;
   try {
     const { data, error } = await supabaseClient
-      .from('nhl_psp_data') // Fetch from NBA table
+      .from('nhl_psp_data')
       .select('*')
       .eq('category', category);
     if (error) throw error;
@@ -72,10 +73,11 @@ async function loadData(category) {
 }
 
 async function switchCategory(category) {
-  elements.shotsButton.classList.toggle('active', category === 'SHOTS');
+  // Use 'SOG' for shots and 'SV' for saves
+  elements.shotsButton.classList.toggle('active', category === 'SOG');
   elements.ptsButton.classList.toggle('active', category === 'PTS');
   elements.hitsButton.classList.toggle('active', category === 'HITS');
-  elements.savesButton.classList.toggle('active', category === "SAVES");
+  elements.savesButton.classList.toggle('active', category === "SV");
   currentCategory = category;
   if (allData[category].length === 0) {
     try {
@@ -248,10 +250,10 @@ function updatePlayerStats(playerData) {
 
 function getCategoryFullName(category) {
     switch (category) {
-        case 'SHOTS': return 'Shots';
+        case 'SOG': return 'Shots'; // Changed from 'SHOTS'
         case 'PTS': return 'Points';
         case 'HITS': return 'Hits';
-        case "Saves": return 'Saves';
+        case "SV": return 'Saves'; // Changed from "Saves"
         default: return category;
     }
 }
