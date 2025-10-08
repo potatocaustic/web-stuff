@@ -1,115 +1,265 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NHL PSP Database - caustic.info</title>
-    <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="nhl-psp-style.css" />
-  </head>
-  <body>
-    <header>
-      <h1>NHL Player Stat Picks Database</h1>
-      <nav>
-        <button id="menu-toggle" class="menu-toggle" aria-label="Open Navigation Menu">&#9776;</button>
-            <ul id="nav-menu">
-                <li><a href="/index.html">Home</a></li>
-                <li><a href="/PSPs/index.html">PSP Databases</a></li>
-                <li><a href="/RKL/rkl-stats.html">Jammers Stats</a></li>
-                <li><a href="/karma-calculator.html">Karma EV Calculator</a></li>
-                <li><a href="/pool-optimizer.html">Pool Optimizer</a></li>
-                <li><a href="/CFB/cfb-projections.html">CFB Projections</a></li>
-            </ul>
-      </nav>
-    </header>
+// Global variables
+let currentCategory = 'SOG'; // Default NHL category changed from SHOTS
+let allData = {
+  SOG: [],
+  PTS: [],
+  HITS: [],
+  "SV": []
+};
+let currentPlayer = null;
+let currentPlayerData = null;
 
-    <div id="auth-container" style="padding: 2rem; max-width: 400px; margin: 2rem auto; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
-      <h2 id="auth-title">Login</h2>
-      <p id="auth-error" style="color: red; margin-bottom: 1rem; min-height: 1.2em;"></p>
+// --- Supabase Configuration ---
+const SUPABASE_URL = 'https://sjqvaelyxdpchnswpapi.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqcXZhZWx5eGRwY2huc3dwYXBpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc1ODU0OTEsImV4cCI6MjA3MzE2MTQ5MX0.mqql48513Ru5s7KEgXP787bNNi5f2ROANfMHzTN6wUM';
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-      <div id="login-form">
-        <input type="text" id="login-username" placeholder="Username" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
-        <input type="password" id="login-password" placeholder="Password" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
-        <button id="login-button" style="background-color: #333; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; width: 100%;">Login</button>
-        <p style="margin-top: 1rem;">Don't have an account? <a href="#" id="show-signup">Sign Up</a></p>
-      </div>
+// DOM elements
+const elements = {
+  ptsButton: document.getElementById('ptsButton'),
+  shotsButton: document.getElementById('shotsButton'),
+  hitsButton: document.getElementById('hitsButton'),
+  savesButton: document.getElementById('savesButton'),
+  playerSearchInput: document.getElementById('playerSearchInput'),
+  searchResults: document.getElementById('searchResults'),
+  resultsTitle: document.getElementById('resultsTitle'),
+  playerStatsBody: document.getElementById('playerStatsBody'),
+  noResultsMessage: document.getElementById('noResultsMessage'),
+  lastUpdated: document.getElementById('last-updated'),
+  statsSection: document.getElementById('statsSection'),
+  successRateByTarget: document.getElementById('successRateByTarget'),
+  avgRankSection: document.getElementById('avgRankSection'),
+  showAllButton: document.getElementById('showAllButton'),
+  menuToggle: document.getElementById('menu-toggle'),
+  navMenu: document.getElementById('nav-menu')
+};
 
-      <div id="signup-form" style="display: none;">
-        <input type="text" id="signup-username" placeholder="Choose Username" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
-        <input type="password" id="signup-password" placeholder="Choose Password" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
-        <input type="password" id="signup-confirm-password" placeholder="Confirm Password" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
-        <button id="signup-button" style="background-color: #5cb85c; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; width: 100%;">Sign Up</button>
-        <p style="margin-top: 1rem;">Already have an account? <a href="#" id="show-login">Login</a></p>
-      </div>
-    </div>
+// Event listeners
+document.addEventListener('DOMContentLoaded', init);
 
-    <main>
-      <section class="info">
-        <p>Search historical NHL player stat pick poll results. Select a category, find a player, and view their performance history.</p>
-        <p id="last-updated">Last updated: Loading...</p>
-      </section>
-      
-      <section class="search-section">
-        <div class="category-selection">
-          <h3>Select Category</h3>
-          <div class="category-buttons">
-            <button id="shotsButton" class="category-button">Shots</button>
-            <button id="ptsButton" class="category-button active">Points</button>
-            <button id="hitsButton" class="category-button">Hits</button>
-            <button id="savesButton" class="category-button">Saves</button>
-          </div>
-        </div>
-        
-        <div class="player-search">
-          <h3>Search Player</h3>
-          <input type="text" id="playerSearchInput" placeholder="Type player name..." />
-          <div id="searchResults" class="search-results"></div>
-        </div>
-      </section>
-      
-      <section class="results-section">
-        <h2 id="resultsTitle">Select a player to view results</h2>
-        <div id="playerStatsContainer" class="player-stats-container">
-          <table id="playerStatsTable" class="player-stats-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Target Value</th>
-                <th>Rank</th>
-                <th>Result</th>
-              </tr>
-            </thead>
-            <tbody id="playerStatsBody">
-              </tbody>
-          </table>
-          <button id="showAllButton" class="show-all-button hidden">Show All Results</button>
-          <div id="noResultsMessage" class="no-results hidden">
-            No results found for this player in the selected category.
-          </div>
-        </div>
-      </section>
-      
-      <section class="stats-section hidden" id="statsSection">
-        <h2>Performance Summary</h2>
-        <div class="stats-container">
-          <div id="successRateByTarget" class="stat-block">
-            </div>
-          <div id="avgRankSection" class="stat-block">
-            </div>
-        </div>
-      </section>
-    </main>
-    <footer>
-      <p>&copy; caustic.info</p>
-    </footer>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics-compat.js"></script>
+async function init() {
+  // Use 'SOG' for shots and 'SV' for saves
+  elements.shotsButton.addEventListener('click', () => switchCategory('SOG'));
+  elements.ptsButton.addEventListener('click', () => switchCategory('PTS'));
+  elements.hitsButton.addEventListener('click', () => switchCategory('HITS'));
+  elements.savesButton.addEventListener('click', () => switchCategory("SV"));
+  elements.playerSearchInput.addEventListener('input', handlePlayerSearch);
+  elements.showAllButton.addEventListener('click', handleShowAll);
+  elements.menuToggle.addEventListener('click', () => elements.navMenu.classList.toggle('show-menu'));
 
-    <script src="../auth.js"></script>
+  try {
+    await loadData(currentCategory);
+    elements.lastUpdated.textContent = 'Data loaded successfully.';
+  } catch (error) {
+    console.error('Failed to load initial data:', error);
+    elements.lastUpdated.textContent = 'Error loading data.';
+  }
+}
 
-    <script src="nhl-psp-script.js"></script>
-  </body>
-</html>
+async function loadData(category) {
+  if (allData[category].length > 0) return;
+  try {
+    const { data, error } = await supabaseClient
+      .from('nhl_psp_data')
+      .select('*')
+      .eq('category', category);
+    if (error) throw error;
+    allData[category] = data;
+    console.log(`Loaded ${data.length} entries for category ${category}`);
+  } catch (error) {
+    console.error(`Error loading data for ${category}:`, error);
+    throw error;
+  }
+}
+
+async function switchCategory(category) {
+  // Use 'SOG' for shots and 'SV' for saves
+  elements.shotsButton.classList.toggle('active', category === 'SOG');
+  elements.ptsButton.classList.toggle('active', category === 'PTS');
+  elements.hitsButton.classList.toggle('active', category === 'HITS');
+  elements.savesButton.classList.toggle('active', category === "SV");
+  currentCategory = category;
+  if (allData[category].length === 0) {
+    try {
+      await loadData(category);
+    } catch (error) {
+      console.error(`Failed to load data for ${category}:`, error);
+      return;
+    }
+  }
+  elements.playerSearchInput.value = '';
+  elements.searchResults.innerHTML = '';
+  resetPlayerResults();
+  elements.playerSearchInput.focus();
+}
+
+function handlePlayerSearch() {
+  const searchTerm = elements.playerSearchInput.value.trim().toLowerCase();
+  elements.searchResults.innerHTML = '';
+  if (searchTerm.length < 2) return;
+  const players = getUniquePlayers(currentCategory, searchTerm);
+  if (players.length > 0) {
+    players.forEach(player => {
+      const resultItem = document.createElement('div');
+      resultItem.classList.add('search-result-item');
+      resultItem.textContent = player;
+      resultItem.addEventListener('click', () => selectPlayer(player));
+      elements.searchResults.appendChild(resultItem);
+    });
+  } else {
+    const noResults = document.createElement('div');
+    noResults.classList.add('search-result-item');
+    noResults.textContent = 'No players found';
+    elements.searchResults.appendChild(noResults);
+  }
+}
+
+function handleShowAll() {
+  if (!currentPlayerData) return;
+  displayPlayerData(currentPlayerData, false);
+  elements.showAllButton.classList.add('hidden');
+}
+
+function getUniquePlayers(category, searchTerm) {
+  const playerSet = new Set();
+  allData[category].forEach(entry => {
+    if (entry.player_name && entry.player_name.toLowerCase().includes(searchTerm)) {
+      playerSet.add(entry.player_name);
+    }
+  });
+  return Array.from(playerSet).sort();
+}
+
+function sortByDateDescending(a, b) {
+  return new Date(b.poll_date) - new Date(a.poll_date);
+}
+
+function selectPlayer(playerName) {
+  currentPlayer = playerName;
+  elements.resultsTitle.textContent = `Results for ${playerName} - ${getCategoryFullName(currentCategory)}`;
+  let playerData = allData[currentCategory].filter(entry => entry.player_name === playerName);
+  playerData.sort(sortByDateDescending);
+  currentPlayerData = playerData;
+  displayPlayerData(playerData, true);
+  if (playerData.length > 5) {
+    elements.showAllButton.classList.remove('hidden');
+  } else {
+    elements.showAllButton.classList.add('hidden');
+  }
+  elements.searchResults.innerHTML = '';
+}
+
+function displayPlayerData(playerData, limitToFive) {
+  elements.playerStatsBody.innerHTML = '';
+  if (playerData.length > 0) {
+    elements.noResultsMessage.classList.add('hidden');
+    elements.playerStatsBody.parentElement.classList.remove('hidden');
+    let dataToDisplay = [...playerData];
+    if (limitToFive && dataToDisplay.length > 5) {
+      dataToDisplay = dataToDisplay.slice(0, 5);
+    }
+    dataToDisplay.forEach(entry => {
+      const row = document.createElement('tr');
+      const formattedDate = formatDate(entry.poll_date);
+      row.innerHTML = `
+        <td>${formattedDate}</td>
+        <td>${entry.target_value}</td>
+        <td>${Math.round(entry.player_rank)}</td>
+        <td><span class="${entry.hit ? 'hit' : 'miss'}">${entry.hit ? 'Hit' : 'Miss'}</span></td>
+      `;
+      elements.playerStatsBody.appendChild(row);
+    });
+    updatePlayerStats(playerData);
+    elements.statsSection.classList.remove('hidden');
+  } else {
+    elements.noResultsMessage.classList.remove('hidden');
+    elements.playerStatsBody.parentElement.classList.add('hidden');
+    elements.statsSection.classList.add('hidden');
+  }
+}
+
+function resetPlayerResults() {
+  elements.resultsTitle.textContent = 'Select a player to view results';
+  elements.playerStatsBody.innerHTML = '';
+  elements.noResultsMessage.classList.add('hidden');
+  elements.statsSection.classList.add('hidden');
+  elements.showAllButton.classList.add('hidden');
+  currentPlayer = null;
+  currentPlayerData = null;
+}
+
+function updatePlayerStats(playerData) {
+  elements.successRateByTarget.innerHTML = '';
+  elements.avgRankSection.innerHTML = '';
+  const targetValueMap = new Map();
+  playerData.forEach(entry => {
+    const targetValue = entry.target_value;
+    if (!targetValueMap.has(targetValue)) {
+      targetValueMap.set(targetValue, { total: 0, hits: 0 });
+    }
+    const stats = targetValueMap.get(targetValue);
+    stats.total += 1;
+    stats.hits += entry.hit ? 1 : 0;
+  });
+  if (targetValueMap.size > 0) {
+    const targetHeader = document.createElement('h3');
+    targetHeader.textContent = 'Success Rate by Target Value';
+    elements.successRateByTarget.appendChild(targetHeader);
+    const targetTable = document.createElement('table');
+    targetTable.classList.add('stats-table');
+    targetTable.innerHTML = '<tr><th>Target</th><th>Success Rate</th><th>Record</th></tr>';
+    const sortedTargets = Array.from(targetValueMap.keys()).sort((a, b) => a - b);
+    sortedTargets.forEach(target => {
+      const stats = targetValueMap.get(target);
+      const successRate = (stats.hits / stats.total) * 100;
+      const row = document.createElement('tr');
+      row.innerHTML = `<td>${target}</td><td>${successRate.toFixed(1)}%</td><td>${stats.hits}/${stats.total}</td>`;
+      targetTable.appendChild(row);
+    });
+    elements.successRateByTarget.appendChild(targetTable);
+  }
+  const calculateAvgRank = (data) => {
+    if (data.length === 0) return 0;
+    const totalRank = data.reduce((sum, entry) => sum + entry.player_rank, 0);
+    return totalRank / data.length;
+  };
+  const sortedData = [...playerData].sort(sortByDateDescending);
+  const overallAvgRank = calculateAvgRank(sortedData);
+  const last5AvgRank = calculateAvgRank(sortedData.slice(0, 5));
+  const last10AvgRank = calculateAvgRank(sortedData.slice(0, 10));
+  const rankHeader = document.createElement('h3');
+  rankHeader.textContent = 'Average Rank';
+  elements.avgRankSection.appendChild(rankHeader);
+  const rankTable = document.createElement('table');
+  rankTable.classList.add('stats-table');
+  rankTable.innerHTML = '<tr><th>Period</th><th>Avg. Rank</th></tr>';
+  const periods = [
+    { name: 'Last 5', value: Math.round(last5AvgRank) },
+    { name: 'Last 10', value: Math.round(last10AvgRank) },
+    { name: 'Overall', value: Math.round(overallAvgRank) }
+  ];
+  periods.forEach(period => {
+    if (period.value > 0) {
+      const row = document.createElement('tr');
+      row.innerHTML = `<td>${period.name}</td><td>${period.value}</td>`;
+      rankTable.appendChild(row);
+    }
+  });
+  elements.avgRankSection.appendChild(rankTable);
+}
+
+function getCategoryFullName(category) {
+    switch (category) {
+        case 'SOG': return 'Shots'; // Changed from 'SHOTS'
+        case 'PTS': return 'Points';
+        case 'HITS': return 'Hits';
+        case "SV": return 'Saves'; // Changed from "Saves"
+        default: return category;
+    }
+}
+
+function formatDate(dateString) {
+  if (!dateString) return '';
+  const date = new Date(dateString + 'T00:00:00');
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
