@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         const playerCost = 200;
-        const maxPlayers = 75;
+        const maxPlayers = 80;
         const teamCost = 800;
 
         const selectedTeams = [];
