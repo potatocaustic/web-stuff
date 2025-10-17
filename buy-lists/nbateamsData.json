@@ -251,12 +251,12 @@
         "name": "CHR",
         "players": [
             {
-                "Name": "Brandon Miller",
-                "Rank": 61
+                "Name": "LaMelo Ball",
+                "Rank": 34
             },
             {
-                "Name": "LaMelo Ball",
-                "Rank": 70
+                "Name": "Brandon Miller",
+                "Rank": 61
             },
             {
                 "Name": "Miles Bridges",
@@ -362,7 +362,7 @@
         "players": [
             {
                 "Name": "Anthony Davis",
-                "Rank": 29
+                "Rank": 18
             },
             {
                 "Name": "Cooper Flagg",
@@ -755,12 +755,12 @@
         "name": "LAC",
         "players": [
             {
-                "Name": "Ivica Zubac",
-                "Rank": 18
-            },
-            {
                 "Name": "James Harden",
                 "Rank": 19
+            },
+            {
+                "Name": "Ivica Zubac",
+                "Rank": 29
             },
             {
                 "Name": "Kawhi Leonard",
@@ -824,12 +824,12 @@
                 "Rank": 22
             },
             {
-                "Name": "Deandre Ayton",
-                "Rank": 34
-            },
-            {
                 "Name": "Austin Reaves",
                 "Rank": 35
+            },
+            {
+                "Name": "Deandre Ayton",
+                "Rank": 70
             },
             {
                 "Name": "Rui Hachimura",
