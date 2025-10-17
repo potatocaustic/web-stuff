@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
             return response.json();
         })
         .then(teamsData => {
-            const featuredTeams = ["OKC", "CLE", "DEN", "MIN", "NY"]; // Thunder, Cavaliers, Nuggets, Timberwolves, Knicks
+            const featuredTeams = ["OKC", "CLE", "DEN", "NY", "LAL"]; 
             const featuredTeamsContainer = document.getElementById('featured-teams');
             const teamSelectionContainer = document.getElementById('team-selection-list');
             
