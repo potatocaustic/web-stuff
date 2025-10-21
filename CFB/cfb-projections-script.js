@@ -30,7 +30,7 @@ GAMES: [
     { name: 'Washington vs Illinois', teams: ['Washington', 'Illinois'] },
     { name: 'Arkansas State vs Georgia Southern', teams: ['Arkansas State', 'Georgia Southern'] },
     { name: 'Indiana vs UCLA', teams: ['Indiana', 'UCLA'] },
-    { name:Am: 'Pittsburgh vs North Carolina State', teams: ['Pittsburgh', 'North Carolina State'] },
+    { name: 'Pittsburgh vs North Carolina State', teams: ['Pittsburgh', 'North Carolina State'] },
     { name: 'Tennessee vs Kentucky', teams: ['Tennessee', 'Kentucky'] },
     { name: 'Baylor vs Cincinnati', teams: ['Baylor', 'Cincinnati'] },
     { name: 'Louisiana-Lafayette vs Troy', teams: ['Louisiana-Lafayette', 'Troy'] },
