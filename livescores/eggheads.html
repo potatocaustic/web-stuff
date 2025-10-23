@@ -118,8 +118,41 @@
 
     function getTodayString() {
       const now = new Date();
-      const est = new Date(now.toLocaleString("en-US", { timeZone: "America/New_York" }));
-      if (est.getHours() < 7) est.setDate(est.getDate() - 1);
+      const options = {
+        timeZone: 'America/New_York',
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        hour12: false
+      };
+      const formatter = new Intl.DateTimeFormat('en-US', options);
+      const parts = formatter.formatToParts(now);
+      
+      const estDateParts = {};
+      for (const part of parts) {
+        if (part.type !== 'literal') {
+          estDateParts[part.type] = part.value;
+        }
+      }
+
+      // Handle 24-hour clock case where '24' means '0'
+      let estHour = parseInt(estDateParts.hour, 10);
+      if (estHour === 24) estHour = 0;
+      
+      // Create a date object based on the EST year, month, and day
+      // Note: month is 0-indexed for new Date(), but 1-indexed from formatter
+      const est = new Date(
+        parseInt(estDateParts.year),
+        parseInt(estDateParts.month) - 1,
+        parseInt(estDateParts.day)
+      );
+
+      // If the hour in EST is before 7 AM, roll the date back by one day
+      if (estHour < 7) {
+        est.setDate(est.getDate() - 1);
+      }
+      
       return `${est.getMonth() + 1}/${est.getDate()}`;
     }
 
