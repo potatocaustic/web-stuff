@@ -1,0 +1,177 @@
+const API_BASE_URL = 'https://admin-seven-weld.vercel.app';
+
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('dotd-form');
+    const dateInput = document.getElementById('poll-date');
+    const sportSelect = document.getElementById('sport-select');
+    const bookmakerSelect = document.getElementById('bookmaker-select');
+    const loader = document.getElementById('loader');
+    const resultsDiv = document.getElementById('results');
+    const errorDiv = document.getElementById('error-message');
+    const submitBtn = document.getElementById('submit-btn');
+    const resultsTitle = document.getElementById('results-title');
+    const tableHead = document.querySelector('#results-table thead');
+    const tableBody = document.querySelector('#results-table tbody');
+    const menuToggle = document.getElementById('menu-toggle');
+    const navMenu = document.getElementById('nav-menu');
+
+    // Mobile menu toggle
+    if (menuToggle && navMenu) {
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+    }
+
+    // Fetch and populate bookmakers on page load
+    async function loadBookmakers() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/get_bookmakers`);
+            const data = await response.json();
+
+            if (data.bookmakers && data.bookmakers.length > 0) {
+                bookmakerSelect.innerHTML = '';
+                data.bookmakers.forEach(bm => {
+                    const option = document.createElement('option');
+                    option.value = bm.key;
+                    option.textContent = bm.name;
+                    bookmakerSelect.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error('Failed to load bookmakers:', error);
+        }
+    }
+
+    // Load bookmakers immediately
+    loadBookmakers();
+
+    // Handle date selection
+    dateInput.addEventListener('change', async () => {
+        const selectedDate = dateInput.value;
+
+        if (!selectedDate) {
+            sportSelect.disabled = true;
+            sportSelect.innerHTML = '<option value="">Select a date first</option>';
+            submitBtn.disabled = true;
+            return;
+        }
+
+        // Fetch available sports for the selected date
+        try {
+            sportSelect.disabled = true;
+            sportSelect.innerHTML = '<option value="">Loading sports...</option>';
+            submitBtn.disabled = true;
+
+            const response = await fetch(`${API_BASE_URL}/get_dotd_sports?date=${selectedDate}`);
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to fetch sports.');
+            }
+
+            if (data.sports && data.sports.length > 0) {
+                sportSelect.innerHTML = '<option value="">Select a sport</option>';
+                data.sports.forEach(sport => {
+                    const option = document.createElement('option');
+                    option.value = sport;
+                    option.textContent = sport.toUpperCase();
+                    sportSelect.appendChild(option);
+                });
+                sportSelect.disabled = false;
+            } else {
+                sportSelect.innerHTML = '<option value="">No sports available for this date</option>';
+            }
+
+        } catch (error) {
+            sportSelect.innerHTML = '<option value="">Error loading sports</option>';
+            displayError(error.message);
+        }
+    });
+
+    // Set default date to today in US Central time
+    const today = new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' });
+    const centralDate = new Date(today);
+    const year = centralDate.getFullYear();
+    const month = String(centralDate.getMonth() + 1).padStart(2, '0');
+    const day = String(centralDate.getDate()).padStart(2, '0');
+    const todayFormatted = `${year}-${month}-${day}`;
+    dateInput.value = todayFormatted;
+
+    // Trigger change event to load sports for today
+    dateInput.dispatchEvent(new Event('change'));
+
+    // Enable submit button when sport is selected
+    sportSelect.addEventListener('change', () => {
+        submitBtn.disabled = !sportSelect.value;
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        loader.classList.remove('hidden');
+        resultsDiv.classList.add('hidden');
+        errorDiv.classList.add('hidden');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Calculating...';
+
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/run_dotd_model`, {
+                method: 'POST',
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'An unknown error occurred.');
+            }
+
+            displayResults(data);
+
+        } catch (error) {
+            displayError(error.message);
+        } finally {
+            loader.classList.add('hidden');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Calculate';
+        }
+    });
+
+    function displayResults(data) {
+        resultsTitle.textContent = data.title;
+        tableHead.innerHTML = '';
+        tableBody.innerHTML = '';
+
+        if (data.results && data.results.length > 0) {
+            // Create table headers
+            const headers = Object.keys(data.results[0]);
+            const headerRow = document.createElement('tr');
+            headers.forEach(headerText => {
+                const th = document.createElement('th');
+                th.textContent = headerText.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                headerRow.appendChild(th);
+            });
+            tableHead.appendChild(headerRow);
+
+            // Create table rows
+            data.results.forEach(rowData => {
+                const row = document.createElement('tr');
+                headers.forEach(header => {
+                    const cell = document.createElement('td');
+                    cell.textContent = rowData[header];
+                    row.appendChild(cell);
+                });
+                tableBody.appendChild(row);
+            });
+        }
+
+        resultsDiv.classList.remove('hidden');
+    }
+
+    function displayError(message) {
+        errorDiv.textContent = `Error: ${message}`;
+        errorDiv.classList.remove('hidden');
+    }
+});
