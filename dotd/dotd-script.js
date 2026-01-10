@@ -15,6 +15,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuToggle = document.getElementById('menu-toggle');
     const navMenu = document.getElementById('nav-menu');
 
+    // Firebase and token management
+    let currentUserId = null;
+    let db = null;
+
+    // Wait for Firebase to be initialized by auth.js
+    const initFirebaseAndTokens = () => {
+        if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+            db = firebase.firestore();
+            const auth = firebase.auth();
+
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    currentUserId = user.uid;
+                    try {
+                        const tokens = await TokenManager.initializeTokens(db, currentUserId);
+                        TokenManager.updateDisplay(tokens);
+                    } catch (error) {
+                        console.error('Error initializing tokens:', error);
+                    }
+                } else {
+                    currentUserId = null;
+                    TokenManager.updateDisplay('--');
+                }
+            });
+        } else {
+            // Firebase not ready yet, retry
+            setTimeout(initFirebaseAndTokens, 100);
+        }
+    };
+
+    initFirebaseAndTokens();
+
     // Mobile menu toggle
     if (menuToggle && navMenu) {
         menuToggle.addEventListener('click', () => {
@@ -108,6 +140,24 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
+        // Check if user is authenticated
+        if (!currentUserId || !db) {
+            displayError('Please log in to use this tool.');
+            return;
+        }
+
+        // Check token availability before making API call
+        try {
+            const currentTokens = await TokenManager.getTokens(db, currentUserId);
+            if (currentTokens <= 0) {
+                displayError('No tokens remaining today. Tokens reset at midnight CT.');
+                return;
+            }
+        } catch (error) {
+            displayError('Error checking token balance. Please try again.');
+            return;
+        }
+
         loader.classList.remove('hidden');
         resultsDiv.classList.add('hidden');
         errorDiv.classList.add('hidden');
@@ -126,6 +176,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!response.ok) {
                 throw new Error(data.error || 'An unknown error occurred.');
+            }
+
+            // API call was successful - use a token
+            const tokenResult = await TokenManager.useToken(db, currentUserId);
+            if (tokenResult.success) {
+                TokenManager.updateDisplay(tokenResult.tokensRemaining);
+            } else {
+                // This shouldn't happen since we checked before, but handle it
+                console.error('Token use failed:', tokenResult.error);
             }
 
             displayResults(data);
