@@ -74,7 +74,7 @@
             <div class="token-info">
                 <span class="token-label">Daily Tokens:</span>
                 <span id="token-count" class="token-count">--</span>
-                <span class="token-max">/ 10 remaining</span>
+                <span class="token-max">/ 25 remaining</span>
             </div>
             <div class="token-hint">Tokens reset daily at midnight CT. Each calculation uses 1 token.</div>
         </div>
@@ -115,19 +115,17 @@
             <div id="strategy-results" class="results-grid">
                 <div class="result-box result-box-primary" id="highest-ev-box">
                     <h3>Highest EV Strategy</h3>
-                    <p><strong>Picks:</strong> <span id="hev-picks" class="value"></span></p>
+                    <p><strong>Bets:</strong> <span id="hev-bets" class="value"></span></p>
                     <p><strong>Total EV:</strong> <span id="hev-total-ev" class="value"></span></p>
                     <p><strong>Payout Probability:</strong> <span id="hev-payout-prob" class="value"></span></p>
                     <p><strong>Details:</strong> Pool EV <span id="hev-pool-ev" class="value"></span>, Bet EV <span id="hev-bet-ev" class="value"></span></p>
-                    <p><strong>Bet Decisions:</strong> <span id="hev-bets" class="value"></span></p>
                 </div>
                 <div class="result-box result-box-success hidden" id="lowest-risk-box">
                     <h3>Lowest Risk Strategy (+EV)</h3>
-                    <p><strong>Picks:</strong> <span id="lrisk-picks" class="value"></span></p>
+                    <p><strong>Bets:</strong> <span id="lrisk-bets" class="value"></span></p>
                     <p><strong>Total EV:</strong> <span id="lrisk-total-ev" class="value"></span></p>
                     <p><strong>Payout Probability:</strong> <span id="lrisk-payout-prob" class="value"></span></p>
                     <p><strong>Details:</strong> Pool EV <span id="lrisk-pool-ev" class="value"></span>, Bet EV <span id="lrisk-bet-ev" class="value"></span></p>
-                    <p><strong>Bet Decisions:</strong> <span id="lrisk-bets" class="value"></span></p>
                 </div>
             </div>
 
@@ -141,7 +139,7 @@
                         <table id="all-combinations-table" class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Picks</th>
+                                    <th>Combos</th>
                                     <th>Total EV</th>
                                     <th>Pool EV</th>
                                     <th>Bet EV</th>

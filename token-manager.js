@@ -7,7 +7,7 @@
  */
 
 const TokenManager = {
-    DAILY_TOKEN_LIMIT: 10,
+    DAILY_TOKEN_LIMIT: 25,
 
     /**
      * Get current date string in Central Time (YYYY-MM-DD format)

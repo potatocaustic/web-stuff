@@ -405,6 +405,66 @@
     border-top: 1px solid var(--gray-100);
 }
 
+/* Mobile Collapsible Details */
+.combo-card-toggle {
+    cursor: pointer;
+}
+
+.combo-card-expand-hint {
+    display: none;
+    text-align: center;
+    font-size: var(--text-xs);
+    color: var(--primary-500);
+    margin-top: var(--space-2);
+    transition: transform var(--transition-fast);
+}
+
+.combo-card.expanded .combo-card-expand-hint {
+    transform: rotate(180deg);
+}
+
+.combo-card-details {
+    display: none;
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--gray-200);
+}
+
+.combo-card.expanded .combo-card-details {
+    display: block;
+}
+
+/* Optimize game detail cards for mobile */
+.combo-card-details .game-details-container {
+    padding: 0;
+}
+
+.combo-card-details .game-detail-card {
+    margin-bottom: var(--space-2);
+    padding: var(--space-3);
+}
+
+.combo-card-details .game-detail-header {
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+}
+
+.combo-card-details .game-detail-header .bet-decision-max,
+.combo-card-details .game-detail-header .bet-decision-min {
+    float: none;
+    display: block;
+    margin-top: var(--space-1);
+}
+
+.combo-card-details .game-detail-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+}
+
+.combo-card-details .game-detail-item {
+    font-size: var(--text-xs);
+}
+
 /* Mobile Adjustments */
 @media (max-width: 639px) {
     .token-display-box {
@@ -439,6 +499,11 @@
 
     .desktop-only {
         display: none;
+    }
+
+    /* Show expand hint on mobile */
+    .combo-card-expand-hint {
+        display: block;
     }
 
     .result-box p {

@@ -272,24 +272,22 @@ document.addEventListener('DOMContentLoaded', () => {
         // Highest EV Strategy
         const hev = data.highest_ev;
         if (hev) {
-            document.getElementById('hev-picks').textContent = hev.picks;
+            document.getElementById('hev-bets').textContent = hev.bet_decisions;
             document.getElementById('hev-total-ev').textContent = hev.total_ev.toFixed(2);
             document.getElementById('hev-payout-prob').textContent = (hev.payout_prob * 100).toFixed(2) + '%';
             document.getElementById('hev-pool-ev').textContent = hev.pool_ev.toFixed(2);
             document.getElementById('hev-bet-ev').textContent = hev.bet_ev.toFixed(2);
-            document.getElementById('hev-bets').textContent = hev.bet_decisions;
         }
 
         // Lowest Risk Strategy
         const lrisk = data.lowest_risk;
         const lowestRiskBox = document.getElementById('lowest-risk-box');
         if (lrisk && JSON.stringify(lrisk) !== JSON.stringify(hev)) {
-            document.getElementById('lrisk-picks').textContent = lrisk.picks;
+            document.getElementById('lrisk-bets').textContent = lrisk.bet_decisions;
             document.getElementById('lrisk-total-ev').textContent = lrisk.total_ev.toFixed(2);
             document.getElementById('lrisk-payout-prob').textContent = (lrisk.payout_prob * 100).toFixed(2) + '%';
             document.getElementById('lrisk-pool-ev').textContent = lrisk.pool_ev.toFixed(2);
             document.getElementById('lrisk-bet-ev').textContent = lrisk.bet_ev.toFixed(2);
-            document.getElementById('lrisk-bets').textContent = lrisk.bet_decisions;
             lowestRiskBox.classList.remove('hidden');
         } else {
             lowestRiskBox.classList.add('hidden');
@@ -330,30 +328,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 detailsRow.classList.toggle('visible');
             });
 
-            // Mobile: Card layout
+            // Mobile: Card layout with collapsible details
             const card = document.createElement('div');
             card.className = 'combo-card';
             card.innerHTML = `
-                <div class="combo-card-header">
-                    <div class="combo-card-picks">${combo.picks}</div>
-                    <div class="combo-card-ev">EV: ${combo.total_ev.toFixed(2)}</div>
+                <div class="combo-card-toggle">
+                    <div class="combo-card-header">
+                        <div class="combo-card-picks">${combo.picks}</div>
+                        <div class="combo-card-ev">EV: ${combo.total_ev.toFixed(2)}</div>
+                    </div>
+                    <div class="combo-card-stats">
+                        <div class="combo-card-stat">
+                            <span class="combo-card-stat-label">Pool EV</span>
+                            <span class="combo-card-stat-value">${combo.pool_ev.toFixed(2)}</span>
+                        </div>
+                        <div class="combo-card-stat">
+                            <span class="combo-card-stat-label">Bet EV</span>
+                            <span class="combo-card-stat-value">${combo.bet_ev.toFixed(2)}</span>
+                        </div>
+                        <div class="combo-card-stat">
+                            <span class="combo-card-stat-label">Payout Prob</span>
+                            <span class="combo-card-stat-value">${(combo.payout_prob * 100).toFixed(2)}%</span>
+                        </div>
+                    </div>
+                    <div class="combo-card-bets"><strong>Bets:</strong> ${combo.bet_decisions}</div>
+                    <div class="combo-card-expand-hint">Tap for details ▼</div>
                 </div>
-                <div class="combo-card-stats">
-                    <div class="combo-card-stat">
-                        <span class="combo-card-stat-label">Pool EV</span>
-                        <span class="combo-card-stat-value">${combo.pool_ev.toFixed(2)}</span>
-                    </div>
-                    <div class="combo-card-stat">
-                        <span class="combo-card-stat-label">Bet EV</span>
-                        <span class="combo-card-stat-value">${combo.bet_ev.toFixed(2)}</span>
-                    </div>
-                    <div class="combo-card-stat">
-                        <span class="combo-card-stat-label">Payout Prob</span>
-                        <span class="combo-card-stat-value">${(combo.payout_prob * 100).toFixed(2)}%</span>
-                    </div>
-                </div>
-                <div class="combo-card-bets"><strong>Bets:</strong> ${combo.bet_decisions}</div>
+                <div class="combo-card-details">${renderComboDetails(combo)}</div>
             `;
+
+            // Toggle details on click
+            const toggleArea = card.querySelector('.combo-card-toggle');
+            const detailsArea = card.querySelector('.combo-card-details');
+            toggleArea.addEventListener('click', () => {
+                card.classList.toggle('expanded');
+            });
+
             comboCards.appendChild(card);
         });
 
@@ -446,10 +456,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="game-detail-item">
                             <span class="label">${g.away_team} EV (Max/Min):</span>
                             <span class="value">${formatEv(g.away_ev_max)} / ${formatEv(g.away_ev_min)}</span>
-                        </div>
-                        <div class="game-detail-item">
-                            <span class="label">Wager Range:</span>
-                            <span class="value">$${g.min_wager} - $${g.max_wager}</span>
                         </div>
                     </div>
                 </div>
