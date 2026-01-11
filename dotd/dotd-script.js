@@ -76,6 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Fetch and populate bookmakers dropdown on page load
+    let selectAllCheckbox = null;
+    let bookmakerCheckboxes = [];
+
     async function loadBookmakers() {
         try {
             const response = await fetch(`${API_BASE_URL}/get_bookmakers`);
@@ -83,7 +86,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.bookmakers && data.bookmakers.length > 0) {
                 bookmakerDropdown.innerHTML = '';
-                data.bookmakers.forEach((bm, index) => {
+
+                // Add "Select All" option first
+                const selectAllLabel = document.createElement('label');
+                selectAllLabel.className = 'multi-select-option select-all-option';
+
+                selectAllCheckbox = document.createElement('input');
+                selectAllCheckbox.type = 'checkbox';
+                selectAllCheckbox.id = 'select-all-bookmakers';
+                selectAllCheckbox.checked = true; // Default to all selected
+                selectAllCheckbox.addEventListener('change', handleSelectAllChange);
+
+                const selectAllSpan = document.createElement('span');
+                selectAllSpan.textContent = 'Select All';
+
+                selectAllLabel.appendChild(selectAllCheckbox);
+                selectAllLabel.appendChild(selectAllSpan);
+                bookmakerDropdown.appendChild(selectAllLabel);
+
+                // Add individual bookmakers
+                bookmakerCheckboxes = [];
+                data.bookmakers.forEach((bm) => {
                     const label = document.createElement('label');
                     label.className = 'multi-select-option';
 
@@ -91,11 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     checkbox.type = 'checkbox';
                     checkbox.value = bm.key;
                     checkbox.dataset.name = bm.name;
-                    // Select first bookmaker (combined) by default
-                    if (index === 0) {
-                        checkbox.checked = true;
-                    }
-                    checkbox.addEventListener('change', updateBookmakerText);
+                    checkbox.checked = true; // All selected by default
+                    checkbox.addEventListener('change', handleIndividualChange);
 
                     const span = document.createElement('span');
                     span.textContent = bm.name;
@@ -103,6 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     label.appendChild(checkbox);
                     label.appendChild(span);
                     bookmakerDropdown.appendChild(label);
+                    bookmakerCheckboxes.push(checkbox);
                 });
                 updateBookmakerText();
             }
@@ -111,10 +132,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function handleSelectAllChange() {
+        const isChecked = selectAllCheckbox.checked;
+        bookmakerCheckboxes.forEach(cb => cb.checked = isChecked);
+        updateBookmakerText();
+    }
+
+    function handleIndividualChange() {
+        // Update "Select All" state based on individual checkboxes
+        const allChecked = bookmakerCheckboxes.every(cb => cb.checked);
+        const someChecked = bookmakerCheckboxes.some(cb => cb.checked);
+        selectAllCheckbox.checked = allChecked;
+        selectAllCheckbox.indeterminate = someChecked && !allChecked;
+        updateBookmakerText();
+    }
+
     function updateBookmakerText() {
-        const checked = bookmakerDropdown.querySelectorAll('input[type="checkbox"]:checked');
+        const checked = bookmakerCheckboxes.filter(cb => cb.checked);
         if (checked.length === 0) {
             bookmakerText.textContent = 'Select sportsbooks...';
+        } else if (checked.length === bookmakerCheckboxes.length) {
+            bookmakerText.textContent = 'All sportsbooks';
         } else if (checked.length === 1) {
             bookmakerText.textContent = checked[0].dataset.name;
         } else {
@@ -221,8 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.textContent = 'Calculating...';
 
         // Get selected bookmakers
-        const selectedBookmakers = Array.from(bookmakerDropdown.querySelectorAll('input[type="checkbox"]:checked'))
-            .map(cb => cb.value);
+        const selectedBookmakers = bookmakerCheckboxes.filter(cb => cb.checked).map(cb => cb.value);
 
         if (selectedBookmakers.length === 0) {
             displayError('Please select at least one sportsbook.');
@@ -233,9 +270,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const formData = new FormData(form);
-        // Replace individual bookmaker entries with comma-separated list
+        // If all bookmakers are selected, send 'combined' for averaging behavior
         formData.delete('bookmakers');
-        formData.set('bookmakers', selectedBookmakers.join(','));
+        if (selectedBookmakers.length === bookmakerCheckboxes.length) {
+            formData.set('bookmakers', 'combined');
+        } else {
+            formData.set('bookmakers', selectedBookmakers.join(','));
+        }
 
         try {
             const response = await fetch(`${API_BASE_URL}/run_dotd_model`, {
