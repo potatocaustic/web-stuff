@@ -64,6 +64,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 navMenu.classList.remove('active');
             }
         });
+
+        // Close menu when clicking a nav link
+        navMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                menuToggle.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
     }
 
     // Fetch and populate bookmakers dropdown on page load

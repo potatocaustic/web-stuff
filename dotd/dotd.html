@@ -140,32 +140,5 @@
     <script src="../auth.js"></script>
     <script src="../token-manager.js"></script>
     <script src="dotd-script.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const menuToggle = document.getElementById('menu-toggle');
-            const navMenu = document.getElementById('nav-menu');
-
-            if (menuToggle && navMenu) {
-                menuToggle.addEventListener('click', () => {
-                    menuToggle.classList.toggle('active');
-                    navMenu.classList.toggle('active');
-                });
-
-                document.addEventListener('click', (e) => {
-                    if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
-                        menuToggle.classList.remove('active');
-                        navMenu.classList.remove('active');
-                    }
-                });
-
-                navMenu.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('click', () => {
-                        menuToggle.classList.remove('active');
-                        navMenu.classList.remove('active');
-                    });
-                });
-            }
-        });
-    </script>
 </body>
 </html>
