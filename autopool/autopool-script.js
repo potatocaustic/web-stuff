@@ -11,6 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateInput = document.getElementById('pool-date');
     const sportSelect = document.getElementById('sport-select');
     const bookmakerSelect = document.getElementById('bookmaker-select');
+    const bookmakerTrigger = bookmakerSelect.querySelector('.multi-select-trigger');
+    const bookmakerDropdown = bookmakerSelect.querySelector('.multi-select-dropdown');
+    const bookmakerText = bookmakerSelect.querySelector('.multi-select-text');
     const menuToggle = document.getElementById('menu-toggle');
     const navMenu = document.getElementById('nav-menu');
 
@@ -60,22 +63,58 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (data.bookmakers && data.bookmakers.length > 0) {
-                bookmakerSelect.innerHTML = '';
+                bookmakerDropdown.innerHTML = '';
                 data.bookmakers.forEach((bm, index) => {
-                    const option = document.createElement('option');
-                    option.value = bm.key;
-                    option.textContent = bm.name;
+                    const label = document.createElement('label');
+                    label.className = 'multi-select-option';
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = bm.key;
+                    checkbox.dataset.name = bm.name;
                     // Select first bookmaker (combined) by default
                     if (index === 0) {
-                        option.selected = true;
+                        checkbox.checked = true;
                     }
-                    bookmakerSelect.appendChild(option);
+                    checkbox.addEventListener('change', updateBookmakerText);
+
+                    const span = document.createElement('span');
+                    span.textContent = bm.name;
+
+                    label.appendChild(checkbox);
+                    label.appendChild(span);
+                    bookmakerDropdown.appendChild(label);
                 });
+                updateBookmakerText();
             }
         } catch (error) {
             console.error('Failed to load bookmakers:', error);
         }
     }
+
+    function updateBookmakerText() {
+        const checked = bookmakerDropdown.querySelectorAll('input[type="checkbox"]:checked');
+        if (checked.length === 0) {
+            bookmakerText.textContent = 'Select sportsbooks...';
+        } else if (checked.length === 1) {
+            bookmakerText.textContent = checked[0].dataset.name;
+        } else {
+            bookmakerText.textContent = `${checked.length} sportsbooks selected`;
+        }
+    }
+
+    // Toggle dropdown
+    bookmakerTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        bookmakerSelect.classList.toggle('open');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!bookmakerSelect.contains(e.target)) {
+            bookmakerSelect.classList.remove('open');
+        }
+    });
 
     // Load bookmakers immediately
     loadBookmakers();
@@ -163,8 +202,8 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.textContent = 'Calculating...';
 
         // Get selected bookmakers
-        const selectedBookmakers = Array.from(bookmakerSelect.selectedOptions)
-            .map(opt => opt.value);
+        const selectedBookmakers = Array.from(bookmakerDropdown.querySelectorAll('input[type="checkbox"]:checked'))
+            .map(cb => cb.value);
 
         if (selectedBookmakers.length === 0) {
             displayError('Please select at least one sportsbook.');
