@@ -280,8 +280,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // All Combinations Table with collapsible details
         const tableBody = document.querySelector('#all-combinations-table tbody');
         tableBody.innerHTML = '';
+
+        // Mobile cards container
+        const comboCards = document.getElementById('combo-cards');
+        comboCards.innerHTML = '';
+
         data.all_combinations.forEach((combo, index) => {
-            // Main row (clickable)
+            // Desktop: Main row (clickable)
             const row = document.createElement('tr');
             row.className = 'combo-row';
             row.dataset.index = index;
@@ -306,6 +311,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 row.classList.toggle('expanded');
                 detailsRow.classList.toggle('visible');
             });
+
+            // Mobile: Card layout
+            const card = document.createElement('div');
+            card.className = 'combo-card';
+            card.innerHTML = `
+                <div class="combo-card-header">
+                    <div class="combo-card-picks">${combo.picks}</div>
+                    <div class="combo-card-ev">EV: ${combo.total_ev.toFixed(2)}</div>
+                </div>
+                <div class="combo-card-stats">
+                    <div class="combo-card-stat">
+                        <span class="combo-card-stat-label">Pool EV</span>
+                        <span class="combo-card-stat-value">${combo.pool_ev.toFixed(2)}</span>
+                    </div>
+                    <div class="combo-card-stat">
+                        <span class="combo-card-stat-label">Bet EV</span>
+                        <span class="combo-card-stat-value">${combo.bet_ev.toFixed(2)}</span>
+                    </div>
+                    <div class="combo-card-stat">
+                        <span class="combo-card-stat-label">Payout Prob</span>
+                        <span class="combo-card-stat-value">${(combo.payout_prob * 100).toFixed(2)}%</span>
+                    </div>
+                </div>
+                <div class="combo-card-bets"><strong>Bets:</strong> ${combo.bet_decisions}</div>
+            `;
+            comboCards.appendChild(card);
         });
 
         resultsDiv.classList.remove('hidden');

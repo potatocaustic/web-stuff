@@ -256,6 +256,9 @@ document.addEventListener('DOMContentLoaded', () => {
         tableHead.innerHTML = '';
         tableBody.innerHTML = '';
 
+        const resultsCards = document.getElementById('results-cards');
+        resultsCards.innerHTML = '';
+
         if (data.results && data.results.length > 0) {
             // Define explicit column order (excluding metadata fields start_time and is_locked)
             // Order: Team, Odds/Spread, Votes, Prob, Payout, EV
@@ -272,10 +275,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             tableHead.appendChild(headerRow);
 
-            // Create table rows
+            // Create table rows and mobile cards
             data.results.forEach(rowData => {
+                // Desktop table row
                 const row = document.createElement('tr');
-                // Gray out locked rows
                 if (rowData['is_locked']) {
                     row.style.opacity = '0.5';
                     row.style.backgroundColor = '#f0f0f0';
@@ -283,7 +286,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers.forEach(header => {
                     const cell = document.createElement('td');
                     if (header === 'team') {
-                        // Combine team name with start time underneath
                         const teamName = document.createElement('div');
                         teamName.textContent = rowData[header];
                         cell.appendChild(teamName);
@@ -300,6 +302,42 @@ document.addEventListener('DOMContentLoaded', () => {
                     row.appendChild(cell);
                 });
                 tableBody.appendChild(row);
+
+                // Mobile card
+                const card = document.createElement('div');
+                card.className = 'result-card' + (rowData['is_locked'] ? ' locked' : '');
+
+                const oddsOrSpread = hasOdds ? rowData['odds'] : rowData['spread'];
+                const oddsLabel = hasOdds ? 'Odds' : 'Spread';
+
+                card.innerHTML = `
+                    <div class="result-card-header">
+                        <div>
+                            <div class="result-card-team">${rowData['team']}</div>
+                            ${rowData['start_time'] ? `<div class="result-card-time">${rowData['start_time']}</div>` : ''}
+                        </div>
+                        <div class="result-card-ev">EV: ${rowData['EV']}</div>
+                    </div>
+                    <div class="result-card-stats">
+                        <div class="result-card-stat">
+                            <span class="result-card-stat-label">${oddsLabel}</span>
+                            <span class="result-card-stat-value">${oddsOrSpread}</span>
+                        </div>
+                        <div class="result-card-stat">
+                            <span class="result-card-stat-label">Votes</span>
+                            <span class="result-card-stat-value">${rowData['votes']}</span>
+                        </div>
+                        <div class="result-card-stat">
+                            <span class="result-card-stat-label">Prob</span>
+                            <span class="result-card-stat-value">${rowData['prob']}</span>
+                        </div>
+                        <div class="result-card-stat">
+                            <span class="result-card-stat-label">Payout</span>
+                            <span class="result-card-stat-value">${rowData['payout']}</span>
+                        </div>
+                    </div>
+                `;
+                resultsCards.appendChild(card);
             });
         }
 
