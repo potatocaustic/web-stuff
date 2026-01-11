@@ -204,9 +204,9 @@ document.addEventListener('DOMContentLoaded', () => {
         tableBody.innerHTML = '';
 
         if (data.results && data.results.length > 0) {
-            // Create table headers - filter out start_time since it's combined with team
+            // Create table headers - filter out metadata fields
             const allHeaders = Object.keys(data.results[0]);
-            const headers = allHeaders.filter(h => h !== 'start_time');
+            const headers = allHeaders.filter(h => h !== 'start_time' && h !== 'is_locked');
             const headerRow = document.createElement('tr');
             headers.forEach(headerText => {
                 const th = document.createElement('th');
@@ -218,6 +218,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Create table rows
             data.results.forEach(rowData => {
                 const row = document.createElement('tr');
+                // Gray out locked rows
+                if (rowData['is_locked']) {
+                    row.style.opacity = '0.5';
+                    row.style.backgroundColor = '#f0f0f0';
+                }
                 headers.forEach(header => {
                     const cell = document.createElement('td');
                     if (header === 'team') {
