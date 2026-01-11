@@ -476,16 +476,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="game-detail-card">
                     <div class="game-detail-header">
                         <div class="game-detail-title">Game ${i + 1}: ${g.matchup}</div>
-                        <div class="game-detail-pick">Pick: <strong>${g.pick}</strong></div>
+                        <div class="game-detail-pick">Choice: <strong>${g.pick}</strong></div>
                         <div class="game-detail-bet ${betClass}">${g.bet_type} Bet (EV: ${formatEv(g.bet_ev)})</div>
                     </div>
                     <div class="game-detail-grid">
                         <div class="game-detail-item">
-                            <span class="label">${g.home_team} Odds</span>
+                            <span class="label">${g.home_team} Odds (Real)</span>
                             <span class="value">${formatOdds(g.home_odds)}</span>
                         </div>
                         <div class="game-detail-item">
-                            <span class="label">${g.away_team} Odds</span>
+                            <span class="label">${g.away_team} Odds (Real)</span>
                             <span class="value">${formatOdds(g.away_odds)}</span>
                         </div>
                         <div class="game-detail-item">
