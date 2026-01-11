@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('dotd-form');
     const dateInput = document.getElementById('poll-date');
     const sportSelect = document.getElementById('sport-select');
-    const bookmakerCheckboxes = document.getElementById('bookmaker-checkboxes');
+    const bookmakerSelect = document.getElementById('bookmaker-select');
     const loader = document.getElementById('loader');
     const resultsDiv = document.getElementById('results');
     const errorDiv = document.getElementById('error-message');
@@ -54,33 +54,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Fetch and populate bookmakers as checkboxes on page load
+    // Fetch and populate bookmakers dropdown on page load
     async function loadBookmakers() {
         try {
             const response = await fetch(`${API_BASE_URL}/get_bookmakers`);
             const data = await response.json();
 
             if (data.bookmakers && data.bookmakers.length > 0) {
-                bookmakerCheckboxes.innerHTML = '';
+                bookmakerSelect.innerHTML = '';
                 data.bookmakers.forEach((bm, index) => {
-                    const label = document.createElement('label');
-                    label.className = 'bookmaker-checkbox-label';
-
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.name = 'bookmakers';
-                    checkbox.value = bm.key;
+                    const option = document.createElement('option');
+                    option.value = bm.key;
+                    option.textContent = bm.name;
                     // Select first bookmaker (combined) by default
                     if (index === 0) {
-                        checkbox.checked = true;
+                        option.selected = true;
                     }
-
-                    const span = document.createElement('span');
-                    span.textContent = bm.name;
-
-                    label.appendChild(checkbox);
-                    label.appendChild(span);
-                    bookmakerCheckboxes.appendChild(label);
+                    bookmakerSelect.appendChild(option);
                 });
             }
         } catch (error) {
@@ -174,8 +164,8 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.textContent = 'Calculating...';
 
         // Get selected bookmakers
-        const selectedBookmakers = Array.from(bookmakerCheckboxes.querySelectorAll('input[type="checkbox"]:checked'))
-            .map(cb => cb.value);
+        const selectedBookmakers = Array.from(bookmakerSelect.selectedOptions)
+            .map(opt => opt.value);
 
         if (selectedBookmakers.length === 0) {
             displayError('Please select at least one sportsbook.');

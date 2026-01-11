@@ -90,10 +90,11 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Sportsbooks</label>
-                        <div id="bookmaker-checkboxes" class="bookmaker-checkboxes">
+                        <label for="bookmaker-select" class="form-label">Sportsbooks</label>
+                        <select id="bookmaker-select" name="bookmakers" class="form-select" multiple>
                             <!-- Populated by JavaScript -->
-                        </div>
+                        </select>
+                        <span class="form-hint">Hold Ctrl/Cmd to select multiple</span>
                     </div>
                     <button type="submit" id="submit-btn" class="btn btn-primary btn-block btn-lg" disabled>Calculate</button>
                 </form>
