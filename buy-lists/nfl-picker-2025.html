@@ -5,6 +5,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NFL Buy List - caustic.info</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="/css/global.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
@@ -13,99 +16,6 @@
             font-family: 'Inter', sans-serif;
             background-color: #f4f4f4;
         }
-
-        /* Header and Nav styling from karma-calculator */
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 1rem;
-            text-align: center;
-            position: relative;
-        }
-
-        header h1 {
-            color: white !important;
-            font-size: 1.5rem;
-            margin: 0;
-        }
-
-        nav ul {
-            display: flex;
-            justify-content: center;
-            list-style: none;
-            margin-top: 1rem;
-            padding: 0;
-            flex-wrap: wrap;
-        }
-
-        nav ul li {
-            margin: 0.5rem 1rem;
-        }
-
-        nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 1.1rem;
-            transition: color 0.3s ease;
-            white-space: nowrap;
-        }
-
-        nav ul li a:hover {
-            color: #ccc;
-        }
-
-        .menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        @media (max-width: 850px) {
-            .menu-toggle {
-                display: block;
-                position: absolute;
-                top: 1rem;
-                right: 1rem;
-            }
-
-            nav ul {
-                display: none;
-                position: absolute;
-                top: 100%;
-                right: 0;
-                background-color: #333;
-                flex-direction: column;
-                width: 200px;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                z-index: 1000;
-                margin-top: 0;
-                text-align: left;
-            }
-
-            nav ul.show-menu {
-                display: flex;
-            }
-
-            nav ul li {
-                width: 100%;
-                margin: 0;
-            }
-
-            nav ul li a {
-                display: block;
-                padding: 0.8rem 1rem;
-                border-bottom: 1px solid #444;
-                width: 100%;
-            }
-
-            nav ul li:last-child a {
-                border-bottom: none;
-            }
-        }
-
 
         /* Custom scrollbar for better aesthetics */
         .custom-scrollbar::-webkit-scrollbar {
@@ -137,21 +47,29 @@
 </head>
 
 <body class="text-gray-800">
-    <!-- Header and Navigation -->
-    <header>
-      <h1>NFL Buy List Generator</h1>
-      <nav>
-        <button id="menu-toggle" class="menu-toggle" aria-label="Open Navigation Menu">&#9776;</button>
-        <ul id="nav-menu">
-            <li><a href="/index.html">Home</a></li>
-            <li><a href="/PSPs/mlb-psp.html">MLB PSP Database</a></li>
-            <li><a href="/PSPs-WNBA/wnba-psp.html">WNBA PSP Database</a></li>
-            <li><a href="/RKL/rkl-stats.html">Jammers Stats</a></li>
-            <li><a href="/karma-calculator.html">Karma EV Calculator</a></li>
-            <li><a href="/pool-optimizer.html">Pool Optimizer</a></li>
-            <li><a href="/CFB/cfb-projections.html">CFB Projections</a></li>
-        </ul>
-      </nav>
+    <header class="site-header">
+        <div class="header-container">
+            <a href="/index.html" class="site-logo">caustic.info</a>
+            <nav>
+                <button id="menu-toggle" class="menu-toggle" aria-label="Toggle navigation menu">
+                    <div class="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </button>
+                <ul id="nav-menu" class="nav-menu">
+                    <li><a href="/index.html">Home</a></li>
+                    <li><a href="/PSPs/index.html">PSP Databases</a></li>
+                    <li><a href="/RKL/rkl-stats.html">Jammers Stats</a></li>
+                    <li><a href="/karma-calculator.html">Karma EV</a></li>
+                    <li><a href="/pool-optimizer.html">Pool Optimizer</a></li>
+                    <li><a href="/autopool/autopool.html">Autopool</a></li>
+                    <li><a href="/dotd/dotd.html">DOTD</a></li>
+                    <li><a href="/CFB/cfb-projections.html">CFB Projections</a></li>
+                </ul>
+            </nav>
+        </div>
     </header>
 
     <div class="container mx-auto p-4 md:p-8 max-w-6xl">
@@ -172,7 +90,7 @@
                          <label class="block text-sm font-medium text-gray-700">2. Select Teams (Max 5)</label>
                          <p id="team-limit-error" class="text-red-500 text-sm font-medium hidden">Maximum 5 teams selected.</p>
                     </div>
-                   
+
                     <!-- Featured Teams -->
                     <div id="featured-teams" class="mb-4">
                         <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Featured Teams</h3>
@@ -212,13 +130,37 @@
             </div>
         </main>
 
-        <!-- Footer -->
-        <footer class="text-center mt-8 text-gray-500 text-sm">
-            <p>&copy; caustic.info</p>
-        </footer>
+        <footer class="site-footer"><p>&copy; caustic.info</p></footer>
     </div>
 
     <script src="nfl-script.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const menuToggle = document.getElementById('menu-toggle');
+        const navMenu = document.getElementById('nav-menu');
+
+        if (menuToggle && navMenu) {
+            menuToggle.addEventListener('click', () => {
+                menuToggle.classList.toggle('active');
+                navMenu.classList.toggle('active');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                    menuToggle.classList.remove('active');
+                    navMenu.classList.remove('active');
+                }
+            });
+
+            navMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    menuToggle.classList.remove('active');
+                    navMenu.classList.remove('active');
+                });
+            });
+        }
+    });
+</script>
 </body>
 
 </html>

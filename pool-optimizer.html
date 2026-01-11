@@ -5,132 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pool Optimizer - caustic.info</title>
     <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/pool-optimizer.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .info-card {
-            background-color: #f9f9f9;
-            border: 1px solid #eee;
-        }
-        .results-card {
-            background-color: #ffffff;
-            border: 1px solid #e2e8f0;
-        }
+        /* Main content visibility for auth.js */
         main {
-        padding: 2rem;
-        max-width: 1200px;
-        margin: 0 auto;
-        display: none;
-        }
-
-        main.visible {
-        display: block;
-        }
-        
-        header {
-            background-color: #333 !important;
-            color: #fff;
-            padding: 1rem;
-            text-align: center;
-            position: relative;
-        }
-        
-        header h1 {
-            color: white !important;
-            font-size: 1.5rem;
-            margin: 0;
-            font-weight: bold;
-        }
-        
-        nav ul {
-          display: flex;
-          justify-content: center;
-          list-style: none;
-          margin-top: 1rem;
-          padding: 0;
-          flex-wrap: wrap;
-        }
-        
-        nav ul li {
-          margin: 0.5rem 1rem;
-        }
-        
-        nav ul li a {
-          color: #fff;
-          text-decoration: none;
-          font-size: 1.1rem;
-          transition: color 0.3s ease;
-          white-space: nowrap;
-        }
-        
-        nav ul li a:hover {
-          color: #ccc;
-        }
-        
-        footer {
-            text-align: center;
-            margin-top: 2rem;
-            padding: 1rem;
-            background-color: #333 !important;
-            color: #fff;
-        }
-
-        .menu-toggle {
             display: none;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
         }
-
-        @media (max-width: 850px) {
-            .menu-toggle {
-                display: block;
-                position: absolute;
-                top: 1rem;
-                right: 1rem;
-            }
-
-            nav ul {
-                display: none;
-                position: absolute;
-                top: 100%;
-                right: 0;
-                background-color: #333;
-                flex-direction: column;
-                width: 200px;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-                z-index: 1000;
-                margin-top: 0;
-                text-align: left;
-            }
-
-            nav ul.show-menu {
-                display: flex;
-            }
-
-            nav ul li {
-                width: 100%;
-                margin: 0;
-            }
-            
-            nav ul li a {
-                display: block;
-                padding: 0.8rem 1rem;
-                border-bottom: 1px solid #444;
-                width: 100%;
-            }
-
-            nav ul li:last-child a {
-                border-bottom: none;
-            }
-        }
-
-        @media (min-width: 768px) {
-            header h1 {
-                font-size: 2rem;
-            }
+        main.visible {
+            display: block;
         }
         #instructions-content ul {
             list-style-type: disc;
@@ -140,43 +27,61 @@
             margin-bottom: 0.5rem;
         }
     </style>
-     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="bg-gray-100 text-gray-800">
-    <header>
-        <h1>Pool Optimizer</h1>
-          <nav>
-            <button id="menu-toggle" class="menu-toggle" aria-label="Open Navigation Menu">&#9776;</button>
-            <ul id="nav-menu">
-                <li><a href="/index.html">Home</a></li>
-                <li><a href="/PSPs/index.html">PSP Databases</a></li>
-                <li><a href="/RKL/rkl-stats.html">Jammers Stats</a></li>
-                <li><a href="/karma-calculator.html">Karma EV Calculator</a></li>
-                <li><a href="/pool-optimizer.html">Pool Optimizer</a></li>
-                <li><a href="/CFB/cfb-projections.html">CFB Projections</a></li>
-            </ul>
-          </nav>
+    <header class="site-header">
+        <div class="header-container">
+            <a href="/index.html" class="site-logo">caustic.info</a>
+            <nav>
+                <button id="menu-toggle" class="menu-toggle" aria-label="Toggle navigation menu">
+                    <div class="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </button>
+                <ul id="nav-menu" class="nav-menu">
+                    <li><a href="/index.html">Home</a></li>
+                    <li><a href="/PSPs/index.html">PSP Databases</a></li>
+                    <li><a href="/RKL/rkl-stats.html">Jammers Stats</a></li>
+                    <li><a href="/karma-calculator.html">Karma EV</a></li>
+                    <li><a href="/pool-optimizer.html" class="active">Pool Optimizer</a></li>
+                    <li><a href="/autopool/autopool.html">Autopool</a></li>
+                    <li><a href="/dotd/dotd.html">DOTD</a></li>
+                    <li><a href="/CFB/cfb-projections.html">CFB Projections</a></li>
+                </ul>
+            </nav>
+        </div>
     </header>
-    <div id="auth-container" style="padding: 2rem; max-width: 400px; margin: 2rem auto; background-color: #fff; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;">
-      <h2 id="auth-title">Login</h2>
-      <p id="auth-error" style="color: red; margin-bottom: 1rem; min-height: 1.2em;"></p>
 
-      <div id="login-form">
-        <input type="text" id="login-username" placeholder="Username" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
-        <input type="password" id="login-password" placeholder="Password" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
-        <button id="login-button" style="background-color: #333; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; width: 100%;">Login</button>
-        <p style="margin-top: 1rem;">Don't have an account? <a href="#" id="show-signup">Sign Up</a></p>
-      </div>
+    <div id="auth-container" class="auth-container">
+        <h2 id="auth-title">Login</h2>
+        <p id="auth-error" class="auth-error"></p>
 
-      <div id="signup-form" style="display: none;">
-        <input type="text" id="signup-username" placeholder="Choose Username" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
-        <input type="password" id="signup-password" placeholder="Choose Password" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
-        <input type="password" id="signup-confirm-password" placeholder="Confirm Password" style="width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
-        <button id="signup-button" style="background-color: #5cb85c; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; font-size: 1rem; width: 100%;">Sign Up</button>
-        <p style="margin-top: 1rem;">Already have an account? <a href="#" id="show-login">Login</a></p>
-      </div>
+        <div id="login-form">
+            <div class="form-group">
+                <input type="text" id="login-username" class="form-input" placeholder="Username">
+            </div>
+            <div class="form-group">
+                <input type="password" id="login-password" class="form-input" placeholder="Password">
+            </div>
+            <button id="login-button" class="btn btn-primary btn-block">Login</button>
+            <p class="auth-switch">Don't have an account? <a href="#" id="show-signup">Sign Up</a></p>
+        </div>
+
+        <div id="signup-form" class="hidden">
+            <div class="form-group">
+                <input type="text" id="signup-username" class="form-input" placeholder="Choose Username">
+            </div>
+            <div class="form-group">
+                <input type="password" id="signup-password" class="form-input" placeholder="Choose Password">
+            </div>
+            <div class="form-group">
+                <input type="password" id="signup-confirm-password" class="form-input" placeholder="Confirm Password">
+            </div>
+            <button id="signup-button" class="btn btn-primary btn-block btn-success">Sign Up</button>
+            <p class="auth-switch">Already have an account? <a href="#" id="show-login">Login</a></p>
+        </div>
     </div>
     <main class="p-4 md:p-8 max-w-7xl mx-auto">
         <div id="app" class="space-y-6">
@@ -297,7 +202,7 @@
             </div>
         </div>
     </main>
-    <footer>
+    <footer class="site-footer">
         <p>&copy; caustic.info</p>
     </footer>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
@@ -913,7 +818,22 @@
 
             if (menuToggle && navMenu) {
                 menuToggle.addEventListener('click', () => {
-                    navMenu.classList.toggle('show-menu');
+                    menuToggle.classList.toggle('active');
+                    navMenu.classList.toggle('active');
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                        menuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    }
+                });
+
+                navMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        menuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    });
                 });
             }
         });

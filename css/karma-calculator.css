@@ -1,0 +1,267 @@
+/* =====================================================
+   Karma Calculator - Page-Specific Styles
+   Extends /css/global.css
+   ===================================================== */
+
+/* Auth Error */
+.auth-error {
+    color: var(--error);
+    font-size: var(--text-sm);
+    min-height: 1.5em;
+    margin-bottom: var(--space-4);
+    text-align: center;
+}
+
+/* Auth Switch Link */
+.auth-switch {
+    text-align: center;
+    margin-top: var(--space-4);
+    font-size: var(--text-sm);
+    color: var(--gray-600);
+}
+
+/* Success Button Variant */
+.btn-success {
+    background: linear-gradient(135deg, var(--success), #16a34a);
+    box-shadow: 0 2px 4px rgba(34, 197, 94, 0.3);
+}
+
+.btn-success:hover:not(:disabled) {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    box-shadow: 0 4px 8px rgba(34, 197, 94, 0.4);
+}
+
+/* Calculator Container */
+.calculator-container {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-md);
+}
+
+/* Section Cards */
+.calc-section {
+    margin-bottom: var(--space-6);
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+}
+
+.calc-section-title {
+    margin-bottom: var(--space-4);
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--gray-900);
+}
+
+/* Grid Layout */
+.calc-grid {
+    display: grid;
+    gap: var(--space-6);
+}
+
+@media (min-width: 768px) {
+    .calc-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Input Groups */
+.calc-input-group {
+    margin-bottom: var(--space-4);
+}
+
+.calc-label {
+    display: block;
+    margin-bottom: var(--space-2);
+    font-weight: var(--font-semibold);
+    font-size: var(--text-sm);
+    color: var(--gray-700);
+}
+
+.calc-input {
+    width: 100%;
+    padding: var(--space-3);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-size: var(--text-base);
+    transition: all var(--transition-fast);
+}
+
+.calc-input:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px var(--primary-100);
+}
+
+/* Input Wrapper with Buttons */
+.calc-input-wrapper {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.calc-input-wrapper .calc-input {
+    flex: 1;
+}
+
+.calc-sign-btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gray-100);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.calc-sign-btn:hover {
+    background: var(--gray-200);
+}
+
+/* Radio Button Groups */
+.calc-radio-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--space-2);
+}
+
+.calc-radio-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    background: white;
+    cursor: pointer;
+    text-align: center;
+    font-weight: var(--font-medium);
+    transition: all var(--transition-fast);
+    min-height: 44px;
+}
+
+.calc-radio-label:hover {
+    background: var(--gray-50);
+}
+
+.calc-radio-label.selected {
+    background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+    color: white;
+    border-color: var(--primary-500);
+}
+
+.calc-radio-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* Reset Button */
+.calc-reset-btn {
+    background: var(--error-light);
+    border: 1px solid #fca5a5;
+    color: #991b1b;
+    padding: var(--space-3) var(--space-5);
+    font-size: var(--text-base);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.calc-reset-btn:hover {
+    background: #fca5a5;
+}
+
+/* Text Button */
+.calc-text-btn {
+    background: var(--gray-100);
+    border: 1px solid var(--gray-300);
+    color: var(--gray-700);
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    margin-top: var(--space-2);
+    transition: all var(--transition-fast);
+}
+
+.calc-text-btn:hover {
+    background: var(--gray-200);
+}
+
+/* Result Cards */
+.calc-result-card {
+    background: white;
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+    margin-bottom: var(--space-4);
+}
+
+.calc-result-title {
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    text-align: center;
+    margin-bottom: var(--space-3);
+    color: var(--gray-900);
+}
+
+.calc-result-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+}
+
+/* Three-Way Results */
+.calc-three-way-results {
+    display: grid;
+    gap: var(--space-4);
+}
+
+@media (min-width: 768px) {
+    .calc-three-way-results {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Recommendation Box */
+.calc-recommendation {
+    background: var(--info-light);
+    border: 1px solid #93c5fd;
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    margin-bottom: var(--space-6);
+}
+
+/* EV Colors */
+.ev-positive {
+    color: #166534;
+    font-weight: var(--font-semibold);
+}
+
+.ev-negative {
+    color: #991b1b;
+    font-weight: var(--font-semibold);
+}
+
+/* Tutorial Link */
+.tutorial-link {
+    color: var(--primary-600);
+    font-weight: var(--font-semibold);
+    text-decoration: none;
+}
+
+.tutorial-link:hover {
+    color: var(--primary-700);
+    text-decoration: underline;
+}

@@ -5,260 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PSP Databases - caustic.info</title>
     <link rel="icon" href="https://raw.githubusercontent.com/potatocaustic/web-stuff/refs/heads/main/favicon.ico" type="image/x-icon" />
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            line-height: 1.6;
-        }
-        
-        h1, h2, h3 {
-            color: #333;
-        }
-
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 1rem;
-            text-align: center;
-            position: relative; /* Added for positioning context */
-        }
-        
-        header h1 {
-            color: white !important;
-            font-size: 1.5rem;
-            margin: 0;
-        }
-        
-        nav ul {
-          display: flex;
-          justify-content: center;
-          list-style: none;
-          margin-top: 1rem;
-          padding: 0; /* Added to reset padding */
-          flex-wrap: wrap;
-        }
-        
-        nav ul li {
-          margin: 0.5rem 1rem;
-        }
-        
-        nav ul li a {
-          color: #fff;
-          text-decoration: none;
-          font-size: 1.1rem;
-          transition: color 0.3s ease;
-          white-space: nowrap;
-        }
-        
-        nav ul li a:hover {
-          color: #ccc;
-        }
-
-        .menu-toggle {
-            display: none; /* Hide the button by default */
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-        
-        /* UPDATED: Mobile navigation styles */
-        @media (max-width: 850px) {
-            .menu-toggle {
-                display: block;
-                position: absolute;
-                top: 1rem;
-                right: 1rem;
-            }
-
-            nav ul {
-                display: none; /* Hide the menu by default */
-                position: absolute;
-                top: 100%;
-                right: 0;
-                background-color: #333;
-                flex-direction: column;
-                width: 200px;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-                z-index: 1000;
-                margin-top: 0;
-                text-align: left;
-            }
-
-            nav ul.show-menu {
-                display: flex; /* This class will be toggled by JavaScript to show the menu */
-            }
-
-            nav ul li {
-                width: 100%;
-                margin: 0;
-            }
-            
-            nav ul li a {
-                display: block;
-                padding: 0.8rem 1rem;
-                border-bottom: 1px solid #444;
-                width: 100%;
-            }
-
-            nav ul li:last-child a {
-                border-bottom: none;
-            }
-        }
-        
-        main {
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .tools-section {
-            margin-top: 2rem;
-        }
-        
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 1.5rem;
-        }
-        
-        .tool-card {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: transform 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .tool-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .tool-card-content {
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-        }
-        
-        .tool-card h3 {
-            margin-bottom: 1rem;
-            color: #333;
-        }
-        
-        .tool-card p {
-            margin-bottom: 1.5rem;
-            color: #666;
-            flex-grow: 1;
-        }
-        
-        .button {
-            display: inline-block;
-            background-color: #333;
-            color: #fff;
-            padding: 0.8rem 1.5rem;
-            border-radius: 4px;
-            text-decoration: none;
-            transition: background-color 0.3s ease;
-            align-self: flex-start;
-            margin-top: auto;
-        }
-        
-        .button:hover {
-            background-color: #555;
-        }
-        
-        footer {
-            text-align: center;
-            margin-top: 2rem;
-            padding: 1rem;
-            background-color: #333;
-            color: #fff;
-        }
-        
-        @media (min-width: 768px) {
-            header h1 {
-                font-size: 2rem;
-            }
-        }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/global.css">
+    <link rel="stylesheet" href="/css/psp.css">
 </head>
 <body>
-    <header>
-        <h1>caustic.info</h1>
-          <nav>
-            <button id="menu-toggle" class="menu-toggle" aria-label="Open Navigation Menu">&#9776;</button>
-            <ul id="nav-menu">
-                <li><a href="/index.html">Home</a></li>
-                <li><a href="/PSPs/index.html">PSP Databases</a></li>
-                <li><a href="/RKL/rkl-stats.html">Jammers Stats</a></li>
-                <li><a href="/karma-calculator.html">Karma EV Calculator</a></li>
-                <li><a href="/pool-optimizer.html">Pool Optimizer</a></li>
-                <li><a href="/CFB/cfb-projections.html">CFB Projections</a></li>
-            </ul>
-          </nav>
+    <header class="site-header">
+        <div class="header-container">
+            <a href="/index.html" class="site-logo">caustic.info</a>
+            <nav>
+                <button id="menu-toggle" class="menu-toggle" aria-label="Toggle navigation menu">
+                    <div class="hamburger">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </button>
+                <ul id="nav-menu" class="nav-menu">
+                    <li><a href="/index.html">Home</a></li>
+                    <li><a href="/PSPs/index.html" class="active">PSP Databases</a></li>
+                    <li><a href="/RKL/rkl-stats.html">Jammers Stats</a></li>
+                    <li><a href="/karma-calculator.html">Karma EV</a></li>
+                    <li><a href="/pool-optimizer.html">Pool Optimizer</a></li>
+                    <li><a href="/autopool/autopool.html">Autopool</a></li>
+                    <li><a href="/dotd/dotd.html">DOTD</a></li>
+                    <li><a href="/CFB/cfb-projections.html">CFB Projections</a></li>
+                </ul>
+            </nav>
+        </div>
     </header>
-    <main>
+
+    <main class="main-content" style="display: block;">
         <section class="intro">
             <h2>Player Stat Pick Databases</h2>
             <p>Select from an available sport below.</p>
         </section>
-        
+
         <section class="tools-section">
             <h2>Available Tools</h2>
             <div class="tools-grid">
-                <div class="tool-card">
-                    <div class="tool-card-content">
-                        <h3>CFB PSP Database (2025)</h3>
-                        <p>Search historical CFB player stat pick poll results. View player performance history, success rates, and average rankings.</p>
-                        <a href="/PSPs/cfb-psp.html" class="button">Open Tool</a>
+                <div class="card card-accent tool-card">
+                    <div class="card-body">
+                        <h3 class="card-title">CFB PSP Database (2025)</h3>
+                        <p class="card-text">Search historical CFB player stat pick poll results. View player performance history, success rates, and average rankings.</p>
+                        <a href="/PSPs/cfb-psp.html" class="btn btn-primary">Open Tool</a>
                     </div>
                 </div>
 
-                <div class="tool-card">
-                    <div class="tool-card-content">
-                        <h3>NFL PSP Database (25-26)</h3>
-                        <p>Search historical NFL player stat pick poll results. View player performance history, success rates, and average rankings.</p>
-                        <a href="/PSPs/nfl-psp.html" class="button">Open Tool</a>
+                <div class="card card-accent tool-card">
+                    <div class="card-body">
+                        <h3 class="card-title">NFL PSP Database (25-26)</h3>
+                        <p class="card-text">Search historical NFL player stat pick poll results. View player performance history, success rates, and average rankings.</p>
+                        <a href="/PSPs/nfl-psp.html" class="btn btn-primary">Open Tool</a>
                     </div>
                 </div>
-                <div class="tool-card">
-                    <div class="tool-card-content">
-                        <h3>NHL PSP Database (25-26)</h3>
-                        <p>Search historical NHL player stat pick poll results. View player performance history, success rates, and average rankings.</p>
-                        <a href="/PSPs/nhl-psp.html" class="button">Open Tool</a>
+
+                <div class="card card-accent tool-card">
+                    <div class="card-body">
+                        <h3 class="card-title">NHL PSP Database (25-26)</h3>
+                        <p class="card-text">Search historical NHL player stat pick poll results. View player performance history, success rates, and average rankings.</p>
+                        <a href="/PSPs/nhl-psp.html" class="btn btn-primary">Open Tool</a>
                     </div>
                 </div>
-                <div class="tool-card">
-                    <div class="tool-card-content">
-                        <h3>NBA PSP Database (25-26)</h3>
-                        <p>Search historical NBA player stat pick poll results. View player performance history, success rates, and average rankings.</p>
-                        <a href="/PSPs/nba-psp.html" class="button">Open Tool</a>
+
+                <div class="card card-accent tool-card">
+                    <div class="card-body">
+                        <h3 class="card-title">NBA PSP Database (25-26)</h3>
+                        <p class="card-text">Search historical NBA player stat pick poll results. View player performance history, success rates, and average rankings.</p>
+                        <a href="/PSPs/nba-psp.html" class="btn btn-primary">Open Tool</a>
                     </div>
                 </div>
-                <div class="tool-card">
-                    <div class="tool-card-content">
-                        <h3>CBB PSP Database (25-26)</h3>
-                        <p>Search historical CBB player stat pick poll results. View player performance history, success rates, and average rankings.</p>
-                        <a href="/PSPs/cbb-psp.html" class="button">Open Tool</a>
+
+                <div class="card card-accent tool-card">
+                    <div class="card-body">
+                        <h3 class="card-title">CBB PSP Database (25-26)</h3>
+                        <p class="card-text">Search historical CBB player stat pick poll results. View player performance history, success rates, and average rankings.</p>
+                        <a href="/PSPs/cbb-psp.html" class="btn btn-primary">Open Tool</a>
                     </div>
                 </div>
             </div>
         </section>
     </main>
-    <footer>
+
+    <footer class="site-footer">
         <p>&copy; caustic.info</p>
     </footer>
 
@@ -269,7 +100,22 @@
 
             if (menuToggle && navMenu) {
                 menuToggle.addEventListener('click', () => {
-                    navMenu.classList.toggle('show-menu');
+                    menuToggle.classList.toggle('active');
+                    navMenu.classList.toggle('active');
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                        menuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    }
+                });
+
+                navMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        menuToggle.classList.remove('active');
+                        navMenu.classList.remove('active');
+                    });
                 });
             }
         });
