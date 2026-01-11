@@ -24,13 +24,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const authContainer = document.getElementById('auth-container');
     const mainContent = document.querySelector('main');
     const messageDiv = document.getElementById('auth-error');
-    
+    const navMenu = document.getElementById('nav-menu');
+
     // Login Form
     const loginForm = document.getElementById('login-form');
     const emailInput = document.getElementById('login-username');
     const passwordInput = document.getElementById('login-password');
     const loginButton = document.getElementById('login-button');
-    
+
     // Signup Form & UI Toggles
     const signupForm = document.getElementById('signup-form');
     const signupUsernameInput = document.getElementById('signup-username');
@@ -43,6 +44,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let logoutMessage = "";
 
+    // --- Helper Functions for UI State ---
+    function showAuthContainer() {
+      if (authContainer) authContainer.classList.add('visible');
+      if (mainContent) mainContent.classList.remove('visible');
+      hideLogoutButton();
+    }
+
+    function showMainContent() {
+      if (mainContent) mainContent.classList.add('visible');
+      if (authContainer) authContainer.classList.remove('visible');
+      showLogoutButton();
+    }
+
+    function showLogoutButton() {
+      const logoutContainer = document.getElementById('nav-logout-container');
+      if (logoutContainer) {
+        logoutContainer.classList.add('visible');
+      } else {
+        createLogoutButton();
+      }
+    }
+
+    function hideLogoutButton() {
+      const logoutContainer = document.getElementById('nav-logout-container');
+      if (logoutContainer) {
+        logoutContainer.classList.remove('visible');
+      }
+    }
+
     // --- Auth State Change Logic ---
     auth.onAuthStateChanged(async (user) => {
       if (!mainContent || !authContainer) {
@@ -54,13 +84,9 @@ document.addEventListener('DOMContentLoaded', () => {
           const userDocRef = db.collection('users').doc(user.uid);
           const userDoc = await userDocRef.get();
           if (userDoc.exists && userDoc.data().isActive === true) {
-            mainContent.style.display = 'block';
-            authContainer.style.display = 'none';
-            if (!document.getElementById('logout-button')) {
-                createLogoutButton();
-            }
+            showMainContent();
           } else {
-            if (!userDoc.exists) { logoutMessage = "User data not found. Please contact admin."; } 
+            if (!userDoc.exists) { logoutMessage = "User data not found. Please contact admin."; }
             else { logoutMessage = "Your account is awaiting admin approval."; }
             await auth.signOut();
           }
@@ -70,8 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
           await auth.signOut();
         }
       } else {
-        mainContent.style.display = 'none';
-        authContainer.style.display = 'block';
+        showAuthContainer();
         if (logoutMessage) {
           messageDiv.textContent = logoutMessage;
           logoutMessage = "";
@@ -106,16 +131,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Logout Button ---
     function createLogoutButton() {
-        const existingButton = document.getElementById('logout-button');
-        if (existingButton) return;
+        if (document.getElementById('nav-logout-container')) return;
+        if (!navMenu) return;
+
+        // Create logout container
+        const logoutContainer = document.createElement('li');
+        logoutContainer.id = 'nav-logout-container';
+        logoutContainer.className = 'nav-logout visible';
+
+        // Create styled logout button
         const logoutButton = document.createElement('button');
         logoutButton.id = 'logout-button';
+        logoutButton.className = 'btn-logout';
         logoutButton.textContent = 'Logout';
         logoutButton.addEventListener('click', async () => {
             logoutMessage = "You have been logged out.";
             await auth.signOut();
         });
-        mainContent.insertBefore(logoutButton, mainContent.firstChild);
+
+        logoutContainer.appendChild(logoutButton);
+        navMenu.appendChild(logoutContainer);
     }
     
     // --- UI Switching Logic ---
