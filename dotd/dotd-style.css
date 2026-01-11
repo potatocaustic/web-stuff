@@ -56,6 +56,11 @@
 /* Form Card */
 .form-card {
     margin-bottom: var(--space-6);
+    overflow: visible;
+}
+
+.form-card .card-body {
+    overflow: visible;
 }
 
 /* Multi-select dropdown */
