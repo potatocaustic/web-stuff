@@ -67,7 +67,7 @@
     <main class="main-content">
         <div class="page-header">
             <h1>DOTD Analyzer</h1>
-            <p>Select a date to see available sports, then choose a sport to analyze.</p>
+            <p>Select a sport and sportsbooks to analyze today's picks.</p>
         </div>
 
         <div id="token-display" class="token-display-box">
@@ -82,21 +82,18 @@
         <section class="card form-card">
             <div class="card-body">
                 <form id="dotd-form">
-                    <div class="form-group">
-                        <label for="poll-date" class="form-label">Date</label>
-                        <input type="date" id="poll-date" name="poll_date" class="form-input" required>
-                    </div>
+                    <input type="hidden" id="poll-date" name="poll_date">
                     <div class="form-group">
                         <label for="sport-select" class="form-label">Sport</label>
                         <select id="sport-select" name="sport" class="form-select" required disabled>
-                            <option value="">Select a date first</option>
+                            <option value="">Loading sports...</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="bookmaker-select" class="form-label">Sportsbook</label>
-                        <select id="bookmaker-select" name="bookmaker" class="form-select">
-                            <option value="combined">Combined (Average)</option>
-                        </select>
+                        <label class="form-label">Sportsbooks</label>
+                        <div id="bookmaker-checkboxes" class="bookmaker-checkboxes">
+                            <!-- Populated by JavaScript -->
+                        </div>
                     </div>
                     <button type="submit" id="submit-btn" class="btn btn-primary btn-block btn-lg" disabled>Calculate</button>
                 </form>

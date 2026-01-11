@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitBtn = document.getElementById('submit-btn');
     const dateInput = document.getElementById('pool-date');
     const sportSelect = document.getElementById('sport-select');
-    const bookmakerSelect = document.getElementById('bookmaker-select');
+    const bookmakerCheckboxes = document.getElementById('bookmaker-checkboxes');
     const menuToggle = document.getElementById('menu-toggle');
     const navMenu = document.getElementById('nav-menu');
 
@@ -53,19 +53,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Fetch and populate bookmakers on page load
+    // Fetch and populate bookmakers as checkboxes on page load
     async function loadBookmakers() {
         try {
             const response = await fetch(`${API_BASE_URL}/get_bookmakers`);
             const data = await response.json();
 
             if (data.bookmakers && data.bookmakers.length > 0) {
-                bookmakerSelect.innerHTML = '';
-                data.bookmakers.forEach(bm => {
-                    const option = document.createElement('option');
-                    option.value = bm.key;
-                    option.textContent = bm.name;
-                    bookmakerSelect.appendChild(option);
+                bookmakerCheckboxes.innerHTML = '';
+                data.bookmakers.forEach((bm, index) => {
+                    const label = document.createElement('label');
+                    label.className = 'bookmaker-checkbox-label';
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.name = 'bookmakers';
+                    checkbox.value = bm.key;
+                    // Select first bookmaker (combined) by default
+                    if (index === 0) {
+                        checkbox.checked = true;
+                    }
+
+                    const span = document.createElement('span');
+                    span.textContent = bm.name;
+
+                    label.appendChild(checkbox);
+                    label.appendChild(span);
+                    bookmakerCheckboxes.appendChild(label);
                 });
             }
         } catch (error) {
@@ -76,23 +90,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load bookmakers immediately
     loadBookmakers();
 
-    // Handle date selection
-    dateInput.addEventListener('change', async () => {
-        const selectedDate = dateInput.value;
+    // Get today's date in US Central time
+    function getTodaysCentralDate() {
+        const today = new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' });
+        const centralDate = new Date(today);
+        const year = centralDate.getFullYear();
+        const month = String(centralDate.getMonth() + 1).padStart(2, '0');
+        const day = String(centralDate.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
 
-        if (!selectedDate) {
-            sportSelect.disabled = true;
-            sportSelect.innerHTML = '<option value="">Select a date first</option>';
-            submitBtn.disabled = true;
-            return;
-        }
+    // Set today's date in hidden input
+    const todayFormatted = getTodaysCentralDate();
+    dateInput.value = todayFormatted;
 
-        // Fetch available sports for the selected date
+    // Load sports for today automatically
+    async function loadSportsForToday() {
         try {
             sportSelect.disabled = true;
             sportSelect.innerHTML = '<option value="">Loading sports...</option>';
+            submitBtn.disabled = true;
 
-            const response = await fetch(`${API_BASE_URL}/get_sports_for_date?date=${selectedDate}`);
+            const response = await fetch(`${API_BASE_URL}/get_sports_for_date?date=${todayFormatted}`);
             const data = await response.json();
 
             if (!response.ok) {
@@ -109,26 +128,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 sportSelect.disabled = false;
             } else {
-                sportSelect.innerHTML = '<option value="">No pools available for this date</option>';
-                submitBtn.disabled = true;
+                sportSelect.innerHTML = '<option value="">No pools available today</option>';
             }
+
         } catch (error) {
             sportSelect.innerHTML = '<option value="">Error loading sports</option>';
             displayError(error.message);
         }
-    });
+    }
 
-    // Set default date to today in US Central time
-    const today = new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' });
-    const centralDate = new Date(today);
-    const year = centralDate.getFullYear();
-    const month = String(centralDate.getMonth() + 1).padStart(2, '0');
-    const day = String(centralDate.getDate()).padStart(2, '0');
-    const todayFormatted = `${year}-${month}-${day}`;
-    dateInput.value = todayFormatted;
-
-    // Trigger change event to load sports for today
-    dateInput.dispatchEvent(new Event('change'));
+    // Load sports on page load
+    loadSportsForToday();
 
     // Enable submit button when sport is selected
     sportSelect.addEventListener('change', () => {
@@ -162,7 +172,22 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.disabled = true;
         submitBtn.textContent = 'Calculating...';
 
+        // Get selected bookmakers
+        const selectedBookmakers = Array.from(bookmakerCheckboxes.querySelectorAll('input[type="checkbox"]:checked'))
+            .map(cb => cb.value);
+
+        if (selectedBookmakers.length === 0) {
+            displayError('Please select at least one sportsbook.');
+            loader.classList.add('hidden');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Calculate';
+            return;
+        }
+
         const formData = new FormData(form);
+        // Replace individual bookmaker entries with comma-separated list
+        formData.delete('bookmakers');
+        formData.set('bookmakers', selectedBookmakers.join(','));
 
         try {
             const response = await fetch(`${API_BASE_URL}/run_autopool_model`, {

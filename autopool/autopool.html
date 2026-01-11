@@ -67,7 +67,7 @@
     <main class="main-content">
         <div class="page-header">
             <h1>Autopool Optimizer</h1>
-            <p>Select a date and sport to find the optimal pool strategy.</p>
+            <p>Select a sport and sportsbooks to find the optimal pool strategy.</p>
         </div>
 
         <div id="token-display" class="token-display-box">
@@ -82,21 +82,18 @@
         <section class="card form-card">
             <div class="card-body">
                 <form id="autopool-form">
-                    <div class="form-group">
-                        <label for="pool-date" class="form-label">Pool Date</label>
-                        <input type="date" id="pool-date" name="pool_date" class="form-input" required>
-                    </div>
+                    <input type="hidden" id="pool-date" name="pool_date">
                     <div class="form-group">
                         <label for="sport-select" class="form-label">Sport</label>
                         <select id="sport-select" name="sport" class="form-select" required disabled>
-                            <option value="">Select a date first</option>
+                            <option value="">Loading sports...</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="bookmaker-select" class="form-label">Sportsbook</label>
-                        <select id="bookmaker-select" name="bookmaker" class="form-select">
-                            <option value="combined">Combined (Average)</option>
-                        </select>
+                        <label class="form-label">Sportsbooks</label>
+                        <div id="bookmaker-checkboxes" class="bookmaker-checkboxes">
+                            <!-- Populated by JavaScript -->
+                        </div>
                     </div>
                     <button type="submit" id="submit-btn" class="btn btn-primary btn-block btn-lg" disabled>Calculate</button>
                 </form>
