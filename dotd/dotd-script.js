@@ -53,7 +53,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mobile menu toggle
     if (menuToggle && navMenu) {
         menuToggle.addEventListener('click', () => {
+            menuToggle.classList.toggle('active');
             navMenu.classList.toggle('active');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!menuToggle.contains(e.target) && !navMenu.contains(e.target)) {
+                menuToggle.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
         });
     }
 
