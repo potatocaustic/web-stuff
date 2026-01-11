@@ -204,8 +204,9 @@ document.addEventListener('DOMContentLoaded', () => {
         tableBody.innerHTML = '';
 
         if (data.results && data.results.length > 0) {
-            // Create table headers
-            const headers = Object.keys(data.results[0]);
+            // Create table headers - filter out start_time since it's combined with team
+            const allHeaders = Object.keys(data.results[0]);
+            const headers = allHeaders.filter(h => h !== 'start_time');
             const headerRow = document.createElement('tr');
             headers.forEach(headerText => {
                 const th = document.createElement('th');
@@ -219,7 +220,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 const row = document.createElement('tr');
                 headers.forEach(header => {
                     const cell = document.createElement('td');
-                    cell.textContent = rowData[header];
+                    if (header === 'team') {
+                        // Combine team name with start time underneath
+                        const teamName = document.createElement('div');
+                        teamName.textContent = rowData[header];
+                        cell.appendChild(teamName);
+                        if (rowData['start_time']) {
+                            const startTime = document.createElement('div');
+                            startTime.textContent = rowData['start_time'];
+                            startTime.style.fontSize = '0.8em';
+                            startTime.style.opacity = '0.7';
+                            cell.appendChild(startTime);
+                        }
+                    } else {
+                        cell.textContent = rowData[header];
+                    }
                     row.appendChild(cell);
                 });
                 tableBody.appendChild(row);
