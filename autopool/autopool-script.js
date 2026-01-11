@@ -393,7 +393,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                     <div class="combo-card-bets"><strong>Bets:</strong> ${combo.bet_decisions}</div>
-                    <div class="combo-card-expand-hint">Tap for details ▼</div>
+                    <div class="combo-card-expand-hint">
+                        <span class="expand-text">Tap for details</span>
+                        <span class="expand-arrow">▼</span>
+                    </div>
                 </div>
                 <div class="combo-card-details">${renderComboDetails(combo)}</div>
             `;
@@ -431,26 +434,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Combo-level summary (payouts and probabilities)
         let summaryHtml = `
-            <div class="game-detail-card" style="background: linear-gradient(135deg, #667eea22 0%, #764ba222 100%); border-left: 3px solid #667eea;">
-                <div class="game-detail-header">Projected Payouts & Probabilities</div>
+            <div class="game-detail-card summary-card">
+                <div class="game-detail-header">
+                    <div class="game-detail-title">Projected Payouts & Probabilities</div>
+                </div>
                 <div class="game-detail-grid">
                     <div class="game-detail-item">
-                        <span class="label">1st Place Payout:</span>
+                        <span class="label">1st Payout</span>
                         <span class="value">${formatCurrency(combo.payout_1st)}</span>
                     </div>
                     <div class="game-detail-item">
-                        <span class="label">1st Place Prob:</span>
+                        <span class="label">1st Prob</span>
                         <span class="value">${formatProb(combo.prob_1st)}</span>
                     </div>`;
 
         if (combo.payout_2nd !== null && combo.payout_2nd !== undefined) {
             summaryHtml += `
                     <div class="game-detail-item">
-                        <span class="label">2nd Place Payout:</span>
+                        <span class="label">2nd Payout</span>
                         <span class="value">${formatCurrency(combo.payout_2nd)}</span>
                     </div>
                     <div class="game-detail-item">
-                        <span class="label">2nd Place Prob:</span>
+                        <span class="label">2nd Prob</span>
                         <span class="value">${formatProb(combo.prob_2nd)}</span>
                     </div>`;
         }
@@ -470,33 +475,42 @@ document.addEventListener('DOMContentLoaded', () => {
             return `
                 <div class="game-detail-card">
                     <div class="game-detail-header">
-                        Game ${i + 1}: ${g.matchup} — Pick: <strong>${g.pick}</strong>
-                        <span class="${betClass}" style="float:right;">${g.bet_type} Bet (EV: ${formatEv(g.bet_ev)})</span>
+                        <div class="game-detail-title">Game ${i + 1}: ${g.matchup}</div>
+                        <div class="game-detail-pick">Pick: <strong>${g.pick}</strong></div>
+                        <div class="game-detail-bet ${betClass}">${g.bet_type} Bet (EV: ${formatEv(g.bet_ev)})</div>
                     </div>
                     <div class="game-detail-grid">
                         <div class="game-detail-item">
-                            <span class="label">${g.home_team} Odds:</span>
+                            <span class="label">${g.home_team} Odds</span>
                             <span class="value">${formatOdds(g.home_odds)}</span>
                         </div>
                         <div class="game-detail-item">
-                            <span class="label">${g.away_team} Odds:</span>
+                            <span class="label">${g.away_team} Odds</span>
                             <span class="value">${formatOdds(g.away_odds)}</span>
                         </div>
                         <div class="game-detail-item">
-                            <span class="label">${g.home_team} Win Prob:</span>
+                            <span class="label">${g.home_team} Prob</span>
                             <span class="value">${formatProb(g.home_prob)}</span>
                         </div>
                         <div class="game-detail-item">
-                            <span class="label">${g.away_team} Win Prob:</span>
+                            <span class="label">${g.away_team} Prob</span>
                             <span class="value">${formatProb(g.away_prob)}</span>
                         </div>
                         <div class="game-detail-item">
-                            <span class="label">${g.home_team} EV (Max/Min):</span>
-                            <span class="value">${formatEv(g.home_ev_max)} / ${formatEv(g.home_ev_min)}</span>
+                            <span class="label">${g.home_team} EV Max</span>
+                            <span class="value">${formatEv(g.home_ev_max)}</span>
                         </div>
                         <div class="game-detail-item">
-                            <span class="label">${g.away_team} EV (Max/Min):</span>
-                            <span class="value">${formatEv(g.away_ev_max)} / ${formatEv(g.away_ev_min)}</span>
+                            <span class="label">${g.home_team} EV Min</span>
+                            <span class="value">${formatEv(g.home_ev_min)}</span>
+                        </div>
+                        <div class="game-detail-item">
+                            <span class="label">${g.away_team} EV Max</span>
+                            <span class="value">${formatEv(g.away_ev_max)}</span>
+                        </div>
+                        <div class="game-detail-item">
+                            <span class="label">${g.away_team} EV Min</span>
+                            <span class="value">${formatEv(g.away_ev_min)}</span>
                         </div>
                     </div>
                 </div>
