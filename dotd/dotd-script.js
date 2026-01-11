@@ -204,9 +204,13 @@ document.addEventListener('DOMContentLoaded', () => {
         tableBody.innerHTML = '';
 
         if (data.results && data.results.length > 0) {
-            // Create table headers - filter out metadata fields
-            const allHeaders = Object.keys(data.results[0]);
-            const headers = allHeaders.filter(h => h !== 'start_time' && h !== 'is_locked');
+            // Define explicit column order (excluding metadata fields start_time and is_locked)
+            // Order: Team, Odds/Spread, Votes, Prob, Payout, EV
+            const allKeys = Object.keys(data.results[0]);
+            const hasOdds = allKeys.includes('odds');
+            const headers = hasOdds
+                ? ['team', 'odds', 'votes', 'prob', 'payout', 'EV']
+                : ['team', 'spread', 'votes', 'prob', 'payout', 'EV'];
             const headerRow = document.createElement('tr');
             headers.forEach(headerText => {
                 const th = document.createElement('th');
