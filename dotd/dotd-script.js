@@ -52,7 +52,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Mobile menu toggle
     if (menuToggle && navMenu) {
-        menuToggle.addEventListener('click', () => {
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
             menuToggle.classList.toggle('active');
             navMenu.classList.toggle('active');
         });
