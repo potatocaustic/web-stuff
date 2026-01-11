@@ -156,16 +156,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- UI Switching Logic ---
     showSignup.addEventListener('click', (e) => {
         e.preventDefault();
-        loginForm.style.display = 'none';
-        signupForm.style.display = 'block';
+        loginForm.classList.add('hidden');
+        signupForm.classList.remove('hidden');
         authTitle.textContent = 'Sign Up';
         messageDiv.textContent = '';
     });
 
     showLogin.addEventListener('click', (e) => {
         e.preventDefault();
-        signupForm.style.display = 'none';
-        loginForm.style.display = 'block';
+        signupForm.classList.add('hidden');
+        loginForm.classList.remove('hidden');
         authTitle.textContent = 'Login';
         messageDiv.textContent = '';
     });
